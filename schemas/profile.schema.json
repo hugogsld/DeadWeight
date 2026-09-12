@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "profile",
+  "type": "object",
+  "required": [
+    "workflow_id",
+    "name",
+    "executions_sampled",
+    "nodes"
+  ],
+  "properties": {
+    "workflow_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "window_days": {
+      "type": "integer"
+    },
+    "executions_sampled": {
+      "type": "integer"
+    },
+    "collected_at": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "calls",
+          "distinct_outputs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "calls": {
+            "type": "integer"
+          },
+          "prompt_tokens_avg": {
+            "type": "number"
+          },
+          "completion_tokens_avg": {
+            "type": "number"
+          },
+          "distinct_outputs": {
+            "type": "integer"
+          },
+          "output_samples": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "latency_p50_ms": {
+            "type": "number"
+          },
+          "latency_p95_ms": {
+            "type": "number"
+          },
+          "cost_est_month_eur": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  }
+}

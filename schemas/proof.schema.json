@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "proof",
+  "type": "object",
+  "required": [
+    "patch_id",
+    "finding_id",
+    "n_replayed",
+    "agreement_rate",
+    "cost_before_month_eur",
+    "cost_after_month_eur",
+    "p95_before_ms",
+    "p95_after_ms",
+    "threshold",
+    "verdict"
+  ],
+  "properties": {
+    "patch_id": {
+      "type": "string"
+    },
+    "finding_id": {
+      "type": "string"
+    },
+    "n_replayed": {
+      "type": "integer"
+    },
+    "agreement_rate": {
+      "type": "number"
+    },
+    "disagreements": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "cost_before_month_eur": {
+      "type": "number"
+    },
+    "cost_after_month_eur": {
+      "type": "number"
+    },
+    "cost_factor": {
+      "type": "number"
+    },
+    "p95_before_ms": {
+      "type": "number"
+    },
+    "p95_after_ms": {
+      "type": "number"
+    },
+    "threshold": {
+      "type": "number"
+    },
+    "verdict": {
+      "type": "string",
+      "enum": [
+        "pass",
+        "reject"
+      ]
+    }
+  }
+}

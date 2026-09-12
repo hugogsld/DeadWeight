@@ -1,0 +1,39 @@
+{
+  "finding_id": "f_001",
+  "workflow_id": "wf_7Kq2",
+  "workflow_name": "Support ticket triage",
+  "node_id": "n_classify",
+  "node_name": "Classify ticket",
+  "rule": "low_entropy_output",
+  "severity": "cut",
+  "title": "Ce noeud LLM est un aiguillage deguise en agent",
+  "evidence": {
+    "calls": 200,
+    "distinct_outputs": 4,
+    "entropy_bits": 1.58,
+    "max_entropy_bits": 7.64,
+    "output_distribution": {
+      "billing": 82,
+      "technical": 61,
+      "account": 44,
+      "other": 13
+    },
+    "samples": [
+      {
+        "input": "Je n'arrive pas a telecharger ma facture de mars",
+        "output": "billing"
+      },
+      {
+        "input": "L'app plante quand j'ouvre le tableau de bord",
+        "output": "technical"
+      },
+      {
+        "input": "Comment changer l'email de mon compte ?",
+        "output": "account"
+      }
+    ]
+  },
+  "current_cost_month_eur": 412.0,
+  "est_saving_month_eur": 401.0,
+  "proposed_action": "Remplacer par un Switch deterministe sur mots-cles, avec gpt-5-mini en fallback pour les cas non couverts"
+}

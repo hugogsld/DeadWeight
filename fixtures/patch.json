@@ -1,0 +1,153 @@
+{
+  "patch_id": "p_001",
+  "finding_id": "f_001",
+  "workflow_id": "wf_7Kq2",
+  "strategy": "rule_switch",
+  "diff_summary": "Noeud 'Classify ticket' (gpt-5) remplace par un Switch a 3 regles + fallback gpt-5-mini sur la sortie non appariee",
+  "coverage_estimate": 0.94,
+  "patched_workflow": {
+    "name": "Support ticket triage - patched by Deadweight",
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "triage",
+          "options": {}
+        },
+        "id": "a1000000-0000-4000-8000-000000000001",
+        "name": "Webhook",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "webhookId": "a1000000-0000-4000-8000-000000000001"
+      },
+      {
+        "parameters": {
+          "rules": {
+            "values": [
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.text }}",
+                      "rightValue": "facture|paiement|abonnement|rembours",
+                      "operator": {
+                        "type": "string",
+                        "operation": "regex"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "outputKey": "billing"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.text }}",
+                      "rightValue": "bug|plante|erreur|charge pas|crash",
+                      "operator": {
+                        "type": "string",
+                        "operation": "regex"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "outputKey": "technical"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.text }}",
+                      "rightValue": "mot de passe|email|compte|connexion",
+                      "operator": {
+                        "type": "string",
+                        "operation": "regex"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "outputKey": "account"
+              }
+            ]
+          },
+          "options": {
+            "fallbackOutput": "extra",
+            "renameFallbackOutput": "unmatched"
+          }
+        },
+        "id": "a1000000-0000-4000-8000-000000000002",
+        "name": "Classify ticket (rules)",
+        "type": "n8n-nodes-base.switch",
+        "typeVersion": 3.2,
+        "position": [
+          220,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "promptType": "define",
+          "text": "=Classe ce ticket dans exactement une categorie parmi billing, technical, account, other. Reponds uniquement par le mot.\n\nTicket: {{ $json.body.text }}"
+        },
+        "id": "a1000000-0000-4000-8000-000000000003",
+        "name": "Classify fallback (gpt-5-mini)",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "typeVersion": 1.4,
+        "position": [
+          460,
+          180
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook": {
+        "main": [
+          [
+            {
+              "node": "Classify ticket (rules)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Classify ticket (rules)": {
+        "main": [
+          [],
+          [],
+          [],
+          [
+            {
+              "node": "Classify fallback (gpt-5-mini)",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "settings": {
+      "executionOrder": "v1"
+    }
+  }
+}
