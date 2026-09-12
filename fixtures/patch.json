@@ -1,10 +1,10 @@
 {
-  "patch_id": "p_b86f8fd4",
-  "finding_id": "f_YsmRj3Og",
+  "patch_id": "p_ef02fcbe",
+  "finding_id": "f_YsmRj3Og_ent",
   "workflow_id": "YsmRj3OgBSjVBv0o",
   "strategy": "rule_switch",
   "diff_summary": "Noeud 'Classify ticket' remplace par un Switch a 4 regles + fallback gpt-5-mini",
-  "coverage_estimate": 1,
+  "coverage_estimate": 0.96,
   "patched_workflow": {
     "name": "Support ticket triage - patched by Deadweight",
     "nodes": [
@@ -50,7 +50,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "paiement|prelevement|facture|remboursement|rembourser|debite|carte",
+                      "rightValue": "facture|remboursement|paiement a echoue|prelevement|abonnement|debite deux fois|formule de paiement",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -70,7 +70,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "export|erreur|tres lent|page reste blanche|connexion|synchronisent|bug|rapport|upload|mise a jour|chargement|double authentification.*urgent",
+                      "rightValue": "d'export|page export|erreur|page reste blanche|site est tres lent|mise a jour|double authentification|synchronisent|bug|upload de fichier|echoue systematiquement|connexion",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -90,7 +90,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "email de confirmation|propriete du compte|supprimer mon compte|compte semble bloque|bloque|collegue|mon espace|reinitialiser mon mot de passe|mot de passe",
+                      "rightValue": "email de confirmation|propriete du compte|compte semble bloque|supprimer mon compte|ajouter un collegue|mon espace|reinitialiser mon mot de passe|mot de passe",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -128,7 +128,7 @@
             "renameFallbackOutput": "unmatched"
           }
         },
-        "id": "79c5f9e5-95fa-4f84-8fe1-5629146b6a9f",
+        "id": "bd37901d-fb65-42c8-83ca-4c0404870b67",
         "name": "Classify ticket (rules)",
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3.2,
@@ -142,7 +142,7 @@
           "promptType": "define",
           "text": "=Classe ce texte dans exactement une categorie parmi billing, technical, account, other. Reponds uniquement par le mot.\n\nTexte: {{ $json.body.text }}"
         },
-        "id": "a0f5d19a-c0fc-4174-a597-acf7e0e6f9a3",
+        "id": "8fe80bce-8c61-4100-94e8-a6e0b3ab7a6c",
         "name": "Classify ticket fallback (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.4,
@@ -156,7 +156,7 @@
           "model": "gpt-5-mini",
           "options": {}
         },
-        "id": "f5bb2afa-52fa-4674-8ba9-2b9cc0c90a0c",
+        "id": "0228fd4e-0eb5-4986-a3cf-a7520ab55b01",
         "name": "OpenAI Chat Model (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,

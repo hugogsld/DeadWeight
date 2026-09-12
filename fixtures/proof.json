@@ -1,6 +1,6 @@
 {
-  "patch_id": "p_b86f8fd4",
-  "finding_id": "f_YsmRj3Og",
+  "patch_id": "p_ef02fcbe",
+  "finding_id": "f_YsmRj3Og_ent",
   "workflow_name": "Support ticket triage",
   "node_name": "Classify ticket",
   "n_replayed": 100,
@@ -11,9 +11,9 @@
   "rules_coverage": 0.93,
   "disagreements": [
     {
-      "input": "Comment activer la double authentification ?",
-      "expected": "technical",
-      "got": "other"
+      "input": "Bonjour, Comment activer la double authentification ?",
+      "expected": "other",
+      "got": "technical"
     },
     {
       "input": "Bonsoir, Impossible de reinitialiser mon mot de passe Cordialement.",
@@ -27,7 +27,7 @@
   "latency_measured": true,
   "p95_before_ms": 1689.0,
   "median_before_ms": 592.0,
-  "p95_rules_path_ms": 0.07,
+  "p95_rules_path_ms": 0.06,
   "threshold": 0.95,
   "verdict": "pass"
 }
