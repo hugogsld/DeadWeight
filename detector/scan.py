@@ -17,7 +17,8 @@ H = {"X-N8N-API-KEY": os.environ["N8N_API_KEY"]}
 MIN_CALLS = int(os.environ.get("DW_MIN_CALLS", "30"))
 MAX_DISTINCT = int(os.environ.get("DW_MAX_DISTINCT", "8"))
 LLM = ("@n8n/n8n-nodes-langchain.chainLlm", "@n8n/n8n-nodes-langchain.agent",
-       "@n8n/n8n-nodes-langchain.chainSummarization", "n8n-nodes-base.openAi")
+       "@n8n/n8n-nodes-langchain.chainSummarization", "n8n-nodes-base.openAi",
+       "@n8n/n8n-nodes-langchain.openAi")
 
 
 def get(path):
@@ -30,6 +31,9 @@ def norm(v):
 
 
 def first_text(j):
+    m = j.get("message")
+    if isinstance(m, dict) and isinstance(m.get("content"), str):
+        return m["content"]
     for k in ("text", "output", "response", "content", "message"):
         if k in j and isinstance(j[k], (str, int, float)):
             return str(j[k])
