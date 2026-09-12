@@ -1,104 +1,40 @@
 {
-  "patch_id": "p_d688ca50",
-  "finding_id": "f_jtIksqYR",
-  "workflow_id": "jtIksqYRpA59PN5I",
+  "patch_id": "p_51d61d54",
+  "finding_id": "f_YsmRj3Og",
+  "workflow_id": "YsmRj3OgBSjVBv0o",
   "strategy": "rule_switch",
-  "diff_summary": "Noeud 'Spam checker' remplace par un Switch a 2 regles + fallback gpt-5-mini",
-  "coverage_estimate": 0.96,
+  "diff_summary": "Noeud 'Classify ticket' remplace par un Switch a 4 regles + fallback gpt-5-mini",
+  "coverage_estimate": 1.0,
   "patched_workflow": {
-    "name": "My workflow (sandboxed) - patched by Deadweight",
+    "name": "Support ticket triage - patched by Deadweight",
     "nodes": [
       {
         "parameters": {
           "httpMethod": "POST",
-          "path": "sandbox-naqefh",
+          "path": "triage-original",
           "options": {}
         },
-        "id": "85dce088-a1cc-4e86-bd87-2ff5c31da10e",
-        "name": "Gmail Trigger",
+        "id": "b0000000-0000-4000-8000-000000000001",
+        "name": "Webhook",
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2,
         "position": [
-          -1168,
-          400
+          0,
+          0
         ],
-        "webhookId": "85dce088-a1cc-4e86-bd87-2ff5c31da10e"
+        "webhookId": "b0000000-0000-4000-8000-000000000001"
       },
       {
         "parameters": {
-          "mode": "raw",
-          "jsonOutput": "={{ JSON.stringify($json) }}",
           "options": {}
         },
-        "id": "03c8a8bf-ce02-418e-9727-c3e6b22c0da7",
-        "name": "get_message",
+        "id": "b0000000-0000-4000-8000-000000000004",
+        "name": "Route to queue",
         "type": "n8n-nodes-base.set",
         "typeVersion": 3.4,
         "position": [
-          -880,
-          400
-        ]
-      },
-      {
-        "parameters": {
-          "content": "## Gmail input\n\nGmail trigger get the full email\nSpam checker is a Openai node with specific system prompt.\nIf the email is from services (google, microsoft, ecc) it considered as spam.\nIn this case the model try to extract only business emails.\nThe node print only 2 different output: \"spam\" and \"no spam\".\nIf \"spam\", nothing happen, if \"no spam\" the \"if node\" pass the message to the Agentic node",
-          "height": 460,
-          "width": 1220,
-          "color": 3
-        },
-        "id": "30d330b6-7140-4585-801f-033f340e626a",
-        "name": "Sticky Note",
-        "type": "n8n-nodes-base.stickyNote",
-        "position": [
-          -1216,
-          160
-        ],
-        "typeVersion": 1
-      },
-      {
-        "parameters": {
-          "conditions": {
-            "options": {
-              "caseSensitive": true,
-              "leftValue": "",
-              "typeValidation": "strict",
-              "version": 2
-            },
-            "combinator": "and",
-            "conditions": [
-              {
-                "id": "921d0426-0dbf-49ac-ab67-b5538856deee",
-                "operator": {
-                  "type": "string",
-                  "operation": "notEquals"
-                },
-                "leftValue": "={{ $json.message.content }}",
-                "rightValue": "spam"
-              }
-            ]
-          },
-          "options": {}
-        },
-        "id": "650da34f-27f7-4be7-912a-ff3d959f716c",
-        "name": "If",
-        "type": "n8n-nodes-base.if",
-        "position": [
-          -288,
-          400
-        ],
-        "typeVersion": 2.2
-      },
-      {
-        "parameters": {
-          "jsCode": "return $input.all().map(i => {\n  const b = i.json.body || {};\n  const t = b.text || i.json.text || b.subject || '';\n  const now = new Date().toISOString();\n  return { json: {\n    text: t, subject: t, body: t, snippet: t, message: t, content: t,\n    input: t, query: t, chatInput: t, id: 'msg_' + Math.random().toString(36).slice(2),\n    date: now, pubDate: now, isoDate: now, createdAt: now,\n    link: 'https://example.com',\n    headers: { subject: t, from: 'client@example.com' }\n  } };\n});"
-        },
-        "id": "dw000000-0000-4000-8000-00000000000a",
-        "name": "DW Input",
-        "type": "n8n-nodes-base.code",
-        "typeVersion": 2,
-        "position": [
-          -992,
-          400
+          528,
+          0
         ]
       },
       {
@@ -114,7 +50,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "remboursement sur la facture de juin|abonnement a ete debite deux fois|email de confirmation|ajouter un collegue a mon espace|page reste blanche apres la connexion|tarifs pour les associations|bouton d'export ne fait rien|application plante quand j'ouvre le tableau de bord|Pouvez-vous m'aider|facture de fevrier me semble incorrecte|le montant a double|facture au nom de ma societe",
+                      "rightValue": "facture|remboursement|paiement|prelevement|debite",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -123,7 +59,7 @@
                   ],
                   "combinator": "and"
                 },
-                "outputKey": "no spam"
+                "outputKey": "billing"
               },
               {
                 "conditions": {
@@ -134,7 +70,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "prelevement du\\s+\\d+\\s+n'est jamais passe|paiement a echoue\\s+\\d+\\s+fois,\\s+la carte est pourtant valide|transferer la propriete du compte|supprimer mon compte definitivement|changer de formule de paiement",
+                      "rightValue": "erreur\\s+\\d+|export|tres lent|page reste blanche|double authentification.*urgent|synchronis|mise a jour|bug|upload",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -143,7 +79,47 @@
                   ],
                   "combinator": "and"
                 },
-                "outputKey": "spam"
+                "outputKey": "technical"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.text }}",
+                      "rightValue": "email de confirmation|propriete du compte|compte semble bloque|supprimer mon compte|ajouter un collegue|mot de passe",
+                      "operator": {
+                        "type": "string",
+                        "operation": "regex"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "outputKey": "account"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.text }}",
+                      "rightValue": "version mobile|documentation|felicit|double authentification",
+                      "operator": {
+                        "type": "string",
+                        "operation": "regex"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "outputKey": "other"
               }
             ]
           },
@@ -152,27 +128,27 @@
             "renameFallbackOutput": "unmatched"
           }
         },
-        "id": "fb4ffa14-4a56-4d8a-b7dc-c68d75e2cf85",
-        "name": "Spam checker (rules)",
+        "id": "06de4dcc-c71b-4847-ae51-6990d553c542",
+        "name": "Classify ticket (rules)",
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3.2,
         "position": [
-          -640,
-          400
+          240,
+          0
         ]
       },
       {
         "parameters": {
           "promptType": "define",
-          "text": "=Classe ce texte dans exactement une categorie parmi no spam, spam. Reponds uniquement par le mot.\n\nTexte: {{ $json.body.text }}"
+          "text": "=Classe ce texte dans exactement une categorie parmi billing, technical, account, other. Reponds uniquement par le mot.\n\nTexte: {{ $json.body.text }}"
         },
-        "id": "d856af03-21ab-4be6-9289-1ba0da83ba95",
-        "name": "Spam checker fallback (gpt-5-mini)",
+        "id": "a97a60a4-f66e-4034-97f6-8e90efdfb515",
+        "name": "Classify ticket fallback (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.4,
         "position": [
-          -400,
-          600
+          480,
+          200
         ]
       },
       {
@@ -180,85 +156,72 @@
           "model": "gpt-5-mini",
           "options": {}
         },
-        "id": "f23666a8-0334-4d2f-9c68-2cc40b96f6aa",
+        "id": "ee07a3b0-a487-4175-8082-bf6fd8b84048",
         "name": "OpenAI Chat Model (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,
         "position": [
-          -440,
-          800
+          440,
+          400
         ]
       }
     ],
     "connections": {
-      "If": {
-        "main": [
-          []
-        ]
-      },
-      "get_message": {
+      "Webhook": {
         "main": [
           [
             {
-              "node": "Spam checker (rules)",
+              "node": "Classify ticket (rules)",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Gmail Trigger": {
+      "Classify ticket (rules)": {
         "main": [
           [
             {
-              "node": "DW Input",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "DW Input": {
-        "main": [
-          [
-            {
-              "node": "get_message",
-              "type": "main",
-              "index": 0
-            }
-          ]
-        ]
-      },
-      "Spam checker (rules)": {
-        "main": [
-          [
-            {
-              "node": "If",
+              "node": "Route to queue",
               "type": "main",
               "index": 0
             }
           ],
           [
             {
-              "node": "If",
+              "node": "Route to queue",
               "type": "main",
               "index": 0
             }
           ],
           [
             {
-              "node": "Spam checker fallback (gpt-5-mini)",
+              "node": "Route to queue",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Route to queue",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Classify ticket fallback (gpt-5-mini)",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "Spam checker fallback (gpt-5-mini)": {
+      "Classify ticket fallback (gpt-5-mini)": {
         "main": [
           [
             {
-              "node": "If",
+              "node": "Route to queue",
               "type": "main",
               "index": 0
             }
@@ -269,7 +232,7 @@
         "ai_languageModel": [
           [
             {
-              "node": "Spam checker fallback (gpt-5-mini)",
+              "node": "Classify ticket fallback (gpt-5-mini)",
               "type": "ai_languageModel",
               "index": 0
             }

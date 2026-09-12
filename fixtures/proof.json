@@ -1,53 +1,33 @@
 {
-  "patch_id": "p_d688ca50",
-  "finding_id": "f_jtIksqYR",
-  "workflow_name": "My workflow (sandboxed)",
-  "node_name": "Spam checker",
-  "n_replayed": 60,
+  "patch_id": "p_51d61d54",
+  "finding_id": "f_YsmRj3Og",
+  "workflow_name": "Support ticket triage",
+  "node_name": "Classify ticket",
+  "n_replayed": 100,
   "source": "executions n8n",
-  "agreement_rate": 0.9,
-  "matched_by_rules": 48,
-  "sent_to_fallback": 12,
-  "rules_coverage": 0.8,
+  "agreement_rate": 0.98,
+  "matched_by_rules": 93,
+  "sent_to_fallback": 7,
+  "rules_coverage": 0.93,
   "disagreements": [
     {
-      "input": "Bonjour, Un bug affiche des chiffres faux dans le rapport",
-      "expected": "spam",
-      "got": "no spam"
+      "input": "Comment activer la double authentification ?",
+      "expected": "technical",
+      "got": "other"
     },
     {
-      "input": "Je veux supprimer mon compte definitivement C'est urgent.",
-      "expected": "no spam",
-      "got": "spam"
-    },
-    {
-      "input": "Bonsoir, Le paiement a echoue 143 fois, la carte est pourtant valide C'est urgent.",
-      "expected": "no spam",
-      "got": "spam"
-    },
-    {
-      "input": "Bonsoir, Le prelevement du 92 n'est jamais passe C'est urgent.",
-      "expected": "no spam",
-      "got": "spam"
-    },
-    {
-      "input": "Bonsoir, Je souhaite changer de formule de paiement Merci d'avance.",
-      "expected": "no spam",
-      "got": "spam"
-    },
-    {
-      "input": "Salut, Comment changer l'email de mon compte ? Cordialement.",
-      "expected": "spam",
-      "got": "no spam"
+      "input": "Bonsoir, Impossible de reinitialiser mon mot de passe Cordialement.",
+      "expected": "technical",
+      "got": "account"
     }
   ],
-  "cost_before_month_eur": 0.0948,
-  "cost_after_month_eur": 0.0033,
-  "cost_factor": 28.5,
+  "cost_before_month_eur": 0.158,
+  "cost_after_month_eur": 0.0014,
+  "cost_factor": 115.6,
   "latency_measured": true,
-  "p95_before_ms": 1719.0,
-  "median_before_ms": 1393.0,
-  "p95_rules_path_ms": 0.13,
+  "p95_before_ms": 1689.0,
+  "median_before_ms": 592.0,
+  "p95_rules_path_ms": 0.11,
   "threshold": 0.95,
-  "verdict": "reject"
+  "verdict": "pass"
 }
