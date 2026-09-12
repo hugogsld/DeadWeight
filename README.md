@@ -70,15 +70,15 @@ executions generated against a live n8n instance.
 
 | | before | after |
 | --- | --- | --- |
-| agreement on replayed inputs | — | **TODO_AGREEMENT** |
-| monthly cost | — | **/530** |
+| agreement on replayed inputs | — | **98.0%** (93 by rules, 7 by fallback) |
+| monthly cost | — | **/145** |
 | p95 latency | 4,300 ms | **< 1 ms** on rule-matched inputs |
 | inputs matched by rules | — | 98 / 100 |
 
 The Prover's first run on real data returned **REJECT at 39% agreement** — rules derived
 from too few examples. That is the system working: it refused to propose a patch that
 would have broken production. Rebuilt from the real execution history, the same pipeline
-returns **TODO_VERDICT**.
+returns **PASS at 98.0% agreement**.
 
 ## Running it
 
