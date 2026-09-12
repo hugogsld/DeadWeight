@@ -17,7 +17,10 @@ ALLOWED = {"name", "nodes", "connections", "settings"}
 
 
 def clean(wf: dict) -> dict:
-    return {k: v for k, v in wf.items() if k in ALLOWED}
+    out = {k: v for k, v in wf.items() if k in ALLOWED}
+    st = wf.get('settings') or {}
+    out['settings'] = {'executionOrder': st.get('executionOrder', 'v1')}
+    return out
 
 
 def post_workflow(wf: dict):

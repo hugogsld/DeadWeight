@@ -197,7 +197,7 @@ def build_patched_workflow(original: dict, finding: dict, rules: dict) -> dict:
         "name": f"{original['name']} - patched by Deadweight",
         "nodes": wf["nodes"],
         "connections": wf["connections"],
-        "settings": original.get("settings", {"executionOrder": "v1"}),
+        "settings": {"executionOrder": (original.get("settings") or {}).get("executionOrder", "v1")},
     }
 
 
