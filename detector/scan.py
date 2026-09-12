@@ -108,6 +108,24 @@ def main():
         print(f"\naucun noeud signale (il faut >= {MIN_CALLS} executions par noeud)")
         return
 
+    # honore le contrat Collector -> profile.json (un profil par workflow scanne)
+    profiles = {}
+    for r in results:
+        prof = profiles.setdefault(r["workflow"]["id"], {
+            "workflow_id": r["workflow"]["id"], "name": r["workflow"]["name"],
+            "executions_sampled": r["calls"], "nodes": []})
+        prof["nodes"].append({
+            "id": next(n["id"] for n in r["workflow"]["nodes"] if n["name"] == r["node"]),
+            "name": r["node"],
+            "type": next(n["type"] for n in r["workflow"]["nodes"] if n["name"] == r["node"]),
+            "calls": r["calls"], "distinct_outputs": len(r["dist"]),
+            "entropy_bits": round(r["entropy"], 2),
+            "output_samples": list(r["dist"])[:8]})
+    os.makedirs("out", exist_ok=True)
+    json.dump(list(profiles.values()), open("out/profile.json", "w"),
+              indent=2, ensure_ascii=False)
+    print(f"\nprofile.json ecrit ({len(profiles)} workflow(s))")
+
     best = min(flagged, key=lambda r: r["entropy"])
     seen, samples = Counter(), []
     for p in best["pairs"]:

@@ -1,10 +1,10 @@
 {
-  "patch_id": "p_19a43ea0",
+  "patch_id": "p_d688ca50",
   "finding_id": "f_jtIksqYR",
   "workflow_id": "jtIksqYRpA59PN5I",
   "strategy": "rule_switch",
   "diff_summary": "Noeud 'Spam checker' remplace par un Switch a 2 regles + fallback gpt-5-mini",
-  "coverage_estimate": 0.95,
+  "coverage_estimate": 0.96,
   "patched_workflow": {
     "name": "My workflow (sandboxed) - patched by Deadweight",
     "nodes": [
@@ -114,7 +114,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "remboursement sur la facture|abonnement a ete debite deux fois|n'?ai jamais recu l'?email de confirmation|ajouter un collegue a mon espace|page reste blanche apres la connexion|tarifs pour les associations|bouton d'?export ne fait rien|application plante quand j'ouvre le tableau de bord|Pouvez-vous m'aider|le montant a double|obtenir une facture au nom de ma societe",
+                      "rightValue": "remboursement sur la facture de juin|abonnement a ete debite deux fois|email de confirmation|ajouter un collegue a mon espace|page reste blanche apres la connexion|tarifs pour les associations|bouton d'export ne fait rien|application plante quand j'ouvre le tableau de bord|Pouvez-vous m'aider|facture de fevrier me semble incorrecte|le montant a double|facture au nom de ma societe",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -134,7 +134,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "le prelevement du \\d+ n'?est jamais passe|le paiement a echoue \\d+ fois, la carte est pourtant valide|transferer la propriete du compte|supprimer mon compte definitivement|changer de formule de paiement",
+                      "rightValue": "prelevement du\\s+\\d+\\s+n'est jamais passe|paiement a echoue\\s+\\d+\\s+fois,\\s+la carte est pourtant valide|transferer la propriete du compte|supprimer mon compte definitivement|changer de formule de paiement",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -152,7 +152,7 @@
             "renameFallbackOutput": "unmatched"
           }
         },
-        "id": "4b0301c9-86f8-43a2-898c-765cc6199e42",
+        "id": "fb4ffa14-4a56-4d8a-b7dc-c68d75e2cf85",
         "name": "Spam checker (rules)",
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3.2,
@@ -166,7 +166,7 @@
           "promptType": "define",
           "text": "=Classe ce texte dans exactement une categorie parmi no spam, spam. Reponds uniquement par le mot.\n\nTexte: {{ $json.body.text }}"
         },
-        "id": "03ae4807-2694-4562-bf61-e8e459b7e5fe",
+        "id": "d856af03-21ab-4be6-9289-1ba0da83ba95",
         "name": "Spam checker fallback (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.4,
@@ -180,7 +180,7 @@
           "model": "gpt-5-mini",
           "options": {}
         },
-        "id": "b6e10759-3a34-4547-896f-0e046888a9e1",
+        "id": "f23666a8-0334-4d2f-9c68-2cc40b96f6aa",
         "name": "OpenAI Chat Model (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,

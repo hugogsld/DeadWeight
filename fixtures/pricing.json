@@ -1,0 +1,3346 @@
+{
+ "aion-2.0": {
+  "in": 0.8,
+  "out": 1.6
+ },
+ "aion-3.0": {
+  "in": 3.0,
+  "out": 6.0
+ },
+ "aion-3.0-mini": {
+  "in": 0.7,
+  "out": 1.4
+ },
+ "aion-labs/aion-2.0": {
+  "in": 0.8,
+  "out": 1.6
+ },
+ "aion-labs/aion-3.0": {
+  "in": 3.0,
+  "out": 6.0
+ },
+ "aion-labs/aion-3.0-mini": {
+  "in": 0.7,
+  "out": 1.4
+ },
+ "aion-labs/aion-rp-llama-3.1-8b": {
+  "in": 0.8,
+  "out": 1.6
+ },
+ "aion-rp-llama-3.1-8b": {
+  "in": 0.8,
+  "out": 1.6
+ },
+ "amazon/nova-2-lite-v1": {
+  "in": 0.3,
+  "out": 2.5
+ },
+ "amazon/nova-lite-v1": {
+  "in": 0.06,
+  "out": 0.24
+ },
+ "amazon/nova-micro-v1": {
+  "in": 0.035,
+  "out": 0.14
+ },
+ "amazon/nova-premier-v1": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "amazon/nova-pro-v1": {
+  "in": 0.8,
+  "out": 3.2
+ },
+ "anthracite-org/magnum-v4-72b": {
+  "in": 2.5,
+  "out": 5.0
+ },
+ "anthropic/claude-3-haiku": {
+  "in": 0.25,
+  "out": 1.25
+ },
+ "anthropic/claude-fable-5": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "anthropic/claude-fable-5.1": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "anthropic/claude-fable-5.1:batch": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "anthropic/claude-fable-5:batch": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "anthropic/claude-haiku-4.5": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "anthropic/claude-haiku-4.5:batch": {
+  "in": 0.5,
+  "out": 2.5
+ },
+ "anthropic/claude-opus-4": {
+  "in": 15.0,
+  "out": 75.0
+ },
+ "anthropic/claude-opus-4.1": {
+  "in": 15.0,
+  "out": 75.0
+ },
+ "anthropic/claude-opus-4.1:batch": {
+  "in": 7.5,
+  "out": 37.5
+ },
+ "anthropic/claude-opus-4.5": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "anthropic/claude-opus-4.5:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "anthropic/claude-opus-4.6": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "anthropic/claude-opus-4.6:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "anthropic/claude-opus-4.7": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "anthropic/claude-opus-4.7:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "anthropic/claude-opus-4.8": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "anthropic/claude-opus-4.8:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "anthropic/claude-opus-5": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "anthropic/claude-opus-5:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "anthropic/claude-sonnet-4": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "anthropic/claude-sonnet-4.5:batch": {
+  "in": 1.5,
+  "out": 7.5
+ },
+ "anthropic/claude-sonnet-4.6": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "anthropic/claude-sonnet-4.6:batch": {
+  "in": 1.5,
+  "out": 7.5
+ },
+ "anthropic/claude-sonnet-5": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "anthropic/claude-sonnet-5:batch": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "arcee-ai/trinity-large-thinking": {
+  "in": 0.25,
+  "out": 0.8
+ },
+ "baidu/ernie-4.5-vl-424b-a47b": {
+  "in": 0.42,
+  "out": 1.25
+ },
+ "bytedance-seed/seed-1.6": {
+  "in": 0.25,
+  "out": 2.0
+ },
+ "bytedance-seed/seed-1.6-flash": {
+  "in": 0.075,
+  "out": 0.3
+ },
+ "bytedance-seed/seed-2-1-turbo": {
+  "in": 0.5,
+  "out": 2.5
+ },
+ "bytedance-seed/seed-2.0-code": {
+  "in": 0.5,
+  "out": 3.0
+ },
+ "bytedance-seed/seed-2.0-lite": {
+  "in": 0.25,
+  "out": 2.0
+ },
+ "bytedance-seed/seed-2.0-mini": {
+  "in": 0.1,
+  "out": 0.4
+ },
+ "bytedance/ui-tars-1.5-7b": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "claude-3-haiku": {
+  "in": 0.25,
+  "out": 1.25
+ },
+ "claude-fable-5": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "claude-fable-5.1": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "claude-fable-5.1:batch": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "claude-fable-5:batch": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "claude-fable-latest": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "claude-haiku-4.5": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "claude-haiku-4.5:batch": {
+  "in": 0.5,
+  "out": 2.5
+ },
+ "claude-haiku-latest": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "claude-opus-4": {
+  "in": 15.0,
+  "out": 75.0
+ },
+ "claude-opus-4.1": {
+  "in": 15.0,
+  "out": 75.0
+ },
+ "claude-opus-4.1:batch": {
+  "in": 7.5,
+  "out": 37.5
+ },
+ "claude-opus-4.5": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "claude-opus-4.5:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "claude-opus-4.6": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "claude-opus-4.6:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "claude-opus-4.7": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "claude-opus-4.7:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "claude-opus-4.8": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "claude-opus-4.8:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "claude-opus-5": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "claude-opus-5:batch": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "claude-opus-latest": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "claude-sonnet-4": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "claude-sonnet-4.5": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "claude-sonnet-4.5:batch": {
+  "in": 1.5,
+  "out": 7.5
+ },
+ "claude-sonnet-4.6": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "claude-sonnet-4.6:batch": {
+  "in": 1.5,
+  "out": 7.5
+ },
+ "claude-sonnet-5": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "claude-sonnet-5:batch": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "claude-sonnet-latest": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "codestral-2508": {
+  "in": 0.3,
+  "out": 0.9
+ },
+ "codestral-2508:batch": {
+  "in": 0.15,
+  "out": 0.45
+ },
+ "cognitivecomputations/dolphin-mistral-24b-venice-edition": {
+  "in": 0.2,
+  "out": 0.9
+ },
+ "cohere/command-a": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "cohere/command-r-08-2024": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "cohere/command-r-plus-08-2024": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "cohere/command-r7b-12-2024": {
+  "in": 0.0375,
+  "out": 0.15
+ },
+ "command-a": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "command-r-08-2024": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "command-r-plus-08-2024": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "command-r7b-12-2024": {
+  "in": 0.0375,
+  "out": 0.15
+ },
+ "cydonia-24b-v4.1": {
+  "in": 0.3,
+  "out": 0.5
+ },
+ "deepseek-chat": {
+  "in": 0.2574,
+  "out": 1.0287
+ },
+ "deepseek-chat-v3-0324": {
+  "in": 0.25,
+  "out": 1.0
+ },
+ "deepseek-chat-v3.1": {
+  "in": 0.25,
+  "out": 0.95
+ },
+ "deepseek-r1": {
+  "in": 0.7,
+  "out": 2.5
+ },
+ "deepseek-r1-0528": {
+  "in": 0.5,
+  "out": 2.15
+ },
+ "deepseek-r1-distill-llama-70b": {
+  "in": 0.8,
+  "out": 0.8
+ },
+ "deepseek-v3.1-terminus": {
+  "in": 0.27,
+  "out": 1.0
+ },
+ "deepseek-v3.2": {
+  "in": 0.269,
+  "out": 0.4
+ },
+ "deepseek-v3.2-exp": {
+  "in": 0.27,
+  "out": 0.41
+ },
+ "deepseek-v4-flash": {
+  "in": 0.0668,
+  "out": 0.1336
+ },
+ "deepseek-v4-flash-0731": {
+  "in": 0.04,
+  "out": 0.08
+ },
+ "deepseek-v4-flash-0731:batch": {
+  "in": 0.11,
+  "out": 0.33
+ },
+ "deepseek-v4-flash-latest": {
+  "in": 0.03,
+  "out": 0.07
+ },
+ "deepseek-v4-flash-vision-exp": {
+  "in": 0.22,
+  "out": 0.66
+ },
+ "deepseek-v4-flash-vision-exp:batch": {
+  "in": 0.11,
+  "out": 0.33
+ },
+ "deepseek-v4-pro": {
+  "in": 0.7788,
+  "out": 1.5576
+ },
+ "deepseek-v4-pro-0813": {
+  "in": 0.5782,
+  "out": 1.7345
+ },
+ "deepseek-v4-pro-0813:batch": {
+  "in": 0.66,
+  "out": 1.98
+ },
+ "deepseek-v4.1-flash": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "deepseek/deepseek-chat": {
+  "in": 0.2574,
+  "out": 1.0287
+ },
+ "deepseek/deepseek-chat-v3-0324": {
+  "in": 0.25,
+  "out": 1.0
+ },
+ "deepseek/deepseek-chat-v3.1": {
+  "in": 0.25,
+  "out": 0.95
+ },
+ "deepseek/deepseek-r1": {
+  "in": 0.7,
+  "out": 2.5
+ },
+ "deepseek/deepseek-r1-0528": {
+  "in": 0.5,
+  "out": 2.15
+ },
+ "deepseek/deepseek-r1-distill-llama-70b": {
+  "in": 0.8,
+  "out": 0.8
+ },
+ "deepseek/deepseek-v3.1-terminus": {
+  "in": 0.27,
+  "out": 1.0
+ },
+ "deepseek/deepseek-v3.2": {
+  "in": 0.269,
+  "out": 0.4
+ },
+ "deepseek/deepseek-v3.2-exp": {
+  "in": 0.27,
+  "out": 0.41
+ },
+ "deepseek/deepseek-v4-flash": {
+  "in": 0.0668,
+  "out": 0.1336
+ },
+ "deepseek/deepseek-v4-flash-0731": {
+  "in": 0.04,
+  "out": 0.08
+ },
+ "deepseek/deepseek-v4-flash-0731:batch": {
+  "in": 0.11,
+  "out": 0.33
+ },
+ "deepseek/deepseek-v4-flash-vision-exp": {
+  "in": 0.22,
+  "out": 0.66
+ },
+ "deepseek/deepseek-v4-flash-vision-exp:batch": {
+  "in": 0.11,
+  "out": 0.33
+ },
+ "deepseek/deepseek-v4-pro": {
+  "in": 0.7788,
+  "out": 1.5576
+ },
+ "deepseek/deepseek-v4-pro-0813": {
+  "in": 0.5782,
+  "out": 1.7345
+ },
+ "deepseek/deepseek-v4-pro-0813:batch": {
+  "in": 0.66,
+  "out": 1.98
+ },
+ "deepseek/deepseek-v4.1-flash": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "devstral-2512": {
+  "in": 0.4,
+  "out": 2.0
+ },
+ "dolphin-mistral-24b-venice-edition": {
+  "in": 0.2,
+  "out": 0.9
+ },
+ "ernie-4.5-vl-424b-a47b": {
+  "in": 0.42,
+  "out": 1.25
+ },
+ "fugu-max": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "fugu-ultra": {
+  "in": 5.0,
+  "out": 30.0
+ },
+ "fugu-ultra-v2": {
+  "in": 5.0,
+  "out": 30.0
+ },
+ "gemini-2.5-flash": {
+  "in": 0.3,
+  "out": 2.5
+ },
+ "gemini-2.5-flash-image": {
+  "in": 0.3,
+  "out": 2.5
+ },
+ "gemini-2.5-flash-lite": {
+  "in": 0.1,
+  "out": 0.4
+ },
+ "gemini-2.5-flash-lite:batch": {
+  "in": 0.05,
+  "out": 0.2
+ },
+ "gemini-2.5-flash:batch": {
+  "in": 0.15,
+  "out": 1.25
+ },
+ "gemini-2.5-pro": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "gemini-2.5-pro-preview": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "gemini-2.5-pro-preview-05-06": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "gemini-2.5-pro:batch": {
+  "in": 0.625,
+  "out": 5.0
+ },
+ "gemini-3-flash-preview": {
+  "in": 0.5,
+  "out": 3.0
+ },
+ "gemini-3-flash-preview:batch": {
+  "in": 0.25,
+  "out": 1.5
+ },
+ "gemini-3-pro-image": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "gemini-3-pro-image-preview": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "gemini-3.1-flash-image": {
+  "in": 0.5,
+  "out": 3.0
+ },
+ "gemini-3.1-flash-image-preview": {
+  "in": 0.5,
+  "out": 3.0
+ },
+ "gemini-3.1-flash-lite": {
+  "in": 0.25,
+  "out": 1.5
+ },
+ "gemini-3.1-flash-lite-image": {
+  "in": 0.25,
+  "out": 1.5
+ },
+ "gemini-3.1-flash-lite-preview": {
+  "in": 0.25,
+  "out": 1.5
+ },
+ "gemini-3.1-flash-lite:batch": {
+  "in": 0.125,
+  "out": 0.75
+ },
+ "gemini-3.1-pro-preview": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "gemini-3.1-pro-preview-customtools": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "gemini-3.1-pro-preview:batch": {
+  "in": 1.0,
+  "out": 6.0
+ },
+ "gemini-3.5-flash": {
+  "in": 1.5,
+  "out": 9.0
+ },
+ "gemini-3.5-flash-lite": {
+  "in": 0.3,
+  "out": 2.5
+ },
+ "gemini-3.5-flash-lite:batch": {
+  "in": 0.15,
+  "out": 1.25
+ },
+ "gemini-3.5-flash:batch": {
+  "in": 0.75,
+  "out": 4.5
+ },
+ "gemini-3.6-flash": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "gemini-3.6-flash:batch": {
+  "in": 0.375,
+  "out": 1.875
+ },
+ "gemini-3.7-flash": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "gemini-3.7-flash:batch": {
+  "in": 0.375,
+  "out": 1.875
+ },
+ "gemini-3.8-flash": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "gemini-3.8-flash:batch": {
+  "in": 0.375,
+  "out": 1.875
+ },
+ "gemini-flash-latest": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "gemini-pro-latest": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "gemma-2-27b-it": {
+  "in": 0.65,
+  "out": 0.65
+ },
+ "gemma-3-12b-it": {
+  "in": 0.05,
+  "out": 0.15
+ },
+ "gemma-3-27b-it": {
+  "in": 0.08,
+  "out": 0.45
+ },
+ "gemma-3-4b-it": {
+  "in": 0.05,
+  "out": 0.1
+ },
+ "gemma-4-26b-a4b-it": {
+  "in": 0.042,
+  "out": 0.22
+ },
+ "gemma-4-31b-it": {
+  "in": 0.09,
+  "out": 0.34
+ },
+ "gemma-4-31b-it:batch": {
+  "in": 0.39,
+  "out": 0.97
+ },
+ "glm-4.5": {
+  "in": 0.6,
+  "out": 2.2
+ },
+ "glm-4.5-air": {
+  "in": 0.13,
+  "out": 0.85
+ },
+ "glm-4.5v": {
+  "in": 0.6,
+  "out": 1.8
+ },
+ "glm-4.6": {
+  "in": 0.43,
+  "out": 1.75
+ },
+ "glm-4.6v": {
+  "in": 0.3,
+  "out": 0.9
+ },
+ "glm-4.7": {
+  "in": 0.4,
+  "out": 1.75
+ },
+ "glm-4.7-flash": {
+  "in": 0.0605,
+  "out": 0.4
+ },
+ "glm-5": {
+  "in": 0.6,
+  "out": 1.92
+ },
+ "glm-5-turbo": {
+  "in": 1.2,
+  "out": 4.0
+ },
+ "glm-5.1": {
+  "in": 0.966,
+  "out": 3.036
+ },
+ "glm-5.2": {
+  "in": 0.6,
+  "out": 2.0
+ },
+ "glm-5.2:batch": {
+  "in": 0.7,
+  "out": 2.2
+ },
+ "glm-5.3": {
+  "in": 1.4,
+  "out": 4.4
+ },
+ "glm-5.3-flash": {
+  "in": 0.075,
+  "out": 0.25
+ },
+ "glm-5.3-flash:batch": {
+  "in": 0.075,
+  "out": 0.25
+ },
+ "glm-5.3:batch": {
+  "in": 0.7,
+  "out": 2.2
+ },
+ "glm-5v-turbo": {
+  "in": 1.2,
+  "out": 4.0
+ },
+ "glm-flash-latest": {
+  "in": 0.075,
+  "out": 0.25
+ },
+ "glm-latest": {
+  "in": 0.8727,
+  "out": 3.36
+ },
+ "google/gemini-2.5-flash": {
+  "in": 0.3,
+  "out": 2.5
+ },
+ "google/gemini-2.5-flash-image": {
+  "in": 0.3,
+  "out": 2.5
+ },
+ "google/gemini-2.5-flash-lite": {
+  "in": 0.1,
+  "out": 0.4
+ },
+ "google/gemini-2.5-flash-lite:batch": {
+  "in": 0.05,
+  "out": 0.2
+ },
+ "google/gemini-2.5-flash:batch": {
+  "in": 0.15,
+  "out": 1.25
+ },
+ "google/gemini-2.5-pro": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "google/gemini-2.5-pro-preview": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "google/gemini-2.5-pro-preview-05-06": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "google/gemini-2.5-pro:batch": {
+  "in": 0.625,
+  "out": 5.0
+ },
+ "google/gemini-3-flash-preview": {
+  "in": 0.5,
+  "out": 3.0
+ },
+ "google/gemini-3-flash-preview:batch": {
+  "in": 0.25,
+  "out": 1.5
+ },
+ "google/gemini-3-pro-image": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "google/gemini-3-pro-image-preview": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "google/gemini-3.1-flash-image": {
+  "in": 0.5,
+  "out": 3.0
+ },
+ "google/gemini-3.1-flash-image-preview": {
+  "in": 0.5,
+  "out": 3.0
+ },
+ "google/gemini-3.1-flash-lite": {
+  "in": 0.25,
+  "out": 1.5
+ },
+ "google/gemini-3.1-flash-lite-image": {
+  "in": 0.25,
+  "out": 1.5
+ },
+ "google/gemini-3.1-flash-lite-preview": {
+  "in": 0.25,
+  "out": 1.5
+ },
+ "google/gemini-3.1-flash-lite:batch": {
+  "in": 0.125,
+  "out": 0.75
+ },
+ "google/gemini-3.1-pro-preview": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "google/gemini-3.1-pro-preview-customtools": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "google/gemini-3.1-pro-preview:batch": {
+  "in": 1.0,
+  "out": 6.0
+ },
+ "google/gemini-3.5-flash": {
+  "in": 1.5,
+  "out": 9.0
+ },
+ "google/gemini-3.5-flash-lite": {
+  "in": 0.3,
+  "out": 2.5
+ },
+ "google/gemini-3.5-flash-lite:batch": {
+  "in": 0.15,
+  "out": 1.25
+ },
+ "google/gemini-3.5-flash:batch": {
+  "in": 0.75,
+  "out": 4.5
+ },
+ "google/gemini-3.6-flash": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "google/gemini-3.6-flash:batch": {
+  "in": 0.375,
+  "out": 1.875
+ },
+ "google/gemini-3.7-flash": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "google/gemini-3.7-flash:batch": {
+  "in": 0.375,
+  "out": 1.875
+ },
+ "google/gemini-3.8-flash": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "google/gemini-3.8-flash:batch": {
+  "in": 0.375,
+  "out": 1.875
+ },
+ "google/gemma-2-27b-it": {
+  "in": 0.65,
+  "out": 0.65
+ },
+ "google/gemma-3-12b-it": {
+  "in": 0.05,
+  "out": 0.15
+ },
+ "google/gemma-3-27b-it": {
+  "in": 0.08,
+  "out": 0.45
+ },
+ "google/gemma-3-4b-it": {
+  "in": 0.05,
+  "out": 0.1
+ },
+ "google/gemma-4-26b-a4b-it": {
+  "in": 0.042,
+  "out": 0.22
+ },
+ "google/gemma-4-31b-it": {
+  "in": 0.09,
+  "out": 0.34
+ },
+ "google/gemma-4-31b-it:batch": {
+  "in": 0.39,
+  "out": 0.97
+ },
+ "gpt-3.5-turbo": {
+  "in": 0.5,
+  "out": 1.5
+ },
+ "gpt-3.5-turbo-0613": {
+  "in": 1.0,
+  "out": 2.0
+ },
+ "gpt-3.5-turbo-16k": {
+  "in": 3.0,
+  "out": 4.0
+ },
+ "gpt-3.5-turbo-instruct": {
+  "in": 1.5,
+  "out": 2.0
+ },
+ "gpt-3.5-turbo:batch": {
+  "in": 0.25,
+  "out": 0.75
+ },
+ "gpt-4": {
+  "in": 30.0,
+  "out": 60.0
+ },
+ "gpt-4-turbo": {
+  "in": 10.0,
+  "out": 30.0
+ },
+ "gpt-4-turbo-preview": {
+  "in": 10.0,
+  "out": 30.0
+ },
+ "gpt-4-turbo:batch": {
+  "in": 5.0,
+  "out": 15.0
+ },
+ "gpt-4.1": {
+  "in": 2.0,
+  "out": 8.0
+ },
+ "gpt-4.1-mini": {
+  "in": 0.4,
+  "out": 1.6
+ },
+ "gpt-4.1-mini:batch": {
+  "in": 0.2,
+  "out": 0.8
+ },
+ "gpt-4.1-nano": {
+  "in": 0.1,
+  "out": 0.4
+ },
+ "gpt-4.1-nano:batch": {
+  "in": 0.05,
+  "out": 0.2
+ },
+ "gpt-4.1:batch": {
+  "in": 1.0,
+  "out": 4.0
+ },
+ "gpt-4o": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "gpt-4o-2024-05-13": {
+  "in": 5.0,
+  "out": 15.0
+ },
+ "gpt-4o-2024-08-06": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "gpt-4o-2024-11-20": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "gpt-4o-mini": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "gpt-4o-mini-2024-07-18": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "gpt-4o-mini:batch": {
+  "in": 0.075,
+  "out": 0.3
+ },
+ "gpt-4o:batch": {
+  "in": 1.25,
+  "out": 5.0
+ },
+ "gpt-5": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "gpt-5-image": {
+  "in": 10.0,
+  "out": 10.0
+ },
+ "gpt-5-image-mini": {
+  "in": 2.5,
+  "out": 2.0
+ },
+ "gpt-5-mini": {
+  "in": 0.25,
+  "out": 2.0
+ },
+ "gpt-5-mini:batch": {
+  "in": 0.125,
+  "out": 1.0
+ },
+ "gpt-5-nano": {
+  "in": 0.05,
+  "out": 0.4
+ },
+ "gpt-5-nano:batch": {
+  "in": 0.025,
+  "out": 0.2
+ },
+ "gpt-5-pro": {
+  "in": 15.0,
+  "out": 120.0
+ },
+ "gpt-5-pro:batch": {
+  "in": 7.5,
+  "out": 60.0
+ },
+ "gpt-5.1": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "gpt-5.1-codex": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "gpt-5.1-codex-max": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "gpt-5.1-codex-mini": {
+  "in": 0.25,
+  "out": 2.0
+ },
+ "gpt-5.1:batch": {
+  "in": 0.625,
+  "out": 5.0
+ },
+ "gpt-5.2": {
+  "in": 1.75,
+  "out": 14.0
+ },
+ "gpt-5.2-chat": {
+  "in": 1.75,
+  "out": 14.0
+ },
+ "gpt-5.2-codex": {
+  "in": 1.75,
+  "out": 14.0
+ },
+ "gpt-5.2-pro": {
+  "in": 21.0,
+  "out": 168.0
+ },
+ "gpt-5.2-pro:batch": {
+  "in": 10.5,
+  "out": 84.0
+ },
+ "gpt-5.2:batch": {
+  "in": 0.875,
+  "out": 7.0
+ },
+ "gpt-5.3-codex": {
+  "in": 1.75,
+  "out": 14.0
+ },
+ "gpt-5.4": {
+  "in": 2.5,
+  "out": 15.0
+ },
+ "gpt-5.4-image-2": {
+  "in": 8.0,
+  "out": 15.0
+ },
+ "gpt-5.4-mini": {
+  "in": 0.75,
+  "out": 4.5
+ },
+ "gpt-5.4-mini:batch": {
+  "in": 0.375,
+  "out": 2.25
+ },
+ "gpt-5.4-nano": {
+  "in": 0.2,
+  "out": 1.25
+ },
+ "gpt-5.4-nano:batch": {
+  "in": 0.1,
+  "out": 0.625
+ },
+ "gpt-5.4-pro": {
+  "in": 30.0,
+  "out": 180.0
+ },
+ "gpt-5.4-pro:batch": {
+  "in": 15.0,
+  "out": 90.0
+ },
+ "gpt-5.4:batch": {
+  "in": 1.25,
+  "out": 7.5
+ },
+ "gpt-5.5": {
+  "in": 5.0,
+  "out": 30.0
+ },
+ "gpt-5.5-pro": {
+  "in": 30.0,
+  "out": 180.0
+ },
+ "gpt-5.5-pro:batch": {
+  "in": 15.0,
+  "out": 90.0
+ },
+ "gpt-5.5:batch": {
+  "in": 2.5,
+  "out": 15.0
+ },
+ "gpt-5.6-luna": {
+  "in": 0.2,
+  "out": 1.2
+ },
+ "gpt-5.6-luna-pro": {
+  "in": 0.2,
+  "out": 1.2
+ },
+ "gpt-5.6-luna-pro:batch": {
+  "in": 0.1,
+  "out": 0.6
+ },
+ "gpt-5.6-luna:batch": {
+  "in": 0.1,
+  "out": 0.6
+ },
+ "gpt-5.6-sol": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "gpt-5.6-sol-pro": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "gpt-5.6-sol-pro:batch": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "gpt-5.6-sol:batch": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "gpt-5.6-terra": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "gpt-5.6-terra-pro": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "gpt-5.6-terra-pro:batch": {
+  "in": 1.0,
+  "out": 6.0
+ },
+ "gpt-5.6-terra:batch": {
+  "in": 1.0,
+  "out": 6.0
+ },
+ "gpt-5:batch": {
+  "in": 0.625,
+  "out": 5.0
+ },
+ "gpt-6-astra": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "gpt-6-astra-pro": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "gpt-6-astra-pro:batch": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "gpt-6-astra:batch": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "gpt-astra-latest": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "gpt-audio": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "gpt-audio-mini": {
+  "in": 0.6,
+  "out": 2.4
+ },
+ "gpt-chat-latest": {
+  "in": 5.0,
+  "out": 30.0
+ },
+ "gpt-luna-latest": {
+  "in": 0.2,
+  "out": 1.2
+ },
+ "gpt-mini-latest": {
+  "in": 0.75,
+  "out": 4.5
+ },
+ "gpt-oss-120b": {
+  "in": 0.037,
+  "out": 0.17
+ },
+ "gpt-oss-120b:batch": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "gpt-oss-20b": {
+  "in": 0.03,
+  "out": 0.13
+ },
+ "gpt-oss-20b:batch": {
+  "in": 0.05,
+  "out": 0.2
+ },
+ "gpt-oss-safeguard-20b": {
+  "in": 0.075,
+  "out": 0.3
+ },
+ "gpt-sol-latest": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "gpt-terra-latest": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "granite-4.0-h-micro": {
+  "in": 0.017,
+  "out": 0.112
+ },
+ "granite-4.2-8b": {
+  "in": 0.06,
+  "out": 0.25
+ },
+ "grok-4.20": {
+  "in": 1.25,
+  "out": 2.5
+ },
+ "grok-4.20-multi-agent": {
+  "in": 1.25,
+  "out": 2.5
+ },
+ "grok-4.3": {
+  "in": 1.25,
+  "out": 2.5
+ },
+ "grok-4.3:batch": {
+  "in": 1.0,
+  "out": 2.0
+ },
+ "grok-4.5": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "grok-4.6": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "grok-build-0.1": {
+  "in": 1.0,
+  "out": 2.0
+ },
+ "grok-latest": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "gryphe/mythomax-l2-13b": {
+  "in": 0.06,
+  "out": 0.06
+ },
+ "hermes-3-llama-3.1-405b": {
+  "in": 1.0,
+  "out": 1.0
+ },
+ "hermes-3-llama-3.1-70b": {
+  "in": 0.7,
+  "out": 0.7
+ },
+ "hermes-4-405b": {
+  "in": 1.0,
+  "out": 3.0
+ },
+ "hunyuan-a13b-instruct": {
+  "in": 0.14,
+  "out": 0.57
+ },
+ "hy-mt2-1.8b": {
+  "in": 0.044,
+  "out": 0.177
+ },
+ "hy-mt2-30b-a3b": {
+  "in": 0.074,
+  "out": 0.295
+ },
+ "hy-mt2-7b": {
+  "in": 0.074,
+  "out": 0.295
+ },
+ "hy3": {
+  "in": 0.132,
+  "out": 0.528
+ },
+ "hy3-preview": {
+  "in": 0.18,
+  "out": 0.6
+ },
+ "hy4-preview": {
+  "in": 0.834,
+  "out": 2.501
+ },
+ "ibm-granite/granite-4.0-h-micro": {
+  "in": 0.017,
+  "out": 0.112
+ },
+ "ibm-granite/granite-4.2-8b": {
+  "in": 0.06,
+  "out": 0.25
+ },
+ "inception/mercury-2": {
+  "in": 0.25,
+  "out": 0.75
+ },
+ "inception/mercury-2.5": {
+  "in": 0.04,
+  "out": 0.15
+ },
+ "inclusionai/ling-3.0-flash": {
+  "in": 0.021,
+  "out": 0.063
+ },
+ "inclusionai/ling-3.0-flash-fin": {
+  "in": 0.06,
+  "out": 0.18
+ },
+ "inclusionai/ling-3.0-flash-vl": {
+  "in": 0.06,
+  "out": 0.18
+ },
+ "inference-net/schematron-v2-small": {
+  "in": 0.05,
+  "out": 0.23
+ },
+ "inference-net/schematron-v2-turbo": {
+  "in": 0.03,
+  "out": 0.15
+ },
+ "inkling": {
+  "in": 1.0,
+  "out": 4.05
+ },
+ "inkling-small": {
+  "in": 0.45,
+  "out": 1.2
+ },
+ "inkling-small:batch": {
+  "in": 0.5,
+  "out": 1.2
+ },
+ "inkling:batch": {
+  "in": 1.0,
+  "out": 4.05
+ },
+ "kat-coder-pro-v2": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "kat-coder-pro-v2.5": {
+  "in": 0.74,
+  "out": 2.96
+ },
+ "kimi-k2": {
+  "in": 0.57,
+  "out": 2.3
+ },
+ "kimi-k2-0905": {
+  "in": 0.6,
+  "out": 2.5
+ },
+ "kimi-k2-thinking": {
+  "in": 0.6,
+  "out": 2.5
+ },
+ "kimi-k2.5": {
+  "in": 0.45,
+  "out": 2.25
+ },
+ "kimi-k2.6": {
+  "in": 0.95,
+  "out": 4.0
+ },
+ "kimi-k2.7-code": {
+  "in": 0.71,
+  "out": 3.5
+ },
+ "kimi-k3": {
+  "in": 2.3027,
+  "out": 11.5502
+ },
+ "kimi-k3:batch": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "kimi-latest": {
+  "in": 2.125,
+  "out": 11.9
+ },
+ "kwaipilot/kat-coder-pro-v2": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "kwaipilot/kat-coder-pro-v2.5": {
+  "in": 0.74,
+  "out": 2.96
+ },
+ "l3-lunaris-8b": {
+  "in": 0.04,
+  "out": 0.05
+ },
+ "l3.1-euryale-70b": {
+  "in": 0.85,
+  "out": 0.85
+ },
+ "l3.3-euryale-70b": {
+  "in": 0.65,
+  "out": 0.75
+ },
+ "laguna-s-2.1": {
+  "in": 0.09,
+  "out": 0.18
+ },
+ "laguna-xs-2.1": {
+  "in": 0.06,
+  "out": 0.12
+ },
+ "ling-3.0-flash": {
+  "in": 0.021,
+  "out": 0.063
+ },
+ "ling-3.0-flash-fin": {
+  "in": 0.06,
+  "out": 0.18
+ },
+ "ling-3.0-flash-vl": {
+  "in": 0.06,
+  "out": 0.18
+ },
+ "llama-3.1-70b-instruct": {
+  "in": 0.72,
+  "out": 0.72
+ },
+ "llama-3.1-8b-instruct": {
+  "in": 0.05,
+  "out": 0.08
+ },
+ "llama-3.2-1b-instruct": {
+  "in": 0.027,
+  "out": 0.201
+ },
+ "llama-3.2-3b-instruct": {
+  "in": 0.05,
+  "out": 0.33
+ },
+ "llama-3.3-70b-instruct": {
+  "in": 0.1,
+  "out": 0.32
+ },
+ "llama-4-maverick": {
+  "in": 0.2,
+  "out": 0.696
+ },
+ "llama-4-scout": {
+  "in": 0.1,
+  "out": 0.3
+ },
+ "llama-guard-4-12b": {
+  "in": 0.18,
+  "out": 0.18
+ },
+ "longcat-2.0": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "magnum-v4-72b": {
+  "in": 2.5,
+  "out": 5.0
+ },
+ "mancer/weaver": {
+  "in": 0.4,
+  "out": 0.75
+ },
+ "meituan/longcat-2.0": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "mercury-2": {
+  "in": 0.25,
+  "out": 0.75
+ },
+ "mercury-2.5": {
+  "in": 0.04,
+  "out": 0.15
+ },
+ "meta-llama/llama-3.1-70b-instruct": {
+  "in": 0.72,
+  "out": 0.72
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "in": 0.05,
+  "out": 0.08
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "in": 0.027,
+  "out": 0.201
+ },
+ "meta-llama/llama-3.2-3b-instruct": {
+  "in": 0.05,
+  "out": 0.33
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "in": 0.1,
+  "out": 0.32
+ },
+ "meta-llama/llama-4-maverick": {
+  "in": 0.2,
+  "out": 0.696
+ },
+ "meta-llama/llama-4-scout": {
+  "in": 0.1,
+  "out": 0.3
+ },
+ "meta-llama/llama-guard-4-12b": {
+  "in": 0.18,
+  "out": 0.18
+ },
+ "meta/muse-glimmer-30b": {
+  "in": 0.3,
+  "out": 1.1
+ },
+ "meta/muse-glimmer-30b:batch": {
+  "in": 0.175,
+  "out": 0.75
+ },
+ "meta/muse-spark-1.1": {
+  "in": 1.25,
+  "out": 4.25
+ },
+ "meta/muse-spark-1.2": {
+  "in": 1.25,
+  "out": 4.25
+ },
+ "meta/muse-spark-1.2-contributor": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "meta/muse-spark-1.3": {
+  "in": 1.25,
+  "out": 4.25
+ },
+ "meta/muse-spark-1.3-contributor": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "microsoft/phi-4": {
+  "in": 0.07,
+  "out": 0.14
+ },
+ "microsoft/wizardlm-2-8x22b": {
+  "in": 0.62,
+  "out": 0.62
+ },
+ "mimo-v2.5": {
+  "in": 0.14,
+  "out": 0.28
+ },
+ "mimo-v2.5-pro": {
+  "in": 0.435,
+  "out": 0.87
+ },
+ "minimax-01": {
+  "in": 0.2,
+  "out": 1.1
+ },
+ "minimax-m1": {
+  "in": 0.55,
+  "out": 2.2
+ },
+ "minimax-m2": {
+  "in": 0.255,
+  "out": 1.02
+ },
+ "minimax-m2-her": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "minimax-m2.1": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "minimax-m2.5": {
+  "in": 0.27,
+  "out": 1.08
+ },
+ "minimax-m2.7": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "minimax-m3": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "minimax-m3:batch": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "minimax/minimax-01": {
+  "in": 0.2,
+  "out": 1.1
+ },
+ "minimax/minimax-m1": {
+  "in": 0.55,
+  "out": 2.2
+ },
+ "minimax/minimax-m2": {
+  "in": 0.255,
+  "out": 1.02
+ },
+ "minimax/minimax-m2-her": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "minimax/minimax-m2.1": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "minimax/minimax-m2.5": {
+  "in": 0.27,
+  "out": 1.08
+ },
+ "minimax/minimax-m2.7": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "minimax/minimax-m3": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "minimax/minimax-m3:batch": {
+  "in": 0.3,
+  "out": 1.2
+ },
+ "ministral-14b-2512": {
+  "in": 0.2,
+  "out": 0.2
+ },
+ "ministral-3b-2512": {
+  "in": 0.1,
+  "out": 0.1
+ },
+ "ministral-8b-2512": {
+  "in": 0.15,
+  "out": 0.15
+ },
+ "ministral-8b-2512:batch": {
+  "in": 0.075,
+  "out": 0.075
+ },
+ "mistral-large": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "mistral-large-2407": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "mistral-large-2512": {
+  "in": 0.5,
+  "out": 1.5
+ },
+ "mistral-large-2512:batch": {
+  "in": 0.25,
+  "out": 0.75
+ },
+ "mistral-medium-3": {
+  "in": 0.4,
+  "out": 2.0
+ },
+ "mistral-medium-3-5": {
+  "in": 1.5,
+  "out": 7.5
+ },
+ "mistral-medium-3-5:batch": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "mistral-medium-3.1": {
+  "in": 0.4,
+  "out": 2.0
+ },
+ "mistral-medium-3.1:batch": {
+  "in": 0.2,
+  "out": 1.0
+ },
+ "mistral-nemo": {
+  "in": 0.019,
+  "out": 0.03
+ },
+ "mistral-saba": {
+  "in": 0.2,
+  "out": 0.6
+ },
+ "mistral-small-24b-instruct-2501": {
+  "in": 0.05,
+  "out": 0.08
+ },
+ "mistral-small-2603": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "mistral-small-2603:batch": {
+  "in": 0.075,
+  "out": 0.3
+ },
+ "mistral-small-3.1-24b-instruct": {
+  "in": 0.351,
+  "out": 0.555
+ },
+ "mistral-small-3.2-24b-instruct": {
+  "in": 0.075,
+  "out": 0.2
+ },
+ "mistralai/codestral-2508": {
+  "in": 0.3,
+  "out": 0.9
+ },
+ "mistralai/codestral-2508:batch": {
+  "in": 0.15,
+  "out": 0.45
+ },
+ "mistralai/devstral-2512": {
+  "in": 0.4,
+  "out": 2.0
+ },
+ "mistralai/ministral-14b-2512": {
+  "in": 0.2,
+  "out": 0.2
+ },
+ "mistralai/ministral-3b-2512": {
+  "in": 0.1,
+  "out": 0.1
+ },
+ "mistralai/ministral-8b-2512": {
+  "in": 0.15,
+  "out": 0.15
+ },
+ "mistralai/ministral-8b-2512:batch": {
+  "in": 0.075,
+  "out": 0.075
+ },
+ "mistralai/mistral-large": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "mistralai/mistral-large-2407": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "mistralai/mistral-large-2512": {
+  "in": 0.5,
+  "out": 1.5
+ },
+ "mistralai/mistral-large-2512:batch": {
+  "in": 0.25,
+  "out": 0.75
+ },
+ "mistralai/mistral-medium-3": {
+  "in": 0.4,
+  "out": 2.0
+ },
+ "mistralai/mistral-medium-3-5": {
+  "in": 1.5,
+  "out": 7.5
+ },
+ "mistralai/mistral-medium-3-5:batch": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "mistralai/mistral-medium-3.1": {
+  "in": 0.4,
+  "out": 2.0
+ },
+ "mistralai/mistral-medium-3.1:batch": {
+  "in": 0.2,
+  "out": 1.0
+ },
+ "mistralai/mistral-nemo": {
+  "in": 0.019,
+  "out": 0.03
+ },
+ "mistralai/mistral-saba": {
+  "in": 0.2,
+  "out": 0.6
+ },
+ "mistralai/mistral-small-24b-instruct-2501": {
+  "in": 0.05,
+  "out": 0.08
+ },
+ "mistralai/mistral-small-2603": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "mistralai/mistral-small-2603:batch": {
+  "in": 0.075,
+  "out": 0.3
+ },
+ "mistralai/mistral-small-3.1-24b-instruct": {
+  "in": 0.351,
+  "out": 0.555
+ },
+ "mistralai/mistral-small-3.2-24b-instruct": {
+  "in": 0.075,
+  "out": 0.2
+ },
+ "mistralai/mixtral-8x22b-instruct": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "mistralai/voxtral-small-24b-2507": {
+  "in": 0.1,
+  "out": 0.3
+ },
+ "mixtral-8x22b-instruct": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "moonshotai/kimi-k2": {
+  "in": 0.57,
+  "out": 2.3
+ },
+ "moonshotai/kimi-k2-0905": {
+  "in": 0.6,
+  "out": 2.5
+ },
+ "moonshotai/kimi-k2-thinking": {
+  "in": 0.6,
+  "out": 2.5
+ },
+ "moonshotai/kimi-k2.5": {
+  "in": 0.45,
+  "out": 2.25
+ },
+ "moonshotai/kimi-k2.6": {
+  "in": 0.95,
+  "out": 4.0
+ },
+ "moonshotai/kimi-k2.7-code": {
+  "in": 0.71,
+  "out": 3.5
+ },
+ "moonshotai/kimi-k3": {
+  "in": 2.3027,
+  "out": 11.5502
+ },
+ "moonshotai/kimi-k3:batch": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "morph-v3-fast": {
+  "in": 0.8,
+  "out": 1.2
+ },
+ "morph-v3-large": {
+  "in": 0.9,
+  "out": 1.9
+ },
+ "morph/morph-v3-fast": {
+  "in": 0.8,
+  "out": 1.2
+ },
+ "morph/morph-v3-large": {
+  "in": 0.9,
+  "out": 1.9
+ },
+ "muse-glimmer-30b": {
+  "in": 0.3,
+  "out": 1.1
+ },
+ "muse-glimmer-30b:batch": {
+  "in": 0.175,
+  "out": 0.75
+ },
+ "muse-spark-1.1": {
+  "in": 1.25,
+  "out": 4.25
+ },
+ "muse-spark-1.2": {
+  "in": 1.25,
+  "out": 4.25
+ },
+ "muse-spark-1.2-contributor": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "muse-spark-1.3": {
+  "in": 1.25,
+  "out": 4.25
+ },
+ "muse-spark-1.3-contributor": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "mythomax-l2-13b": {
+  "in": 0.06,
+  "out": 0.06
+ },
+ "nemotron-3-nano-30b-a3b": {
+  "in": 0.05,
+  "out": 0.2
+ },
+ "nemotron-3-super-120b-a12b": {
+  "in": 0.085,
+  "out": 0.4
+ },
+ "nemotron-3-ultra-550b-a55b": {
+  "in": 0.625,
+  "out": 3.125
+ },
+ "nemotron-3.5-content-safety": {
+  "in": 0.2,
+  "out": 0.2
+ },
+ "nemotron-3.5-lightning": {
+  "in": 0.08,
+  "out": 0.2
+ },
+ "nousresearch/hermes-3-llama-3.1-405b": {
+  "in": 1.0,
+  "out": 1.0
+ },
+ "nousresearch/hermes-3-llama-3.1-70b": {
+  "in": 0.7,
+  "out": 0.7
+ },
+ "nousresearch/hermes-4-405b": {
+  "in": 1.0,
+  "out": 3.0
+ },
+ "nova-2-lite-v1": {
+  "in": 0.3,
+  "out": 2.5
+ },
+ "nova-lite-v1": {
+  "in": 0.06,
+  "out": 0.24
+ },
+ "nova-micro-v1": {
+  "in": 0.035,
+  "out": 0.14
+ },
+ "nova-premier-v1": {
+  "in": 2.5,
+  "out": 12.5
+ },
+ "nova-pro-v1": {
+  "in": 0.8,
+  "out": 3.2
+ },
+ "nvidia/nemotron-3-nano-30b-a3b": {
+  "in": 0.05,
+  "out": 0.2
+ },
+ "nvidia/nemotron-3-super-120b-a12b": {
+  "in": 0.085,
+  "out": 0.4
+ },
+ "nvidia/nemotron-3-ultra-550b-a55b": {
+  "in": 0.625,
+  "out": 3.125
+ },
+ "nvidia/nemotron-3.5-content-safety": {
+  "in": 0.2,
+  "out": 0.2
+ },
+ "nvidia/nemotron-3.5-lightning": {
+  "in": 0.08,
+  "out": 0.2
+ },
+ "o1": {
+  "in": 15.0,
+  "out": 60.0
+ },
+ "o1-pro": {
+  "in": 150.0,
+  "out": 600.0
+ },
+ "o3": {
+  "in": 2.0,
+  "out": 8.0
+ },
+ "o3-mini": {
+  "in": 1.1,
+  "out": 4.4
+ },
+ "o3-mini-high": {
+  "in": 1.1,
+  "out": 4.4
+ },
+ "o3-mini:batch": {
+  "in": 0.55,
+  "out": 2.2
+ },
+ "o3-pro": {
+  "in": 20.0,
+  "out": 80.0
+ },
+ "o3:batch": {
+  "in": 1.0,
+  "out": 4.0
+ },
+ "o4-mini": {
+  "in": 1.1,
+  "out": 4.4
+ },
+ "o4-mini-high": {
+  "in": 1.1,
+  "out": 4.4
+ },
+ "o4-mini:batch": {
+  "in": 0.55,
+  "out": 2.2
+ },
+ "openai/gpt-3.5-turbo": {
+  "in": 0.5,
+  "out": 1.5
+ },
+ "openai/gpt-3.5-turbo-0613": {
+  "in": 1.0,
+  "out": 2.0
+ },
+ "openai/gpt-3.5-turbo-16k": {
+  "in": 3.0,
+  "out": 4.0
+ },
+ "openai/gpt-3.5-turbo-instruct": {
+  "in": 1.5,
+  "out": 2.0
+ },
+ "openai/gpt-3.5-turbo:batch": {
+  "in": 0.25,
+  "out": 0.75
+ },
+ "openai/gpt-4": {
+  "in": 30.0,
+  "out": 60.0
+ },
+ "openai/gpt-4-turbo": {
+  "in": 10.0,
+  "out": 30.0
+ },
+ "openai/gpt-4-turbo-preview": {
+  "in": 10.0,
+  "out": 30.0
+ },
+ "openai/gpt-4-turbo:batch": {
+  "in": 5.0,
+  "out": 15.0
+ },
+ "openai/gpt-4.1": {
+  "in": 2.0,
+  "out": 8.0
+ },
+ "openai/gpt-4.1-mini": {
+  "in": 0.4,
+  "out": 1.6
+ },
+ "openai/gpt-4.1-mini:batch": {
+  "in": 0.2,
+  "out": 0.8
+ },
+ "openai/gpt-4.1-nano": {
+  "in": 0.1,
+  "out": 0.4
+ },
+ "openai/gpt-4.1-nano:batch": {
+  "in": 0.05,
+  "out": 0.2
+ },
+ "openai/gpt-4.1:batch": {
+  "in": 1.0,
+  "out": 4.0
+ },
+ "openai/gpt-4o": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "in": 5.0,
+  "out": 15.0
+ },
+ "openai/gpt-4o-2024-08-06": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "openai/gpt-4o-2024-11-20": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "openai/gpt-4o-mini": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "openai/gpt-4o-mini-2024-07-18": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "openai/gpt-4o-mini:batch": {
+  "in": 0.075,
+  "out": 0.3
+ },
+ "openai/gpt-4o:batch": {
+  "in": 1.25,
+  "out": 5.0
+ },
+ "openai/gpt-5": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "openai/gpt-5-image": {
+  "in": 10.0,
+  "out": 10.0
+ },
+ "openai/gpt-5-image-mini": {
+  "in": 2.5,
+  "out": 2.0
+ },
+ "openai/gpt-5-mini": {
+  "in": 0.25,
+  "out": 2.0
+ },
+ "openai/gpt-5-mini:batch": {
+  "in": 0.125,
+  "out": 1.0
+ },
+ "openai/gpt-5-nano": {
+  "in": 0.05,
+  "out": 0.4
+ },
+ "openai/gpt-5-nano:batch": {
+  "in": 0.025,
+  "out": 0.2
+ },
+ "openai/gpt-5-pro": {
+  "in": 15.0,
+  "out": 120.0
+ },
+ "openai/gpt-5-pro:batch": {
+  "in": 7.5,
+  "out": 60.0
+ },
+ "openai/gpt-5.1": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "openai/gpt-5.1-codex": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "openai/gpt-5.1-codex-max": {
+  "in": 1.25,
+  "out": 10.0
+ },
+ "openai/gpt-5.1-codex-mini": {
+  "in": 0.25,
+  "out": 2.0
+ },
+ "openai/gpt-5.1:batch": {
+  "in": 0.625,
+  "out": 5.0
+ },
+ "openai/gpt-5.2": {
+  "in": 1.75,
+  "out": 14.0
+ },
+ "openai/gpt-5.2-chat": {
+  "in": 1.75,
+  "out": 14.0
+ },
+ "openai/gpt-5.2-codex": {
+  "in": 1.75,
+  "out": 14.0
+ },
+ "openai/gpt-5.2-pro": {
+  "in": 21.0,
+  "out": 168.0
+ },
+ "openai/gpt-5.2-pro:batch": {
+  "in": 10.5,
+  "out": 84.0
+ },
+ "openai/gpt-5.2:batch": {
+  "in": 0.875,
+  "out": 7.0
+ },
+ "openai/gpt-5.3-codex": {
+  "in": 1.75,
+  "out": 14.0
+ },
+ "openai/gpt-5.4": {
+  "in": 2.5,
+  "out": 15.0
+ },
+ "openai/gpt-5.4-image-2": {
+  "in": 8.0,
+  "out": 15.0
+ },
+ "openai/gpt-5.4-mini": {
+  "in": 0.75,
+  "out": 4.5
+ },
+ "openai/gpt-5.4-mini:batch": {
+  "in": 0.375,
+  "out": 2.25
+ },
+ "openai/gpt-5.4-nano": {
+  "in": 0.2,
+  "out": 1.25
+ },
+ "openai/gpt-5.4-nano:batch": {
+  "in": 0.1,
+  "out": 0.625
+ },
+ "openai/gpt-5.4-pro": {
+  "in": 30.0,
+  "out": 180.0
+ },
+ "openai/gpt-5.4-pro:batch": {
+  "in": 15.0,
+  "out": 90.0
+ },
+ "openai/gpt-5.4:batch": {
+  "in": 1.25,
+  "out": 7.5
+ },
+ "openai/gpt-5.5": {
+  "in": 5.0,
+  "out": 30.0
+ },
+ "openai/gpt-5.5-pro": {
+  "in": 30.0,
+  "out": 180.0
+ },
+ "openai/gpt-5.5-pro:batch": {
+  "in": 15.0,
+  "out": 90.0
+ },
+ "openai/gpt-5.5:batch": {
+  "in": 2.5,
+  "out": 15.0
+ },
+ "openai/gpt-5.6-luna": {
+  "in": 0.2,
+  "out": 1.2
+ },
+ "openai/gpt-5.6-luna-pro": {
+  "in": 0.2,
+  "out": 1.2
+ },
+ "openai/gpt-5.6-luna-pro:batch": {
+  "in": 0.1,
+  "out": 0.6
+ },
+ "openai/gpt-5.6-luna:batch": {
+  "in": 0.1,
+  "out": 0.6
+ },
+ "openai/gpt-5.6-sol": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "openai/gpt-5.6-sol-pro": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "openai/gpt-5.6-sol-pro:batch": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "openai/gpt-5.6-sol:batch": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "openai/gpt-5.6-terra": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "openai/gpt-5.6-terra-pro": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "openai/gpt-5.6-terra-pro:batch": {
+  "in": 1.0,
+  "out": 6.0
+ },
+ "openai/gpt-5.6-terra:batch": {
+  "in": 1.0,
+  "out": 6.0
+ },
+ "openai/gpt-5:batch": {
+  "in": 0.625,
+  "out": 5.0
+ },
+ "openai/gpt-6-astra": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "openai/gpt-6-astra-pro": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "openai/gpt-6-astra-pro:batch": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "openai/gpt-6-astra:batch": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "openai/gpt-audio": {
+  "in": 2.5,
+  "out": 10.0
+ },
+ "openai/gpt-audio-mini": {
+  "in": 0.6,
+  "out": 2.4
+ },
+ "openai/gpt-chat-latest": {
+  "in": 5.0,
+  "out": 30.0
+ },
+ "openai/gpt-oss-120b": {
+  "in": 0.037,
+  "out": 0.17
+ },
+ "openai/gpt-oss-120b:batch": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "openai/gpt-oss-20b": {
+  "in": 0.03,
+  "out": 0.13
+ },
+ "openai/gpt-oss-20b:batch": {
+  "in": 0.05,
+  "out": 0.2
+ },
+ "openai/gpt-oss-safeguard-20b": {
+  "in": 0.075,
+  "out": 0.3
+ },
+ "openai/o1": {
+  "in": 15.0,
+  "out": 60.0
+ },
+ "openai/o1-pro": {
+  "in": 150.0,
+  "out": 600.0
+ },
+ "openai/o3": {
+  "in": 2.0,
+  "out": 8.0
+ },
+ "openai/o3-mini": {
+  "in": 1.1,
+  "out": 4.4
+ },
+ "openai/o3-mini-high": {
+  "in": 1.1,
+  "out": 4.4
+ },
+ "openai/o3-mini:batch": {
+  "in": 0.55,
+  "out": 2.2
+ },
+ "openai/o3-pro": {
+  "in": 20.0,
+  "out": 80.0
+ },
+ "openai/o3:batch": {
+  "in": 1.0,
+  "out": 4.0
+ },
+ "openai/o4-mini": {
+  "in": 1.1,
+  "out": 4.4
+ },
+ "openai/o4-mini-high": {
+  "in": 1.1,
+  "out": 4.4
+ },
+ "openai/o4-mini:batch": {
+  "in": 0.55,
+  "out": 2.2
+ },
+ "palmyra-x5": {
+  "in": 0.6,
+  "out": 6.0
+ },
+ "perceptron-mk1": {
+  "in": 0.15,
+  "out": 1.5
+ },
+ "perceptron/perceptron-mk1": {
+  "in": 0.15,
+  "out": 1.5
+ },
+ "perplexity/sonar": {
+  "in": 1.0,
+  "out": 1.0
+ },
+ "perplexity/sonar-deep-research": {
+  "in": 2.0,
+  "out": 8.0
+ },
+ "perplexity/sonar-pro": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "perplexity/sonar-pro-search": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "perplexity/sonar-reasoning-pro": {
+  "in": 2.0,
+  "out": 8.0
+ },
+ "phi-4": {
+  "in": 0.07,
+  "out": 0.14
+ },
+ "poolside/laguna-s-2.1": {
+  "in": 0.09,
+  "out": 0.18
+ },
+ "poolside/laguna-xs-2.1": {
+  "in": 0.06,
+  "out": 0.12
+ },
+ "qwen-2.5-72b-instruct": {
+  "in": 0.36,
+  "out": 0.4
+ },
+ "qwen-2.5-7b-instruct": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "qwen-2.5-coder-32b-instruct": {
+  "in": 0.66,
+  "out": 1.0
+ },
+ "qwen-plus": {
+  "in": 0.26,
+  "out": 0.78
+ },
+ "qwen-plus-2025-07-28": {
+  "in": 0.26,
+  "out": 0.78
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "in": 0.36,
+  "out": 0.4
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "qwen/qwen-2.5-coder-32b-instruct": {
+  "in": 0.66,
+  "out": 1.0
+ },
+ "qwen/qwen-plus": {
+  "in": 0.26,
+  "out": 0.78
+ },
+ "qwen/qwen-plus-2025-07-28": {
+  "in": 0.26,
+  "out": 0.78
+ },
+ "qwen/qwen2.5-vl-72b-instruct": {
+  "in": 0.8,
+  "out": 1.0
+ },
+ "qwen/qwen3-14b": {
+  "in": 0.2275,
+  "out": 0.91
+ },
+ "qwen/qwen3-235b-a22b": {
+  "in": 0.455,
+  "out": 1.82
+ },
+ "qwen/qwen3-235b-a22b-2507": {
+  "in": 0.0875,
+  "out": 0.35
+ },
+ "qwen/qwen3-235b-a22b-thinking-2507": {
+  "in": 0.23,
+  "out": 2.3
+ },
+ "qwen/qwen3-30b-a3b": {
+  "in": 0.12,
+  "out": 0.5
+ },
+ "qwen/qwen3-30b-a3b-instruct-2507": {
+  "in": 0.09,
+  "out": 0.3
+ },
+ "qwen/qwen3-30b-a3b-thinking-2507": {
+  "in": 0.2,
+  "out": 2.4
+ },
+ "qwen/qwen3-32b": {
+  "in": 0.08,
+  "out": 0.28
+ },
+ "qwen/qwen3-8b": {
+  "in": 0.117,
+  "out": 0.455
+ },
+ "qwen/qwen3-coder": {
+  "in": 0.3,
+  "out": 1.0
+ },
+ "qwen/qwen3-coder-30b-a3b-instruct": {
+  "in": 0.07,
+  "out": 0.28
+ },
+ "qwen/qwen3-coder-flash": {
+  "in": 0.195,
+  "out": 0.975
+ },
+ "qwen/qwen3-coder-next": {
+  "in": 0.12,
+  "out": 0.8
+ },
+ "qwen/qwen3-coder-plus": {
+  "in": 0.65,
+  "out": 3.25
+ },
+ "qwen/qwen3-max": {
+  "in": 0.78,
+  "out": 3.9
+ },
+ "qwen/qwen3-max-thinking": {
+  "in": 0.78,
+  "out": 3.9
+ },
+ "qwen/qwen3-next-80b-a3b-instruct": {
+  "in": 0.09,
+  "out": 1.1
+ },
+ "qwen/qwen3-next-80b-a3b-thinking": {
+  "in": 0.15,
+  "out": 1.2
+ },
+ "qwen/qwen3-vl-235b-a22b-instruct": {
+  "in": 0.21,
+  "out": 1.9
+ },
+ "qwen/qwen3-vl-235b-a22b-thinking": {
+  "in": 0.4,
+  "out": 4.0
+ },
+ "qwen/qwen3-vl-30b-a3b-instruct": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "qwen/qwen3-vl-30b-a3b-thinking": {
+  "in": 0.2,
+  "out": 2.4
+ },
+ "qwen/qwen3-vl-32b-instruct": {
+  "in": 0.104,
+  "out": 0.416
+ },
+ "qwen/qwen3-vl-8b-instruct": {
+  "in": 0.117,
+  "out": 0.455
+ },
+ "qwen/qwen3-vl-8b-thinking": {
+  "in": 0.18,
+  "out": 2.1
+ },
+ "qwen/qwen3.5-122b-a10b": {
+  "in": 0.26,
+  "out": 2.08
+ },
+ "qwen/qwen3.5-27b": {
+  "in": 0.195,
+  "out": 1.56
+ },
+ "qwen/qwen3.5-35b-a3b": {
+  "in": 0.3125,
+  "out": 1.25
+ },
+ "qwen/qwen3.5-397b-a17b": {
+  "in": 0.55,
+  "out": 3.5
+ },
+ "qwen/qwen3.5-9b": {
+  "in": 0.1,
+  "out": 0.15
+ },
+ "qwen/qwen3.5-9b:batch": {
+  "in": 0.17,
+  "out": 0.25
+ },
+ "qwen/qwen3.5-flash-02-23": {
+  "in": 0.065,
+  "out": 0.26
+ },
+ "qwen/qwen3.5-plus-02-15": {
+  "in": 0.26,
+  "out": 1.56
+ },
+ "qwen/qwen3.5-plus-20260420": {
+  "in": 0.3,
+  "out": 1.8
+ },
+ "qwen/qwen3.6-27b": {
+  "in": 0.3,
+  "out": 2.0
+ },
+ "qwen/qwen3.6-35b-a3b": {
+  "in": 0.1,
+  "out": 0.9
+ },
+ "qwen/qwen3.6-flash": {
+  "in": 0.1875,
+  "out": 1.125
+ },
+ "qwen/qwen3.6-max-preview": {
+  "in": 1.027,
+  "out": 6.162
+ },
+ "qwen/qwen3.6-plus": {
+  "in": 0.325,
+  "out": 1.95
+ },
+ "qwen/qwen3.7-flash": {
+  "in": 0.03,
+  "out": 0.13
+ },
+ "qwen/qwen3.7-max": {
+  "in": 1.475,
+  "out": 4.425
+ },
+ "qwen/qwen3.7-plus": {
+  "in": 0.32,
+  "out": 1.28
+ },
+ "qwen/qwen3.8-2.4t-a95b": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "qwen/qwen3.8-2.4t-a95b:batch": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "qwen/qwen3.8-27b": {
+  "in": 0.214,
+  "out": 2.55
+ },
+ "qwen/qwen3.8-flash": {
+  "in": 0.15,
+  "out": 0.47
+ },
+ "qwen/qwen3.8-max-0902": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "qwen2.5-vl-72b-instruct": {
+  "in": 0.8,
+  "out": 1.0
+ },
+ "qwen3-14b": {
+  "in": 0.2275,
+  "out": 0.91
+ },
+ "qwen3-235b-a22b": {
+  "in": 0.455,
+  "out": 1.82
+ },
+ "qwen3-235b-a22b-2507": {
+  "in": 0.0875,
+  "out": 0.35
+ },
+ "qwen3-235b-a22b-thinking-2507": {
+  "in": 0.23,
+  "out": 2.3
+ },
+ "qwen3-30b-a3b": {
+  "in": 0.12,
+  "out": 0.5
+ },
+ "qwen3-30b-a3b-instruct-2507": {
+  "in": 0.09,
+  "out": 0.3
+ },
+ "qwen3-30b-a3b-thinking-2507": {
+  "in": 0.2,
+  "out": 2.4
+ },
+ "qwen3-32b": {
+  "in": 0.08,
+  "out": 0.28
+ },
+ "qwen3-8b": {
+  "in": 0.117,
+  "out": 0.455
+ },
+ "qwen3-coder": {
+  "in": 0.3,
+  "out": 1.0
+ },
+ "qwen3-coder-30b-a3b-instruct": {
+  "in": 0.07,
+  "out": 0.28
+ },
+ "qwen3-coder-flash": {
+  "in": 0.195,
+  "out": 0.975
+ },
+ "qwen3-coder-next": {
+  "in": 0.12,
+  "out": 0.8
+ },
+ "qwen3-coder-plus": {
+  "in": 0.65,
+  "out": 3.25
+ },
+ "qwen3-max": {
+  "in": 0.78,
+  "out": 3.9
+ },
+ "qwen3-max-thinking": {
+  "in": 0.78,
+  "out": 3.9
+ },
+ "qwen3-next-80b-a3b-instruct": {
+  "in": 0.09,
+  "out": 1.1
+ },
+ "qwen3-next-80b-a3b-thinking": {
+  "in": 0.15,
+  "out": 1.2
+ },
+ "qwen3-vl-235b-a22b-instruct": {
+  "in": 0.21,
+  "out": 1.9
+ },
+ "qwen3-vl-235b-a22b-thinking": {
+  "in": 0.4,
+  "out": 4.0
+ },
+ "qwen3-vl-30b-a3b-instruct": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "qwen3-vl-30b-a3b-thinking": {
+  "in": 0.2,
+  "out": 2.4
+ },
+ "qwen3-vl-32b-instruct": {
+  "in": 0.104,
+  "out": 0.416
+ },
+ "qwen3-vl-8b-instruct": {
+  "in": 0.117,
+  "out": 0.455
+ },
+ "qwen3-vl-8b-thinking": {
+  "in": 0.18,
+  "out": 2.1
+ },
+ "qwen3.5-122b-a10b": {
+  "in": 0.26,
+  "out": 2.08
+ },
+ "qwen3.5-27b": {
+  "in": 0.195,
+  "out": 1.56
+ },
+ "qwen3.5-35b-a3b": {
+  "in": 0.3125,
+  "out": 1.25
+ },
+ "qwen3.5-397b-a17b": {
+  "in": 0.55,
+  "out": 3.5
+ },
+ "qwen3.5-9b": {
+  "in": 0.1,
+  "out": 0.15
+ },
+ "qwen3.5-9b:batch": {
+  "in": 0.17,
+  "out": 0.25
+ },
+ "qwen3.5-flash-02-23": {
+  "in": 0.065,
+  "out": 0.26
+ },
+ "qwen3.5-plus-02-15": {
+  "in": 0.26,
+  "out": 1.56
+ },
+ "qwen3.5-plus-20260420": {
+  "in": 0.3,
+  "out": 1.8
+ },
+ "qwen3.6-27b": {
+  "in": 0.3,
+  "out": 2.0
+ },
+ "qwen3.6-35b-a3b": {
+  "in": 0.1,
+  "out": 0.9
+ },
+ "qwen3.6-flash": {
+  "in": 0.1875,
+  "out": 1.125
+ },
+ "qwen3.6-max-preview": {
+  "in": 1.027,
+  "out": 6.162
+ },
+ "qwen3.6-plus": {
+  "in": 0.325,
+  "out": 1.95
+ },
+ "qwen3.7-flash": {
+  "in": 0.03,
+  "out": 0.13
+ },
+ "qwen3.7-max": {
+  "in": 1.475,
+  "out": 4.425
+ },
+ "qwen3.7-plus": {
+  "in": 0.32,
+  "out": 1.28
+ },
+ "qwen3.8-2.4t-a95b": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "qwen3.8-2.4t-a95b:batch": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "qwen3.8-27b": {
+  "in": 0.214,
+  "out": 2.55
+ },
+ "qwen3.8-flash": {
+  "in": 0.15,
+  "out": 0.47
+ },
+ "qwen3.8-max-0902": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "reka-edge": {
+  "in": 0.1,
+  "out": 0.1
+ },
+ "reka-flash-3": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "rekaai/reka-edge": {
+  "in": 0.1,
+  "out": 0.1
+ },
+ "rekaai/reka-flash-3": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "relace-apply-3": {
+  "in": 0.85,
+  "out": 1.25
+ },
+ "relace-search": {
+  "in": 1.0,
+  "out": 3.0
+ },
+ "relace/relace-apply-3": {
+  "in": 0.85,
+  "out": 1.25
+ },
+ "relace/relace-search": {
+  "in": 1.0,
+  "out": 3.0
+ },
+ "remm-slerp-l2-13b": {
+  "in": 0.35,
+  "out": 0.65
+ },
+ "sakana-namazu": {
+  "in": 0.95,
+  "out": 4.0
+ },
+ "sakana/fugu-max": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "sakana/fugu-ultra": {
+  "in": 5.0,
+  "out": 30.0
+ },
+ "sakana/fugu-ultra-v2": {
+  "in": 5.0,
+  "out": 30.0
+ },
+ "sakana/sakana-namazu": {
+  "in": 0.95,
+  "out": 4.0
+ },
+ "sao10k/l3-lunaris-8b": {
+  "in": 0.04,
+  "out": 0.05
+ },
+ "sao10k/l3.1-euryale-70b": {
+  "in": 0.85,
+  "out": 0.85
+ },
+ "sao10k/l3.3-euryale-70b": {
+  "in": 0.65,
+  "out": 0.75
+ },
+ "schematron-v2-small": {
+  "in": 0.05,
+  "out": 0.23
+ },
+ "schematron-v2-turbo": {
+  "in": 0.03,
+  "out": 0.15
+ },
+ "seed-1.6": {
+  "in": 0.25,
+  "out": 2.0
+ },
+ "seed-1.6-flash": {
+  "in": 0.075,
+  "out": 0.3
+ },
+ "seed-2-1-turbo": {
+  "in": 0.5,
+  "out": 2.5
+ },
+ "seed-2.0-code": {
+  "in": 0.5,
+  "out": 3.0
+ },
+ "seed-2.0-lite": {
+  "in": 0.25,
+  "out": 2.0
+ },
+ "seed-2.0-mini": {
+  "in": 0.1,
+  "out": 0.4
+ },
+ "skyfall-36b-v2": {
+  "in": 0.55,
+  "out": 0.8
+ },
+ "solar-pro-3": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "solar-pro4": {
+  "in": 0.09,
+  "out": 0.36
+ },
+ "sonar": {
+  "in": 1.0,
+  "out": 1.0
+ },
+ "sonar-deep-research": {
+  "in": 2.0,
+  "out": 8.0
+ },
+ "sonar-pro": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "sonar-pro-search": {
+  "in": 3.0,
+  "out": 15.0
+ },
+ "sonar-reasoning-pro": {
+  "in": 2.0,
+  "out": 8.0
+ },
+ "step-3.5-flash": {
+  "in": 0.1,
+  "out": 0.3
+ },
+ "step-3.7-flash": {
+  "in": 0.2,
+  "out": 1.15
+ },
+ "stepfun/step-3.5-flash": {
+  "in": 0.1,
+  "out": 0.3
+ },
+ "stepfun/step-3.7-flash": {
+  "in": 0.2,
+  "out": 1.15
+ },
+ "tencent/hunyuan-a13b-instruct": {
+  "in": 0.14,
+  "out": 0.57
+ },
+ "tencent/hy-mt2-1.8b": {
+  "in": 0.044,
+  "out": 0.177
+ },
+ "tencent/hy-mt2-30b-a3b": {
+  "in": 0.074,
+  "out": 0.295
+ },
+ "tencent/hy-mt2-7b": {
+  "in": 0.074,
+  "out": 0.295
+ },
+ "tencent/hy3": {
+  "in": 0.132,
+  "out": 0.528
+ },
+ "tencent/hy3-preview": {
+  "in": 0.18,
+  "out": 0.6
+ },
+ "tencent/hy4-preview": {
+  "in": 0.834,
+  "out": 2.501
+ },
+ "thedrummer/cydonia-24b-v4.1": {
+  "in": 0.3,
+  "out": 0.5
+ },
+ "thedrummer/skyfall-36b-v2": {
+  "in": 0.55,
+  "out": 0.8
+ },
+ "thedrummer/unslopnemo-12b": {
+  "in": 0.4,
+  "out": 0.4
+ },
+ "thinkingmachines/inkling": {
+  "in": 1.0,
+  "out": 4.05
+ },
+ "thinkingmachines/inkling-small": {
+  "in": 0.45,
+  "out": 1.2
+ },
+ "thinkingmachines/inkling-small:batch": {
+  "in": 0.5,
+  "out": 1.2
+ },
+ "thinkingmachines/inkling:batch": {
+  "in": 1.0,
+  "out": 4.05
+ },
+ "trinity-large-thinking": {
+  "in": 0.25,
+  "out": 0.8
+ },
+ "ui-tars-1.5-7b": {
+  "in": 0.1,
+  "out": 0.2
+ },
+ "undi95/remm-slerp-l2-13b": {
+  "in": 0.35,
+  "out": 0.65
+ },
+ "unslopnemo-12b": {
+  "in": 0.4,
+  "out": 0.4
+ },
+ "upstage/solar-pro-3": {
+  "in": 0.15,
+  "out": 0.6
+ },
+ "upstage/solar-pro4": {
+  "in": 0.09,
+  "out": 0.36
+ },
+ "voxtral-small-24b-2507": {
+  "in": 0.1,
+  "out": 0.3
+ },
+ "weaver": {
+  "in": 0.4,
+  "out": 0.75
+ },
+ "wizardlm-2-8x22b": {
+  "in": 0.62,
+  "out": 0.62
+ },
+ "writer/palmyra-x5": {
+  "in": 0.6,
+  "out": 6.0
+ },
+ "x-ai/grok-4.20": {
+  "in": 1.25,
+  "out": 2.5
+ },
+ "x-ai/grok-4.20-multi-agent": {
+  "in": 1.25,
+  "out": 2.5
+ },
+ "x-ai/grok-4.3": {
+  "in": 1.25,
+  "out": 2.5
+ },
+ "x-ai/grok-4.3:batch": {
+  "in": 1.0,
+  "out": 2.0
+ },
+ "x-ai/grok-4.5": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "x-ai/grok-4.6": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "x-ai/grok-build-0.1": {
+  "in": 1.0,
+  "out": 2.0
+ },
+ "xiaomi/mimo-v2.5": {
+  "in": 0.14,
+  "out": 0.28
+ },
+ "xiaomi/mimo-v2.5-pro": {
+  "in": 0.435,
+  "out": 0.87
+ },
+ "z-ai/glm-4.5": {
+  "in": 0.6,
+  "out": 2.2
+ },
+ "z-ai/glm-4.5-air": {
+  "in": 0.13,
+  "out": 0.85
+ },
+ "z-ai/glm-4.5v": {
+  "in": 0.6,
+  "out": 1.8
+ },
+ "z-ai/glm-4.6": {
+  "in": 0.43,
+  "out": 1.75
+ },
+ "z-ai/glm-4.6v": {
+  "in": 0.3,
+  "out": 0.9
+ },
+ "z-ai/glm-4.7": {
+  "in": 0.4,
+  "out": 1.75
+ },
+ "z-ai/glm-4.7-flash": {
+  "in": 0.0605,
+  "out": 0.4
+ },
+ "z-ai/glm-5": {
+  "in": 0.6,
+  "out": 1.92
+ },
+ "z-ai/glm-5-turbo": {
+  "in": 1.2,
+  "out": 4.0
+ },
+ "z-ai/glm-5.1": {
+  "in": 0.966,
+  "out": 3.036
+ },
+ "z-ai/glm-5.2": {
+  "in": 0.6,
+  "out": 2.0
+ },
+ "z-ai/glm-5.2:batch": {
+  "in": 0.7,
+  "out": 2.2
+ },
+ "z-ai/glm-5.3": {
+  "in": 1.4,
+  "out": 4.4
+ },
+ "z-ai/glm-5.3-flash": {
+  "in": 0.075,
+  "out": 0.25
+ },
+ "z-ai/glm-5.3-flash:batch": {
+  "in": 0.075,
+  "out": 0.25
+ },
+ "z-ai/glm-5.3:batch": {
+  "in": 0.7,
+  "out": 2.2
+ },
+ "z-ai/glm-5v-turbo": {
+  "in": 1.2,
+  "out": 4.0
+ },
+ "~anthropic/claude-fable-latest": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "~anthropic/claude-haiku-latest": {
+  "in": 1.0,
+  "out": 5.0
+ },
+ "~anthropic/claude-opus-latest": {
+  "in": 5.0,
+  "out": 25.0
+ },
+ "~anthropic/claude-sonnet-latest": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "~deepseek/deepseek-v4-flash-latest": {
+  "in": 0.03,
+  "out": 0.07
+ },
+ "~google/gemini-flash-latest": {
+  "in": 0.75,
+  "out": 3.75
+ },
+ "~google/gemini-pro-latest": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "~moonshotai/kimi-latest": {
+  "in": 2.125,
+  "out": 11.9
+ },
+ "~openai/gpt-astra-latest": {
+  "in": 10.0,
+  "out": 50.0
+ },
+ "~openai/gpt-luna-latest": {
+  "in": 0.2,
+  "out": 1.2
+ },
+ "~openai/gpt-mini-latest": {
+  "in": 0.75,
+  "out": 4.5
+ },
+ "~openai/gpt-sol-latest": {
+  "in": 2.0,
+  "out": 10.0
+ },
+ "~openai/gpt-terra-latest": {
+  "in": 2.0,
+  "out": 12.0
+ },
+ "~x-ai/grok-latest": {
+  "in": 2.0,
+  "out": 6.0
+ },
+ "~z-ai/glm-flash-latest": {
+  "in": 0.075,
+  "out": 0.25
+ },
+ "~z-ai/glm-latest": {
+  "in": 0.8727,
+  "out": 3.36
+ }
+}

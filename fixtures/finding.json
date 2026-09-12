@@ -1,117 +1,195 @@
 {
-  "finding_id": "f_jtIksqYR",
-  "workflow_id": "jtIksqYRpA59PN5I",
-  "workflow_name": "My workflow (sandboxed)",
-  "node_id": "c4c831ec-0682-4691-b5db-6c8715c235fb",
-  "node_name": "Spam checker",
+  "finding_id": "f_YsmRj3Og",
+  "workflow_id": "YsmRj3OgBSjVBv0o",
+  "workflow_name": "Support ticket triage",
+  "node_id": "b0000000-0000-4000-8000-000000000002",
+  "node_name": "Classify ticket",
   "rule": "low_entropy_output",
   "severity": "cut",
   "title": "Ce noeud LLM est un aiguillage deguise en agent",
   "evidence": {
-    "calls": 60,
-    "distinct_outputs": 2,
-    "entropy_bits": 0.78,
-    "max_entropy_bits": 5.91,
+    "calls": 125,
+    "distinct_outputs": 4,
+    "entropy_bits": 1.76,
+    "max_entropy_bits": 6.97,
     "output_distribution": {
-      "no spam": 46,
-      "spam": 14
+      "billing": 47,
+      "technical": 46,
+      "account": 25,
+      "other": 7
     },
     "samples": [
       {
-        "input": "Bonsoir, Je veux un remboursement sur la facture de juin Merci d'avance.",
-        "output": "no spam"
+        "input": "Bonjour, Je souhaite changer de formule de paiement Pouvez-vous m'aider ?",
+        "output": "billing"
       },
       {
-        "input": "Le prelevement du 35 n'est jamais passe C'est urgent.",
-        "output": "spam"
+        "input": "Bonsoir, Le prelevement du 91 n'est jamais passe C'est urgent.",
+        "output": "billing"
       },
       {
-        "input": "Bonjour, Mon abonnement a ete debite deux fois ce mois-ci Merci d'avance.",
-        "output": "no spam"
+        "input": "Bonjour, Mon abonnement a ete debite deux fois ce mois-ci Cordialement.",
+        "output": "billing"
       },
       {
-        "input": "Salut, Je n'ai jamais recu l'email de confirmation Pouvez-vous m'aider ?",
-        "output": "no spam"
+        "input": "Bonjour, Le bouton d'export ne fait rien depuis la mise a jour Cordialement.",
+        "output": "technical"
       },
       {
-        "input": "Bonjour, Je veux transferer la propriete du compte Merci d'avance.",
-        "output": "spam"
+        "input": "Je veux un remboursement sur la facture de octobre Cordialement.",
+        "output": "billing"
       },
       {
-        "input": "Bonjour, Comment ajouter un collegue a mon espace ? C'est urgent.",
-        "output": "no spam"
+        "input": "Bonsoir, Le site est tres lent depuis 368 jours Pouvez-vous m'aider ?",
+        "output": "technical"
       },
       {
-        "input": "Bonsoir, La page reste blanche apres la connexion Merci d'avance.",
-        "output": "no spam"
+        "input": "Bonsoir, Erreur 86 au chargement de la page export Pouvez-vous m'aider ?",
+        "output": "technical"
       },
       {
-        "input": "Bonjour, Proposez-vous des tarifs pour les associations ? C'est urgent.",
-        "output": "no spam"
+        "input": "Bonjour, Le paiement a echoue 165 fois, la carte est pourtant valide Pouvez-vous m'aider ?",
+        "output": "billing"
       },
       {
-        "input": "Salut, Le bouton d'export ne fait rien depuis la mise a jour",
-        "output": "no spam"
+        "input": "Salut, La page reste blanche apres la connexion Pouvez-vous m'aider ?",
+        "output": "technical"
       },
       {
-        "input": "L'application plante quand j'ouvre le tableau de bord C'est urgent.",
-        "output": "no spam"
+        "input": "Bonjour, Je n'ai jamais recu l'email de confirmation",
+        "output": "account"
       },
       {
-        "input": "Bonsoir, Un bug affiche des chiffres faux dans le rapport Pouvez-vous m'aider ?",
-        "output": "no spam"
+        "input": "Salut, Je n'ai jamais recu l'email de confirmation Merci d'avance.",
+        "output": "account"
       },
       {
-        "input": "Le prelevement du 476 n'est jamais passe Cordialement.",
-        "output": "spam"
+        "input": "Salut, Je n'ai jamais recu l'email de confirmation C'est urgent.",
+        "output": "account"
       },
       {
-        "input": "Un bug affiche des chiffres faux dans le rapport Pouvez-vous m'aider ?",
-        "output": "no spam"
+        "input": "Comment obtenir une facture au nom de ma societe ? Pouvez-vous m'aider ?",
+        "output": "billing"
       },
       {
-        "input": "Salut, Ma facture de fevrier me semble incorrecte, le montant a double Cordialement.",
-        "output": "no spam"
+        "input": "Bonsoir, Je n'arrive pas a telecharger ma facture de octobre C'est urgent.",
+        "output": "billing"
       },
       {
-        "input": "Bonjour, Le prelevement du 292 n'est jamais passe Merci d'avance.",
-        "output": "spam"
+        "input": "Je veux un remboursement sur la facture de avril Cordialement.",
+        "output": "billing"
       },
       {
-        "input": "Bonsoir, Comment obtenir une facture au nom de ma societe ? Merci d'avance.",
-        "output": "no spam"
+        "input": "Bonjour, Le prelevement du 257 n'est jamais passe Merci d'avance.",
+        "output": "billing"
       },
       {
-        "input": "Bonjour, Un bug affiche des chiffres faux dans le rapport",
-        "output": "spam"
+        "input": "Salut, Je veux transferer la propriete du compte Pouvez-vous m'aider ?",
+        "output": "account"
       },
       {
-        "input": "Salut, Le paiement a echoue 433 fois, la carte est pourtant valide",
-        "output": "spam"
+        "input": "Bonjour, Le paiement a echoue 329 fois, la carte est pourtant valide C'est urgent.",
+        "output": "billing"
       },
       {
-        "input": "Bonjour, Le paiement a echoue 309 fois, la carte est pourtant valide Cordialement.",
-        "output": "spam"
+        "input": "Salut, Je souhaite changer de formule de paiement Pouvez-vous m'aider ?",
+        "output": "billing"
       },
       {
-        "input": "Bonjour, Je veux supprimer mon compte definitivement Merci d'avance.",
-        "output": "spam"
+        "input": "Mon abonnement a ete debite deux fois ce mois-ci C'est urgent.",
+        "output": "billing"
       },
       {
-        "input": "Bonsoir, Le paiement a echoue 99 fois, la carte est pourtant valide Merci d'avance.",
-        "output": "spam"
+        "input": "Salut, Comment activer la double authentification ? C'est urgent.",
+        "output": "technical"
       },
       {
-        "input": "Salut, Le paiement a echoue 493 fois, la carte est pourtant valide C'est urgent.",
-        "output": "spam"
+        "input": "Salut, Avez-vous une version mobile prevue ? Pouvez-vous m'aider ?",
+        "output": "other"
       },
       {
-        "input": "Le paiement a echoue 264 fois, la carte est pourtant valide C'est urgent.",
-        "output": "spam"
+        "input": "Salut, La page reste blanche apres la connexion C'est urgent.",
+        "output": "technical"
       },
       {
-        "input": "Bonsoir, Je souhaite changer de formule de paiement",
-        "output": "spam"
+        "input": "Bonjour, Les donnees ne se synchronisent plus depuis decembre",
+        "output": "technical"
+      },
+      {
+        "input": "Bonjour, Le bouton d'export ne fait rien depuis la mise a jour Cordialement.",
+        "output": "technical"
+      },
+      {
+        "input": "Bonsoir, Un bug affiche des chiffres faux dans le rapport Merci d'avance.",
+        "output": "technical"
+      },
+      {
+        "input": "Mon compte semble bloque depuis novembre Merci d'avance.",
+        "output": "account"
+      },
+      {
+        "input": "Salut, Je veux supprimer mon compte definitivement C'est urgent.",
+        "output": "account"
+      },
+      {
+        "input": "Bonjour, Le site est tres lent depuis 223 jours C'est urgent.",
+        "output": "technical"
+      },
+      {
+        "input": "Bonjour, Comment ajouter un collegue a mon espace ? Merci d'avance.",
+        "output": "account"
+      },
+      {
+        "input": "Erreur 238 au chargement de la page export Merci d'avance.",
+        "output": "technical"
+      },
+      {
+        "input": "Bonjour, Impossible de reinitialiser mon mot de passe C'est urgent.",
+        "output": "account"
+      },
+      {
+        "input": "Bonsoir, Ou puis-je trouver votre documentation ?",
+        "output": "other"
+      },
+      {
+        "input": "Bonsoir, Bonjour, je voulais juste vous feliciter pour le produit Cordialement.",
+        "output": "other"
+      },
+      {
+        "input": "Comment ajouter un collegue a mon espace ? Merci d'avance.",
+        "output": "account"
+      },
+      {
+        "input": "Je n'ai jamais recu l'email de confirmation Merci d'avance.",
+        "output": "account"
+      },
+      {
+        "input": "Bonjour, Je veux supprimer mon compte definitivement",
+        "output": "account"
+      },
+      {
+        "input": "Bonjour, L'upload de fichier echoue systematiquement Pouvez-vous m'aider ?",
+        "output": "technical"
+      },
+      {
+        "input": "Bonjour, Mon compte semble bloque depuis mars",
+        "output": "account"
+      },
+      {
+        "input": "Salut, Ou puis-je trouver votre documentation ? Merci d'avance.",
+        "output": "other"
+      },
+      {
+        "input": "Salut, Ou puis-je trouver votre documentation ? Cordialement.",
+        "output": "other"
+      },
+      {
+        "input": "Bonjour, Comment activer la double authentification ?",
+        "output": "other"
+      },
+      {
+        "input": "Bonsoir, Avez-vous une version mobile prevue ? Pouvez-vous m'aider ?",
+        "output": "other"
       }
     ]
   },
