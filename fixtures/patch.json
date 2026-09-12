@@ -117,6 +117,20 @@
           460,
           180
         ]
+      },
+      {
+        "parameters": {
+          "model": "gpt-5-mini",
+          "options": {}
+        },
+        "id": "a1000000-0000-4000-8000-000000000004",
+        "name": "OpenAI Chat Model",
+        "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+        "typeVersion": 1.2,
+        "position": [
+          420,
+          380
+        ]
       }
     ],
     "connections": {
@@ -140,6 +154,17 @@
             {
               "node": "Classify fallback (gpt-5-mini)",
               "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model": {
+        "ai_languageModel": [
+          [
+            {
+              "node": "Classify fallback (gpt-5-mini)",
+              "type": "ai_languageModel",
               "index": 0
             }
           ]

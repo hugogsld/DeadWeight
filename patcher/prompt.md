@@ -27,3 +27,8 @@ Le noeud LLM incrimine est remplace par un `n8n-nodes-base.switch` :
 
 Tu remplis `coverage_estimate` avec la fraction des `samples` que tes regles
 classent correctement. Sois honnete : c'est le Prover qui verifiera.
+
+6. **Tout noeud LangChain `chain*` ou `agent*` exige un sous-noeud modele**, relie
+   par une connexion de type `ai_languageModel` qui part du MODELE vers le chain :
+   `"OpenAI Chat Model": {"ai_languageModel": [[{"node": "<nom du chain>", "type": "ai_languageModel", "index": 0}]]}`
+   Si tu crees un tel noeud sans son modele, le workflow s'ouvre en erreur.
