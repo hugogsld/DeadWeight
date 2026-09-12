@@ -1,0 +1,361 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('get_message').item.json.text }}",
+        "options": {
+          "systemMessage": "You are a polite and professional virtual assistant.\n\nYou receive an email.\n\nYour knowledge base is stored in the Pinecone Vector Store, which contains all relevant FAQs and information needed to assist the user accurately.\n\nAlways consult the Pinecone Vector Store before generating your response.\n\nYour final answer must be sent using the \"Gmail\" tool.\n\nWhen using the Gmail tool, make sure to:\n\nFill in the Message field with the response content\n\nFill in the Subject field with a short subject line (you can use \"Reply\" if unsure)"
+        }
+      },
+      "id": "6aba5d14-cf99-4f83-a0d3-e64fcced1e4d",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        144,
+        192
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "id": "27338c68-169d-4ae2-b7ab-d88dae2d5c55",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        80,
+        368
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{'key'}}"
+      },
+      "id": "f5f144d9-fd00-4a6e-8513-5d0b780c39c1",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        240,
+        368
+      ],
+      "typeVersion": 1.3
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{ $('get_message').item.json.id }}",
+        "emailType": "text",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "c603da2a-55cb-453b-818c-c34a5157c4d6",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmailTool",
+      "position": [
+        384,
+        368
+      ],
+      "webhookId": "f8feb0d1-c7dd-4172-8ebd-e125f18f2c4c",
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyHour"
+            },
+            {}
+          ]
+        },
+        "filters": {}
+      },
+      "id": "85dce088-a1cc-4e86-bd87-2ff5c31da10e",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        -1168,
+        400
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {}
+      },
+      "id": "03c8a8bf-ce02-418e-9727-c3e6b22c0da7",
+      "name": "get_message",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        -880,
+        400
+      ],
+      "webhookId": "364e19bb-56a0-4cfe-8f89-1bedce5345ae",
+      "typeVersion": 2.1
+    },
+    {
+      "parameters": {
+        "content": "## Gmail input\n\nGmail trigger get the full email\nSpam checker is a Openai node with specific system prompt.\nIf the email is from services (google, microsoft, ecc) it considered as spam.\nIn this case the model try to extract only business emails.\nThe node print only 2 different output: \"spam\" and \"no spam\".\nIf \"spam\", nothing happen, if \"no spam\" the \"if node\" pass the message to the Agentic node",
+        "height": 460,
+        "width": 1220,
+        "color": 3
+      },
+      "id": "30d330b6-7140-4585-801f-033f340e626a",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1216,
+        160
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## AI Agent\n\nAI Agent get the message and respond to the email autonomously in base of contest.\nHere we have a vector store too, where you can add your data, like FAQ, product prices and so on",
+        "height": 620,
+        "width": 540,
+        "color": 4
+      },
+      "id": "ee95f106-f0ed-41ac-9ef6-60c3069a0a2d",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## VECTOR STORE\n",
+        "height": 300,
+        "width": 540,
+        "color": 6
+      },
+      "id": "c65da925-fcb6-46f3-bd8c-a9d35af0e8e0",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        624
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolName": "FAQ",
+        "pineconeIndex": {
+          "__rl": true,
+          "mode": "list",
+          "value": "faqmattabott",
+          "cachedResultName": "faqmattabott"
+        },
+        "options": {}
+      },
+      "id": "06fa7416-0a6e-420a-9789-715cf4ffe300",
+      "name": "Pinecone Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "position": [
+        208,
+        688
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "95c619e3-65dd-405a-84de-d7fd3d43cd8f",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        64,
+        800
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "921d0426-0dbf-49ac-ab67-b5538856deee",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "spam"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "650da34f-27f7-4be7-912a-ff3d959f716c",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -288,
+        400
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a e-mail assistant. You have to check if the received e-mail are spam or not.\nYou have to check not only normal spam, but everything is not sent from a person, for example, automatic e-mail, google email, and anything out of a possible client.\n\nIf an e-mail is considered spam, as I sayd befor, your output will be \"spam\". If not, say \"no spam\".\n\nDon't respond anything else \"spam\" or \"not spam\".",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.headers.subject }}{{ $json.headers.from }}{{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c4c831ec-0682-4691-b5db-6c8715c235fb",
+      "name": "Spam checker",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        -640,
+        400
+      ],
+      "typeVersion": 1.8
+    }
+  ],
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get_message": {
+      "main": [
+        [
+          {
+            "node": "Spam checker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spam checker": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "get_message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

@@ -1,28 +1,23 @@
 {
-  "patch_id": "p_a4f573a7",
-  "finding_id": "f_YsmRj3Og",
-  "n_replayed": 100,
-  "source": "executions n8n",
-  "agreement_rate": 0.98,
-  "matched_by_rules": 92,
-  "sent_to_fallback": 8,
+  "patch_id": "p_19a43ea0",
+  "finding_id": "f_jtIksqYR",
+  "n_replayed": 24,
+  "source": "samples du finding",
+  "agreement_rate": 0.9583,
+  "matched_by_rules": 23,
+  "sent_to_fallback": 1,
   "disagreements": [
     {
-      "input": "Comment activer la double authentification ?",
-      "expected": "technical",
-      "got": "account"
-    },
-    {
-      "input": "Bonsoir, Impossible de reinitialiser mon mot de passe Cordialement.",
-      "expected": "technical",
-      "got": "account"
+      "input": "Bonjour, Un bug affiche des chiffres faux dans le rapport",
+      "expected": "spam",
+      "got": "no spam"
     }
   ],
-  "cost_before_month_eur": 0.236,
-  "cost_after_month_eur": 0.0017,
-  "cost_factor": 142.8,
+  "cost_before_month_eur": 0.0566,
+  "cost_after_month_eur": 0.0003,
+  "cost_factor": 197.0,
   "p95_before_ms": 4300.0,
-  "p95_after_ms": 1646.42,
+  "p95_after_ms": 0.29,
   "threshold": 0.95,
   "verdict": "pass"
 }

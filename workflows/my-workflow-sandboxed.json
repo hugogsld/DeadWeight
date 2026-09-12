@@ -1,0 +1,188 @@
+{
+  "name": "My workflow (sandboxed)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sandbox-naqefh",
+        "options": {}
+      },
+      "id": "85dce088-a1cc-4e86-bd87-2ff5c31da10e",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1168,
+        400
+      ],
+      "webhookId": "85dce088-a1cc-4e86-bd87-2ff5c31da10e"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "03c8a8bf-ce02-418e-9727-c3e6b22c0da7",
+      "name": "get_message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Gmail input\n\nGmail trigger get the full email\nSpam checker is a Openai node with specific system prompt.\nIf the email is from services (google, microsoft, ecc) it considered as spam.\nIn this case the model try to extract only business emails.\nThe node print only 2 different output: \"spam\" and \"no spam\".\nIf \"spam\", nothing happen, if \"no spam\" the \"if node\" pass the message to the Agentic node",
+        "height": 460,
+        "width": 1220,
+        "color": 3
+      },
+      "id": "30d330b6-7140-4585-801f-033f340e626a",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1216,
+        160
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "921d0426-0dbf-49ac-ab67-b5538856deee",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "spam"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "650da34f-27f7-4be7-912a-ff3d959f716c",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -288,
+        400
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "You are a e-mail assistant. You have to check if the received e-mail are spam or not.\nYou have to check not only normal spam, but everything is not sent from a person, for example, automatic e-mail, google email, and anything out of a possible client.\n\nIf an e-mail is considered spam, as I sayd befor, your output will be \"spam\". If not, say \"no spam\".\n\nDon't respond anything else \"spam\" or \"not spam\".",
+              "role": "system"
+            },
+            {
+              "content": "={{ $json.headers.subject }}{{ $json.headers.from }}{{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c4c831ec-0682-4691-b5db-6c8715c235fb",
+      "name": "Spam checker",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        -640,
+        400
+      ],
+      "typeVersion": 1.8,
+      "credentials": {
+        "openAiApi": {
+          "id": "P1ZBPqBPO527GE5F",
+          "name": "OpenAI account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(i => {\n  const b = i.json.body || {};\n  const t = b.text || i.json.text || b.subject || '';\n  const now = new Date().toISOString();\n  return { json: {\n    text: t, subject: t, body: t, snippet: t, message: t, content: t,\n    input: t, query: t, chatInput: t, id: 'msg_' + Math.random().toString(36).slice(2),\n    date: now, pubDate: now, isoDate: now, createdAt: now,\n    link: 'https://example.com',\n    headers: { subject: t, from: 'client@example.com' }\n  } };\n});"
+      },
+      "id": "dw000000-0000-4000-8000-00000000000a",
+      "name": "DW Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -992,
+        400
+      ]
+    }
+  ],
+  "connections": {
+    "If": {
+      "main": [
+        []
+      ]
+    },
+    "get_message": {
+      "main": [
+        [
+          {
+            "node": "Spam checker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spam checker": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "DW Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DW Input": {
+      "main": [
+        [
+          {
+            "node": "get_message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

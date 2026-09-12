@@ -1,0 +1,276 @@
+{
+  "name": "My workflow (sandboxed) - patched by Deadweight",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sandbox-naqefh",
+        "options": {}
+      },
+      "id": "85dce088-a1cc-4e86-bd87-2ff5c31da10e",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -1168,
+        400
+      ],
+      "webhookId": "85dce088-a1cc-4e86-bd87-2ff5c31da10e"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={{ JSON.stringify($json) }}",
+        "options": {}
+      },
+      "id": "03c8a8bf-ce02-418e-9727-c3e6b22c0da7",
+      "name": "get_message",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -880,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Gmail input\n\nGmail trigger get the full email\nSpam checker is a Openai node with specific system prompt.\nIf the email is from services (google, microsoft, ecc) it considered as spam.\nIn this case the model try to extract only business emails.\nThe node print only 2 different output: \"spam\" and \"no spam\".\nIf \"spam\", nothing happen, if \"no spam\" the \"if node\" pass the message to the Agentic node",
+        "height": 460,
+        "width": 1220,
+        "color": 3
+      },
+      "id": "30d330b6-7140-4585-801f-033f340e626a",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1216,
+        160
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "921d0426-0dbf-49ac-ab67-b5538856deee",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "leftValue": "={{ $json.message.content }}",
+              "rightValue": "spam"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "650da34f-27f7-4be7-912a-ff3d959f716c",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -288,
+        400
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(i => {\n  const b = i.json.body || {};\n  const t = b.text || i.json.text || b.subject || '';\n  const now = new Date().toISOString();\n  return { json: {\n    text: t, subject: t, body: t, snippet: t, message: t, content: t,\n    input: t, query: t, chatInput: t, id: 'msg_' + Math.random().toString(36).slice(2),\n    date: now, pubDate: now, isoDate: now, createdAt: now,\n    link: 'https://example.com',\n    headers: { subject: t, from: 'client@example.com' }\n  } };\n});"
+      },
+      "id": "dw000000-0000-4000-8000-00000000000a",
+      "name": "DW Input",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -992,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.text }}",
+                    "rightValue": "remboursement sur la facture|abonnement a ete debite deux fois|n'?ai jamais recu l'?email de confirmation|ajouter un collegue a mon espace|page reste blanche apres la connexion|tarifs pour les associations|bouton d'?export ne fait rien|application plante quand j'ouvre le tableau de bord|Pouvez-vous m'aider|le montant a double|obtenir une facture au nom de ma societe",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "outputKey": "no spam"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": false,
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.text }}",
+                    "rightValue": "le prelevement du \\d+ n'?est jamais passe|le paiement a echoue \\d+ fois, la carte est pourtant valide|transferer la propriete du compte|supprimer mon compte definitivement|changer de formule de paiement",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "outputKey": "spam"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "unmatched"
+        }
+      },
+      "id": "4b0301c9-86f8-43a2-898c-765cc6199e42",
+      "name": "Spam checker (rules)",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        -640,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Classe ce texte dans exactement une categorie parmi no spam, spam. Reponds uniquement par le mot.\n\nTexte: {{ $json.body.text }}"
+      },
+      "id": "03ae4807-2694-4562-bf61-e8e459b7e5fe",
+      "name": "Spam checker fallback (gpt-5-mini)",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        -400,
+        600
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-5-mini",
+        "options": {}
+      },
+      "id": "b6e10759-3a34-4547-896f-0e046888a9e1",
+      "name": "OpenAI Chat Model (gpt-5-mini)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -440,
+        800
+      ]
+    }
+  ],
+  "connections": {
+    "If": {
+      "main": [
+        []
+      ]
+    },
+    "get_message": {
+      "main": [
+        [
+          {
+            "node": "Spam checker (rules)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "DW Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DW Input": {
+      "main": [
+        [
+          {
+            "node": "get_message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spam checker (rules)": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Spam checker fallback (gpt-5-mini)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spam checker fallback (gpt-5-mini)": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model (gpt-5-mini)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Spam checker fallback (gpt-5-mini)",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
