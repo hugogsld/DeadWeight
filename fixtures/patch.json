@@ -1,10 +1,10 @@
 {
-  "patch_id": "p_ef02fcbe",
+  "patch_id": "p_8b7185a3",
   "finding_id": "f_YsmRj3Og_ent",
   "workflow_id": "YsmRj3OgBSjVBv0o",
   "strategy": "rule_switch",
   "diff_summary": "Noeud 'Classify ticket' remplace par un Switch a 4 regles + fallback gpt-5-mini",
-  "coverage_estimate": 0.96,
+  "coverage_estimate": 1,
   "patched_workflow": {
     "name": "Support ticket triage - patched by Deadweight",
     "nodes": [
@@ -50,7 +50,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "facture|remboursement|paiement a echoue|prelevement|abonnement|debite deux fois|formule de paiement",
+                      "rightValue": "formule de paiement|prelevement du|abonnement a ete debite deux fois|remboursement sur la facture de|paiement a echoue|obtenir une facture|telecharger ma facture de|carte est pourtant valide",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -70,7 +70,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "d'export|page export|erreur|page reste blanche|site est tres lent|mise a jour|double authentification|synchronisent|bug|upload de fichier|echoue systematiquement|connexion",
+                      "rightValue": "bouton d'export ne fait rien|site est tres lent|erreur [0-9]+ au chargement de la page export|page reste blanche apres la connexion|donnees ne se synchronisent plus|bug affiche des chiffres faux|upload de fichier echoue|double authentification.*urgent",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -90,7 +90,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "email de confirmation|propriete du compte|compte semble bloque|supprimer mon compte|ajouter un collegue|mon espace|reinitialiser mon mot de passe|mot de passe",
+                      "rightValue": "email de confirmation|transferer la propriete du compte|compte semble bloque|supprimer mon compte definitivement|ajouter un collegue a mon espace|reinitialiser mon mot de passe",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -110,7 +110,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "version mobile|documentation|feliciter|double authentification",
+                      "rightValue": "version mobile prevue|ou puis-je trouver votre documentation|feliciter pour le produit|Bonjour, Comment activer la double authentification",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -128,7 +128,7 @@
             "renameFallbackOutput": "unmatched"
           }
         },
-        "id": "bd37901d-fb65-42c8-83ca-4c0404870b67",
+        "id": "7f0d2746-8ce4-4bf7-aecd-cc2d32bcf50e",
         "name": "Classify ticket (rules)",
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3.2,
@@ -142,7 +142,7 @@
           "promptType": "define",
           "text": "=Classe ce texte dans exactement une categorie parmi billing, technical, account, other. Reponds uniquement par le mot.\n\nTexte: {{ $json.body.text }}"
         },
-        "id": "8fe80bce-8c61-4100-94e8-a6e0b3ab7a6c",
+        "id": "28c7af67-77f5-4fc7-aa38-ea1fb5fe4229",
         "name": "Classify ticket fallback (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.4,
@@ -156,7 +156,7 @@
           "model": "gpt-5-mini",
           "options": {}
         },
-        "id": "0228fd4e-0eb5-4986-a3cf-a7520ab55b01",
+        "id": "f800de10-b208-432f-b678-98b8ea4d6434",
         "name": "OpenAI Chat Model (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,

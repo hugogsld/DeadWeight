@@ -1,45 +1,73 @@
-{
-  "workflow_id": "wf_7Kq2",
-  "name": "Support ticket triage",
-  "window_days": 30,
-  "executions_sampled": 200,
-  "collected_at": "2026-09-12T12:50:00Z",
-  "nodes": [
-    {
-      "id": "n_classify",
-      "name": "Classify ticket",
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "model": "openai/gpt-5",
-      "calls": 200,
-      "prompt_tokens_avg": 1840,
-      "completion_tokens_avg": 6,
-      "distinct_outputs": 4,
-      "output_samples": [
-        "billing",
-        "technical",
-        "account",
-        "other"
-      ],
-      "latency_p50_ms": 2100,
-      "latency_p95_ms": 4300,
-      "cost_est_month_eur": 412.0
-    },
-    {
-      "id": "n_draft",
-      "name": "Draft reply",
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "model": "openai/gpt-5",
-      "calls": 200,
-      "prompt_tokens_avg": 3200,
-      "completion_tokens_avg": 180,
-      "distinct_outputs": 197,
-      "output_samples": [
-        "Bonjour, merci pour votre message...",
-        "Hello, thanks for reaching out..."
-      ],
-      "latency_p50_ms": 3800,
-      "latency_p95_ms": 7200,
-      "cost_est_month_eur": 890.0
-    }
-  ]
-}
+[
+  {
+    "workflow_id": "1zEJ3vbKVlp8iQ5q",
+    "name": "Ticket summariser",
+    "executions_sampled": 60,
+    "nodes": [
+      {
+        "id": "c0000000-0000-4000-8000-000000000002",
+        "name": "Summarise ticket",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "calls": 60,
+        "distinct_outputs": 58,
+        "entropy_bits": 5.83,
+        "model": "gpt-4o-mini",
+        "avg_output_words": 13.5,
+        "output_samples": [
+          "le client ne parvient pas à réinitialiser son mot de passe.",
+          "le client signale que la page reste blanche après sa connexion.",
+          "le client demande s'il existe une version mobile de votre service et sollicite de l'aide à ce sujet.",
+          "le client souhaite féliciter l'équipe pour la qualité du produit.",
+          "le client signale que l'application plante de manière urgente lorsqu'il tente d'ouvrir le tableau de bord.",
+          "un client signale un bug qui entraîne l'affichage de chiffres incorrects dans le rapport.",
+          "le client souhaite féliciter l'équipe pour le produit et indique que cela est urgent.",
+          "le client n'arrive pas à réinitialiser son mot de passe."
+        ]
+      }
+    ]
+  },
+  {
+    "workflow_id": "YsmRj3OgBSjVBv0o",
+    "name": "Support ticket triage",
+    "executions_sampled": 125,
+    "nodes": [
+      {
+        "id": "b0000000-0000-4000-8000-000000000002",
+        "name": "Classify ticket",
+        "type": "@n8n/n8n-nodes-langchain.chainLlm",
+        "calls": 125,
+        "distinct_outputs": 4,
+        "entropy_bits": 1.76,
+        "model": "gpt-4o-mini",
+        "avg_output_words": 1.0,
+        "output_samples": [
+          "billing",
+          "technical",
+          "account",
+          "other"
+        ]
+      }
+    ]
+  },
+  {
+    "workflow_id": "jtIksqYRpA59PN5I",
+    "name": "My workflow (sandboxed)",
+    "executions_sampled": 60,
+    "nodes": [
+      {
+        "id": "c4c831ec-0682-4691-b5db-6c8715c235fb",
+        "name": "Spam checker",
+        "type": "@n8n/n8n-nodes-langchain.openAi",
+        "calls": 60,
+        "distinct_outputs": 2,
+        "entropy_bits": 0.78,
+        "model": "gpt-4o-mini",
+        "avg_output_words": 1.8,
+        "output_samples": [
+          "no spam",
+          "spam"
+        ]
+      }
+    ]
+  }
+]

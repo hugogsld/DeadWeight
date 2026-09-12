@@ -1,19 +1,19 @@
 {
-  "patch_id": "p_ef02fcbe",
+  "patch_id": "p_8b7185a3",
   "finding_id": "f_YsmRj3Og_ent",
   "workflow_name": "Support ticket triage",
   "node_name": "Classify ticket",
   "n_replayed": 100,
   "source": "executions n8n",
   "agreement_rate": 0.98,
-  "matched_by_rules": 93,
-  "sent_to_fallback": 7,
-  "rules_coverage": 0.93,
+  "matched_by_rules": 91,
+  "sent_to_fallback": 9,
+  "rules_coverage": 0.91,
   "disagreements": [
     {
-      "input": "Bonjour, Comment activer la double authentification ?",
-      "expected": "other",
-      "got": "technical"
+      "input": "Comment activer la double authentification ?",
+      "expected": "technical",
+      "got": "account"
     },
     {
       "input": "Bonsoir, Impossible de reinitialiser mon mot de passe Cordialement.",
@@ -22,12 +22,12 @@
     }
   ],
   "cost_before_month_eur": 0.158,
-  "cost_after_month_eur": 0.0012,
-  "cost_factor": 127.5,
+  "cost_after_month_eur": 0.0019,
+  "cost_factor": 81.4,
   "latency_measured": true,
   "p95_before_ms": 1689.0,
   "median_before_ms": 592.0,
-  "p95_rules_path_ms": 0.06,
+  "p95_rules_path_ms": 0.08,
   "threshold": 0.95,
   "verdict": "pass"
 }
