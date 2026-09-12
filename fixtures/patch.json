@@ -1,9 +1,9 @@
 {
-  "patch_id": "p_001",
+  "patch_id": "p_ea1de3af",
   "finding_id": "f_001",
-  "workflow_id": "wf_7Kq2",
+  "workflow_id": "YsmRj3OgBSjVBv0o",
   "strategy": "rule_switch",
-  "diff_summary": "Noeud 'Classify ticket' (gpt-5) remplace par un Switch a 3 regles + fallback gpt-5-mini sur la sortie non appariee",
+  "diff_summary": "Noeud 'Classify ticket' remplace par un Switch a 4 regles + fallback gpt-5-mini",
   "coverage_estimate": 0.94,
   "patched_workflow": {
     "name": "Support ticket triage - patched by Deadweight",
@@ -11,10 +11,10 @@
       {
         "parameters": {
           "httpMethod": "POST",
-          "path": "triage",
+          "path": "triage-original",
           "options": {}
         },
-        "id": "a1000000-0000-4000-8000-000000000001",
+        "id": "b0000000-0000-4000-8000-000000000001",
         "name": "Webhook",
         "type": "n8n-nodes-base.webhook",
         "typeVersion": 2,
@@ -22,7 +22,20 @@
           0,
           0
         ],
-        "webhookId": "a1000000-0000-4000-8000-000000000001"
+        "webhookId": "b0000000-0000-4000-8000-000000000001"
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "b0000000-0000-4000-8000-000000000004",
+        "name": "Route to queue",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          528,
+          0
+        ]
       },
       {
         "parameters": {
@@ -37,7 +50,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "facture|paiement|abonnement|rembours",
+                      "rightValue": "paiement|facture|remboursement|prelevement|debite",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -57,7 +70,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "bug|plante|erreur|charge pas|crash",
+                      "rightValue": "bouton d'export|erreur \\d+ au chargement|page reste blanche|tres lent|ne se synchronisent plus|bug affiche|upload de fichier echoue|double authentification.*c'est urgent|c'est urgent.*double authentification",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -77,7 +90,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "mot de passe|email|compte|connexion",
+                      "rightValue": "email de confirmation|propriete du compte|supprimer mon compte|ajouter un collegue a mon espace|reinitialiser mon mot de passe|compte semble bloque",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -87,6 +100,26 @@
                   "combinator": "and"
                 },
                 "outputKey": "account"
+              },
+              {
+                "conditions": {
+                  "options": {
+                    "caseSensitive": false,
+                    "version": 2
+                  },
+                  "conditions": [
+                    {
+                      "leftValue": "={{ $json.body.text }}",
+                      "rightValue": "version mobile|documentation|feliciter pour le produit|double authentification",
+                      "operator": {
+                        "type": "string",
+                        "operation": "regex"
+                      }
+                    }
+                  ],
+                  "combinator": "and"
+                },
+                "outputKey": "other"
               }
             ]
           },
@@ -95,27 +128,27 @@
             "renameFallbackOutput": "unmatched"
           }
         },
-        "id": "a1000000-0000-4000-8000-000000000002",
+        "id": "a242befe-8ca8-4155-8623-7a756cbd95ee",
         "name": "Classify ticket (rules)",
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3.2,
         "position": [
-          220,
+          240,
           0
         ]
       },
       {
         "parameters": {
           "promptType": "define",
-          "text": "=Classe ce ticket dans exactement une categorie parmi billing, technical, account, other. Reponds uniquement par le mot.\n\nTicket: {{ $json.body.text }}"
+          "text": "=Classe ce texte dans exactement une categorie parmi billing, technical, account, other. Reponds uniquement par le mot.\n\nTexte: {{ $json.body.text }}"
         },
-        "id": "a1000000-0000-4000-8000-000000000003",
-        "name": "Classify fallback (gpt-5-mini)",
+        "id": "901e4647-4765-4ab6-80f4-098a1d01776f",
+        "name": "Classify ticket fallback (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.4,
         "position": [
-          460,
-          180
+          480,
+          200
         ]
       },
       {
@@ -123,13 +156,13 @@
           "model": "gpt-5-mini",
           "options": {}
         },
-        "id": "a1000000-0000-4000-8000-000000000004",
-        "name": "OpenAI Chat Model",
+        "id": "64297bfd-1077-4136-9e8f-1d7db56520b2",
+        "name": "OpenAI Chat Model (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,
         "position": [
-          420,
-          380
+          440,
+          400
         ]
       }
     ],
@@ -147,23 +180,59 @@
       },
       "Classify ticket (rules)": {
         "main": [
-          [],
-          [],
-          [],
           [
             {
-              "node": "Classify fallback (gpt-5-mini)",
+              "node": "Route to queue",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Route to queue",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Route to queue",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Route to queue",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Classify ticket fallback (gpt-5-mini)",
               "type": "main",
               "index": 0
             }
           ]
         ]
       },
-      "OpenAI Chat Model": {
+      "Classify ticket fallback (gpt-5-mini)": {
+        "main": [
+          [
+            {
+              "node": "Route to queue",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "OpenAI Chat Model (gpt-5-mini)": {
         "ai_languageModel": [
           [
             {
-              "node": "Classify fallback (gpt-5-mini)",
+              "node": "Classify ticket fallback (gpt-5-mini)",
               "type": "ai_languageModel",
               "index": 0
             }
@@ -172,7 +241,8 @@
       }
     },
     "settings": {
-      "executionOrder": "v1"
+      "executionOrder": "v1",
+      "binaryMode": "separate"
     }
   }
 }

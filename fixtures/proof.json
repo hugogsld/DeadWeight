@@ -1,20 +1,28 @@
 {
-  "patch_id": "p_001",
+  "patch_id": "p_ea1de3af",
   "finding_id": "f_001",
   "n_replayed": 100,
-  "agreement_rate": 0.985,
+  "source": "executions n8n",
+  "agreement_rate": 0.98,
+  "matched_by_rules": 93,
+  "sent_to_fallback": 7,
   "disagreements": [
     {
-      "input": "je veux resilier et etre rembourse",
-      "expected": "billing",
+      "input": "Comment activer la double authentification ?",
+      "expected": "technical",
+      "got": "other"
+    },
+    {
+      "input": "Bonsoir, Impossible de reinitialiser mon mot de passe Cordialement.",
+      "expected": "technical",
       "got": "account"
     }
   ],
-  "cost_before_month_eur": 412.0,
-  "cost_after_month_eur": 9.8,
-  "cost_factor": 42.0,
-  "p95_before_ms": 4300,
-  "p95_after_ms": 900,
+  "cost_before_month_eur": 0.236,
+  "cost_after_month_eur": 0.0016,
+  "cost_factor": 145.4,
+  "p95_before_ms": 4300.0,
+  "p95_after_ms": 2151.47,
   "threshold": 0.95,
   "verdict": "pass"
 }
