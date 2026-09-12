@@ -1,8 +1,8 @@
 {
-  "finding_id": "f_001",
+  "finding_id": "f_YsmRj3Og",
   "workflow_id": "YsmRj3OgBSjVBv0o",
   "workflow_name": "Support ticket triage",
-  "node_id": "n_classify",
+  "node_id": "b0000000-0000-4000-8000-000000000002",
   "node_name": "Classify ticket",
   "rule": "low_entropy_output",
   "severity": "cut",
@@ -193,7 +193,5 @@
       }
     ]
   },
-  "current_cost_month_eur": 412.0,
-  "est_saving_month_eur": 401.0,
-  "proposed_action": "Remplacer par un Switch deterministe sur mots-cles, avec gpt-5-mini en fallback pour les cas non couverts"
+  "proposed_action": "Remplacer par un Switch deterministe, avec un petit modele en fallback pour les cas non couverts"
 }
