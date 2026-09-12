@@ -1,5 +1,5 @@
 {
-  "patch_id": "p_51d61d54",
+  "patch_id": "p_b86f8fd4",
   "finding_id": "f_YsmRj3Og",
   "workflow_name": "Support ticket triage",
   "node_name": "Classify ticket",
@@ -22,12 +22,12 @@
     }
   ],
   "cost_before_month_eur": 0.158,
-  "cost_after_month_eur": 0.0014,
-  "cost_factor": 115.6,
+  "cost_after_month_eur": 0.0012,
+  "cost_factor": 127.5,
   "latency_measured": true,
   "p95_before_ms": 1689.0,
   "median_before_ms": 592.0,
-  "p95_rules_path_ms": 0.11,
+  "p95_rules_path_ms": 0.07,
   "threshold": 0.95,
   "verdict": "pass"
 }

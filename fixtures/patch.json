@@ -1,10 +1,10 @@
 {
-  "patch_id": "p_51d61d54",
+  "patch_id": "p_b86f8fd4",
   "finding_id": "f_YsmRj3Og",
   "workflow_id": "YsmRj3OgBSjVBv0o",
   "strategy": "rule_switch",
   "diff_summary": "Noeud 'Classify ticket' remplace par un Switch a 4 regles + fallback gpt-5-mini",
-  "coverage_estimate": 1.0,
+  "coverage_estimate": 1,
   "patched_workflow": {
     "name": "Support ticket triage - patched by Deadweight",
     "nodes": [
@@ -50,7 +50,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "facture|remboursement|paiement|prelevement|debite",
+                      "rightValue": "paiement|prelevement|facture|remboursement|rembourser|debite|carte",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -70,7 +70,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "erreur\\s+\\d+|export|tres lent|page reste blanche|double authentification.*urgent|synchronis|mise a jour|bug|upload",
+                      "rightValue": "export|erreur|tres lent|page reste blanche|connexion|synchronisent|bug|rapport|upload|mise a jour|chargement|double authentification.*urgent",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -90,7 +90,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "email de confirmation|propriete du compte|compte semble bloque|supprimer mon compte|ajouter un collegue|mot de passe",
+                      "rightValue": "email de confirmation|propriete du compte|supprimer mon compte|compte semble bloque|bloque|collegue|mon espace|reinitialiser mon mot de passe|mot de passe",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -110,7 +110,7 @@
                   "conditions": [
                     {
                       "leftValue": "={{ $json.body.text }}",
-                      "rightValue": "version mobile|documentation|felicit|double authentification",
+                      "rightValue": "version mobile|documentation|feliciter|double authentification",
                       "operator": {
                         "type": "string",
                         "operation": "regex"
@@ -128,7 +128,7 @@
             "renameFallbackOutput": "unmatched"
           }
         },
-        "id": "06de4dcc-c71b-4847-ae51-6990d553c542",
+        "id": "79c5f9e5-95fa-4f84-8fe1-5629146b6a9f",
         "name": "Classify ticket (rules)",
         "type": "n8n-nodes-base.switch",
         "typeVersion": 3.2,
@@ -142,7 +142,7 @@
           "promptType": "define",
           "text": "=Classe ce texte dans exactement une categorie parmi billing, technical, account, other. Reponds uniquement par le mot.\n\nTexte: {{ $json.body.text }}"
         },
-        "id": "a97a60a4-f66e-4034-97f6-8e90efdfb515",
+        "id": "a0f5d19a-c0fc-4174-a597-acf7e0e6f9a3",
         "name": "Classify ticket fallback (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.chainLlm",
         "typeVersion": 1.4,
@@ -156,7 +156,7 @@
           "model": "gpt-5-mini",
           "options": {}
         },
-        "id": "ee07a3b0-a487-4175-8082-bf6fd8b84048",
+        "id": "f5bb2afa-52fa-4674-8ba9-2b9cc0c90a0c",
         "name": "OpenAI Chat Model (gpt-5-mini)",
         "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
         "typeVersion": 1.2,
