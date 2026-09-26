@@ -1,14 +1,17 @@
-"""Latence ajoutée par la passerelle, capture activée (critère D1.1 : < 30 ms au p95).
+"""Latence ajoutée par la passerelle (D1.1 : < 30 ms au p95) et par SQLite (D1.2 : aucune).
 
-Même requête envoyée au faux OpenAI en direct puis à travers la passerelle,
-en alternance. On compare les p50/p95 des deux séries.
+Même requête envoyée au faux OpenAI en direct, à travers la passerelle, puis à
+travers la passerelle qui écrit dans SQLite, en alternance.
 
     python3 -m gateway.bench              # 300 requêtes par mode
     python3 -m gateway.bench 1000 20      # 1000 requêtes, 20 en parallèle
 """
 import asyncio
 import math
+import os
+import shutil
 import sys
+import tempfile
 import time
 
 import aiohttp
@@ -16,6 +19,7 @@ from aiohttp import web
 
 from gateway import fake_openai
 from gateway.proxy import make_app
+from gateway.store import EventStore, count
 
 BODY = {"model": "gpt-4o", "messages": [{"role": "user", "content": "Classe ce mail : facture n°4471"}]}
 
@@ -55,35 +59,42 @@ async def series(session, base, stream, n, concurrency):
 
 
 async def main(n, concurrency):
-    captured = []
+    tmp = tempfile.mkdtemp()
+    store = EventStore(os.path.join(tmp, "events.db"))
     up_runner, up = await _serve(fake_openai.make_app(delay=0.002))
-    gw_runner, gw = await _serve(make_app(upstream=up, on_event=captured.append))
+    gw_runner, gw = await _serve(make_app(upstream=up, on_event=lambda e: None))
+    db_runner, gw_db = await _serve(make_app(upstream=up, on_event=lambda e: None, store=store))
+    targets = (("direct", up), ("passerelle", gw), ("passerelle + SQLite", gw_db))
     ok = True
     try:
         async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=0)) as s:
-            await series(s, gw, False, 20, 1)  # chauffe
-            await series(s, up, False, 20, 1)
-            print(f"{n} requêtes par mode, {concurrency} en parallèle, capture activée\n")
-            print(f"{'mode':26} {'direct p50':>10} {'p95':>7} {'via p50':>9} {'p95':>7} {'ajout p95':>10}")
+            for _, base in targets:  # chauffe
+                await series(s, base, False, 20, 1)
+            print(f"{n} requêtes par mode, {concurrency} en parallèle\n")
+            print(f"{'mesure':28} {'cible':20} {'p50':>7} {'p95':>7} {'ajout p95':>10}")
             for stream in (False, True):
-                direct, via = [], []
+                runs = {name: [] for name, _ in targets}
                 for _ in range(4):  # alternance pour lisser le bruit de la machine
-                    direct += await series(s, up, stream, n // 4, concurrency)
-                    via += await series(s, gw, stream, n // 4, concurrency)
+                    for name, base in targets:
+                        runs[name] += await series(s, base, stream, n // 4, concurrency)
                 for label, idx in (("total", 0), ("premier morceau", 1)):
                     if not stream and idx == 1:
                         continue
-                    d = [x[idx] for x in direct]
-                    v = [x[idx] for x in via]
-                    added = pct(v, .95) - pct(d, .95)
-                    ok &= added < 30
-                    name = f"{'streaming' if stream else 'simple'} — {label}"
-                    print(f"{name:26} {pct(d, .5):>8.1f}ms {pct(d, .95):>5.1f}ms "
-                          f"{pct(v, .5):>7.1f}ms {pct(v, .95):>5.1f}ms {added:>+8.1f}ms")
+                    base_p95 = pct([x[idx] for x in runs["direct"]], .95)
+                    for name, _ in targets:
+                        v = [x[idx] for x in runs[name]]
+                        added = pct(v, .95) - base_p95
+                        if name != "direct":
+                            ok &= added < 30
+                        title = f"{'streaming' if stream else 'simple'} — {label}"
+                        print(f"{title:28} {name:20} {pct(v, .5):>5.1f}ms {pct(v, .95):>5.1f}ms "
+                              + ("" if name == "direct" else f"{added:>+8.1f}ms"))
     finally:
+        await db_runner.cleanup()  # ferme le store : la file est vidée
         await gw_runner.cleanup()
         await up_runner.cleanup()
-    print(f"\n{len(captured)} événements capturés")
+    print(f"\n{count(store.path)} événements écrits dans SQLite, {store.dropped} perdu(s)")
+    shutil.rmtree(tmp)
     print("OK : latence ajoutée < 30 ms au p95" if ok else "ÉCHEC : latence ajoutée >= 30 ms au p95")
     return ok
 
