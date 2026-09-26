@@ -12,7 +12,8 @@ EVENTS = [json.loads(line) for line in (V1 / "events.jsonl").read_text().splitli
 LABELS = json.loads((V1 / "labels.json").read_text())
 BY_ID = {e["event_id"]: e for e in EVENTS}
 RULES = ["low_entropy_output", "oversized_model", "raw_context",
-         "no_cache", "unbounded_loop", "agent_where_chain"]
+         "no_cache", "unbounded_loop", "agent_where_chain",
+         "excess_reasoning", "duplicate_calls", "paid_errors", "verbose_output"]
 
 
 def test_all_events_match_schema():

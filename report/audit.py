@@ -74,6 +74,14 @@ RULE_TEXT = {
                        "Fixer un nombre maximal d'étapes et une condition d'arrêt explicite."),
     "agent_where_chain": ("Un agent qui suit toujours le même chemin",
                           "Remplacer l'agent par une chaîne d'étapes fixe."),
+    "excess_reasoning": ("Un modèle qui réfléchit longtemps pour une réponse triviale",
+                        "Réduire l'effort de raisonnement demandé, à vérifier par rejeu."),
+    "duplicate_calls": ("La même question payée plusieurs fois, mot pour mot",
+                       "Mettre en cache la réponse plutôt que de rappeler le modèle."),
+    "paid_errors": ("Des échecs facturés puis payés une seconde fois en relance",
+                    "Corriger la cause de l'échec (limite de longueur, filtre) avant de relancer."),
+    "verbose_output": ("Des réponses bien plus longues que nécessaire",
+                       "Poser un plafond de longueur raisonnable, à vérifier par rejeu."),
 }
 DEFAULT_TEXT = ("Usage à examiner", "Examiner ces appels avec l'équipe concernée.")
 
