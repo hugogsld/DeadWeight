@@ -32,8 +32,10 @@ def _line(p, link):
     return f"{icon} *{p['app_id']}* — {p['changement']}\n      {detail}{why}{pr}"
 
 
-def message(proposals, links=None, total_spent=None):
-    """Texte Slack (mrkdwn). ``links`` : {finding_id+type: url de PR} ; ``total_spent`` : dépense observée."""
+def message(proposals, links=None, total_spent=None, show_all=False):
+    """Texte Slack (mrkdwn). ``links`` : {finding_id+type: url de PR} ; ``total_spent`` : dépense observée.
+    Par défaut, seules les propositions prouvées apparaissent (un décideur n'a rien à faire des autres) ;
+    ``show_all`` (démo) les montre toutes. Le détail complet est dans la page développeur."""
     links = links or {}
     ok = [p for p in proposals if p["verdict"] == "pass"]
     saved = [p["cout_usd"] for p in ok if p.get("cout_usd") and p["cout_usd"].get("apres") is not None]
@@ -53,6 +55,11 @@ def message(proposals, links=None, total_spent=None):
             head.append(f"• Coût : *{(after - before) / before * 100:+.0f} %*{scope} (mesuré, "
                         f"{before:.4g} $ → {after:.4g} $ sur la période observée)")
         head.append("• Chaque gain s'active en acceptant sa micro-PR, et s'annule en la retirant.")
-    body = [_line(p, links.get(p["finding_id"] + p["type"])) for p in proposals]
+    shown = proposals if show_all else ok
+    body = [_line(p, links.get(p["finding_id"] + p["type"])) for p in shown]
+    hidden = len(proposals) - len(shown)
+    if hidden:
+        body.append(f"_{hidden} autre{'s' if hidden > 1 else ''} piste{'s' if hidden > 1 else ''} testée"
+                    f"{'s' if hidden > 1 else ''} sans preuve suffisante : détail dans la page développeur._")
     foot = "_Mesuré = rejeu des mêmes entrées sur votre historique. ~ = estimation, jamais additionnée._"
     return "\n".join(head + [""] + body + ["", foot])
