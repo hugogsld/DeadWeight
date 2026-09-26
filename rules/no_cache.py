@@ -39,6 +39,34 @@ def _normalize(value):
 
 
 def detect(events):
+    """Un finding par (app, modèle), qui regroupe les demandes répétées."""
+    return _merge(_detect_templates(events))
+
+
+def _merge(per_template):
+    """Le rapport doit montrer un constat par application, pas une carte par prompt."""
+    groups = defaultdict(list)
+    for f in per_template:
+        groups[(f['app_id'], f['model'])].append(f)
+    merged = []
+    for (app, model), fs in sorted(groups.items()):
+        calls = sum(f['evidence']['calls'] for f in fs)
+        digest = hashlib.sha256(json.dumps([app, model]).encode()).hexdigest()[:20]
+        merged.append({
+            'finding_id': f'f_{digest}_no_cache', 'rule': 'no_cache', 'app_id': app,
+            'model': model, 'template': None, 'severity': 'candidate',
+            'title': (f"{len(fs)} demande(s) identique(s) reviennent en tout {calls} fois après retrait "
+                      "des dates et identifiants : la réutilisation des réponses est à vérifier."),
+            'proven': False,
+            'event_ids': sorted(i for f in fs for i in f['event_ids']),
+            'evidence': {'distinct_prompts': len(fs), 'calls': calls,
+                         'repetitions': calls - len(fs),
+                         'per_prompt': [dict(f['evidence'], template=f['template']) for f in fs]},
+        })
+    return merged
+
+
+def _detect_templates(events):
     """Groupe par app, modèle et empreinte de system + messages normalisés.
 
     Cache absent/null : compté comme inconnu, jamais comme zéro mesuré.

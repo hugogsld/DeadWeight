@@ -21,6 +21,34 @@ MAX_OUTPUT_INPUT_RATIO = 0.10
 
 
 def detect(events):
+    """Un finding par (app, modèle), qui regroupe les traces signalées."""
+    return _merge(_detect_traces(events))
+
+
+def _merge(per_trace):
+    """Le rapport doit montrer un constat par application, pas une carte par conversation."""
+    groups = defaultdict(list)
+    for f in per_trace:
+        groups[(f['app_id'], f['model'])].append(f)
+    merged = []
+    for (app, model), fs in sorted(groups.items()):
+        slope = mean(f['evidence']['slope_tokens_per_turn'] for f in fs)
+        turns = mean(f['evidence']['turns'] for f in fs)
+        digest = hashlib.sha256(json.dumps([app, model]).encode()).hexdigest()[:20]
+        merged.append({
+            'finding_id': f'f_{digest}_raw_context', 'rule': 'raw_context', 'app_id': app,
+            'model': model, 'template': None, 'severity': 'trim',
+            'title': (f"Dans {len(fs)} conversation(s) d'environ {turns:.0f} tours, le texte envoyé "
+                      f"augmente d'environ {slope:.0f} tokens par tour alors que les réponses restent courtes."),
+            'proven': False,
+            'event_ids': [i for f in fs for i in f['event_ids']],
+            'evidence': {'traces': len(fs), 'mean_slope_tokens_per_turn': slope,
+                         'per_trace': [f['evidence'] for f in fs]},
+        })
+    return merged
+
+
+def _detect_traces(events):
     """Retourne un finding par (app, modèle, trace), ordonné par trace.step.
 
     Les traces incomplètes (étapes/tokens inconnus ou étapes dupliquées) sont

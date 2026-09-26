@@ -5,7 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from rules.raw_context import detect
+from rules.raw_context import _detect_traces as detect
+from rules.raw_context import detect as detect_merged
 
 DATA = Path(__file__).resolve().parents[1] / 'fixtures/dataset/v1'
 KEYS = {'finding_id', 'rule', 'app_id', 'model', 'template', 'severity',
@@ -107,3 +108,10 @@ def test_dataset_exact_apps_and_trace_membership():
 
 def test_empty():
     assert detect([]) == []
+
+
+def test_dataset_one_finding_per_app_for_the_report():
+    events = [json.loads(line) for line in (DATA / 'events.jsonl').read_text().splitlines()]
+    merged = detect_merged(events)
+    assert [f['app_id'] for f in merged] == ['contract-bot']
+    assert merged[0]['evidence']['traces'] == 10 and len(merged[0]['event_ids']) == 80

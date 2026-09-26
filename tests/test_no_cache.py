@@ -5,7 +5,8 @@ from pathlib import Path
 
 import pytest
 
-from rules.no_cache import detect
+from rules.no_cache import _detect_templates as detect
+from rules.no_cache import detect as detect_merged
 
 DATA = Path(__file__).resolve().parents[1] / 'fixtures/dataset/v1'
 KEYS = {'finding_id', 'rule', 'app_id', 'model', 'template', 'severity',
@@ -124,3 +125,11 @@ def test_requires_measured_substantial_input(tokens, flagged):
     for e in events:
         e['usage']['input_tokens'] = tokens
     assert bool(detect(events)) is flagged
+
+
+def test_dataset_one_finding_per_app_for_the_report():
+    events = [json.loads(line) for line in (DATA / 'events.jsonl').read_text().splitlines()]
+    merged = detect_merged(events)
+    assert sorted(f['app_id'] for f in merged) == ['daily-report', 'faq-bot']
+    faq = next(f for f in merged if f['app_id'] == 'faq-bot')
+    assert faq['evidence']['distinct_prompts'] == 5 and faq['evidence']['calls'] == 60
