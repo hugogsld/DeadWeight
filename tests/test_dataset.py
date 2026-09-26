@@ -12,7 +12,9 @@ EVENTS = [json.loads(line) for line in (V1 / "events.jsonl").read_text().splitli
 LABELS = json.loads((V1 / "labels.json").read_text())
 BY_ID = {e["event_id"]: e for e in EVENTS}
 RULES = ["low_entropy_output", "oversized_model", "raw_context",
-         "no_cache", "unbounded_loop", "agent_where_chain"]
+         "no_cache", "unbounded_loop", "agent_where_chain",
+         "excess_reasoning", "duplicate_calls", "paid_errors", "verbose_output",
+         "tool_bloat", "batch_eligible", "image_heavy", "llm_judge", "harness_overhead", "mergeable_steps", "per_item_calls", "parallelizable_steps"]
 
 
 def test_all_events_match_schema():
@@ -65,6 +67,7 @@ def test_generation_is_deterministic(tmp_path, monkeypatch):
     monkeypatch.setattr(gen, "OUT", tmp_path)
     gen.main()
     assert (tmp_path / "events.jsonl").read_text() == (V1 / "events.jsonl").read_text()
+    assert (tmp_path / "labels.json").read_text() == (V1 / "labels.json").read_text()
 
 
 def test_trace_steps_are_chronological():
@@ -72,3 +75,19 @@ def test_trace_steps_are_chronological():
         for tid, ids in s["traces"].items():
             starts = [BY_ID[i]["ts_start"] for i in ids]
             assert starts == sorted(starts), tid
+
+
+def test_all_rules_match_labels_without_new_false_positives():
+    from report.audit import _discover_detectors
+    expected = {(s['app_id'], rule) for s in LABELS for rule in s['expected_rules']}
+    actual = {(f['app_id'], f['rule']) for _, detect in _discover_detectors() for f in detect(EVENTS)}
+    assert actual == expected
+
+
+def test_original_1332_events_are_unchanged():
+    import hashlib
+    original = [e for e in EVENTS if int(e['event_id'].removeprefix('ds_')) <= 1332]
+    assert len(original) == 1332
+    # Empreinte des événements avant l'extension #71, sérialisation indépendante de l'indentation.
+    digest = hashlib.sha256(json.dumps(original, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+    assert digest == '20b1a71936b3c2654815b08c29009bff393a003ac1ce1251b0bd684f84543542'

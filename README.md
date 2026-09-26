@@ -111,6 +111,63 @@ par rejeu ceux qui peuvent l'être, et publie un plan d'action priorisé en têt
 détail de sa démarche. Il ne calcule rien lui-même : un plan qui cite un chiffre absent des
 vérifications est refusé et l'agent doit se corriger. Sans clé, le rapport est le même, sans plan.
 
+## Test de bout en bout
+
+    make e2e
+
+Installe, lance la démo, puis une vraie passerelle devant trois fournisseurs simulés (OpenAI, Anthropic,
+Gemini) : trafic simple, en streaming et en boucle d'agent, capture, traces, rapport, rejeu, miroir et
+court-circuit. Aucune clé, aucun appel payant. La CI le lance à chaque PR.
+
+## Workflows de test
+
+De vrais workflows d'agents, passés par la passerelle pour tester Deadweight hors des fixtures, sont
+dans le repo **[Workflow-test-hackathon-agentique-25-09-2026](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026)** :
+
+| Workflow | Ce qu'il fait |
+| --- | --- |
+| [workflow 1 - Miguel short](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short) | pipeline de production de shorts vidéo piloté par des agents Claude Code (snapshot) |
+| [workflow 2 - Recap Gmail](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%202%20-%20Recap%20Gmail) | un agent lit les mails des dernières 24 h et rédige un récap |
+| [workflow 3 - OpenAI story flow](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%203%20-%20OpenAI%20story%20flow) | exemple officiel `deterministic.py` du SDK Agents d'OpenAI : trois agents à la suite |
+
+Ce que chaque test a donné, et les problèmes à corriger : [docs/retours-tests-workflows.md](docs/retours-tests-workflows.md).
+
+## OpenTelemetry
+
+Vos agents sont déjà instrumentés avec OpenTelemetry (LangChain, SDK d'agents OpenAI, Vercel AI, LiteLLM,
+Langfuse…) ? Deux façons de les auditer, sans rien changer à votre code :
+
+    # 1. un export de traces (OTLP/JSON)
+    .venv/bin/python -m connectors.otel traces.json -o out/otel-events.jsonl
+    .venv/bin/python -m agent.audit out/otel-events.jsonl -o out/audit.html
+
+    # 2. en direct : ajoutez la passerelle comme destination de vos traces
+    OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://127.0.0.1:8080/v1/traces
+    OTEL_EXPORTER_OTLP_PROTOCOL=http/json
+
+Par défaut, OpenTelemetry transmet l'usage (modèles, jetons, durées) et l'enchaînement des appels : on
+chiffre et on repère des pistes. Pour les preuves (rejeu, banc de modèles), activez la capture du contenu
+dans votre instrumentation. Méthode : `docs/analyser-un-workflow.md`.
+
+## Journaux Claude Code et Codex (B1)
+
+Si vos agents sont Claude Code ou Codex, leurs journaux de session contiennent déjà chaque appel
+de modèle. Zippez ceux d'un run, puis une commande (Python 3.9+, rien à installer) :
+
+    cd ~/.claude/projects && zip -r ~/run.zip <dossier-du-projet>     # Claude Code
+    cd ~/.codex && zip -r ~/run-codex.zip sessions/2026/09/26          # Codex, le jour du run
+
+    python3 -m connectors.agent_logs ~/run.zip ~/run-codex.zip -o private/agent-logs/events.jsonl
+    python -m report.audit private/agent-logs/events.jsonl -o out/audit.html
+
+Chaque appel devient un événement : modèle, jetons (cache compris), heure, messages du tour,
+réponse, appels d'outils ; la session sert de trace, un sous-agent a son propre `app_id`
+(`claude-code:<projet>/sous-agent`). Les clés d'API affichées dans les journaux sont masquées.
+`comprehension.json` dit, par outil, les appels lus, ignorés et pourquoi, et le niveau atteint.
+Limites : le prompt système et la liste des outils ne sont pas journalisés ; les jetons écrits en
+cache par Claude Code sont comptés au prix normal (facturés 1,25× à 2×), le coût est donc un
+peu sous-estimé sur cette part.
+
 ## Prix des modèles
 
 Les coûts viennent de `fixtures/pricing.json`, le catalogue public d'OpenRouter (prix d'entrée,
