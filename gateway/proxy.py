@@ -21,6 +21,7 @@ from datetime import datetime, timezone
 from aiohttp import ClientError, ClientSession, ClientTimeout, TCPConnector, web
 from yarl import URL
 
+from gateway import mirror as mirror_mode
 from gateway import shortcircuit
 from gateway.capture import StreamAccumulator, build_event, fmt
 from gateway.store import EventStore
@@ -190,9 +191,10 @@ async def _close(app):
     await app[SESSION].close()
 
 
-def make_app(upstream=None, on_event=None, store=None, shortcut=None, upstreams=None):
+def make_app(upstream=None, on_event=None, store=None, shortcut=None, upstreams=None, mirror=None):
     """``store`` : EventStore où persister ; ``on_event`` : sink supplémentaire (log par défaut) ;
     ``shortcut`` : preuves du court-circuit D3.3 (sinon GATEWAY_SHORTCIRCUIT, sinon désactivé) ;
+    ``mirror`` : preuves du mode miroir D4.3 (sinon GATEWAY_MIRROR, sinon désactivé) ;
     ``upstream`` : OpenAI ; ``upstreams`` : {"anthropic": url, "gemini": url} (tests)."""
     app = web.Application(client_max_size=64 * 1024 * 1024)
     app[UPSTREAM_KEY] = {"openai": (upstream or UPSTREAM).rstrip("/"), **UPSTREAMS,
@@ -209,6 +211,21 @@ def make_app(upstream=None, on_event=None, store=None, shortcut=None, upstreams=
         async def close_store(app):
             await asyncio.get_running_loop().run_in_executor(None, store.close)
         app.on_cleanup.append(close_store)
+    mirror_path = mirror or os.environ.get("GATEWAY_MIRROR")
+    if mirror_path:
+        # D4.3 : branché sur la capture, jamais sur la réponse rendue au client
+        watcher = mirror_mode.Mirror(mirror_mode.load(mirror_path))
+        inner = app[SINK]
+
+        def mirrored(event):
+            watcher.observe(event)
+            inner(event)
+        app[SINK] = mirrored
+
+        async def close_mirror(app):
+            watcher.close()
+        app.on_cleanup.append(close_mirror)
+        log.info("miroir actif sur %d constat(s), journal %s", len(watcher.table), watcher.path)
     path = shortcut or os.environ.get("GATEWAY_SHORTCIRCUIT")
     app[SHORTCUT] = shortcircuit.load(path) if path else {}
     if app[SHORTCUT]:
