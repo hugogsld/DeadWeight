@@ -14,6 +14,8 @@ from bench.scoring import score_case, threshold_for
 HARD_MAX_CALLS = 200
 DEFAULT_MAX_CALLS = 50
 DEFAULT_MIN_INTERVAL_S = 0.0
+AUTH_ERROR_CODES = {'http_401', 'http_403'}  # problème 17 : pas mesuré, pas un rejet de qualité
+MISSING_KEY_REASON = "non testé (clé absente) : authentification refusée par le fournisseur"
 
 
 class Throttle:
@@ -54,12 +56,14 @@ def _cost(candidate, calls_usage, prices):
 
 
 def run_candidate(candidate, cases, task_type, throttle=None, prices=None, client_cls=CandidateLLM):
-    """N'echoue jamais par exception : un candidat en panne devient un verdict reject."""
+    """N'echoue jamais par exception : un candidat en panne devient un verdict reject, sauf si
+    tous ses appels ont echoue en authentification (cle absente ou refusee) : ce n'est alors pas
+    mesure, donc pas un rejet de qualite (probleme 17)."""
     throttle = throttle or Throttle()
     extra = {k: v for k, v in (('route', candidate.route), ('max_tokens', candidate.max_tokens)) if v}
     client = client_cls(resolve_base_url(candidate), resolve_api_key(candidate), candidate.model, **extra)
 
-    scores, latencies, calls_usage = [], [], []
+    scores, latencies, calls_usage, error_codes = [], [], [], []
     n_calls = errors = 0
     for case in cases:
         if not throttle.acquire():
@@ -70,9 +74,17 @@ def run_candidate(candidate, cases, task_type, throttle=None, prices=None, clien
         calls_usage.append((result.input_tokens, result.output_tokens))
         if result.error is not None:
             errors += 1
+            error_codes.append(result.error)
             scores.append(0.0)
             continue
         scores.append(score_case(task_type, result.content, case.reference))
+
+    if n_calls and errors == n_calls and all(code in AUTH_ERROR_CODES for code in error_codes):
+        return CandidateResult(
+            candidate=candidate, n_cases=len(cases), n_calls=n_calls, n_errors=errors, score=None,
+            latency_p50_ms=_percentile(latencies, .5), latency_p95_ms=_percentile(latencies, .95),
+            cost_per_1000_calls_usd=None, verdict='not_tested', reasons=(MISSING_KEY_REASON,),
+        )
 
     threshold = threshold_for(task_type)
     score = round(sum(scores) / len(scores), 4) if scores else None

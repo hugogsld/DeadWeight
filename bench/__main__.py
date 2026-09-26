@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 from bench import m2
-from bench.catalog import load_candidates
+from bench.catalog import load_candidates, resolve_api_key
 from bench.pricing import load_prices
 from bench.report import dry_run_estimate, rank, to_dict
 from bench.runner import DEFAULT_MIN_INTERVAL_S, Throttle, run_candidate
@@ -25,6 +25,25 @@ from bench.testset import DEFAULT_MAX_CASES, build_test_cases
 
 def _load_events(path):
     return [json.loads(line) for line in Path(path).read_text().splitlines() if line.strip()]
+
+
+def _select_candidates(spec):
+    """--candidates : classes de taille et/ou identifiants de candidat, separes par des
+    virgules, melanges ou non (probleme 17). Sans cle configuree, un candidat est ignore
+    par defaut ; demande par son identifiant exact, il est teste quand meme (et obtient alors
+    un verdict « non testé » plutôt qu'un rejet, si l'authentification echoue vraiment)."""
+    tokens = set(spec.split(',')) if spec else None
+    all_candidates = load_candidates()
+    candidates = ([c for c in all_candidates if c.id in tokens or c.size_class in tokens]
+                  if tokens is not None else all_candidates)
+    explicit_ids = {c.id for c in candidates if tokens and c.id in tokens}
+    kept, skipped = [], []
+    for c in candidates:
+        if c.id not in explicit_ids and c.api_key_env is not None and resolve_api_key(c) is None:
+            skipped.append(c)
+        else:
+            kept.append(c)
+    return kept, skipped
 
 
 def _print_dry_run(cases, task_type, candidates, prices):
@@ -72,7 +91,8 @@ def main(argv=None):
     run.add_argument('--model', required=True, dest='model')
     run.add_argument('--template', default=None)
     run.add_argument('--candidates', default=None,
-                     help='classes de taille separees par des virgules (small,local,medium)')
+                     help='classes de taille et/ou identifiants de candidat, separes par des virgules '
+                          '(ex. small,local ou openai-gpt-5-nano,openai-gpt-5-mini)')
     run.add_argument('--max-cases', type=int, default=DEFAULT_MAX_CASES)
     run.add_argument('--max-calls', type=int, default=None)
     run.add_argument('--min-interval', type=float, default=DEFAULT_MIN_INTERVAL_S)
@@ -98,8 +118,9 @@ def main(argv=None):
         print(f'aucun cas exploitable pour {args.app}/{args.model}', file=sys.stderr)
         return 1
     task_type = detect_task_type(cases)
-    size_classes = args.candidates.split(',') if args.candidates else None
-    candidates = load_candidates(size_classes=size_classes)
+    candidates, skipped = _select_candidates(args.candidates)
+    for c in skipped:
+        print(f"{c.id} ignoré par défaut : clé absente ({c.api_key_env} non définie)", file=sys.stderr)
     if not candidates:
         print('aucun candidat ne correspond au filtre --candidates', file=sys.stderr)
         return 1

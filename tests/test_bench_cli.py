@@ -47,11 +47,18 @@ def candidates_file(tmp_path, echo_server, monkeypatch):
         {'id': 'fixture-local', 'kind': 'ollama', 'model': 'llama3.3:70b',
          'base_url_env': 'DW_BENCH_TEST_UNSET_BASE', 'default_base_url': echo_server.base_url,
          'api_key_env': None, 'size_class': 'local', 'origin': 'US', 'note': 'fixture de test'},
+        {'id': 'fixture-needs-key', 'kind': 'openai', 'model': 'gpt-5-nano',
+         'base_url_env': 'DW_BENCH_TEST_UNSET_BASE', 'default_base_url': echo_server.base_url,
+         'api_key_env': 'DW_BENCH_TEST_MISSING_KEY', 'size_class': 'small', 'origin': 'US',
+         'note': 'fixture de test, cle jamais definie (probleme 17)'},
     ]}
     path = tmp_path / 'candidates.json'
     path.write_text(json.dumps(catalog))
     monkeypatch.setattr('bench.catalog.CANDIDATES_PATH', path)
-    monkeypatch.delenv('DW_BENCH_TEST_UNSET_KEY', raising=False)
+    # fixture-echo a une cle configuree (le test porte sur l'execution reussie, pas sur son absence) ;
+    # fixture-needs-key n'en a jamais : c'est le candidat du probleme 17.
+    monkeypatch.setenv('DW_BENCH_TEST_UNSET_KEY', 'sk-test-fixture-key')
+    monkeypatch.delenv('DW_BENCH_TEST_MISSING_KEY', raising=False)
     return path
 
 
@@ -91,3 +98,40 @@ def test_unknown_group_exits_with_error(candidates_file, capsys):
     code = main(['run', str(DATASET), '--app', 'inconnu', '--model', 'inconnu'])
     assert code == 1
     assert 'aucun cas exploitable' in capsys.readouterr().err
+
+
+# --- probleme 17 : candidats sans cle -------------------------------------------
+
+def test_candidate_without_key_is_skipped_by_default(candidates_file, tmp_path, capsys):
+    events_path = _write_events(tmp_path / 'events.jsonl')
+    out_path = tmp_path / 'report.json'
+    code = main(['run', str(events_path), '--app', 'demo-app', '--model', 'demo-model',
+                '--max-cases', '40', '--out', str(out_path)])
+    assert code == 0
+    report = json.loads(out_path.read_text())
+    assert 'fixture-needs-key' not in {c['candidate_id'] for c in report['candidates']}
+    err = capsys.readouterr().err
+    assert 'fixture-needs-key' in err and 'clé absente' in err and 'DW_BENCH_TEST_MISSING_KEY' in err
+
+
+def test_candidates_flag_accepts_a_comma_separated_list_of_ids(candidates_file, tmp_path):
+    events_path = _write_events(tmp_path / 'events.jsonl')
+    out_path = tmp_path / 'report.json'
+    code = main(['run', str(events_path), '--app', 'demo-app', '--model', 'demo-model',
+                '--max-cases', '40', '--candidates', 'fixture-echo,fixture-local', '--out', str(out_path)])
+    assert code == 0
+    report = json.loads(out_path.read_text())
+    assert {c['candidate_id'] for c in report['candidates']} == {'fixture-echo', 'fixture-local'}
+
+
+def test_explicit_id_request_runs_the_candidate_even_without_a_key(candidates_file, tmp_path, capsys):
+    """Demande par son identifiant exact, un candidat sans cle configuree est quand meme
+    teste (pas de saut silencieux) : ici le faux serveur ne verifie pas l'en-tete, il passe."""
+    events_path = _write_events(tmp_path / 'events.jsonl')
+    out_path = tmp_path / 'report.json'
+    code = main(['run', str(events_path), '--app', 'demo-app', '--model', 'demo-model',
+                '--max-cases', '40', '--candidates', 'fixture-needs-key', '--out', str(out_path)])
+    assert code == 0
+    report = json.loads(out_path.read_text())
+    assert {c['candidate_id'] for c in report['candidates']} == {'fixture-needs-key'}
+    assert 'clé absente' not in capsys.readouterr().err
