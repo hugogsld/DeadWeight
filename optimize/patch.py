@@ -7,6 +7,11 @@ Recettes, volontairement simples et vérifiables à la relecture :
   étapes, la PR le dit : à vérifier avant d'accepter.
 - ``plafond`` : ``max_tokens`` ajouté aux appels ``chat.completions.create`` qui n'en ont pas, dans les
   fichiers de l'application concernée.
+- ``modele_alias`` : dans un orchestrateur qui nomme ses modèles par alias (``spawn(fn, {label, model})``),
+  ne renomme que les étapes dont le label commence par un des préfixes donnés (``label_prefixes``).
+- ``regles`` sur une source n8n (``app_id`` de la forme ``n8n:<workflow>/<noeud>``) : le nœud LLM
+  classifieur est remplacé par un Switch déterministe (les règles prouvées) + le modèle d'origine
+  gardé en secours pour les entrées non couvertes. Écrit le workflow patché dans le dépôt de démo.
 
 Rien n'est poussé sans ``open_pr`` : par défaut, on écrit le diff et le texte de la PR.
 """
@@ -16,6 +21,9 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+
+from optimize.patch_alias import rewrite_model_alias
+from optimize.patch_n8n import apply_regles_n8n
 
 SKIP = {".git", ".venv", "venv", "node_modules", "__pycache__", "out", "private"}
 TEXT = {".py", ".js", ".ts", ".mjs", ".json", ".yaml", ".yml", ".toml", ".md", ".example", ".env"}
@@ -34,6 +42,8 @@ def _app_files(repo, app_id):
 
 
 def _apply_regles(repo, proposal):
+    if proposal["app_id"].startswith("n8n:"):
+        return apply_regles_n8n(repo, proposal)
     slug = re.sub(r"[^a-z0-9-]+", "-", proposal["app_id"].lower()).strip("-")
     target = Path(repo) / "deadweight" / "preuves" / f"proof-{slug}.json"
     target.parent.mkdir(parents=True, exist_ok=True)
@@ -74,7 +84,24 @@ def _apply_plafond(repo, proposal):
     return notes
 
 
-RECIPES = {"regles": _apply_regles, "modele": _apply_modele, "plafond": _apply_plafond}
+def _apply_modele_alias(repo, proposal):
+    prefixes, alias = proposal["label_prefixes"], proposal["alias"]
+    targets = [Path(repo) / proposal["file"]] if proposal.get("file") else \
+        [p for p in _files(repo) if p.suffix in {".js", ".mjs", ".ts"}]
+    touched = []
+    for p in targets:
+        if not p.exists():
+            continue
+        text = p.read_text(errors="ignore")
+        new_text, changed = rewrite_model_alias(text, prefixes, alias)
+        if changed:
+            p.write_text(new_text, encoding="utf-8")
+            touched += [f"{p.relative_to(repo)}:{c}" for c in changed]
+    return [] if touched else [f"aucun appel spawn() avec un label parmi {prefixes} trouvé"]
+
+
+RECIPES = {"regles": _apply_regles, "modele": _apply_modele, "plafond": _apply_plafond,
+           "modele_alias": _apply_modele_alias}
 
 
 def make_patch(repo, proposal):
