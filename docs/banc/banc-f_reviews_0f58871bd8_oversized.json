@@ -1,0 +1,50 @@
+{
+  "finding_id": "f_reviews_0f58871bd8_oversized",
+  "app_id": "reviews",
+  "model": "claude-opus-4-1",
+  "task_type": "classification",
+  "threshold": 0.95,
+  "n_cases": 40,
+  "raison": null,
+  "options": {
+    "moins_cher": {
+      "candidate_id": "m2-moins_cher",
+      "kind": "openrouter",
+      "model": "mistralai/mistral-nemo",
+      "size_class": "small",
+      "origin": "FR",
+      "n_cases": 40,
+      "n_calls": 40,
+      "n_errors": 0,
+      "score": 0.95,
+      "latency_p50_ms": 494.57,
+      "latency_p95_ms": 707.05,
+      "cost_per_1000_calls_usd": 0.0004,
+      "verdict": "pass",
+      "reasons": [],
+      "route": null,
+      "task_type": "classification",
+      "facteur_mesure": 2139.5
+    },
+    "meilleur_compromis": {
+      "candidate_id": "m2-meilleur_compromis",
+      "kind": "openrouter",
+      "model": "anthropic/claude-haiku-4.5",
+      "size_class": "small",
+      "origin": "US",
+      "n_cases": 40,
+      "n_calls": 40,
+      "n_errors": 0,
+      "score": 0.95,
+      "latency_p50_ms": 803.23,
+      "latency_p95_ms": 1025.46,
+      "cost_per_1000_calls_usd": 0.056,
+      "verdict": "pass",
+      "reasons": [],
+      "route": "Anthropic",
+      "task_type": "classification",
+      "facteur_mesure": 15.3
+    }
+  },
+  "reference_cost_per_1000_calls_usd": 0.8558
+}

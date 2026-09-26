@@ -13,7 +13,7 @@ NEXT_STEPS = (
 )
 
 
-def audit(db, output):
+def audit(db, output, banc=None):
     """Utilise les deux CLI publiques ; conserve l'ancien rapport en cas d'échec."""
     db, output = Path(db), Path(output)
     if not db.is_file():
@@ -39,7 +39,8 @@ def audit(db, output):
             with tempfile.TemporaryDirectory(prefix='.audit-', dir=output.parent) as stage:
                 staged = Path(stage) / 'audit.html'
                 rendered = subprocess.run(
-                    [sys.executable, '-m', 'agent.audit', str(events), '-o', str(staged)],
+                    [sys.executable, '-m', 'agent.audit', str(events), '-o', str(staged),
+                     *(['--banc', str(banc)] if banc and Path(banc).is_dir() else [])],
                     capture_output=True, text=True,
                 )
                 if rendered.returncode:
@@ -59,8 +60,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--db', default=os.environ.get('GATEWAY_DB', 'out/events.db'))
     parser.add_argument('--out', default='out/audit.html')
+    parser.add_argument('--banc', default=os.environ.get('AUDIT_BANC', 'out/banc'),
+                        help='verdicts du banc (python -m bench m2), lus s’ils existent')
     args = parser.parse_args()
-    return audit(args.db, args.out)
+    return audit(args.db, args.out, args.banc)
 
 
 if __name__ == '__main__':
