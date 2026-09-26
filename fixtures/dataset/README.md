@@ -1,11 +1,12 @@
 # Jeu de données réaliste (D0.3)
 
 `v1/events.jsonl` : 1 554 appels sur 7 jours, 21 applications, 3 fournisseurs, au schéma
+`v1/events.jsonl` : 1 436 appels sur 7 jours, 22 applications, 3 fournisseurs, au schéma
 `schemas/event.schema.json`. `v1/labels.json` : pour chaque scénario, les règles attendues
 (`[]` = ne doit rien déclencher), les événements concernés et le découpage réel en traces.
 
 Régénérer : `python3 fixtures/dataset/gen_dataset.py` (déterministe, graine fixe).
-Une nouvelle version = un nouveau dossier `v2/`, on ne réécrit jamais `v1`.
+Extension additive R13–R16 (#71) : nouveaux événements et apps uniquement ; les scénarios historiques restent inchangés.
 
 | Scénario | App | Règles attendues | Ce qu'il teste |
 |---|---|---|---|
@@ -44,3 +45,11 @@ dans `v1/` — les 1 332 événements et les 15 scénarios d'origine restent ide
 `test_generation_is_deterministic` et le test de non-régression par règle). Nécessite un champ
 `usage.reasoning_tokens` optionnel dans `fixtures/gen_events.py::event()` (défaut `None`,
 rétrocompatible) pour simuler les modèles de raisonnement de `reasoning_trivia`.
+## Extension #71
+
+| App | Signal attendu | Contre-exemple |
+|---|---|---|
+| wide-tools | R13 : 9 outils sur 10 inutilisés, définitions volumineuses répétées | focused-tools : 8 outils utilisés |
+| night-batch | R14 : 3 rafales de 10 appels à 02h UTC | day-burst : mêmes rafales à 14h UTC |
+| image-titles | R15 : entrée élevée et titre court | image-analysis : réponse longue et différente |
+| systematic-review | R16 : 6 relectures courtes après génération | useful-followup : approfondissements longs |

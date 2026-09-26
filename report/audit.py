@@ -62,6 +62,14 @@ def _figures(events):
 
 # Texte humain par regle : aucun code de regle ne doit apparaitre dans la page.
 RULE_TEXT = {
+    "llm_judge": ("Une deuxième IA relit presque chaque réponse",
+                  "Tester une relecture par échantillon ou par règle, en vérifiant la qualité conservée."),
+    "image_heavy": ("Des images très coûteuses pour une réponse simple",
+                    "Tester une résolution plus basse et vérifier que la réponse reste aussi fiable."),
+    "batch_eligible": ("Des tâches régulières pourraient attendre",
+                       "Confirmer le délai acceptable puis tester une API de traitement par lots à tarif réduit."),
+    "tool_bloat": ("Des descriptions d’outils renvoyées inutilement",
+                   "Ne passer que les outils utiles à l’étape et raccourcir leurs descriptions."),
     "low_entropy_output": ("Une IA qui répond toujours la même chose",
                            "Remplacer par quelques règles fixes, avec l'IA en secours pour les cas imprévus."),
     "oversized_model": ("Un modèle haut de gamme pour une tâche simple",
