@@ -52,10 +52,10 @@
     "evidence": {
       "type": "object"
     },
-    "current_cost_month_eur": {
+    "current_cost_month_usd": {
       "type": "number"
     },
-    "est_saving_month_eur": {
+    "est_saving_month_usd": {
       "type": "number"
     },
     "proposed_action": {
