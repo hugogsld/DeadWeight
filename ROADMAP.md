@@ -10,14 +10,14 @@ Comment apparaître dans le tableau : créer une issue dont le titre commence pa
 Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépendent.
 
 <!-- STATUT:DEBUT -->
-**8 / 17 livrables du plan de base faits** (24 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:57.
+**8 / 17 livrables du plan de base faits** (24 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:59.
 
 | Id | Livrable | Durée | Dépend de | Statut | Qui | Issue / PR |
 |---|---|---|---|---|---|---|
 | D0.1 | Schéma d'événement et fixtures | 3 h | — | **Fait** | Natanlsr3 | #1 · PR #2 |
 | D0.2 | Repo, CI, make dev, enregistrement | 3 h | — | **En relecture** | alexandre-zenou, claude | #22 · PR #21 |
 | D0.3 | Jeu de données réaliste | 4 h | D0.1 | **Fait** | Natanlsr3 | #3 · PR #5 |
-| D1.1 | Proxy passe-plat OpenAI, streaming | 5 h | D0.2 | Bloqué (attend D0.2) | — | — |
+| D1.1 | Proxy passe-plat OpenAI, streaming | 5 h | D0.2 | **En cours** | claude, thibaudgregori | #23 |
 | D1.2 | Capture et persistance | 3 h | D0.1, D1.1 | Bloqué (attend D1.1) | — | — |
 | D1.3 | Anthropic et Gemini | 4 h | D1.1 | Bloqué (attend D1.1) | — | — |
 | D1.4 | Regroupement par trace | 3 h | D1.2 | Bloqué (attend D1.2) | — | — |
