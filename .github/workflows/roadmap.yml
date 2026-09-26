@@ -1,0 +1,43 @@
+# Met a jour le tableau d'avancement de ROADMAP.md a chaque evenement d'issue ou de PR.
+# pull_request_target : tourne dans le contexte de main, n'execute jamais le code de la PR.
+name: roadmap
+
+on:
+  issues:
+    types: [opened, edited, closed, reopened, assigned, unassigned, labeled, unlabeled]
+  pull_request_target:
+    types: [opened, edited, closed, reopened]
+  push:
+    branches: [main]
+    paths-ignore: [ROADMAP.md]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+  pull-requests: read
+
+concurrency:
+  group: roadmap
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Recalculer le tableau
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TZ: Europe/Paris
+        run: python3 scripts/roadmap_status.py
+      - name: Commit si changement
+        run: |
+          if git diff --quiet -- ROADMAP.md; then exit 0; fi
+          git config user.name "roadmap-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: avancement roadmap" -- ROADMAP.md
+          git pull --rebase origin main
+          git push origin HEAD:main
