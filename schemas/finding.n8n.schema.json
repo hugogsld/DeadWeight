@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "finding (prototype n8n)",
+  "description": "Contrat du pipeline hackathon detector/patcher/prover/habitat (workflow n8n). Ne pas confondre avec schemas/finding.schema.json, qui documente la sortie des six regles de rules/ (D2.x).",
+  "type": "object",
+  "required": [
+    "finding_id",
+    "workflow_id",
+    "node_id",
+    "rule",
+    "severity",
+    "evidence",
+    "proposed_action"
+  ],
+  "properties": {
+    "finding_id": {
+      "type": "string"
+    },
+    "workflow_id": {
+      "type": "string"
+    },
+    "workflow_name": {
+      "type": "string"
+    },
+    "node_id": {
+      "type": "string"
+    },
+    "node_name": {
+      "type": "string"
+    },
+    "rule": {
+      "type": "string",
+      "enum": [
+        "low_entropy_output",
+        "oversized_model",
+        "raw_context",
+        "no_cache",
+        "unbounded_loop",
+        "agent_where_chain"
+      ]
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "cut",
+        "trim",
+        "keep"
+      ]
+    },
+    "title": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "current_cost_month_usd": {
+      "type": "number"
+    },
+    "est_saving_month_usd": {
+      "type": "number"
+    },
+    "proposed_action": {
+      "type": "string"
+    }
+  }
+}
