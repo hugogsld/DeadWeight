@@ -40,11 +40,10 @@ FINDINGS = _all_findings()
 
 
 def test_dataset_produces_at_least_one_finding_per_rule():
-    """Garde-fou : si le dataset ne declenche plus une regle, le test suivant passerait a vide."""
-    assert FINDINGS
-    assert {f["rule"] for f in FINDINGS} == {
-        "low_entropy_output", "oversized_model", "raw_context", "no_cache",
-    }
+    """Garde-fou : si le dataset ne declenche plus une regle, le test suivant passerait a vide.
+    Pas de liste figee : une regle ajoutee dans rules/ (D2.4...) est couverte d'office."""
+    silent = [name for name, detect in _detectors() if not detect(EVENTS)]
+    assert not silent, f"regles sans aucun constat sur le jeu de donnees : {silent}"
 
 
 @pytest.mark.parametrize("finding", FINDINGS, ids=lambda f: f["finding_id"])
