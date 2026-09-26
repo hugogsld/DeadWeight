@@ -262,3 +262,39 @@ def test_gemini_error_captured_without_key():
         _check_gemini(e)
         assert e["error"] == {"type": "INVALID_ARGUMENT", "message": "API key not valid. Please pass a valid API key."}
         assert e["response"]["finish_reason"] == "error" and e["http_status"] == 400
+
+
+# ── Persistance (D1.2 + D1.3) ────────────────────────────────────────────────
+def test_anthropic_and_gemini_calls_land_in_the_store_without_keys(tmp_path):
+    from gateway.store import EventStore, read_events
+
+    db = str(tmp_path / "events.db")
+
+    async def main():
+        ant_runner, ant = await _serve(fake_anthropic.make_app())
+        gem_runner, gem = await _serve(fake_gemini.make_app())
+        gw_runner, gw = await _serve(make_app(on_event=lambda e: None, store=EventStore(db),
+                                              upstreams={"anthropic": ant, "gemini": gem}))
+        try:
+            async with aiohttp.ClientSession() as s:
+                async with s.post(gw + "/anthropic/v1/messages",
+                                  json={"model": "claude-sonnet-4-5", "max_tokens": 16,
+                                        "messages": [{"role": "user", "content": "Salut"}]},
+                                  headers={"x-api-key": ANT_KEY, "anthropic-version": "2023-06-01"}) as r:
+                    assert r.status == 200
+                async with s.post(gw + f"/gemini/v1beta/models/gemini-2.5-flash:generateContent?key={GEM_KEY}",
+                                  json=BODY) as r:
+                    assert r.status == 200
+        finally:
+            await gw_runner.cleanup()  # ferme le store : les événements en attente sont écrits
+            await gem_runner.cleanup()
+            await ant_runner.cleanup()
+
+    asyncio.run(main())
+    events = read_events(db)
+    assert sorted(e["provider"] for e in events) == ["anthropic", "gemini"]
+    for e in events:
+        jsonschema.validate(e, SCHEMA)
+    for f in tmp_path.iterdir():  # events.db et ses fichiers annexes (-wal, -shm)
+        raw = f.read_bytes()
+        assert ANT_KEY.encode() not in raw and GEM_KEY.encode() not in raw, f.name
