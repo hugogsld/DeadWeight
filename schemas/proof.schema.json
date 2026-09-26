@@ -34,13 +34,16 @@
       }
     },
     "cost_before_month_usd": {
-      "type": "number"
+      "description": "null si non mesurable (modele hors catalogue, usage inconnu) : jamais de valeur par defaut.",
+      "type": ["number", "null"]
     },
     "cost_after_month_usd": {
-      "type": "number"
+      "description": "null si non mesurable.",
+      "type": ["number", "null"]
     },
     "cost_factor": {
-      "type": "number"
+      "description": "null si l'un des deux couts est null.",
+      "type": ["number", "null"]
     },
     "p95_before_ms": {
       "type": "number"
