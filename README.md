@@ -168,6 +168,15 @@ Limites : le prompt système et la liste des outils ne sont pas journalisés ; l
 cache par Claude Code sont comptés au prix normal (facturés 1,25× à 2×), le coût est donc un
 peu sous-estimé sur cette part.
 
+## Proposer et prouver des micro-modifications
+
+    .venv/bin/python -m optimize events.jsonl --out private/optim --repo chemin/du/depot
+
+Pour chaque constat : une seule modification (règles à la place d'un LLM qui aiguille, modèle plus petit,
+plafond de longueur), **testée sur votre historique** (mêmes entrées rejouées, comparées aux anciennes
+réponses), puis un diff et un texte de micro-PR par modification validée, et le message Slack. Chaque chiffre
+porte son statut : mesuré, estimé (hypothèse nommée) ou non testé. `--open-prs` ouvre réellement les PR (gh).
+
 ## Prix des modèles
 
 Les coûts viennent de `fixtures/pricing.json`, le catalogue public d'OpenRouter (prix d'entrée,

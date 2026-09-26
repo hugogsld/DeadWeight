@@ -1,0 +1,74 @@
+"""Proposer, tester, chiffrer, préparer la micro-PR et le message Slack. Hors ligne (aucune clé)."""
+import json
+import subprocess
+from pathlib import Path
+
+import pytest
+
+from optimize.patch import make_patch, pr_text
+from optimize.propose import MESURE, propose
+from optimize.slack import message
+
+ROOT = Path(__file__).resolve().parents[1]
+EVENTS = [json.loads(line) for line in (ROOT / "fixtures/dataset/v1/events.jsonl").read_text().splitlines()
+          if line.strip()]
+
+
+@pytest.fixture(scope="module")
+def proposals():
+    return propose(EVENTS)
+
+
+def test_proven_rules_are_measured_on_the_history(proposals):
+    triage = next(p for p in proposals if p["type"] == "regles" and p["app_id"] == "mail-triage")
+    assert triage["verdict"] == "pass"
+    m = triage["mesures"]
+    assert m["precision"] == {"valeur": 100.0, "statut": MESURE, "unite": "%"}
+    assert m["latence_mediane"]["statut"] == MESURE and m["latence_mediane"]["valeur"] < -90
+    assert m["cout"]["valeur"] < 0 and m["jetons_envoyes"]["statut"] == "estimé" and "hypothese" in m["jetons_envoyes"]
+    assert triage["cout_usd"]["apres"] < triage["cout_usd"]["avant"]
+
+
+def test_without_a_key_a_model_swap_is_not_tested_never_guessed(proposals):
+    swaps = [p for p in proposals if p["type"] == "modele"]
+    assert swaps and all(p["verdict"] == "non_teste" and p["mesures"]["precision"]["valeur"] is None for p in swaps)
+
+
+def test_slack_totals_only_proven_measured_gains(proposals):
+    text = message(proposals, total_spent=1.0)
+    assert "1 optimisation prouvée sur" in text and "100 % minimum" in text
+    assert "précision +" not in text                      # un niveau, pas une variation
+    assert "~" in text                                    # les estimations restent marquées
+    assert text.count("✅") == sum(p["verdict"] == "pass" for p in proposals)
+
+
+def _repo(tmp_path):
+    repo = tmp_path / "client"
+    repo.mkdir()
+    (repo / "app.py").write_text(
+        'client = OpenAI(default_headers={"x-deadweight-app": "mail-triage"})\n'
+        'r = client.chat.completions.create(model="gpt-4o", messages=m)\n')
+    (repo / ".env.example").write_text("OPENAI_API_KEY=\n")
+    for cmd in (["git", "init", "-q"], ["git", "add", "-A"], ["git", "-c", "user.email=t@t", "-c", "user.name=t",
+                                                               "commit", "-qm", "init"]):
+        subprocess.run(cmd, cwd=repo, check=True)
+    return repo
+
+
+def test_rules_patch_touches_no_code_and_is_reversible(proposals, tmp_path):
+    triage = next(p for p in proposals if p["type"] == "regles" and p["app_id"] == "mail-triage")
+    diff, notes = make_patch(_repo(tmp_path), triage)
+    assert "deadweight/preuves/proof-mail-triage.json" in diff and "+GATEWAY_SHORTCIRCUIT=deadweight/preuves" in diff
+    assert "app.py" not in diff and notes == []
+    title, body = pr_text(triage, notes)
+    assert title.startswith("Deadweight : ") and "| precision | 100.0 % | mesuré |" in body
+
+
+def test_model_and_cap_patches(tmp_path):
+    repo = _repo(tmp_path)
+    swap = {"type": "modele", "app_id": "mail-triage", "model": "gpt-4o", "nouveau_modele": "gpt-4o-mini"}
+    diff, notes = make_patch(repo, swap)
+    assert '-r = client.chat.completions.create(model="gpt-4o"' in diff and '+r = client.chat.completions.create(model="gpt-4o-mini"' in diff
+    cap = {"type": "plafond", "app_id": "mail-triage", "plafond": 300}
+    diff, _ = make_patch(repo, cap)
+    assert "chat.completions.create(max_tokens=300, model=" in diff
