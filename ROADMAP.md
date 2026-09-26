@@ -10,7 +10,7 @@ Comment apparaître dans le tableau : créer une issue dont le titre commence pa
 Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépendent.
 
 <!-- STATUT:DEBUT -->
-**8 / 17 livrables du plan de base faits** (24 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:51.
+**8 / 17 livrables du plan de base faits** (24 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:57.
 
 | Id | Livrable | Durée | Dépend de | Statut | Qui | Issue / PR |
 |---|---|---|---|---|---|---|
