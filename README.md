@@ -95,7 +95,7 @@ returns **PASS at 98.0% agreement**.
 
 Add `--no-llm` to the patcher to run the whole pipeline with no API key at all.
 
-## Gateway (D1.1) — OpenAI pass-through proxy
+## Gateway (D1.1, D1.2) — OpenAI pass-through proxy
 
 The gateway sits between your application and OpenAI. You change one line — the
 `base_url` — and every call is relayed unchanged, streaming included, while a copy
@@ -112,6 +112,7 @@ Then, in your application:
 | --- | --- | --- |
 | `GATEWAY_HOST` / `GATEWAY_PORT` | `127.0.0.1` / `8080` | listen address |
 | `GATEWAY_OPENAI_UPSTREAM` | `https://api.openai.com` | where calls are relayed |
+| `GATEWAY_DB` | `out/events.db` | SQLite file where captured calls are stored |
 | `GATEWAY_LOG_LEVEL` | `INFO` | one summary line per call, never content or headers |
 
 Optional headers: `x-deadweight-app` (groups calls by application, default `default`)
@@ -123,15 +124,24 @@ masked before capture. Only `POST /v1/chat/completions` is captured; every other
 relayed without capture. With streaming, token counts are only known if the client sets
 `stream_options: {"include_usage": true}` — the gateway never alters the request.
 
+Every captured call is written to SQLite in a background thread, never on the response
+path. The database stays on your machine. Once your normal traffic has run for a while:
+
+    .venv/bin/python -m gateway.store count                          # calls captured so far
+    .venv/bin/python -m gateway.store export > out/events.jsonl      # --app <app_id> to filter
+    .venv/bin/python -m report.audit out/events.jsonl -o out/audit.html
+
+Stop the gateway with Ctrl+C or SIGTERM: pending events are flushed before it exits.
+
 Checks, no API key needed (a local fake OpenAI stands in):
 
     .venv/bin/pip install pytest jsonschema openai
-    .venv/bin/python -m pytest tests/test_gateway.py   # byte-identical relay, no buffering, key never captured
-    .venv/bin/python -m gateway.bench                   # added latency, p50 / p95
+    .venv/bin/python -m pytest tests/test_gateway.py tests/test_store.py
+    .venv/bin/python -m gateway.bench                   # added latency, with and without SQLite
 
-Measured on a laptop, capture on: **+0.2 ms p95** sequential, **+3.6 ms p95** at 20
-concurrent requests (target: < 30 ms). Checked against the real OpenAI API with the
-official SDK, plain and streaming.
+Measured on a laptop, p95 added over a direct call: **+0.3 ms** sequential and **+3.0 ms**
+at 20 concurrent requests with SQLite on — SQLite itself adds under 1 ms (target: < 30 ms).
+Checked against the real OpenAI API with the official SDK, plain and streaming.
 
 ## Stack
 
