@@ -3,15 +3,7 @@
 Journal des tests de Deadweight sur de vrais workflows : ce qu'on a rencontré, et
 comment on compte le résoudre. État vérifié sur `main` au commit `11d0ed0`.
 
-Les workflows testés sont dans le repo **[Workflow-test-hackathon-agentique-25-09-2026](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026)**,
-un dossier par workflow :
-
-- [workflow 1 - Miguel short](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short) : snapshot de la
-  shorts-factory de Miguel (pipeline vidéo piloté par des agents Claude Code) ;
-- [workflow 2 - Recap Gmail](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%202%20-%20Recap%20Gmail) : récap des mails des
-  dernières 24 h par un agent ;
-- [workflow 3 - OpenAI story flow](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%203%20-%20OpenAI%20story%20flow) : exemple
-  officiel `deterministic.py` du SDK Agents d'OpenAI.
+Les workflows testés et leurs liens sont listés dans le README, section « Workflows de test ».
 
 **Test réel** veut dire : le workflow a tourné, son trafic est passé par la passerelle,
 et le rapport et le rejeu ont été lancés dessus. Les constats marqués « lecture du
