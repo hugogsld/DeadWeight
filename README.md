@@ -137,6 +137,14 @@ l'éditeur lui-même, pas à celui d'un hébergeur tiers moins cher. Un modèle 
 signalé : ses jetons de réflexion ne sont pas dans votre trafic, son coût est donc sous-estimé.
 Leur qualité n'est pas prouvée : à vérifier par rejeu avant de changer de modèle.
 
+Pour le vérifier, le banc de modèles rejoue un échantillon de vos vraies requêtes sur le modèle
+proposé, par la route choisie, et compare ses réponses aux vôtres (seuil de 95 %, comme le rejeu). Il
+mesure aussi les jetons réellement facturés, réflexion comprise, et la latence. Il appelle le modèle
+avec votre clé (plafond de 200 appels, un appel par seconde par défaut) :
+
+    export DW_LLM_BASE_URL=https://openrouter.ai/api/v1 DW_LLM_API_KEY=...
+    .venv/bin/python -m bench events.jsonl --finding <finding_id> --model mistralai/mistral-small-3.2-24b-instruct --route Mistral
+
 ## Confidentialité
 
 - **La clé n’est jamais stockée** par la passerelle : l’en-tête d’autorisation est
