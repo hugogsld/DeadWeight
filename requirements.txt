@@ -1,0 +1,5 @@
+# Installe par `make dev` dans .venv (Python 3.11)
+jsonschema==4.25.1
+openai>=1.40        # prototype hackathon (patcher, prover)
+pytest==8.4.2
+ruff==0.13.3
