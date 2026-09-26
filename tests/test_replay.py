@@ -68,13 +68,23 @@ def test_dataset_mail_triage_passes_on_held_out_events(dataset):
         assert proof[field] is not None
 
 
-def test_dataset_reviews_rejected_as_a_result_with_unmeasured_cost(dataset):
+def test_dataset_reviews_rejected_as_a_result(dataset):
     events, findings = dataset
     finding = findings['reviews']
     proof = replay(finding, events, extract_rules(finding, events))
     assert proof['verdict'] == 'reject' and proof['reasons']
+    assert proof['cost_before_month_usd'] > 0  # claude-opus-4-1 est au catalogue
+
+
+def test_unmeasured_cost_is_null_never_a_default(dataset):
+    events, findings = dataset
+    finding = findings['reviews']
+    unknown = [{**e, 'model': 'modele-maison-inconnu'} if e['app_id'] == 'reviews' else e for e in events]
+    finding = {**finding, 'model': 'modele-maison-inconnu'}
+    proof = replay(finding, unknown, extract_rules(finding, unknown))
     assert proof['cost_before_month_usd'] is None and proof['cost_factor'] is None
     assert any('catalogue' in m for m in proof['cost_missing'])
+    jsonschema.validate(proof, PROOF_SCHEMA)
 
 
 def test_extraction_samples_are_excluded():
@@ -142,6 +152,6 @@ def test_cli_writes_proofs_and_exits_zero_on_reject(tmp_path, capsys):
 
 def test_pass_and_reject_proofs_match_the_contract(dataset):
     events, findings = dataset
-    for app in ('mail-triage', 'reviews'):  # PASS, et REJECT avec coût non mesurable (null)
+    for app in ('mail-triage', 'reviews'):  # PASS et REJECT
         finding = findings[app]
         jsonschema.validate(replay(finding, events, extract_rules(finding, events)), PROOF_SCHEMA)

@@ -29,7 +29,7 @@ import urllib.request
 from pathlib import Path
 
 from proof.extract import OpenAICompatibleLLM, build_router, extract_rules
-from report.cost import PRICING_PATH, chiffrer
+from report.cost import PRICING_PATH, chiffrer, lookup
 from rules.low_entropy import detect, normalize
 
 THRESHOLD = 0.95
@@ -103,7 +103,7 @@ def _prices():
 
 
 def _tokens_cost(prices, model, tin, tout):
-    price = prices.get(model) or (prices.get(model.split('/', 1)[1]) if '/' in model else None)
+    price = lookup(prices, model)
     if price is None or tin is None or tout is None:
         return None
     return (tin * price['in'] + tout * price['out']) / 1_000_000

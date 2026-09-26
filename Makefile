@@ -3,7 +3,7 @@ PY := $(shell command -v python3.11 || command -v python3)
 VENV := .venv
 BIN := $(VENV)/bin
 
-.PHONY: dev install test lint record audit demo
+.PHONY: dev install test lint record audit demo prices
 
 dev: install .env.local
 	@set -a; . ./.env.local; set +a; \
@@ -41,3 +41,7 @@ audit: install
 # Aucune clé et aucune modification de la base client ; ports locaux libres.
 demo: install
 	$(BIN)/python -m scripts.demo
+
+# prix OpenRouter (API publique, sans clé) -> fixtures/pricing.json ; anciens modèles conservés
+prices: install
+	$(BIN)/python -m collector.pricing

@@ -30,9 +30,26 @@ def _window_seconds(events):
     return (end - start).total_seconds()
 
 
+def _partial(events, c):
+    """Si des appels ne sont pas chiffrables, chiffre les autres plutôt que rien.
+    ``part_chiffree`` dit quelle part des appels réussis le chiffre couvre."""
+    ids = {e["event_id"] for e in events}
+    unpriced = {m.split(": ", 1)[0] for m in c["manquants"]} & ids
+    succeeded = [e for e in events if e["error"] is None]
+    priced = [e for e in succeeded if e["event_id"] not in unpriced]
+    if not unpriced or not priced:
+        return c
+    p = chiffrer(priced)
+    if p["cout_mensuel_usd"] is None:
+        return c
+    return {**c, "cout_mensuel_usd": p["cout_mensuel_usd"], "part_chiffree": len(priced) / len(succeeded)}
+
+
 def _figures(events):
-    """chiffrer(), sans projection mensuelle sur moins d'une heure de trafic."""
+    """chiffrer(), partiel plutôt que rien, sans projection mensuelle sur moins d'une heure."""
     c = chiffrer(events)
+    if c["cout_mensuel_usd"] is None and events:
+        c = _partial(events, c)
     window = _window_seconds(events)
     if c["cout_mensuel_usd"] is None or window >= MIN_WINDOW_SECONDS:
         return c
@@ -126,7 +143,11 @@ def _cost(n):
 
 
 def _cost_label(n, monthly="Coût mensuel"):
-    return (monthly, n["cout_mensuel_usd"]) if n.get("cout_observe_usd") is None else ("Coût observé", n["cout_observe_usd"])
+    label, value = ((monthly, n["cout_mensuel_usd"]) if n.get("cout_observe_usd") is None
+                    else ("Coût observé", n["cout_observe_usd"]))
+    if n.get("part_chiffree") is not None and value is not None:
+        label += f" (partiel, {round(n['part_chiffree'] * 100)} % des appels)"
+    return label, value
 
 
 def _usd(v):
@@ -186,7 +207,8 @@ def render_html(report):
         body = "<p>Aucun appel capturé pour l'instant : laissez tourner le trafic puis relancez le rapport.</p>"
     else:
         g = r["global"]
-        missing = (f'<p class="note">Coût total non disponible : '
+        partial = g.get("part_chiffree") is not None or g.get("cout_observe_usd") is not None
+        missing = (f'<p class="note">{"Coût à lire avec prudence" if partial else "Coût total non disponible"} : '
                    f'{e("; ".join(report["raisons_globales"]))}.</p>' if report["raisons_globales"] else "")
         checks = e(", ".join(report["verifications"])) or "aucune"
         cards = "".join(_card(c) for c in report["constats"]) or "<p>Aucun gaspillage détecté.</p>"
@@ -196,7 +218,7 @@ def render_html(report):
         body = f"""<div class="kpis">
 <div class="kpi"><b>{r['nb_appels']}</b><span>appels observés</span></div>
 <div class="kpi"><b>{r['nb_applications']}</b><span>applications</span></div>
-<div class="kpi"><b>{_usd(_cost_label(g)[1])}</b><span>{_cost_label(g, "coût mensuel")[0].lower()} total</span></div>
+<div class="kpi"><b>{_usd(_cost_label(g)[1])}</b><span>{_cost_label(g, "Coût mensuel total")[0].replace("Coût observé", "Coût observé total").lower()}</span></div>
 <div class="kpi"><b>{len(report['constats'])}</b><span>constats</span></div></div>
 {missing}
 <p class="note">Vérifications effectuées : {checks}.</p>
