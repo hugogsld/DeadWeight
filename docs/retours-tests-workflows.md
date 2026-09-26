@@ -51,16 +51,19 @@ en-tête. Coût réel des 51 appels : 0,0049 $.
   **en pause** depuis le 22/09). Aucun appel OpenAI direct.
 - **Ce que Deadweight signalerait** (lecture du code, non mesuré) : une
   famille d'agents Opus dont le prompt dit lui-même qu'ils ne décident rien.
-  | Agent | Ce que dit son prompt | Remplaçable par |
-  | --- | --- | --- |
-  | `wait:` (sleeper) | « exécute `sleep 600`, puis réponds le seul mot *slept* ». Existe parce que le script n'a pas d'horloge | un minuteur dans l'orchestrateur |
-  | `marker:` | « tu es aussi petit qu'un agent peut l'être » : une commande, ne juge rien | l'appel direct du script |
-  | `watch:` | lance la même commande jusqu'à 4 fois, « ne juge rien » | une boucle dans le script |
-  | `probe:` | lit au plus deux fichiers et revient | une lecture de fichier |
-  | `costs:report` | « lance UNE commande », ne peut pas échouer | l'appel direct du script |
-  | `prep:launch`, `render:` | lancent un script et renvoient son résultat | l'appel direct du script |
-  Restent de vrais agents : `design:`, `author:` (création), `metadata:`
   (rédaction), la revue du détourage par Astra.
+
+| Agent | Ce que dit son prompt | Remplaçable par |
+| --- | --- | --- |
+| `wait:` (sleeper) | « exécute `sleep 600`, puis réponds le seul mot *slept* ». Existe parce que le script n'a pas d'horloge | un minuteur dans l'orchestrateur |
+| `marker:` | « tu es aussi petit qu'un agent peut l'être » : une commande, ne juge rien | l'appel direct du script |
+| `watch:` | lance la même commande jusqu'à 4 fois, « ne juge rien » | une boucle dans le script |
+| `probe:` | lit au plus deux fichiers et revient | une lecture de fichier |
+| `costs:report` | « lance UNE commande », ne peut pas échouer | l'appel direct du script |
+| `prep:launch`, `render:` | lancent un script et renvoient son résultat | l'appel direct du script |
+
+Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédaction), la revue du détourage par Astra.
+
 - **Coût** : le relevé de Miguel annonce **1,48 $ pour tout le lot 24**
   (« every number below was measured »), 6,25 $ sur 7 lots. **Aucune ligne
   pour les agents Claude Opus ni pour GPT-6 Astra** : seuls Modal, Gemini et
