@@ -44,10 +44,12 @@ def groups(events):
     return out
 
 
-def assert_matches_truth(events):
+def assert_matches_truth(events, without_headers=False):
     found = groups(events)
     assert sorted(map(sorted, ({e["event_id"] for e in g} for g in found.values()))) == \
-        sorted(map(sorted, TRUTH.values()))
+        sorted(map(sorted, (
+            set(ids) for s in LABELS if not (without_headers and s.get("requires_header"))
+            for ids in s["traces"].values())))
     for g in found.values():
         g.sort(key=lambda e: e["ts_start"])
         assert [e["trace"]["step"] for e in g] == list(range(len(g)))
@@ -55,7 +57,7 @@ def assert_matches_truth(events):
 
 def test_dataset_traces_recovered_without_any_header():
     out = assign_traces(bare(e) for e in DATASET)
-    assert_matches_truth(out)
+    assert_matches_truth(out, without_headers=True)
     assert {e["trace"]["source"] for e in out} == {"heuristic", None}
 
 
@@ -73,7 +75,7 @@ def test_robust_to_missing_tool_ids_and_input_order():
     random.Random(1).shuffle(events)
     out = assign_traces(events)
     assert [e["event_id"] for e in out] == [e["event_id"] for e in events]  # ordre d'entrée conservé
-    assert_matches_truth(out)
+    assert_matches_truth(out, without_headers=True)
 
 
 def test_isolated_calls_stay_out_of_traces():

@@ -533,6 +533,76 @@ def judge_scenarios(ds):
                     'Six générations suivies de verdicts courts.' if reviewing else
                     'Six approfondissements utiles, ni verdict ni intention de relecture.', traces)
 
+
+def parallel_scenarios(ds):
+    for independent in (True, False):
+        app = 'serial-independent' if independent else 'serial-dependent'
+        evts = []
+        for i in range(4):
+            messages = [user(f'Analyse le dossier distinct {i}')]
+            if not independent and evts:
+                messages += [{'role': 'assistant', 'content': evts[-1]['response']['content']}]
+            evts.append(ds.emit(app=app, provider='openai', model='gpt-4o-mini',
+                                system='Analyse documentaire.', messages=messages,
+                                content=f'Conclusion argumentée et particulière pour le dossier {i}.',
+                                in_tok=200, out_tok=40, offset_s=800000 + i * 3,
+                                latency_ms=2000, trace=(app, 'header', i)))
+        ds.scenario(app, app, ['parallelizable_steps'] if independent else [], evts,
+                    'Étapes indépendantes, gain théorique de 6 secondes.' if independent else
+                    'Chaque étape dépend de la conclusion précédente.', {app: evts})
+        ds.scenarios[-1]['requires_header'] = True
+
+
+def item_scenarios(ds):
+    for short in (True, False):
+        app = 'item-loop' if short else 'item-long-analysis'
+        es = []
+        for i in range(10):
+            es.append(ds.emit(app=app, provider='openai', model='gpt-4o-mini',
+                              system='Instructions communes pour analyser chaque élément. ' * 6,
+                              messages=[user(f'Produit particulier numéro {i}')],
+                              content=f'Analyse propre au produit {i}', in_tok=200,
+                              out_tok=30 if short else 500, offset_s=810000 + i * 3, latency_ms=2000))
+        ds.scenario(app, app, ['per_item_calls'] if short else [], es,
+                    'Dix éléments courts, système répété.' if short else 'Analyses longues : regroupement non présumé.')
+
+
+def merge_scenarios(ds):
+    for transform in (True, False):
+        app = 'rewrite-chain' if transform else 'research-followup'
+        es, traces = [], {}
+        for i in range(4):
+            tid = f'{app}-{i}'
+            response = f'Dossier {i} : ' + 'Le rapport expose les conclusions particulières de cette étude. ' * 3
+            question = user(f'Rédige une étude sur le dossier {i}')
+            a = ds.emit(app=app, provider='openai', model='gpt-4o-mini', system='Assistant de rédaction.',
+                        messages=[question], content=response, in_tok=200, out_tok=80,
+                        offset_s=820000 + i * 60, latency_ms=1200, trace=(tid, 'header', 0))
+            b = ds.emit(app=app, provider='openai', model='gpt-4o-mini', system='Assistant de rédaction.',
+                        messages=[question, {'role': 'assistant', 'content': response},
+                                  user('Traduis cette réponse en anglais.' if transform else 'Cherche des éléments nouveaux sur les ventes.')],
+                        content=f'Result of the detailed study for file {i}.', in_tok=300, out_tok=60,
+                        offset_s=820002 + i * 60, latency_ms=1000, trace=(tid, 'header', 1))
+            es += [a, b]
+            traces[tid] = [a, b]
+        ds.scenario(app, app, ['mergeable_steps'] if transform else [], es,
+                    'Transformation seule de la réponse.' if transform else 'Nouvelle recherche, fusion non présumée.', traces)
+
+
+def harness_scenarios(ds):
+    for heavy in (True, False):
+        app = 'heavy-harness' if heavy else 'lean-harness'
+        es = []
+        for i in range(24):
+            es.append(ds.emit(app=app, provider='openai', model='gpt-4o-mini',
+                              system='Instructions générales de traitement. ' * (150 if heavy else 5),
+                              messages=[user(f'Dossier {i} avec des observations particulières.')],
+                              content=f'Analyse détaillée adaptée au dossier {i}', in_tok=1700 if heavy else 200,
+                              out_tok=100, cached=1000 if heavy else 0,
+                              offset_s=830000 + i * 60, latency_ms=1500))
+        ds.scenario(app, app, ['harness_overhead'] if heavy else [], es,
+                    'Part fixe dominante, cache déjà partiellement actif.' if heavy else 'Instructions courtes, pas de surcharge dominante.')
+
 def main():
     ds = Dataset()
     mail_triage(ds)
@@ -565,6 +635,10 @@ def main():
     batch_scenarios(ds)
     image_scenarios(ds)
     judge_scenarios(ds)
+    parallel_scenarios(ds)
+    item_scenarios(ds)
+    merge_scenarios(ds)
+    harness_scenarios(ds)
 
     ds.events.sort(key=lambda e: e["ts_start"])
     OUT.mkdir(parents=True, exist_ok=True)

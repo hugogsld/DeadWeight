@@ -2688,5 +2688,227 @@
         "ds_01658"
       ]
     }
+  },
+  {
+    "scenario": "serial-independent",
+    "app_id": "serial-independent",
+    "expected_rules": [
+      "parallelizable_steps"
+    ],
+    "note": "Étapes indépendantes, gain théorique de 6 secondes.",
+    "event_ids": [
+      "ds_01659",
+      "ds_01660",
+      "ds_01661",
+      "ds_01662"
+    ],
+    "traces": {
+      "serial-independent": [
+        "ds_01659",
+        "ds_01660",
+        "ds_01661",
+        "ds_01662"
+      ]
+    },
+    "requires_header": true
+  },
+  {
+    "scenario": "serial-dependent",
+    "app_id": "serial-dependent",
+    "expected_rules": [],
+    "note": "Chaque étape dépend de la conclusion précédente.",
+    "event_ids": [
+      "ds_01663",
+      "ds_01664",
+      "ds_01665",
+      "ds_01666"
+    ],
+    "traces": {
+      "serial-dependent": [
+        "ds_01663",
+        "ds_01664",
+        "ds_01665",
+        "ds_01666"
+      ]
+    },
+    "requires_header": true
+  },
+  {
+    "scenario": "item-loop",
+    "app_id": "item-loop",
+    "expected_rules": [
+      "per_item_calls"
+    ],
+    "note": "Dix éléments courts, système répété.",
+    "event_ids": [
+      "ds_01667",
+      "ds_01668",
+      "ds_01669",
+      "ds_01670",
+      "ds_01671",
+      "ds_01672",
+      "ds_01673",
+      "ds_01674",
+      "ds_01675",
+      "ds_01676"
+    ],
+    "traces": {}
+  },
+  {
+    "scenario": "item-long-analysis",
+    "app_id": "item-long-analysis",
+    "expected_rules": [],
+    "note": "Analyses longues : regroupement non présumé.",
+    "event_ids": [
+      "ds_01677",
+      "ds_01678",
+      "ds_01679",
+      "ds_01680",
+      "ds_01681",
+      "ds_01682",
+      "ds_01683",
+      "ds_01684",
+      "ds_01685",
+      "ds_01686"
+    ],
+    "traces": {}
+  },
+  {
+    "scenario": "rewrite-chain",
+    "app_id": "rewrite-chain",
+    "expected_rules": [
+      "mergeable_steps"
+    ],
+    "note": "Transformation seule de la réponse.",
+    "event_ids": [
+      "ds_01687",
+      "ds_01688",
+      "ds_01689",
+      "ds_01690",
+      "ds_01691",
+      "ds_01692",
+      "ds_01693",
+      "ds_01694"
+    ],
+    "traces": {
+      "rewrite-chain-0": [
+        "ds_01687",
+        "ds_01688"
+      ],
+      "rewrite-chain-1": [
+        "ds_01689",
+        "ds_01690"
+      ],
+      "rewrite-chain-2": [
+        "ds_01691",
+        "ds_01692"
+      ],
+      "rewrite-chain-3": [
+        "ds_01693",
+        "ds_01694"
+      ]
+    }
+  },
+  {
+    "scenario": "research-followup",
+    "app_id": "research-followup",
+    "expected_rules": [],
+    "note": "Nouvelle recherche, fusion non présumée.",
+    "event_ids": [
+      "ds_01695",
+      "ds_01696",
+      "ds_01697",
+      "ds_01698",
+      "ds_01699",
+      "ds_01700",
+      "ds_01701",
+      "ds_01702"
+    ],
+    "traces": {
+      "research-followup-0": [
+        "ds_01695",
+        "ds_01696"
+      ],
+      "research-followup-1": [
+        "ds_01697",
+        "ds_01698"
+      ],
+      "research-followup-2": [
+        "ds_01699",
+        "ds_01700"
+      ],
+      "research-followup-3": [
+        "ds_01701",
+        "ds_01702"
+      ]
+    }
+  },
+  {
+    "scenario": "heavy-harness",
+    "app_id": "heavy-harness",
+    "expected_rules": [
+      "harness_overhead"
+    ],
+    "note": "Part fixe dominante, cache déjà partiellement actif.",
+    "event_ids": [
+      "ds_01703",
+      "ds_01704",
+      "ds_01705",
+      "ds_01706",
+      "ds_01707",
+      "ds_01708",
+      "ds_01709",
+      "ds_01710",
+      "ds_01711",
+      "ds_01712",
+      "ds_01713",
+      "ds_01714",
+      "ds_01715",
+      "ds_01716",
+      "ds_01717",
+      "ds_01718",
+      "ds_01719",
+      "ds_01720",
+      "ds_01721",
+      "ds_01722",
+      "ds_01723",
+      "ds_01724",
+      "ds_01725",
+      "ds_01726"
+    ],
+    "traces": {}
+  },
+  {
+    "scenario": "lean-harness",
+    "app_id": "lean-harness",
+    "expected_rules": [],
+    "note": "Instructions courtes, pas de surcharge dominante.",
+    "event_ids": [
+      "ds_01727",
+      "ds_01728",
+      "ds_01729",
+      "ds_01730",
+      "ds_01731",
+      "ds_01732",
+      "ds_01733",
+      "ds_01734",
+      "ds_01735",
+      "ds_01736",
+      "ds_01737",
+      "ds_01738",
+      "ds_01739",
+      "ds_01740",
+      "ds_01741",
+      "ds_01742",
+      "ds_01743",
+      "ds_01744",
+      "ds_01745",
+      "ds_01746",
+      "ds_01747",
+      "ds_01748",
+      "ds_01749",
+      "ds_01750"
+    ],
+    "traces": {}
   }
 ]

@@ -62,6 +62,14 @@ def _figures(events):
 
 # Texte humain par regle : aucun code de regle ne doit apparaitre dans la page.
 RULE_TEXT = {
+    'harness_overhead': ('Un cadre d’exécution lourd pour des tâches répétitives',
+        'Tester un appel direct avec des instructions minimales ; activer le cache et contrôler la qualité.'),
+    'mergeable_steps': ('Une réponse retravaillée par un deuxième appel',
+        'Tester une consigne qui produit directement la forme finale et comparer la qualité.'),
+    'per_item_calls': ('Un appel séparé pour chaque élément',
+        'Tester un appel groupé ou un traitement par lots, puis vérifier la qualité.'),
+    'parallelizable_steps': ('Des étapes indépendantes attendent leur tour',
+        'Confirmer les dépendances puis tester une exécution parallèle.'),
     "llm_judge": ("Une deuxième IA relit presque chaque réponse",
                   "Tester une relecture par échantillon ou par règle, en vérifiant la qualité conservée."),
     "image_heavy": ("Des images très coûteuses pour une réponse simple",
