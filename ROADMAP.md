@@ -10,7 +10,7 @@ Comment apparaître dans le tableau : créer une issue dont le titre commence pa
 Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépendent.
 
 <!-- STATUT:DEBUT -->
-**5 / 17 livrables du plan de base faits** (15 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:38.
+**5 / 17 livrables du plan de base faits** (15 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:39.
 
 | Id | Livrable | Durée | Dépend de | Statut | Qui | Issue / PR |
 |---|---|---|---|---|---|---|
@@ -22,11 +22,11 @@ Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépend
 | D1.3 | Anthropic et Gemini | 4 h | D1.1 | Bloqué (attend D1.1) | — | — |
 | D1.4 | Regroupement par trace | 3 h | D1.2 | Bloqué (attend D1.2) | — | — |
 | D2.1 | R1 entropie | 2 h | D0.3 | **Fait** | Natanlsr3, claude | #7 · PR #9 |
-| D2.2 | R2 modèle surdimensionné | 3 h | D0.3 | Prenable | — | — |
+| D2.2 | R2 modèle surdimensionné | 3 h | D0.3 | **En cours** | Natanlsr3, claude | #17 |
 | D2.3 | R3 contexte brut + R4 absence de cache | 3 h | D0.3 | **En relecture** | Natanlsr3, codex | #8 · PR #15 |
 | D2.4 | R5 boucle + R6 agent inutile | 5 h | D0.3, D1.4 | Bloqué (attend D1.4) | — | — |
 | D2.5 | Chiffrage coût et latence | 3 h | D0.1 | **Fait** | Natanlsr3 | #4 · PR #6 |
-| D3.1 | Extraction des règles | 3 h | D2.1 | Prenable | — | — |
+| D3.1 | Extraction des règles | 3 h | D2.1 | **En cours** | Natanlsr3, codex | #16 |
 | D3.2 | Rejeu et seuil 0,95 | 4 h | D3.1 | Bloqué (attend D3.1) | — | — |
 | D3.3 | Court-circuit *(hors plan)* | 4 h | D3.2 | Bloqué (attend D3.2) | — | — |
 | D4.1 | Rapport d'audit | 3 h | D2.5 | **Fait** | Natanlsr3, claude | #12 · PR #13 |
