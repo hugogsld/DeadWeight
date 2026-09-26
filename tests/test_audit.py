@@ -81,3 +81,17 @@ def test_custom_detectors_and_global_missing_reason():
     assert report["constats"] == [] and report["verifications"] == ["Les mêmes demandes payées plusieurs fois"]
     if report["resume"]["global"]["cout_mensuel_usd"] is None:
         assert "Coût total non disponible" in render_html(report)
+
+
+def test_short_traffic_shows_observed_cost_not_a_monthly_projection():
+    """36 appels en quelques secondes ne se projettent pas sur un mois (315 220 $ en démo)."""
+    from report.cost import chiffrer
+    base = next(e for e in EVENTS if chiffrer([e])["cout_mensuel_usd"])  # un appel chiffrable
+    burst = [{**base, "event_id": f"burst_{i}", "ts_start": f"2026-09-26T12:00:{i:02d}Z",
+              "ts_end": f"2026-09-26T12:00:{i:02d}.500Z"} for i in range(36)]
+    report = build_report(burst, detectors=[])
+    g = report["resume"]["global"]
+    assert g["cout_mensuel_usd"] is None and g["cout_observe_usd"] > 0
+    assert any("moins d'une heure" in r for r in report["raisons_globales"])
+    page = render_html(report)
+    assert "coût observé total" in page and "315" not in page
