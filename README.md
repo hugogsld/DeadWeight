@@ -111,6 +111,63 @@ par rejeu ceux qui peuvent l'être, et publie un plan d'action priorisé en têt
 détail de sa démarche. Il ne calcule rien lui-même : un plan qui cite un chiffre absent des
 vérifications est refusé et l'agent doit se corriger. Sans clé, le rapport est le même, sans plan.
 
+## Test de bout en bout
+
+    make e2e
+
+Installe, lance la démo, puis une vraie passerelle devant trois fournisseurs simulés (OpenAI, Anthropic,
+Gemini) : trafic simple, en streaming et en boucle d'agent, capture, traces, rapport, rejeu, miroir et
+court-circuit. Aucune clé, aucun appel payant. La CI le lance à chaque PR.
+
+## Workflows de test
+
+De vrais workflows d'agents, passés par la passerelle pour tester Deadweight hors des fixtures, sont
+dans le repo **[Workflow-test-hackathon-agentique-25-09-2026](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026)** :
+
+| Workflow | Ce qu'il fait |
+| --- | --- |
+| [workflow 1 - Miguel short](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short) | pipeline de production de shorts vidéo piloté par des agents Claude Code (snapshot) |
+| [workflow 2 - Recap Gmail](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%202%20-%20Recap%20Gmail) | un agent lit les mails des dernières 24 h et rédige un récap |
+| [workflow 3 - OpenAI story flow](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%203%20-%20OpenAI%20story%20flow) | exemple officiel `deterministic.py` du SDK Agents d'OpenAI : trois agents à la suite |
+
+Ce que chaque test a donné, et les problèmes à corriger : [docs/retours-tests-workflows.md](docs/retours-tests-workflows.md).
+
+## OpenTelemetry
+
+Vos agents sont déjà instrumentés avec OpenTelemetry (LangChain, SDK d'agents OpenAI, Vercel AI, LiteLLM,
+Langfuse…) ? Deux façons de les auditer, sans rien changer à votre code :
+
+    # 1. un export de traces (OTLP/JSON)
+    .venv/bin/python -m connectors.otel traces.json -o out/otel-events.jsonl
+    .venv/bin/python -m agent.audit out/otel-events.jsonl -o out/audit.html
+
+    # 2. en direct : ajoutez la passerelle comme destination de vos traces
+    OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://127.0.0.1:8080/v1/traces
+    OTEL_EXPORTER_OTLP_PROTOCOL=http/json
+
+Par défaut, OpenTelemetry transmet l'usage (modèles, jetons, durées) et l'enchaînement des appels : on
+chiffre et on repère des pistes. Pour les preuves (rejeu, banc de modèles), activez la capture du contenu
+dans votre instrumentation. Méthode : `docs/analyser-un-workflow.md`.
+
+## Journaux Claude Code et Codex (B1)
+
+Si vos agents sont Claude Code ou Codex, leurs journaux de session contiennent déjà chaque appel
+de modèle. Zippez ceux d'un run, puis une commande (Python 3.9+, rien à installer) :
+
+    cd ~/.claude/projects && zip -r ~/run.zip <dossier-du-projet>     # Claude Code
+    cd ~/.codex && zip -r ~/run-codex.zip sessions/2026/09/26          # Codex, le jour du run
+
+    python3 -m connectors.agent_logs ~/run.zip ~/run-codex.zip -o private/agent-logs/events.jsonl
+    python -m report.audit private/agent-logs/events.jsonl -o out/audit.html
+
+Chaque appel devient un événement : modèle, jetons (cache compris), heure, messages du tour,
+réponse, appels d'outils ; la session sert de trace, un sous-agent a son propre `app_id`
+(`claude-code:<projet>/sous-agent`). Les clés d'API affichées dans les journaux sont masquées.
+`comprehension.json` dit, par outil, les appels lus, ignorés et pourquoi, et le niveau atteint.
+Limites : le prompt système et la liste des outils ne sont pas journalisés ; les jetons écrits en
+cache par Claude Code sont comptés au prix normal (facturés 1,25× à 2×), le coût est donc un
+peu sous-estimé sur cette part.
+
 ## Prix des modèles
 
 Les coûts viennent de `fixtures/pricing.json`, le catalogue public d'OpenRouter (prix d'entrée,
@@ -363,6 +420,40 @@ Optional fallback model for uncovered inputs, via any OpenAI-compatible endpoint
 
 The fallback is the only thing that calls an API: hard cap of 200 calls per replay
 (`--max-calls` cannot exceed it) and a minimum interval between two calls.
+
+## Banc de modèles (M2.2) — tester un modèle avant de le recommander
+
+Avant que M2 (recommandations) propose de remplacer un modèle, le banc le teste pour de
+vrai sur l'échantillon d'entrées **réelles** d'un groupe (`app_id` x modèle x gabarit de
+prompt, comme `low_entropy_output`) : mêmes entrées, réponse du modèle d'origine comme
+référence. Aucun appel réseau tant que `--dry-run` n'est pas levé.
+
+    python -m bench run fixtures/dataset/v1/events.jsonl --app mail-triage --model gpt-4o \
+        --dry-run                                    # ce qui serait appelé, coût estimé, 0 appel
+    python -m bench run fixtures/dataset/v1/events.jsonl --app mail-triage --model gpt-4o \
+        --candidates small,local --max-cases 50 --out out/bench.json
+
+Type de tâche détecté automatiquement à partir des références : **classification** (peu de
+réponses distinctes, comme `low_entropy_output`) jugée par égalité stricte après
+normalisation, seuil **0.95** ; **texte libre** jugé par recouvrement de tokens (F1), seuil
+**0.5** indicatif seulement — un point d'extension pour un LLM-juge est documenté dans
+`bench/scoring.py` mais pas implémenté (bruit et coût à ce stade). Chaque candidat est
+mesuré : latence p50/p95, taux d'erreur, coût pour 1000 appels (`report.cost.lookup` sur
+`fixtures/pricing.json`, `0 $` pour l'exécution locale), et marqué de son origine
+(FR/EU/US/CN, `bench/candidates.json`, curé depuis `docs/research/modeles.md`). Plafond dur
+d'appels par candidat (`bench.runner.HARD_MAX_CALLS`, comme `proof.replay.Throttle`).
+
+Candidats réels, un point de terminaison OpenAI-compatible par nature de fournisseur :
+
+    export OPENROUTER_API_KEY=...                 # une seule clé pour les ~10 candidats OpenRouter
+    export OPENAI_API_KEY=... MISTRAL_API_KEY=...  # candidats en API directe (gpt-5-*, ministral-8b)
+    ollama pull llama3.3:70b && ollama serve        # candidats locaux : http://localhost:11434/v1, aucune clé
+    python -m bench run events.jsonl --app mon-app --model gpt-4o --max-calls 50 --min-interval 1
+
+`bench/candidates.json` est une bibliothèque : `gateway/bench.py` mesure la latence de la
+passerelle, ce banc mesure des modèles candidats sur du trafic — deux choses différentes
+malgré le nom voisin. M2 (catalogue, recommandations) appelle ce module comme une
+bibliothèque ; il ne le remplace pas.
 
 ## Short-circuit (D3.3) — the gateway answers proven calls itself
 

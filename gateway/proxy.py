@@ -12,6 +12,7 @@ Chaque événement est écrit dans SQLite par gateway.store (D1.2), hors du
 chemin critique ; GATEWAY_DB en donne le chemin.
 """
 import asyncio
+import gzip
 import json
 import logging
 import os
@@ -21,6 +22,7 @@ from datetime import datetime, timezone
 from aiohttp import ClientError, ClientSession, ClientTimeout, TCPConnector, web
 from yarl import URL
 
+from connectors import otel
 from gateway import mirror as mirror_mode
 from gateway import shortcircuit
 from gateway.capture import StreamAccumulator, build_event, fmt
@@ -160,6 +162,25 @@ async def _answer(request, meta, t0, finding_id, output):
     return resp
 
 
+async def receive_traces(request):
+    """B2 : réception OpenTelemetry (OTLP/HTTP, JSON). Le client ajoute cette adresse comme destination
+    de ses traces ; les appels d'IA qu'elles décrivent entrent dans la même capture que le trafic relayé."""
+    if "json" not in request.headers.get("content-type", ""):
+        return web.json_response({"message": "Deadweight lit OTLP/HTTP en JSON : réglez "
+                                  "OTEL_EXPORTER_OTLP_PROTOCOL=http/json côté client."}, status=415)
+    body = await request.read()
+    if body[:2] == b"\x1f\x8b":  # aiohttp décompresse déjà en général ; au cas où il reste du gzip
+        body = gzip.decompress(body)
+    try:
+        events, report = otel.read(json.loads(body))
+    except (ValueError, KeyError, TypeError):
+        return web.json_response({"message": "export OTLP/JSON illisible"}, status=400)
+    for event in events:
+        _emit(request.app, event)
+    log.info("otel : %d appel(s) sur %d span(s), niveaux %s", report["appels_lus"], report["spans"], report["niveaux"])
+    return web.json_response({"partialSuccess": {}})
+
+
 async def relay(request):
     app = request.app
     t0 = time.perf_counter()
@@ -293,6 +314,7 @@ def make_app(upstream=None, on_event=None, store=None, shortcut=None, upstreams=
         log.info("court-circuit actif sur %d constat(s) prouvé(s)", len(app[SHORTCUT]))
     app.on_startup.append(_open)
     app.on_cleanup.append(_close)
+    app.router.add_post("/v1/traces", receive_traces)  # avant le relais : OpenAI n'a pas cette route
     app.router.add_route("*", "/{tail:.*}", relay)
     return app
 

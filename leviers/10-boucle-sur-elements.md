@@ -7,7 +7,7 @@
 | Gain latence | ÷5 à ÷20 |
 | Comment prouver | Banc (lot vs unitaire) |
 | Données nécessaires | Historique n8n (B1) |
-| État | À faire (R11, après B1) |
+| État | Détection faite (R11), regroupement à tester |
 | Règle | R11 (à venir) |
 
 ## Le signal

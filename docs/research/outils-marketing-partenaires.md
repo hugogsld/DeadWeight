@@ -65,6 +65,7 @@ Cadrage : quels outils non-LLM composent les workflows marketing IA, quelles met
 | GitHub — tachyurgy/n8n-automation-portfolio | Workflows production-grade : agents IA, lead enrichment, repurposing de contenu, JSON reel importable | https://github.com/tachyurgy/n8n-automation-portfolio |
 | GitHub — Denizk276/ai-lead-enrichment-workflow | Workflow n8n de recherche/enrichissement d'entreprises avec profil + accroche personnalisee | https://github.com/Denizk276/ai-lead-enrichment-workflow |
 | Make.com — Template Gallery (filtre Marketing/AI) | +1000 scenarios pre-construits, filtrables par app (HubSpot, Slack, Shopify) | https://www.make.com/en/templates (categorie Marketing/AI) |
+| GitHub — thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026 | Workflows deja passes par la passerelle Deadweight : shorts-factory de Miguel, recap Gmail, exemple officiel du SDK Agents d'OpenAI. Resultats dans `docs/retours-tests-workflows.md` | https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026 (workflow 1 : https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short) |
 
 Ces sources permettent de tester Deadweight sur des workflows n8n/Make reels sans avoir a les construire soi-meme — priorite aux deux premiers repos GitHub (JSON directement exploitable en replay).
 
