@@ -1,9 +1,12 @@
 """Normalisation d'un appel OpenAI /v1/chat/completions vers le schéma d'événement v1.
+Anthropic et Gemini (D1.3) ont leur module, gateway/anthropic.py et gateway/gemini.py,
+avec les mêmes fonctions ; build_event choisit selon ``provider``.
 
 Tout ici tourne APRÈS que la réponse a été rendue au client, ou à côté du
 relais en streaming : rien de ce module n'est sur le chemin critique.
 Aucun en-tête n'entre dans l'événement : la clé du client ne peut pas fuiter.
 """
+import importlib
 import json
 import re
 import uuid
@@ -12,7 +15,11 @@ FINISH = {"stop": "stop", "length": "length", "tool_calls": "tool_calls",
           "function_call": "tool_calls", "content_filter": "content_filter"}
 RESPONSE_FORMATS = {"text", "json_object", "json_schema"}
 # OpenAI recopie la clé dans ses erreurs 401 ("Incorrect API key provided: sk-...").
-KEY_LIKE = re.compile(r"\b(sk|rk|pk|sess)-[A-Za-z0-9_\-*]{3,}")
+KEY_LIKE = re.compile(r"\b((sk|rk|pk|sess)-[A-Za-z0-9_\-*]{3,}|AIza[A-Za-z0-9_\-]{10,})")
+
+
+def mask_keys(message):
+    return KEY_LIKE.sub("[clé masquée]", message)
 
 
 def _text(content):
@@ -39,7 +46,7 @@ def _tool_calls(calls):
     return out
 
 
-def normalize_request(body):
+def normalize_request(body, path=None):
     """Corps JSON de la requête client -> (model, request au schéma)."""
     system, messages = [], []
     for m in body.get("messages") or []:
@@ -103,20 +110,29 @@ def _error(payload, status):
         kind, message = "http_error", err
     else:
         kind, message = "http_error", f"HTTP {status}"
-    return {"type": kind, "message": KEY_LIKE.sub("[clé masquée]", message)}
+    return {"type": kind, "message": mask_keys(message)}
 
 
-class StreamAccumulator:
-    """Reconstitue la complétion à partir des octets SSE relayés, sans les retenir."""
+parse_error = _error
 
-    def __init__(self):
-        self._buf = b""
-        self.content = []
-        self.tools = {}
-        self.finish_raw = None
-        self.model = None
-        self.usage = None
-        self.error = None
+
+def finish(raw, tool_calls=None):
+    return FINISH.get(raw, "other")
+
+
+def parse_response(payload):
+    """Réponse non streamée -> (content, tool_calls, finish_raw, model_resolved, usage au schéma)."""
+    choice = (payload.get("choices") or [{}])[0]
+    message = choice.get("message") or {}
+    content, _ = _text(message.get("content"))
+    return (content, _tool_calls(message.get("tool_calls")), choice.get("finish_reason"),
+            payload.get("model"), _usage(payload.get("usage")))
+
+
+class SSEParser:
+    """Découpe les octets SSE relayés en objets JSON ``data:`` ; chaque format définit ``on_data``."""
+
+    _buf = b""
 
     def feed(self, chunk):
         self._buf += chunk
@@ -139,6 +155,26 @@ class StreamAccumulator:
             obj = json.loads(data)
         except ValueError:
             return
+        if isinstance(obj, dict):
+            self.on_data(obj)
+
+
+class StreamAccumulator(SSEParser):
+    """Reconstitue la complétion à partir des octets SSE relayés, sans les retenir."""
+
+    def __init__(self):
+        self.content = []
+        self.tools = {}
+        self.finish_raw = None
+        self.model = None
+        self.usage = None
+        self.error = None
+
+    def result(self):
+        return ("".join(self.content) or None, [self.tools[i] for i in sorted(self.tools)],
+                self.finish_raw, self.model, _usage(self.usage), self.error)
+
+    def on_data(self, obj):
         if obj.get("error"):
             self.error = _error(obj, 200)
             return
@@ -161,34 +197,37 @@ class StreamAccumulator:
                 self.finish_raw = choice["finish_reason"]
 
 
+def fmt(provider):
+    """Module de normalisation du fournisseur (ce module-ci pour OpenAI)."""
+    return importlib.import_module(__name__ if provider == "openai" else f"gateway.{provider}")
+
+
+Accumulator = StreamAccumulator  # même nom dans chaque module de format
+
+
 def build_event(*, req_body, status, resp_body=None, stream=None, upstream, app_id, trace_id,
-                endpoint, ts_start, ts_end, latency_ms, ttft_ms, transport_error=None):
+                endpoint, ts_start, ts_end, latency_ms, ttft_ms, transport_error=None, provider="openai"):
     """Assemble l'événement v1. ``resp_body`` : octets de la réponse non streamée."""
+    f = fmt(provider)
     try:
-        model, request = normalize_request(json.loads(req_body) if req_body else {})
-    except (ValueError, AttributeError):
+        model, request = f.normalize_request(json.loads(req_body) if req_body else {}, endpoint)
+    except (ValueError, AttributeError, TypeError):
         model, request = "unknown", {"system": None, "messages": [], "tools": [],
                                      "params": {"stream": False}}
 
-    content, tool_calls, finish_raw, model_resolved, usage, error = None, [], None, None, {}, None
+    content, tool_calls, finish_raw, model_resolved, error = None, [], None, None, None
+    usage = _usage(None)
     if stream is not None:
-        content = "".join(stream.content) or None
-        tool_calls = [stream.tools[i] for i in sorted(stream.tools)]
-        finish_raw, model_resolved, usage, error = stream.finish_raw, stream.model, stream.usage, stream.error
+        content, tool_calls, finish_raw, model_resolved, usage, error = stream.result()
     elif resp_body:
         try:
             payload = json.loads(resp_body)
         except ValueError:
             payload = {}
         if status >= 400:
-            error = _error(payload, status)
+            error = f.parse_error(payload, status)
         elif isinstance(payload, dict):
-            choice = (payload.get("choices") or [{}])[0]
-            message = choice.get("message") or {}
-            content, _ = _text(message.get("content"))
-            tool_calls = _tool_calls(message.get("tool_calls"))
-            finish_raw = choice.get("finish_reason")
-            model_resolved, usage = payload.get("model"), payload.get("usage")
+            content, tool_calls, finish_raw, model_resolved, usage = f.parse_response(payload)
     if transport_error:
         error = transport_error
     if status >= 400 and error is None:
@@ -203,16 +242,16 @@ def build_event(*, req_body, status, resp_body=None, stream=None, upstream, app_
         "ts_end": ts_end,
         "latency_ms": round(latency_ms, 3),
         "ttft_ms": None if ttft_ms is None else round(ttft_ms, 3),
-        "provider": "openai",
+        "provider": provider,
         "upstream": upstream,
         "endpoint": endpoint,
         "model": model,
         "model_resolved": model_resolved,
         "request": request,
         "response": {"content": content, "tool_calls": tool_calls,
-                     "finish_reason": "error" if error else (FINISH.get(finish_raw, "other") if finish_raw else None),
+                     "finish_reason": "error" if error else (f.finish(finish_raw, tool_calls) if finish_raw else None),
                      "finish_reason_raw": "error" if error and not finish_raw else finish_raw},
-        "usage": _usage(usage),
+        "usage": usage,
         "http_status": status,
         "error": error,
     }
