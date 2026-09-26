@@ -61,3 +61,6 @@ rétrocompatible) pour simuler les modèles de raisonnement de `reasoning_trivia
 Ces scénarios portent `requires_header` : leurs traces sont explicites ; sans
 en-tête, leur regroupement ne fait pas partie de la vérité attendue de l'heuristique.
 Les 1 332 événements historiques et tous les scénarios antérieurs sont conservés.
+
+R11 : `item-loop` contient dix éléments courts distincts ; `item-long-analysis`
+conserve dix sorties longues et ne déclenche pas. Instructions / 4 : estimation, pas tokenisation.

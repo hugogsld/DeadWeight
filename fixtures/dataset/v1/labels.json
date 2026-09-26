@@ -2732,5 +2732,45 @@
       ]
     },
     "requires_header": true
+  },
+  {
+    "scenario": "item-loop",
+    "app_id": "item-loop",
+    "expected_rules": [
+      "per_item_calls"
+    ],
+    "note": "Dix éléments courts, système répété.",
+    "event_ids": [
+      "ds_01667",
+      "ds_01668",
+      "ds_01669",
+      "ds_01670",
+      "ds_01671",
+      "ds_01672",
+      "ds_01673",
+      "ds_01674",
+      "ds_01675",
+      "ds_01676"
+    ],
+    "traces": {}
+  },
+  {
+    "scenario": "item-long-analysis",
+    "app_id": "item-long-analysis",
+    "expected_rules": [],
+    "note": "Analyses longues : regroupement non présumé.",
+    "event_ids": [
+      "ds_01677",
+      "ds_01678",
+      "ds_01679",
+      "ds_01680",
+      "ds_01681",
+      "ds_01682",
+      "ds_01683",
+      "ds_01684",
+      "ds_01685",
+      "ds_01686"
+    ],
+    "traces": {}
   }
 ]

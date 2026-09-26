@@ -552,6 +552,20 @@ def parallel_scenarios(ds):
                     'Chaque étape dépend de la conclusion précédente.', {app: evts})
         ds.scenarios[-1]['requires_header'] = True
 
+
+def item_scenarios(ds):
+    for short in (True, False):
+        app = 'item-loop' if short else 'item-long-analysis'
+        es = []
+        for i in range(10):
+            es.append(ds.emit(app=app, provider='openai', model='gpt-4o-mini',
+                              system='Instructions communes pour analyser chaque élément. ' * 6,
+                              messages=[user(f'Produit particulier numéro {i}')],
+                              content=f'Analyse propre au produit {i}', in_tok=200,
+                              out_tok=30 if short else 500, offset_s=810000 + i * 3, latency_ms=2000))
+        ds.scenario(app, app, ['per_item_calls'] if short else [], es,
+                    'Dix éléments courts, système répété.' if short else 'Analyses longues : regroupement non présumé.')
+
 def main():
     ds = Dataset()
     mail_triage(ds)
@@ -585,6 +599,7 @@ def main():
     image_scenarios(ds)
     judge_scenarios(ds)
     parallel_scenarios(ds)
+    item_scenarios(ds)
 
     ds.events.sort(key=lambda e: e["ts_start"])
     OUT.mkdir(parents=True, exist_ok=True)

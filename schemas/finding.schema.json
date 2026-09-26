@@ -38,7 +38,8 @@
         "batch_eligible",
         "image_heavy",
         "llm_judge",
-        "parallelizable_steps"
+        "parallelizable_steps",
+        "per_item_calls"
       ],
       "description": "Dix regles implementees (rules/*.py). Contrat partage : toute extension de cette enumeration doit rester minimale et etre signalee dans la PR qui l'ajoute (voir rules/excess_reasoning.py, duplicate_calls.py, paid_errors.py, verbose_output.py pour les quatre derniers ajouts)."
     },

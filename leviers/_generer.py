@@ -94,7 +94,7 @@ LEVIERS = [
          comment_prouver="Distribution des chemins.", suite="—"),
     dict(fichier="10-boucle-sur-elements", titre="Un appel LLM par élément au lieu d'un appel groupé",
          famille="Forme du workflow", argent="÷5 à ÷20", latence="÷5 à ÷20", preuve="Banc (lot vs unitaire)",
-         donnees="Historique n8n (B1)", etat="À faire (R11, après B1)", regle="R11 (à venir)",
+         donnees="Historique n8n (B1)", etat="Détection faite (R11), regroupement à tester", regle="R11 (à venir)",
          signal="Une étape LLM dans une boucle sur les lignes d'un tableau.",
          detection="Graphe n8n (nœud LLM dans une boucle) ou rafales d'appels du même gabarit.",
          optimisation="Regrouper les éléments dans un seul appel structuré, ou l'API batch.",

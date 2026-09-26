@@ -20,7 +20,7 @@ Fichiers générés par `python leviers/_generer.py` : modifier la liste dans ce
 | 7 | [Les mêmes appels payés plusieurs fois](07-appels-identiques.md) | Usage des LLM | 100 % de chaque doublon | Réponse immédiate si mise en cache | Calcul exact | En cours (R8) |
 | 8 | [Un agent qui tourne en rond](08-agent-en-boucle.md) | Forme des briques d'IA | Chaque tour en trop | Forte | Traces | Fait (R5) |
 | 9 | [Un agent là où une chaîne fixe suffit](09-agent-ou-chaine.md) | Forme des briques d'IA | Coût d'orchestration | Moyenne | Traces | Fait (R6) |
-| 10 | [Un appel LLM par élément au lieu d'un appel groupé](10-boucle-sur-elements.md) | Forme du workflow | ÷5 à ÷20 | ÷5 à ÷20 | Banc (lot vs unitaire) | À faire (R11, après B1) |
+| 10 | [Un appel LLM par élément au lieu d'un appel groupé](10-boucle-sur-elements.md) | Forme du workflow | ÷5 à ÷20 | ÷5 à ÷20 | Banc (lot vs unitaire) | Détection faite (R11), regroupement à tester |
 | 11 | [Des réponses trop longues](11-sorties-trop-longues.md) | Usage des LLM | 20 à 60 % (la sortie coûte 4 à 8 fois l'entrée) | Proportionnelle | Calcul + banc | En cours (R12) |
 | 12 | [Des erreurs et relances payées](12-erreurs-et-relances.md) | Usage des LLM | Variable, parfois énorme | Forte (attentes, relances) | Calcul exact | En cours (R9) |
 | 13 | [Des tâches non urgentes payées plein tarif](13-api-batch.md) | Usage des LLM | 50 % | Aucun (elle augmente, c'est voulu) | Calcul exact | Détection faite (R14), éligibilité à confirmer |

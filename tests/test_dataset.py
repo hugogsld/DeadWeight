@@ -14,7 +14,7 @@ BY_ID = {e["event_id"]: e for e in EVENTS}
 RULES = ["low_entropy_output", "oversized_model", "raw_context",
          "no_cache", "unbounded_loop", "agent_where_chain",
          "excess_reasoning", "duplicate_calls", "paid_errors", "verbose_output",
-         "tool_bloat", "batch_eligible", "image_heavy", "llm_judge", "parallelizable_steps"]
+         "tool_bloat", "batch_eligible", "image_heavy", "llm_judge", "per_item_calls", "parallelizable_steps"]
 
 
 def test_all_events_match_schema():
