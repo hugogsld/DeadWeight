@@ -7,6 +7,7 @@ et suffisant comme signal de premiere ligne. Un LLM-juge serait plus fin mais
 coute et bruite le banc lui-meme : point d'extension documente, pas implemente ici.
 """
 import re
+import unicodedata
 from collections import Counter
 
 from rules.low_entropy import MAX_DISTINCT, normalize
@@ -43,10 +44,17 @@ def token_overlap_f1(a, b):
     return 2 * precision * recall / (precision + recall)
 
 
+def _label(text):
+    """Étiquette comparable : normalize (casse, espaces, ponctuation) puis sans accents.
+    « Négatif » et « negatif » sont la même étiquette, comme « Spam. » et « spam »."""
+    decomposed = unicodedata.normalize('NFKD', normalize(text))
+    return ''.join(ch for ch in decomposed if not unicodedata.combining(ch))
+
+
 def score_case(task_type, got, reference):
     """1.0/0.0 en classification, F1 en texte libre. got=None (erreur) -> 0.0."""
     if got is None:
         return 0.0
     if task_type == 'classification':
-        return 1.0 if normalize(got) == normalize(reference) else 0.0
+        return 1.0 if _label(got) == _label(reference) else 0.0
     return token_overlap_f1(got, reference)

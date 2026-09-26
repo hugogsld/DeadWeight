@@ -113,8 +113,9 @@ def _missing_reasons(manquants):
     return sorted({m.split(": ", 1)[-1] for m in manquants})
 
 
-def build_report(events, detectors=None):
-    """detectors : liste de (nom, detect). Par defaut, toutes les regles de rules/."""
+def build_report(events, detectors=None, banc=None):
+    """detectors : liste de (nom, detect). Par defaut, toutes les regles de rules/.
+    banc : {finding_id: résultat de bench.m2.prove} ; les options M2 testées portent leur verdict."""
     events = list(events)
     by_id = {e["event_id"]: e for e in events}
     detectors = detectors if detectors is not None else _discover_detectors()
@@ -129,6 +130,10 @@ def build_report(events, detectors=None):
         titre, action = RULE_TEXT.get(f["rule"], DEFAULT_TEXT)
         # M2 : alternatives hors famille, seulement là où R2 a jugé la tâche simple
         alternatives = recommend(evts)["options"] if f["rule"] == "oversized_model" and evts else None
+        tested = ((banc or {}).get(f["finding_id"]) or {}).get("options", {})
+        if alternatives and tested:
+            alternatives = {k: ({**o, "banc": tested[k]} if o and k in tested and tested[k]["model"] == o["modele"]
+                                else o) for k, o in alternatives.items()}
         constats.append({
             "app_id": f["app_id"], "model": f["model"], "titre": titre, "phrase": f["title"],
             "action": action, "prouve": f.get("proven", False), "gravite": f.get("severity"),
@@ -225,14 +230,35 @@ def _alternatives(options):
     for (name, host), (o, labels) in by_route.items():
         where = (f"via {host}, {ue.get(o['hebergement_ue'], 'hébergement UE non vérifié')}" if host
                  else "au prix du moins cher des hébergeurs, hébergement non garanti")
-        factor = f", ×{o['facteur']} moins cher" if o["facteur"] else ""
+        measured = (o.get("banc") or {}).get("facteur_mesure")
+        monthly = o["cout_mensuel_usd"]
+        if measured:  # le banc a mesuré les vrais jetons (réflexion comprise) : ce sont ces chiffres qui comptent
+            monthly = (o["cout_mensuel_usd"] + o["economie_usd"]) / measured  # coût actuel ÷ facteur mesuré
+            factor = f", ×{measured} moins cher mesuré au banc (estimation ×{o['facteur']})"
+        else:
+            factor = f", ×{o['facteur']} moins cher" if o["facteur"] else ""
         caveat = (" <i>Modèle à raisonnement : jetons de réflexion non comptés, coût sous-estimé.</i>"
-                  if o["raisonnement"] else "")
+                  if o["raisonnement"] and not o.get("banc") else "")
         items.append(f"<li>{html.escape(' et '.join(labels))} : <b>{html.escape(name)}</b> "
                      f"({html.escape(o['pays'] or '?')}, {html.escape(where)}) — "
-                     f"{_usd(o['cout_mensuel_usd'])} par mois{factor}.{caveat}</li>")
-    return ('<p class="todo"><b>Autres modèles compatibles</b> (capacités vérifiées, qualité non prouvée : '
-            f'à rejouer avant de changer) :</p><ul>{"".join(items)}</ul>')
+                     f"{_usd(monthly)} par mois{factor}.{caveat}{_bench_verdict(o.get('banc'))}</li>")
+    tested = all(o.get("banc") for o, _ in by_route.values())
+    quality = ("qualité mesurée au banc sur votre trafic" if tested
+               else "qualité non prouvée : à tester au banc avant de changer")
+    return (f'<p class="todo"><b>Autres modèles compatibles</b> (capacités vérifiées, {quality}) :</p>'
+            f'<ul>{"".join(items)}</ul>')
+
+
+def _bench_verdict(b):
+    """M2.2 : le verdict du banc sur cette option, tel que mesuré."""
+    if not b:
+        return ""
+    if b["verdict"] == "not_tested" or b["score"] is None:
+        return " <i>Banc : non testé.</i>"
+    measure = (f"accord de {b['score'] * 100:.0f} %" if b.get("task_type", "classification") == "classification"
+               else f"recouvrement de {b['score']:.2f} (indicatif)")
+    tail = "validé" if b["verdict"] == "pass" else "refusé" + (f" ({b['reasons'][0]})" if b["reasons"] else "")
+    return f" <b>Banc : {measure} sur {b['n_calls']} requêtes réelles, {html.escape(tail)}.</b>"
 
 
 def _card(c):
@@ -328,9 +354,14 @@ def main():
     ap = argparse.ArgumentParser(description="Rapport d'audit d'une page")
     ap.add_argument("events", help="fichier .jsonl d'evenements")
     ap.add_argument("-o", "--out", default="out/audit.html")
+    ap.add_argument("--banc", help="dossier des résultats de python -m bench m2 (banc-*.json)")
     args = ap.parse_args()
     lines = Path(args.events).read_text(encoding="utf-8").splitlines()
-    report = build_report(json.loads(line) for line in lines if line.strip())
+    banc = {}
+    for path in sorted(Path(args.banc).glob("banc-*.json")) if args.banc else []:
+        result = json.loads(path.read_text(encoding="utf-8"))
+        banc[result["finding_id"]] = result
+    report = build_report((json.loads(line) for line in lines if line.strip()), banc=banc)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render_html(report), encoding="utf-8")
