@@ -16,19 +16,10 @@ from pathlib import Path
 
 import rules
 from catalog.recommend import recommend
-from report.cost import MONTH_SECONDS, chiffrer
+from report.cost import MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer, window_seconds
 
 # En dessous d'une heure de trafic, projeter sur un mois multiplie du bruit :
 # 36 appels en 0,3 s donnaient 315 220 $/mois. On affiche alors le coût réellement dépensé.
-MIN_WINDOW_SECONDS = 60 * 60
-
-
-def _window_seconds(events):
-    if not events:
-        return 0
-    start = min(datetime.fromisoformat(e["ts_start"].replace("Z", "+00:00")) for e in events)
-    end = max(datetime.fromisoformat(e["ts_end"].replace("Z", "+00:00")) for e in events)
-    return (end - start).total_seconds()
 
 
 def _partial(events, c):
@@ -51,7 +42,7 @@ def _figures(events):
     c = chiffrer(events)
     if c["cout_mensuel_usd"] is None and events:
         c = _partial(events, c)
-    window = _window_seconds(events)
+    window = window_seconds(events)
     if c["cout_mensuel_usd"] is None or window >= MIN_WINDOW_SECONDS:
         return c
     # pas de « : » dans la raison, _missing_reasons coupe dessus
