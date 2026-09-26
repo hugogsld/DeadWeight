@@ -201,6 +201,39 @@ def _card(c):
 {''.join(f'<p class="note">{e(x)}</p>' for x in notes)}</div>"""
 
 
+TOOL_TEXT = {"vue_ensemble": "a regardé l'ensemble du trafic", "lancer_regles": "a lancé les six vérifications",
+             "detail_constat": "a examiné un constat", "prouver": "a rejoué des règles fixes sur l'historique",
+             "publier_plan": "a publié son plan"}
+
+
+def _agent_section(agent):
+    """A1.4 : plan d'action de l'agent, puis comment il a mené l'audit."""
+    if not agent:
+        return ""
+    e = html.escape
+    if not agent.get("plan"):
+        return (f'<h2>Plan d\'action</h2><p class="note">L\'agent auditeur n\'a pas conclu '
+                f'({e(agent.get("statut", ""))}) : les constats ci-dessous restent valables.</p>')
+    plan = agent["plan"]
+    actions = "".join(
+        f"<li><b>{e(a['action'])}</b> <span class=\"note\">[{e(a.get('statut', 'piste à vérifier'))}]</span>"
+        f"<br><span class=\"note\">{e(a['justification'])}</span></li>"
+        for a in sorted(plan["actions"], key=lambda a: a["priorite"]))
+    steps = "".join(
+        f"<li>L'agent {e(TOOL_TEXT.get(j['outil'], j['outil']))}"
+        + (f" — <i>{e(j['pensee'])}</i>" if j.get("pensee") else "")
+        + (f" (verdict : {e(j['resultat']['verdict'])}, accord {e(str(j['resultat']['accord_pct']))} %)"
+           if j["outil"] == "prouver" and "verdict" in j["resultat"] else "")
+        + "</li>" for j in agent["journal"])
+    cost = agent.get("cout_audit_usd")
+    meta = (f"{agent['appels_modele']} appels au modèle {e(agent.get('modele') or '')}"
+            + (f", coût de l'audit {cost:.4f} $" if cost is not None else ""))
+    return f"""<h2>Plan d'action</h2>
+<p>{e(plan['resume'])}</p><ol class="todo">{actions}</ol>
+<details><summary>Comment l'agent a mené l'audit</summary><ol class="note">{steps}</ol>
+<p class="note">{meta}. Tous les chiffres viennent des vérifications et du rejeu, pas du modèle.</p></details>"""
+
+
 def render_html(report):
     r, e = report["resume"], html.escape
     if not r["nb_appels"]:
@@ -222,6 +255,7 @@ def render_html(report):
 <div class="kpi"><b>{len(report['constats'])}</b><span>constats</span></div></div>
 {missing}
 <p class="note">Vérifications effectuées : {checks}.</p>
+{_agent_section(report.get("agent"))}
 <h2>Constats, du plus coûteux au moins coûteux</h2>{cards}
 <h2>Rien à signaler</h2>
 <p class="note">Ces applications ne déclenchent aucune des vérifications ci-dessus.</p>

@@ -103,6 +103,14 @@ La base par défaut est `out/events.db`. Pour la changer, définissez
 `make audit` charge le même fichier de configuration. Pour le compteur manuel,
 ajoutez `--db /chemin/vers/events.db`.
 
+## Agent auditeur
+
+Avec une clé dans `.env.local` (`DW_LLM_API_KEY`, la vôtre : l'audit tourne chez vous), `make audit`
+confie l'enquête à un agent. Il regarde votre trafic, choisit les constats qui coûtent le plus, prouve
+par rejeu ceux qui peuvent l'être, et publie un plan d'action priorisé en tête du rapport, avec le
+détail de sa démarche. Il ne calcule rien lui-même : un plan qui cite un chiffre absent des
+vérifications est refusé et l'agent doit se corriger. Sans clé, le rapport est le même, sans plan.
+
 ## Prix des modèles
 
 Les coûts viennent de `fixtures/pricing.json`, le catalogue public d'OpenRouter (prix d'entrée,
