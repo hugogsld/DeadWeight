@@ -92,6 +92,7 @@ class AuditTools:
         self.detectors = detectors if detectors is not None else _discover_detectors()
         self._findings = None
         self.proofs = {}
+        self.methods = {}  # méthode d'extraction par constat prouvé : « offline » ou « llm »
         self.attempted = set()  # constats passés par prouver, même en échec
 
     def findings(self):
@@ -116,7 +117,10 @@ class AuditTools:
             for a, evts in sorted(apps.items(), key=lambda kv: -len(kv[1]))]}
 
     def lancer_regles(self):
-        return {"a_prouver_avant_de_publier": self.unproven(), "constats": [
+        # nb_verifications : nombre reel de verifications lancees (probleme 16, le rapport ne doit
+        # pas afficher un nombre fige alors que rules/ en compte davantage ou moins).
+        return {"nb_verifications": len(self.detectors), "a_prouver_avant_de_publier": self.unproven(),
+                "constats": [
             {"finding_id": f["finding_id"], "verification": RULE_TEXT.get(f["rule"], (f["rule"],))[0],
              "app_id": f["app_id"], "modele": f["model"], "appels": c["nb_appels"],
              "prouvable_par_rejeu": f["rule"] in REPLAYABLE,
@@ -146,6 +150,7 @@ class AuditTools:
         rules = extract_rules(f, self.events, llm=self.llm)
         proof = replay(f, self.events, rules)
         self.proofs[finding_id] = proof
+        self.methods[finding_id] = rules["method"]
         return {"finding_id": finding_id, "verdict": proof["verdict"], "raisons": proof["reasons"][:3],
                 "categories": [c["key"] for c in rules["categories"]], "methode_extraction": rules["method"],
                 "appels_rejoues": proof["n_replayed"], "accord_pct": _pct(proof["agreement_rate"]),

@@ -158,7 +158,7 @@ def build_report(events, detectors=None, banc=None):
             alternatives = {k: ({**o, "banc": tested[k]} if o and k in tested and tested[k]["model"] == o["modele"]
                                 else o) for k, o in alternatives.items()}
         constats.append({
-            "app_id": f["app_id"], "model": f["model"], "titre": titre, "phrase": f["title"],
+            "finding_id": f["finding_id"], "app_id": f["app_id"], "model": f["model"], "titre": titre, "phrase": f["title"],
             "action": action, "prouve": f.get("proven", False), "gravite": f.get("severity"),
             "chiffres": chiffres, "raisons_manquantes": _missing_reasons(chiffres["manquants"]),
             "alternatives": alternatives,
@@ -318,7 +318,12 @@ Aucune piste n'est prouvée : un modèle européen se teste au banc avant de cha
 def _card(c):
     n, e = c["chiffres"], html.escape
     notes = []
-    if not c["prouve"]:
+    proof = c.get("preuve_agent")
+    if proof:
+        how = {"llm": "règles extraites par IA", "offline": "règles extraites sans IA"}.get(proof.get("methode"), "")
+        notes.append(f"Rejoué par l'agent auditeur : {proof['verdict'].upper()}, {proof['accord_pct']:g} % d'accord"
+                     + (f" ({how})." if how else "."))
+    elif not c["prouve"]:
         notes.append("Constat statistique, pas encore vérifié par rejeu.")
     if c["raisons_manquantes"]:
         notes.append("Chiffre manquant : " + "; ".join(c["raisons_manquantes"]) + ".")
@@ -334,9 +339,16 @@ def _card(c):
 {''.join(f'<p class="note">{e(x)}</p>' for x in notes)}</div>"""
 
 
-TOOL_TEXT = {"vue_ensemble": "a regardé l'ensemble du trafic", "lancer_regles": "a lancé les six vérifications",
+TOOL_TEXT = {"vue_ensemble": "a regardé l'ensemble du trafic", "lancer_regles": "a lancé les vérifications",
              "detail_constat": "a examiné un constat", "prouver": "a rejoué des règles fixes sur l'historique",
              "publier_plan": "a publié son plan"}
+
+
+def _step_text(step):
+    """Le texte d'une étape ; le nombre de vérifications vient du résultat, jamais d'un chiffre figé."""
+    text = TOOL_TEXT.get(step["outil"], step["outil"])
+    n = (step.get("resultat") or {}).get("nb_verifications")
+    return text.replace("les vérifications", f"les {n} vérifications") if n else text
 
 
 def _agent_section(agent):
@@ -353,7 +365,7 @@ def _agent_section(agent):
         f"<br><span class=\"note\">{e(a['justification'])}</span></li>"
         for a in sorted(plan["actions"], key=lambda a: a["priorite"]))
     steps = "".join(
-        f"<li>L'agent {e(TOOL_TEXT.get(j['outil'], j['outil']))}"
+        f"<li>L'agent {e(_step_text(j))}"
         + (f" — <i>{e(j['pensee'])}</i>" if j.get("pensee") else "")
         + (f" (verdict : {e(j['resultat']['verdict'])}, accord {e(str(j['resultat']['accord_pct']))} %)"
            if j["outil"] == "prouver" and "verdict" in j["resultat"] else "")

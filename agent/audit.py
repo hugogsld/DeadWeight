@@ -25,6 +25,8 @@ def audit(events, llm=None, extract_llm=None, model_name=None):
     report = build_report(events)
     if llm is not None and events:
         report["agent"] = run_agent(AuditTools(events, llm=extract_llm), llm, model_name=model_name)
+        proofs = report["agent"].get("preuves") or {}
+        report["constats"] = [{**c, "preuve_agent": proofs.get(c.get("finding_id"))} for c in report["constats"]]
     return report
 
 
