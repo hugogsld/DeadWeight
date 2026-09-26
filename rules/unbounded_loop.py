@@ -5,13 +5,25 @@ l'ordre des étapes. Une action est une *répétition* si le même outil a déj�
 appelé dans cette trace avec des arguments quasi identiques. Une trace est une
 boucle quand les répétitions sont à la fois nombreuses et majoritaires.
 
+Comparaison des arguments, argument par argument :
+
+- Deux appels du même outil se ressemblent si CHAQUE argument se ressemble :
+  mêmes clés, et pour chaque clé des mots proches (Jaccard >= SIMILARITY,
+  pluriel en -s retiré, chiffres gardés). Comparer clé par clé, et non tous
+  les mots mélangés, évite qu'une longue partie commune (une URL) masque ce
+  qui change : ``{url: <longue>, page: 3}`` et ``{url: <longue>, page: 4}``
+  diffèrent sur ``page``, la pagination avance.
+- Les identifiants techniques sont ignorés : ils changent à chaque appel sans
+  rien dire de ce que l'agent demande. Une clé est ignorée si elle porte un nom
+  de transport (request_id, nonce, idempotency_key, timestamp…) ou si toutes ses
+  valeurs ressemblent à des jetons aléatoires (UUID, hexadécimal long, horodatage).
+  Les identifiants métier sont gardés : ``order_id: "ORD-2026-000123"`` puis
+  ``"ORD-2026-000124"``, c'est un agent qui traite deux commandes, pas une boucle.
+
 Seuils et raisonnement :
 
-- SIMILARITY = 0.6 (Jaccard sur les mots des arguments, pluriel en -s retiré,
-  chiffres gardés). « tarif entreprise » / « tarifs entreprise 2026 » = 0,67 :
-  même recherche reformulée. « read_page page 3 » / « page 4 » avec une URL
-  courte reste sous le seuil : une pagination avance. Les chiffres sont gardés
-  exprès, sinon toute pagination deviendrait une boucle.
+- SIMILARITY = 0.6 : « tarif entreprise » / « tarifs entreprise 2026 » = 0,67,
+  même recherche reformulée ; « prix pétrole » / « production opep » = 0.
 - MIN_REPEATS = 5 : relancer un outil deux ou trois fois (erreur, vérification,
   résultat vide) est un comportement normal d'agent. Six appels ou plus à la
   même action dans une seule trace, c'est l'agent qui n'exploite pas ce qu'il
@@ -26,8 +38,10 @@ encore un outil n'a jamais rendu de réponse. Ce n'est pas exigé (une boucle qu
 finit par répondre a quand même payé ses répétitions) mais c'est ce qui décide
 de la gravité : ``cut`` sans réponse finale, ``trim`` sinon.
 
-Angle mort connu : une pagination dont les arguments sont longs et ne diffèrent
-que par un numéro peut dépasser le seuil. D'où ``proven = False``.
+Cas assumé : un agent qui interroge 8 fois l'état d'un même job en attendant
+qu'il finisse est signalé. Il paie un appel de modèle par interrogation pour
+une attente qu'un simple minuteur ferait. Angle mort : un identifiant métier
+qui a l'air aléatoire (hexadécimal long) est ignoré à tort. D'où ``proven = False``.
 """
 import hashlib
 import json
@@ -41,21 +55,58 @@ MIN_REPEATS = 5
 MIN_REPEAT_SHARE = 0.5
 
 _WORDS = re.compile(r"[^\W_]+")
+# Identifiants de transport : changent à chaque appel, ne disent rien de la demande.
+NOISE_KEYS = re.compile(r"(^|[._])(request_?id|requestid|idempotency_?key|nonce|trace_?id|"
+                        r"correlation_?id|timestamp|ts|cache_?buster)$", re.I)
+_RANDOM = re.compile(
+    r"^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"  # UUID
+    r"|[0-9a-f]{16,}"                                                     # hexadécimal long
+    r"|\d{10,13}"                                                         # horodatage epoch
+    r"|\d{4}-\d{2}-\d{2}[t ]\d{2}:\d{2}(:\d{2}(\.\d+)?)?(z|[+-]\d{2}:?\d{2})?)$", re.I)  # ISO 8601
 
 
-def _words(arguments):
+def _flat(arguments):
+    """Arguments -> {chemin de clé: valeur texte}. Non-JSON : une seule clé."""
     try:
         value = json.loads(arguments)
-        text = " ".join(str(v) for v in value.values()) if isinstance(value, dict) else str(value)
     except (TypeError, ValueError):
-        text = str(arguments or "")
-    return {w[:-1] if len(w) > 3 and w.endswith("s") else w for w in _WORDS.findall(text.lower())}
+        return {"": str(arguments or "")}
+    out = {}
+
+    def walk(v, path):
+        if isinstance(v, dict):
+            for k, x in v.items():
+                walk(x, f"{path}.{k}" if path else str(k))
+        elif isinstance(v, list) and any(isinstance(x, (dict, list)) for x in v):
+            for i, x in enumerate(v):
+                walk(x, f"{path}[{i}]")
+        else:
+            out[path] = " ".join(map(str, v)) if isinstance(v, list) else str(v)
+    walk(value, "")
+    return out
+
+
+def _words(text):
+    return frozenset(w[:-1] if len(w) > 3 and w.endswith("s") else w for w in _WORDS.findall(text.lower()))
+
+
+def _noise_keys(calls):
+    """Clés à ignorer pour un outil dans une trace : nom de transport, ou valeurs toutes aléatoires."""
+    keys = {k for c in calls for k in c}
+    return {k for k in keys
+            if NOISE_KEYS.search(k)
+            or all(k in c and _RANDOM.match(c[k].strip()) for c in calls)}
 
 
 def _similar(a, b):
-    if not a and not b:
-        return True
-    return len(a & b) / len(a | b) >= SIMILARITY
+    """a, b : {clé: mots}. Mêmes clés, et chaque valeur proche."""
+    if a.keys() != b.keys():
+        return False
+    for k in a:
+        x, y = a[k], b[k]
+        if (x or y) and (not x or not y or len(x & y) / len(x | y) < SIMILARITY):
+            return False
+    return True
 
 
 def traces(events):
@@ -73,17 +124,24 @@ def traces(events):
 
 def analyse(evts):
     """Actions demandées, répétitions, et présence d'une réponse finale."""
-    seen = defaultdict(list)
-    actions = repeats = 0
+    by_tool = defaultdict(list)
+    order = []
     for e in evts:
         for call in e["response"]["tool_calls"]:
-            words = _words(call["arguments"])
-            actions += 1
-            if any(_similar(words, w) for w in seen[call["name"]]):
-                repeats += 1
-            seen[call["name"]].append(words)
+            flat = _flat(call["arguments"])
+            by_tool[call["name"]].append(flat)
+            order.append((call["name"], flat))
+    noise = {tool: _noise_keys(calls) for tool, calls in by_tool.items()}
+
+    seen = defaultdict(list)
+    repeats = 0
+    for tool, flat in order:
+        sig = {k: _words(v) for k, v in flat.items() if k not in noise[tool]}
+        if any(_similar(sig, prev) for prev in seen[tool]):
+            repeats += 1
+        seen[tool].append(sig)
     final = not evts[-1]["response"]["tool_calls"] and evts[-1]["response"].get("content") is not None
-    return actions, repeats, final
+    return len(order), repeats, final
 
 
 def _detect_traces(events):

@@ -1,5 +1,6 @@
 """D2.4 R5 : un agent qui relance la même action, sans condamner un agent qui avance."""
 import json
+import uuid
 from pathlib import Path
 
 import pytest
@@ -66,6 +67,46 @@ def test_a_few_retries_are_normal():
 def test_pagination_progresses():
     calls = [("read_page", {"page": str(p)}) for p in range(1, 21)]
     assert detect(agent_run(calls, final="synthèse")) == []
+
+
+LONG_URL = "https://api.example.com/v2/customers/list?region=eu&status=active&sort=created_at"
+
+
+@pytest.mark.parametrize("page", [str, int], ids=["texte", "nombre"])
+def test_pagination_with_long_shared_arguments_progresses(page):
+    """Comparer tous les mots mélangés ferait passer ceci pour une boucle : l'URL écrase le numéro."""
+    calls = [("fetch", {"url": LONG_URL, "page": page(p)}) for p in range(1, 11)]
+    assert detect(agent_run(calls, final="liste complète")) == []
+
+
+@pytest.mark.parametrize("noise", [
+    lambda i: {"request_id": f"req-{i:04x}-9f3a-{i * 7919:05d}"},
+    lambda i: {"ref": str(uuid.uuid4())},
+    lambda i: {"at": f"2026-09-26T10:{i:02d}:00Z"},
+    lambda i: {"meta": {"nonce": f"n{i}"}},
+], ids=["request_id", "uuid", "horodatage", "nonce imbriqué"])
+def test_loop_hidden_behind_technical_ids_is_found(noise):
+    calls = [("search", {"q": "tarif entreprise", **noise(i)}) for i in range(10)]
+    assert len(detect(agent_run(calls))) == 1
+
+
+@pytest.mark.parametrize("order_id", [lambda i: f"ORD-2026-{123 + i:06d}", lambda i: f"A-{1000 + i}"],
+                         ids=["long", "court"])
+def test_business_ids_are_kept(order_id):
+    """Dix commandes différentes : un agent qui traite un lot, pas une boucle."""
+    calls = [("get_order", {"order_id": order_id(i)}) for i in range(10)]
+    assert detect(agent_run(calls, final="lot traité")) == []
+
+
+def test_polling_the_same_job_is_reported():
+    """Choix assumé : un appel de modèle par interrogation, pour une attente qu'un minuteur ferait."""
+    assert len(detect(agent_run([("get_job_status", {"job_id": "job_8812"})] * 8, final="fini"))) == 1
+
+
+def test_other_arguments_must_match_too():
+    calls = [("search", {"q": "tarif entreprise", "lang": lang}) for lang in
+             ["fr", "en", "de", "es", "it", "pt", "nl", "pl"]]
+    assert detect(agent_run(calls, final="ok")) == []
 
 
 def test_progressing_agent_with_varied_arguments():
