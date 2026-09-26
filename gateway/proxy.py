@@ -9,6 +9,7 @@ L'en-tête Authorization du client est relayé tel quel. Il n'est jamais
 stocké, jamais journalisé, jamais mis dans l'événement.
 """
 import asyncio
+import json
 import logging
 import os
 import time
@@ -17,6 +18,7 @@ from datetime import datetime, timezone
 from aiohttp import ClientError, ClientSession, ClientTimeout, TCPConnector, web
 from yarl import URL
 
+from gateway import shortcircuit
 from gateway.capture import StreamAccumulator, build_event
 
 log = logging.getLogger("deadweight.gateway")
@@ -35,6 +37,7 @@ RESP_DROP = HOP | {"content-encoding"}
 UPSTREAM_KEY = web.AppKey("upstream", str)
 SINK = web.AppKey("on_event", object)
 SESSION = web.AppKey("session", ClientSession)
+SHORTCUT = web.AppKey("shortcut", dict)
 
 
 def _now():
@@ -55,6 +58,25 @@ def _emit(app, event):
         log.exception("capture: sink en échec")
 
 
+async def _answer(request, meta, t0, finding_id, output):
+    """D3.3 : réponse rendue par les règles prouvées, sans appel amont. Capturée quand même."""
+    streaming = bool(json.loads(meta["req_body"]).get("stream"))
+    payload = shortcircuit.stream(output) if streaming else shortcircuit.completion(output)
+    resp = web.Response(status=200, body=payload, headers={"x-deadweight-shortcircuit": finding_id},
+                        content_type="text/event-stream" if streaming else "application/json")
+    acc = None
+    if streaming:
+        acc = StreamAccumulator()
+        acc.feed(payload)
+    latency = (time.perf_counter() - t0) * 1000
+    _emit(request.app, build_event(**{**meta, "upstream": "deadweight"}, status=200,
+                                   resp_body=None if streaming else payload, stream=acc,
+                                   ts_end=_now(), latency_ms=latency,
+                                   ttft_ms=latency if streaming else None))
+    log.info("court-circuit %s %s", meta["app_id"], finding_id)
+    return resp
+
+
 async def relay(request):
     app = request.app
     t0 = time.perf_counter()
@@ -70,6 +92,10 @@ async def relay(request):
     meta = dict(req_body=body, upstream=URL(app[UPSTREAM_KEY]).host, app_id=request.headers.get("x-deadweight-app") or "default",
                 trace_id=request.headers.get("x-deadweight-trace") or None,
                 endpoint=request.path, ts_start=ts_start)
+
+    hit = shortcircuit.match(app[SHORTCUT], body, meta["app_id"]) if captured else None
+    if hit is not None:
+        return await _answer(request, meta, t0, *hit)
 
     try:
         upstream = await app[SESSION].request(request.method, url, headers=headers,
@@ -130,10 +156,14 @@ async def _close(app):
     await app[SESSION].close()
 
 
-def make_app(upstream=None, on_event=None):
+def make_app(upstream=None, on_event=None, shortcut=None):
     app = web.Application(client_max_size=64 * 1024 * 1024)
     app[UPSTREAM_KEY] = (upstream or UPSTREAM).rstrip("/")
     app[SINK] = on_event or log_event
+    path = shortcut or os.environ.get("GATEWAY_SHORTCIRCUIT")
+    app[SHORTCUT] = shortcircuit.load(path) if path else {}
+    if app[SHORTCUT]:
+        log.info("court-circuit actif sur %d constat(s) prouvé(s)", len(app[SHORTCUT]))
     app.on_startup.append(_open)
     app.on_cleanup.append(_close)
     app.router.add_route("*", "/{tail:.*}", relay)
