@@ -152,3 +152,24 @@ def test_report_shows_alternatives_only_on_r2_cards(events):
 def test_small_amounts_keep_their_order_of_magnitude(value, text):
     from report.audit import _usd
     assert _usd(value) == text
+
+
+def _squeezed(events, seconds):
+    """Mêmes appels, ramassés sur ``seconds`` secondes de trafic."""
+    out = []
+    for i, e in enumerate(events):
+        e = dict(e)
+        t = f"2026-09-20T09:00:{i * seconds // len(events):02d}"
+        e["ts_start"], e["ts_end"] = t + "Z", t + ".5Z"
+        out.append(e)
+    return out
+
+
+def test_no_monthly_figure_on_less_than_an_hour_of_traffic(events):
+    """Bug : la carte disait « projection non fiable » mais les alternatives affichaient un coût mensuel."""
+    short = _squeezed([e for e in events if e["app_id"] == "mail-triage"], 30)
+    rec = recommend(short)
+    assert rec["options"] == {} and rec["cout_mensuel_usd"] is None and "moins d'une heure" in rec["raison"]
+    card = next(c for c in build_report(short)["constats"] if c["alternatives"] is not None)
+    assert card["chiffres"]["cout_mensuel_usd"] is None
+    assert "Autres modèles compatibles" not in render_html(build_report(short))

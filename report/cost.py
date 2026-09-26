@@ -13,6 +13,8 @@ from statistics import median
 
 PRICING_PATH = Path(__file__).resolve().parents[1] / 'fixtures' / 'pricing.json'
 MONTH_SECONDS = 30 * 24 * 60 * 60
+# En dessous d'une heure de trafic, une projection sur un mois n'est pas fiable.
+MIN_WINDOW_SECONDS = 60 * 60
 # suffixes de version datée : claude-sonnet-4-5-20250929, gpt-4o-2024-08-06, gemini-2.0-flash-001
 _DATED = re.compile(r"(-\d{8}|-\d{4}-\d{2}-\d{2}|@\d{8}|-0\d\d)$")
 
@@ -118,3 +120,12 @@ def chiffrer(events, pricing=None):
     if not missing:
         result['cout_mensuel_usd'] = math.fsum(costs) * MONTH_SECONDS / duration
     return result
+
+
+def window_seconds(events):
+    """Durée observée, du premier début au dernier fin d'appel."""
+    if not events:
+        return 0
+    start = min(datetime.fromisoformat(e["ts_start"].replace("Z", "+00:00")) for e in events)
+    end = max(datetime.fromisoformat(e["ts_end"].replace("Z", "+00:00")) for e in events)
+    return (end - start).total_seconds()
