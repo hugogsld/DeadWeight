@@ -95,3 +95,15 @@ def test_short_traffic_shows_observed_cost_not_a_monthly_projection():
     assert any("moins d'une heure" in r for r in report["raisons_globales"])
     page = render_html(report)
     assert "coût observé total" in page and "315" not in page
+
+
+def test_unpriced_calls_give_a_partial_cost_not_nothing():
+    from report.cost import chiffrer
+    priced = [e for e in EVENTS if e["error"] is None and chiffrer([e])["cout_mensuel_usd"]][:10]
+    events = [{**e, "ts_start": f"2026-09-26T{8 + i:02d}:00:00Z", "ts_end": f"2026-09-26T{8 + i:02d}:00:01Z"}
+              for i, e in enumerate(priced)]
+    events[0] = {**events[0], "model": "modele-maison-inconnu"}
+    g = build_report(events, detectors=[])["resume"]["global"]
+    assert g["cout_mensuel_usd"] > 0 and g["part_chiffree"] == 0.9
+    page = render_html(build_report(events, detectors=[]))
+    assert "partiel, 90 % des appels" in page and "modele-maison-inconnu" in page

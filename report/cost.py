@@ -6,12 +6,29 @@ Une entrée peut en plus fournir ``cached_in`` : aucun rabais n'est inféré.
 """
 import json
 import math
+import re
 from datetime import datetime
 from pathlib import Path
 from statistics import median
 
 PRICING_PATH = Path(__file__).resolve().parents[1] / 'fixtures' / 'pricing.json'
 MONTH_SECONDS = 30 * 24 * 60 * 60
+# suffixes de version datée : claude-sonnet-4-5-20250929, gpt-4o-2024-08-06, gemini-2.0-flash-001
+_DATED = re.compile(r"(-\d{8}|-\d{4}-\d{2}-\d{2}|@\d{8}|-0\d\d)$")
+
+
+def lookup(prices, model):
+    """Prix d'un modèle tel que l'appelle le client : nom exact, sans préfixe
+    fournisseur, puis sans suffixe de date. None si inconnu."""
+    if not model:
+        return None
+    for name in (model, model.split("/", 1)[-1]):
+        if name in prices:
+            return prices[name]
+        base = _DATED.sub("", name)
+        if base != name and base in prices:
+            return prices[base]
+    return None
 
 
 def chiffrer(events, pricing=None):
@@ -71,9 +88,7 @@ def chiffrer(events, pricing=None):
             if (field != 'cached_input_tokens' or field in usage) and usage.get(field) is None:
                 reasons.append(f'usage.{field} inconnu')
         model = e['model']
-        price = prices.get(model)
-        if price is None and '/' in model:
-            price = prices.get(model.split('/', 1)[1])
+        price = lookup(prices, model)
         if price is None:
             reasons.append(f'modele absent du catalogue : {model}')
         else:

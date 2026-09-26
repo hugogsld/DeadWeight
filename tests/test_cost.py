@@ -123,11 +123,29 @@ def test_default_catalog_is_loaded_relative_to_module(monkeypatch, tmp_path):
     assert result['cout_mensuel_usd'] == pytest.approx((1000 * prices['in'] + 100 * prices['out']) / 1e6 * 30)
 
 
-def test_real_fixtures_report_unpriced_models_and_keep_counts():
+def test_real_fixtures_are_all_priced_and_keep_counts():
+    # le catalogue connaît les noms des API (claude-sonnet-4-5, suffixes de date) : tout est chiffré
     before = copy.deepcopy(EVENTS)
     result = chiffrer(EVENTS)
     assert result['nb_appels'] == 50 and result['nb_erreurs'] == 1
-    assert result['cout_mensuel_usd'] is None
-    assert result['manquants']
+    assert result['cout_mensuel_usd'] > 0 and result['manquants'] == []
     assert result['latence_mediane_ms'] > 0
     assert EVENTS == before
+
+
+def test_unknown_model_is_still_reported():
+    events = copy.deepcopy(EVENTS)
+    events[0]['model'] = 'modele-maison-inconnu'
+    result = chiffrer(events)
+    assert result['cout_mensuel_usd'] is None
+    assert any('modele-maison-inconnu' in m for m in result['manquants'])
+
+
+def test_lookup_accepts_api_names_and_dated_versions():
+    from report.cost import lookup
+    prices = {'claude-sonnet-4-5': {'in': 3}, 'gpt-4o': {'in': 2.5}, 'gemini-2.0-flash': {'in': 0.1}}
+    assert lookup(prices, 'claude-sonnet-4-5-20250929') == {'in': 3}
+    assert lookup(prices, 'gpt-4o-2024-08-06') == {'in': 2.5}
+    assert lookup(prices, 'openai/gpt-4o') == {'in': 2.5}
+    assert lookup(prices, 'gemini-2.0-flash-001') == {'in': 0.1}
+    assert lookup(prices, 'inconnu') is None and lookup(prices, None) is None

@@ -103,6 +103,16 @@ La base par défaut est `out/events.db`. Pour la changer, définissez
 `make audit` charge le même fichier de configuration. Pour le compteur manuel,
 ajoutez `--db /chemin/vers/events.db`.
 
+## Prix des modèles
+
+Les coûts viennent de `fixtures/pricing.json`, le catalogue public d'OpenRouter (prix d'entrée,
+de sortie et du cache, en dollars par million de jetons). Pour le rafraîchir :
+
+    make prices
+
+Les noms des API sont reconnus tels quels (`claude-sonnet-4-5`, `gpt-4o-2024-08-06`). Si un
+modèle reste inconnu, le rapport chiffre les autres appels et indique la part couverte.
+
 ## Confidentialité
 
 - **La clé n’est jamais stockée** par la passerelle : l’en-tête d’autorisation est

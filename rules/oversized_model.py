@@ -11,7 +11,7 @@ from collections import defaultdict
 from pathlib import Path
 from statistics import median
 
-from report.cost import chiffrer
+from report.cost import chiffrer, lookup
 from rules.low_entropy import normalize, template_of
 
 PRICING_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "pricing.json"
@@ -41,7 +41,7 @@ def _load_pricing():
 
 
 def is_premium(model, pricing):
-    price = pricing.get(model)
+    price = lookup(pricing, model)
     if price and isinstance(price.get("in"), (int, float)):
         return price["in"] >= PREMIUM_PRICE_IN
     name = model.lower()
@@ -51,9 +51,9 @@ def is_premium(model, pricing):
 def suggest_model(provider, model, pricing):
     """Le moins cher de la meme famille present au catalogue, sinon le premier de la liste."""
     options = [m for m in SMALL_BY_PROVIDER.get(provider, []) if m != model]
-    priced = [m for m in options if m in pricing]
+    priced = [m for m in options if lookup(pricing, m)]
     if priced:
-        return min(priced, key=lambda m: pricing[m]["in"])
+        return min(priced, key=lambda m: lookup(pricing, m)["in"])
     return options[0] if options else None
 
 
