@@ -80,6 +80,60 @@ def is_captured(provider, method, path):
     return path.endswith((":generateContent", ":streamGenerateContent")) and "/models/" in path
 
 
+def _ask_usage(provider, path, body):
+    """Streaming OpenAI sans ``stream_options.include_usage`` : OpenAI ne dit pas combien de
+    jetons il facture. On le demande à la place du client, qui n'en voit rien (_DropUsage).
+    Renvoie (corps à envoyer en amont, demandé ?). Si le client a choisi, on respecte."""
+    if provider != "openai" or path != "/v1/chat/completions":
+        return body, False
+    try:
+        req = json.loads(body)
+    except ValueError:
+        return body, False
+    opts = req.get("stream_options") if isinstance(req, dict) else None
+    if not isinstance(req, dict) or not req.get("stream") or not isinstance(opts, (dict, type(None))):
+        return body, False
+    if opts and "include_usage" in opts:
+        return body, False
+    req["stream_options"] = {**(opts or {}), "include_usage": True}
+    return json.dumps(req, ensure_ascii=False).encode(), True
+
+
+class _DropUsage:
+    """Retire du flux rendu au client le seul morceau qu'on a ajouté : celui de l'usage
+    (``choices: []``). Découpe par évènement SSE, quelles que soient les coupures réseau."""
+
+    def __init__(self):
+        self.buf = b""
+
+    def feed(self, chunk):
+        self.buf += chunk
+        out = []
+        while True:
+            cuts = [(i, len(sep)) for sep in (b"\n\n", b"\r\n\r\n") if (i := self.buf.find(sep)) >= 0]
+            if not cuts:
+                return b"".join(out)
+            i, n = min(cuts)
+            event, self.buf = self.buf[:i + n], self.buf[i + n:]
+            if not self._usage_only(event):
+                out.append(event)
+
+    def flush(self):
+        rest, self.buf = self.buf, b""
+        return rest
+
+    @staticmethod
+    def _usage_only(event):
+        for line in event.splitlines():
+            if line.startswith(b"data:"):
+                try:
+                    obj = json.loads(line[5:])
+                except ValueError:
+                    return False
+                return isinstance(obj, dict) and obj.get("choices") == [] and obj.get("usage") is not None
+        return False
+
+
 def _emit(app, event):
     try:
         app[SINK](event)
@@ -130,9 +184,11 @@ async def relay(request):
     if hit is not None:
         return await _answer(request, meta, t0, *hit)
 
+    # l'événement garde la requête du client ; seul l'amont reçoit la demande d'usage
+    sent, asked_usage = _ask_usage(provider, path, body) if captured else (body, False)
     try:
         upstream = await app[SESSION].request(request.method, url, headers=headers,
-                                                data=body or None, allow_redirects=False)
+                                                data=sent or None, allow_redirects=False)
     except (ClientError, asyncio.TimeoutError, OSError) as exc:
         payload = ('{"error":{"message":"deadweight: upstream unreachable","type":"deadweight_upstream_error",'
                    '"param":null,"code":null}}').encode()
@@ -155,13 +211,18 @@ async def relay(request):
 
         if streaming:
             await resp.prepare(request)
+            drop = _DropUsage() if asked_usage else None
             try:
                 async for chunk in upstream.content.iter_any():
                     if ttft is None:
                         ttft = (time.perf_counter() - t0) * 1000
-                    await resp.write(chunk)
+                    out = drop.feed(chunk) if drop else chunk
+                    if out:
+                        await resp.write(out)
                     if acc is not None:
                         acc.feed(chunk)
+                if drop and (rest := drop.flush()):
+                    await resp.write(rest)
                 await resp.write_eof()
             except (ConnectionResetError, ClientError) as exc:
                 transport_error = {"type": "stream_interrupted", "message": type(exc).__name__}

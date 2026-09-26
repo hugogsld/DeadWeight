@@ -290,6 +290,12 @@ path. The database stays on your machine. Once your normal traffic has run for a
 
 Stop the gateway with Ctrl+C or SIGTERM: pending events are flushed before it exits.
 
+**Streaming token counts.** OpenAI only reports usage in a stream when the client sets
+`stream_options.include_usage`. When the client says nothing, the gateway asks for it and
+removes that extra usage chunk before relaying: the client gets the same bytes as a direct
+call, and the event gets real token counts. A client that sets `include_usage` either way
+is left alone.
+
 **Traces.** `export` groups the calls of one workflow into traces (`trace.id`, `trace.step`),
 which the loop and context rules need. If your application sets `x-deadweight-trace`, that
 id is used as is. Otherwise the gateway infers it: a call continues an earlier one when it
