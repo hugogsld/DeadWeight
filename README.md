@@ -173,6 +173,13 @@ les reconstitue depuis les nœuds outils. Il ne sépare pas non plus la part ser
 le coût est donc un plafond (tout au prix plein). `comprehension.json` dit ce qui a été lu :
 jetons réels, estimés par n8n, appels illisibles — et le **taux d'appels LLM compris**.
 
+Données personnelles : `convert --anonymize` remplace emails, téléphones, IBAN et numéros de
+carte par des étiquettes stables (`[email-1]`, `[telephone-2]`…) ; une même valeur garde la
+même étiquette, les règles gardent donc leur signal. Envoyez-nous alors seulement
+`events.jsonl`, pas `executions.jsonl` (brut). Après l'analyse :
+
+    python3 -m importers.n8n purge private/n8n/<id>
+
 ## Confidentialité
 
 - **La clé n’est jamais stockée** par la passerelle : l’en-tête d’autorisation est
