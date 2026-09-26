@@ -41,23 +41,14 @@ DELIVERABLES = [
 ]
 # Roadmap v2 (ROADMAP_V2.md) : lots A, B, C, M (modeles), E (partenaires), Q (tests), V (video)
 DELIVERABLES_V2 = [
-    ("A1", "Agent auditeur", 3, [], False),
+    ("A1", "Agent auditeur", 7, [], False),
+    ("B1", "Import de l'historique n8n", 6, [], False),
+    ("B3", "Analyse du premier workflow", 3, [], False),
+    ("M1", "Catalogue : origine, hébergement, qualité, vitesse", 4, [], False),
+    ("M2", "Recommandations de modèles", 5, ["M1"], False),
+    ("Q1", "Boucle de bout en bout en CI", 1, [], False),
     ("A2", "Section « construit pendant le hackathon »", 0.5, [], False),
     ("A3", "Inscriptions X-IA et Luma", 0.25, [], False),
-    ("B1", "Banc n8n branché sur la passerelle", 2, [], False),
-    ("B2", "Convertisseur de logs", 1, [], False),
-    ("B3", "Analyse des vrais workflows", 3, [], False),
-    ("B4", "Trouver un 3e workflow", 1, [], False),
-    ("B5", "Confidentialité des données clients", 0.5, [], False),
-    ("C1", "Relais HTTP générique (outils)", 2, [], False),
-    ("C2", "Constats outils", 1.5, ["C1"], False),
-    ("M1", "Catalogue de modèles", 1.5, [], False),
-    ("M2", "Recommandations concrètes", 2, ["M1"], False),
-    ("E1", "Export Pipelex", 2, [], True),
-    ("E2", "Résumé vocal Gradium", 1, [], True),
-    ("E3", "Agent Dust", 1.5, [], True),
-    ("Q1", "Test de bout en bout en CI", 1, ["D4.2"], False),
-    ("Q2", "Tests dorés sur vrais workflows", 1, ["B3"], False),
     ("V1", "Script de la vidéo", 1, [], False),
     ("V2", "Tournage et montage", 2, ["V1"], False),
     ("V3", "Description et README final", 0.5, ["A2"], False),
@@ -159,7 +150,7 @@ def main():
     block = render(compute(issues, prs), now)
     if "--check" in sys.argv:
         # publie dans l'issue épinglée : v2 d'abord (le travail en cours), puis v1
-        v2 = render(compute(issues, prs, DELIVERABLES_V2), now, "tâches de la v2 faites (hors partenaires)")
+        v2 = render(compute(issues, prs, DELIVERABLES_V2), now, "tâches de la v2 faites")
         print("## Roadmap v2 — samedi après-midi → dimanche\n\n" + v2 + "\n\n## Roadmap v1\n\n" + block)
         return
     ROADMAP.write_text(replace_block(ROADMAP.read_text(encoding="utf-8"), block), encoding="utf-8")
