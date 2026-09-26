@@ -3,7 +3,7 @@ PY := $(shell command -v python3.11 || command -v python3)
 VENV := .venv
 BIN := $(VENV)/bin
 
-.PHONY: dev install test lint
+.PHONY: dev install test lint record
 
 dev: install .env.local
 	@set -a; . ./.env.local; set +a; \
@@ -27,3 +27,7 @@ test: install
 
 lint: install
 	$(BIN)/ruff check .
+
+# appelle les vraies API une fois et ecrit tests/cassettes/ (cles de .env.local, jamais ecrites)
+record: install .env.local
+	@set -a; . ./.env.local; set +a; $(BIN)/python -m pytest -q --record-mode=once
