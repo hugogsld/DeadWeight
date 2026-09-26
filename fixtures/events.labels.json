@@ -1,0 +1,122 @@
+[
+  {
+    "scenario": "low_entropy_classifier",
+    "app_id": "mail-triage",
+    "expected_rules": [
+      "low_entropy_output",
+      "oversized_model"
+    ],
+    "event_ids": [
+      "evt_0001",
+      "evt_0002",
+      "evt_0003",
+      "evt_0004",
+      "evt_0005",
+      "evt_0006",
+      "evt_0007",
+      "evt_0008",
+      "evt_0009",
+      "evt_0010"
+    ]
+  },
+  {
+    "scenario": "oversized_sentiment",
+    "app_id": "reviews",
+    "expected_rules": [
+      "oversized_model",
+      "low_entropy_output"
+    ],
+    "event_ids": [
+      "evt_0011",
+      "evt_0012",
+      "evt_0013",
+      "evt_0014",
+      "evt_0015",
+      "evt_0016"
+    ]
+  },
+  {
+    "scenario": "raw_context_chat",
+    "app_id": "contract-bot",
+    "expected_rules": [
+      "raw_context"
+    ],
+    "event_ids": [
+      "evt_0017",
+      "evt_0018",
+      "evt_0019",
+      "evt_0020",
+      "evt_0021",
+      "evt_0022"
+    ]
+  },
+  {
+    "scenario": "no_cache_repeats",
+    "app_id": "faq-bot",
+    "expected_rules": [
+      "no_cache"
+    ],
+    "event_ids": [
+      "evt_0023",
+      "evt_0024",
+      "evt_0025",
+      "evt_0026",
+      "evt_0027",
+      "evt_0028"
+    ]
+  },
+  {
+    "scenario": "unbounded_loop",
+    "app_id": "sales-agent",
+    "expected_rules": [
+      "unbounded_loop"
+    ],
+    "event_ids": [
+      "evt_0029",
+      "evt_0030",
+      "evt_0031",
+      "evt_0032",
+      "evt_0033",
+      "evt_0034",
+      "evt_0035",
+      "evt_0036"
+    ]
+  },
+  {
+    "scenario": "agent_where_chain",
+    "app_id": "order-agent",
+    "expected_rules": [
+      "agent_where_chain"
+    ],
+    "event_ids": [
+      "evt_0037",
+      "evt_0038",
+      "evt_0039",
+      "evt_0040",
+      "evt_0041",
+      "evt_0042",
+      "evt_0043",
+      "evt_0044",
+      "evt_0045"
+    ]
+  },
+  {
+    "scenario": "real_reasoning",
+    "app_id": "eng-copilot",
+    "expected_rules": [],
+    "event_ids": [
+      "evt_0046",
+      "evt_0047",
+      "evt_0048",
+      "evt_0049"
+    ]
+  },
+  {
+    "scenario": "upstream_error",
+    "app_id": "eng-copilot",
+    "expected_rules": [],
+    "event_ids": [
+      "evt_0050"
+    ]
+  }
+]

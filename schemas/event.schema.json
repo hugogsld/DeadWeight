@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://deadweight.dev/schemas/event/v1",
+  "title": "event",
+  "description": "Un appel LLM capture par la passerelle, normalise pour OpenAI, Anthropic et Gemini. Ne contient JAMAIS l'en-tete d'autorisation ni aucune cle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "trace",
+    "app_id",
+    "ts_start",
+    "ts_end",
+    "latency_ms",
+    "provider",
+    "model",
+    "request",
+    "response",
+    "usage",
+    "http_status",
+    "error"
+  ],
+  "properties": {
+    "schema_version": { "const": "1" },
+    "event_id": { "type": "string", "minLength": 1 },
+    "trace": {
+      "description": "Regroupement des appels d'un meme workflow. Rempli par D1.4 ; null tant qu'inconnu.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source"],
+      "properties": {
+        "id": { "type": ["string", "null"] },
+        "source": {
+          "description": "header = pose par le client (x-deadweight-trace) ; heuristic = deduit par la passerelle ; null = pas encore regroupe.",
+          "enum": ["header", "heuristic", null]
+        },
+        "step": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "app_id": {
+      "description": "Application cliente (en-tete x-deadweight-app, sinon 'default'). Cle de regroupement des regles.",
+      "type": "string",
+      "minLength": 1
+    },
+    "ts_start": { "type": "string", "format": "date-time" },
+    "ts_end": { "type": "string", "format": "date-time" },
+    "latency_ms": { "type": "number", "minimum": 0 },
+    "ttft_ms": {
+      "description": "Temps jusqu'au premier morceau, streaming uniquement.",
+      "type": ["number", "null"],
+      "minimum": 0
+    },
+    "provider": { "enum": ["openai", "anthropic", "gemini"] },
+    "endpoint": { "type": "string" },
+    "model": { "description": "Modele demande par le client.", "type": "string", "minLength": 1 },
+    "model_resolved": { "description": "Modele annonce dans la reponse (ex. snapshot date).", "type": ["string", "null"] },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system", "messages", "tools", "params"],
+      "properties": {
+        "system": {
+          "description": "Prompt systeme unique. OpenAI : messages role=system concatenes. Anthropic : champ system. Gemini : systemInstruction.",
+          "type": ["string", "null"]
+        },
+        "messages": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/message" }
+        },
+        "tools": {
+          "description": "Outils declares.",
+          "type": "array",
+          "items": { "$ref": "#/definitions/tool_decl" }
+        },
+        "params": { "$ref": "#/definitions/params" }
+      }
+    },
+    "response": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["content", "tool_calls", "finish_reason"],
+      "properties": {
+        "content": { "description": "Texte complet, reconstitue si streaming.", "type": ["string", "null"] },
+        "tool_calls": { "type": "array", "items": { "$ref": "#/definitions/tool_call" } },
+        "finish_reason": { "enum": ["stop", "length", "tool_calls", "content_filter", "error", "other", null] },
+        "finish_reason_raw": { "description": "Valeur brute du fournisseur (end_turn, MAX_TOKENS...).", "type": ["string", "null"] }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_tokens", "output_tokens"],
+      "properties": {
+        "input_tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "output_tokens": { "type": ["integer", "null"], "minimum": 0 },
+        "cached_input_tokens": {
+          "description": "OpenAI prompt_tokens_details.cached_tokens ; Anthropic cache_read_input_tokens ; Gemini cachedContentTokenCount.",
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "reasoning_tokens": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "http_status": { "type": "integer" },
+    "error": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "message"],
+          "properties": {
+            "type": { "type": "string" },
+            "message": { "type": "string" }
+          }
+        }
+      ]
+    }
+  },
+  "definitions": {
+    "message": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "content"],
+      "properties": {
+        "role": {
+          "description": "Gemini 'model' devient 'assistant' ; un resultat d'outil devient role=tool quel que soit le fournisseur.",
+          "enum": ["user", "assistant", "tool"]
+        },
+        "content": { "description": "Parties texte concatenees.", "type": ["string", "null"] },
+        "tool_calls": { "type": "array", "items": { "$ref": "#/definitions/tool_call" } },
+        "tool_call_id": { "type": ["string", "null"] },
+        "n_images": { "description": "Images presentes : comptees, jamais stockees.", "type": "integer", "minimum": 0 }
+      }
+    },
+    "tool_decl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": ["string", "null"] },
+        "parameters": { "type": ["object", "null"] }
+      }
+    },
+    "tool_call": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "arguments"],
+      "properties": {
+        "id": { "type": ["string", "null"] },
+        "name": { "type": "string" },
+        "arguments": { "description": "Arguments serialises en JSON (chaine), comme OpenAI.", "type": "string" }
+      }
+    },
+    "params": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stream"],
+      "properties": {
+        "stream": { "type": "boolean" },
+        "temperature": { "type": ["number", "null"] },
+        "top_p": { "type": ["number", "null"] },
+        "max_tokens": { "type": ["integer", "null"] },
+        "stop": { "type": ["array", "null"], "items": { "type": "string" } },
+        "response_format": { "enum": ["text", "json_object", "json_schema", null] }
+      }
+    }
+  }
+}
