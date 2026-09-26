@@ -21,8 +21,8 @@
       "got": "account"
     }
   ],
-  "cost_before_month_eur": 0.158,
-  "cost_after_month_eur": 0.0019,
+  "cost_before_month_usd": 0.158,
+  "cost_after_month_usd": 0.0019,
   "cost_factor": 81.4,
   "latency_measured": true,
   "p95_before_ms": 1689.0,

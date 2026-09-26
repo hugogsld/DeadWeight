@@ -152,6 +152,26 @@ Measured on a laptop, p95 added over a direct call: **+0.3 ms** sequential and *
 at 20 concurrent requests with SQLite on — SQLite itself adds under 1 ms (target: < 30 ms).
 Checked against the real OpenAI API with the official SDK, plain and streaming.
 
+## Replay (D3.2) — agreement threshold at 0.95
+
+Replays the extracted rules (D3.1) on real captured events and compares against what
+the original model actually answered. Extraction examples are excluded: the proof runs
+on independent data. Inputs no rule covers stay on the original call; agreement is
+measured on the inputs the new path replaces, and at least 30 are needed to conclude.
+
+    python3 -m proof.replay fixtures/dataset/v1/events.jsonl   # writes out/proof-<finding>.json
+
+A **reject** is a result, not an error: the verdict lists its reasons and the exit code is 0.
+Costs are in USD, `null` when not measurable — never a default value.
+
+Optional fallback model for uncovered inputs, via any OpenAI-compatible endpoint:
+
+    export DW_LLM_BASE_URL=https://api.openai.com/v1 DW_LLM_API_KEY=...
+    python3 -m proof.replay events.jsonl --fallback-model gpt-4o-mini --max-calls 50 --min-interval 1
+
+The fallback is the only thing that calls an API: hard cap of 200 calls per replay
+(`--max-calls` cannot exceed it) and a minimum interval between two calls.
+
 ## Stack
 
 **n8n** — the audited target: the only orchestrator exposing both workflow JSON and
