@@ -39,7 +39,7 @@ def audit(db, output):
             with tempfile.TemporaryDirectory(prefix='.audit-', dir=output.parent) as stage:
                 staged = Path(stage) / 'audit.html'
                 rendered = subprocess.run(
-                    [sys.executable, '-m', 'report.audit', str(events), '-o', str(staged)],
+                    [sys.executable, '-m', 'agent.audit', str(events), '-o', str(staged)],
                     capture_output=True, text=True,
                 )
                 if rendered.returncode:
