@@ -1,0 +1,701 @@
+{
+ "resourceSpans": [
+  {
+   "resource": {
+    "attributes": [
+     {
+      "key": "telemetry.sdk.language",
+      "value": {
+       "stringValue": "python"
+      }
+     },
+     {
+      "key": "telemetry.sdk.name",
+      "value": {
+       "stringValue": "opentelemetry"
+      }
+     },
+     {
+      "key": "telemetry.sdk.version",
+      "value": {
+       "stringValue": "1.45.0"
+      }
+     },
+     {
+      "key": "service.instance.id",
+      "value": {
+       "stringValue": "6132cb0a-9863-4309-b57d-743b3dd9b090"
+      }
+     },
+     {
+      "key": "service.name",
+      "value": {
+       "stringValue": "tri-des-mails"
+      }
+     }
+    ]
+   },
+   "scopeSpans": [
+    {
+     "scope": {
+      "name": "opentelemetry.instrumentation.openai_v2"
+     },
+     "spans": [
+      {
+       "traceId": "41207b193a2e4d42774e7841e4c303b1",
+       "spanId": "86e893e10142ae5f",
+       "parentSpanId": "cadd1e21831ec984",
+       "name": "chat gpt-4o",
+       "kind": "SPAN_KIND_CLIENT",
+       "startTimeUnixNano": "1790435868605989000",
+       "endTimeUnixNano": "1790435868648117000",
+       "attributes": [
+        {
+         "key": "gen_ai.operation.name",
+         "value": {
+          "stringValue": "chat"
+         }
+        },
+        {
+         "key": "gen_ai.system",
+         "value": {
+          "stringValue": "openai"
+         }
+        },
+        {
+         "key": "gen_ai.request.model",
+         "value": {
+          "stringValue": "gpt-4o"
+         }
+        },
+        {
+         "key": "gen_ai.request.temperature",
+         "value": {
+          "intValue": "0"
+         }
+        },
+        {
+         "key": "gen_ai.request.max_tokens",
+         "value": {
+          "intValue": "5"
+         }
+        },
+        {
+         "key": "server.address",
+         "value": {
+          "stringValue": "127.0.0.1"
+         }
+        },
+        {
+         "key": "server.port",
+         "value": {
+          "intValue": "55089"
+         }
+        },
+        {
+         "key": "gen_ai.response.model",
+         "value": {
+          "stringValue": "gpt-4o-2026"
+         }
+        },
+        {
+         "key": "gen_ai.response.finish_reasons",
+         "value": {
+          "arrayValue": {
+           "values": [
+            {
+             "stringValue": "stop"
+            }
+           ]
+          }
+         }
+        },
+        {
+         "key": "gen_ai.response.id",
+         "value": {
+          "stringValue": "chatcmpl-fake"
+         }
+        },
+        {
+         "key": "gen_ai.usage.input_tokens",
+         "value": {
+          "intValue": "12"
+         }
+        },
+        {
+         "key": "gen_ai.usage.output_tokens",
+         "value": {
+          "intValue": "6"
+         }
+        }
+       ],
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "41207b193a2e4d42774e7841e4c303b1",
+       "spanId": "368a11e6b587e9d9",
+       "parentSpanId": "cadd1e21831ec984",
+       "name": "chat gpt-4o-mini",
+       "kind": "SPAN_KIND_CLIENT",
+       "startTimeUnixNano": "1790435868648344000",
+       "endTimeUnixNano": "1790435868655682000",
+       "attributes": [
+        {
+         "key": "gen_ai.operation.name",
+         "value": {
+          "stringValue": "chat"
+         }
+        },
+        {
+         "key": "gen_ai.system",
+         "value": {
+          "stringValue": "openai"
+         }
+        },
+        {
+         "key": "gen_ai.request.model",
+         "value": {
+          "stringValue": "gpt-4o-mini"
+         }
+        },
+        {
+         "key": "server.address",
+         "value": {
+          "stringValue": "127.0.0.1"
+         }
+        },
+        {
+         "key": "server.port",
+         "value": {
+          "intValue": "55089"
+         }
+        },
+        {
+         "key": "gen_ai.response.model",
+         "value": {
+          "stringValue": "gpt-4o-mini-2026"
+         }
+        },
+        {
+         "key": "gen_ai.response.id",
+         "value": {
+          "stringValue": "chatcmpl-fake"
+         }
+        },
+        {
+         "key": "gen_ai.usage.input_tokens",
+         "value": {
+          "intValue": "12"
+         }
+        },
+        {
+         "key": "gen_ai.usage.output_tokens",
+         "value": {
+          "intValue": "6"
+         }
+        }
+       ],
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "45ac4ab072d53f6880a7500b98193d93",
+       "spanId": "e07cc9b2d61a0960",
+       "parentSpanId": "b7e1b696ee331051",
+       "name": "chat gpt-4o",
+       "kind": "SPAN_KIND_CLIENT",
+       "startTimeUnixNano": "1790435868655807000",
+       "endTimeUnixNano": "1790435868658065000",
+       "attributes": [
+        {
+         "key": "gen_ai.operation.name",
+         "value": {
+          "stringValue": "chat"
+         }
+        },
+        {
+         "key": "gen_ai.system",
+         "value": {
+          "stringValue": "openai"
+         }
+        },
+        {
+         "key": "gen_ai.request.model",
+         "value": {
+          "stringValue": "gpt-4o"
+         }
+        },
+        {
+         "key": "gen_ai.request.temperature",
+         "value": {
+          "intValue": "0"
+         }
+        },
+        {
+         "key": "gen_ai.request.max_tokens",
+         "value": {
+          "intValue": "5"
+         }
+        },
+        {
+         "key": "server.address",
+         "value": {
+          "stringValue": "127.0.0.1"
+         }
+        },
+        {
+         "key": "server.port",
+         "value": {
+          "intValue": "55089"
+         }
+        },
+        {
+         "key": "gen_ai.response.model",
+         "value": {
+          "stringValue": "gpt-4o-2026"
+         }
+        },
+        {
+         "key": "gen_ai.response.finish_reasons",
+         "value": {
+          "arrayValue": {
+           "values": [
+            {
+             "stringValue": "stop"
+            }
+           ]
+          }
+         }
+        },
+        {
+         "key": "gen_ai.response.id",
+         "value": {
+          "stringValue": "chatcmpl-fake"
+         }
+        },
+        {
+         "key": "gen_ai.usage.input_tokens",
+         "value": {
+          "intValue": "12"
+         }
+        },
+        {
+         "key": "gen_ai.usage.output_tokens",
+         "value": {
+          "intValue": "6"
+         }
+        }
+       ],
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "45ac4ab072d53f6880a7500b98193d93",
+       "spanId": "c965e0ac846085c1",
+       "parentSpanId": "b7e1b696ee331051",
+       "name": "chat gpt-4o-mini",
+       "kind": "SPAN_KIND_CLIENT",
+       "startTimeUnixNano": "1790435868658143000",
+       "endTimeUnixNano": "1790435868660581000",
+       "attributes": [
+        {
+         "key": "gen_ai.operation.name",
+         "value": {
+          "stringValue": "chat"
+         }
+        },
+        {
+         "key": "gen_ai.system",
+         "value": {
+          "stringValue": "openai"
+         }
+        },
+        {
+         "key": "gen_ai.request.model",
+         "value": {
+          "stringValue": "gpt-4o-mini"
+         }
+        },
+        {
+         "key": "server.address",
+         "value": {
+          "stringValue": "127.0.0.1"
+         }
+        },
+        {
+         "key": "server.port",
+         "value": {
+          "intValue": "55089"
+         }
+        },
+        {
+         "key": "gen_ai.response.model",
+         "value": {
+          "stringValue": "gpt-4o-mini-2026"
+         }
+        },
+        {
+         "key": "gen_ai.response.id",
+         "value": {
+          "stringValue": "chatcmpl-fake"
+         }
+        },
+        {
+         "key": "gen_ai.usage.input_tokens",
+         "value": {
+          "intValue": "12"
+         }
+        },
+        {
+         "key": "gen_ai.usage.output_tokens",
+         "value": {
+          "intValue": "6"
+         }
+        }
+       ],
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "51a0f91c134245dac129d9e4d52653ad",
+       "spanId": "33ef099bad245919",
+       "parentSpanId": "4157f788d19d9246",
+       "name": "chat gpt-4o",
+       "kind": "SPAN_KIND_CLIENT",
+       "startTimeUnixNano": "1790435868660672000",
+       "endTimeUnixNano": "1790435868662484000",
+       "attributes": [
+        {
+         "key": "gen_ai.operation.name",
+         "value": {
+          "stringValue": "chat"
+         }
+        },
+        {
+         "key": "gen_ai.system",
+         "value": {
+          "stringValue": "openai"
+         }
+        },
+        {
+         "key": "gen_ai.request.model",
+         "value": {
+          "stringValue": "gpt-4o"
+         }
+        },
+        {
+         "key": "gen_ai.request.temperature",
+         "value": {
+          "intValue": "0"
+         }
+        },
+        {
+         "key": "gen_ai.request.max_tokens",
+         "value": {
+          "intValue": "5"
+         }
+        },
+        {
+         "key": "server.address",
+         "value": {
+          "stringValue": "127.0.0.1"
+         }
+        },
+        {
+         "key": "server.port",
+         "value": {
+          "intValue": "55089"
+         }
+        },
+        {
+         "key": "gen_ai.response.model",
+         "value": {
+          "stringValue": "gpt-4o-2026"
+         }
+        },
+        {
+         "key": "gen_ai.response.finish_reasons",
+         "value": {
+          "arrayValue": {
+           "values": [
+            {
+             "stringValue": "stop"
+            }
+           ]
+          }
+         }
+        },
+        {
+         "key": "gen_ai.response.id",
+         "value": {
+          "stringValue": "chatcmpl-fake"
+         }
+        },
+        {
+         "key": "gen_ai.usage.input_tokens",
+         "value": {
+          "intValue": "12"
+         }
+        },
+        {
+         "key": "gen_ai.usage.output_tokens",
+         "value": {
+          "intValue": "6"
+         }
+        }
+       ],
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "51a0f91c134245dac129d9e4d52653ad",
+       "spanId": "90f3174c7ee4ffcc",
+       "parentSpanId": "4157f788d19d9246",
+       "name": "chat gpt-4o-mini",
+       "kind": "SPAN_KIND_CLIENT",
+       "startTimeUnixNano": "1790435868662555000",
+       "endTimeUnixNano": "1790435868664810000",
+       "attributes": [
+        {
+         "key": "gen_ai.operation.name",
+         "value": {
+          "stringValue": "chat"
+         }
+        },
+        {
+         "key": "gen_ai.system",
+         "value": {
+          "stringValue": "openai"
+         }
+        },
+        {
+         "key": "gen_ai.request.model",
+         "value": {
+          "stringValue": "gpt-4o-mini"
+         }
+        },
+        {
+         "key": "server.address",
+         "value": {
+          "stringValue": "127.0.0.1"
+         }
+        },
+        {
+         "key": "server.port",
+         "value": {
+          "intValue": "55089"
+         }
+        },
+        {
+         "key": "gen_ai.response.model",
+         "value": {
+          "stringValue": "gpt-4o-mini-2026"
+         }
+        },
+        {
+         "key": "gen_ai.response.id",
+         "value": {
+          "stringValue": "chatcmpl-fake"
+         }
+        },
+        {
+         "key": "gen_ai.usage.input_tokens",
+         "value": {
+          "intValue": "12"
+         }
+        },
+        {
+         "key": "gen_ai.usage.output_tokens",
+         "value": {
+          "intValue": "6"
+         }
+        }
+       ],
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "166489983b9fd835920355703faebd2e",
+       "spanId": "714ead5c633aaa51",
+       "parentSpanId": "fc79b87eb286ba82",
+       "name": "chat tools",
+       "kind": "SPAN_KIND_CLIENT",
+       "startTimeUnixNano": "1790435868664896000",
+       "endTimeUnixNano": "1790435868667506000",
+       "attributes": [
+        {
+         "key": "gen_ai.operation.name",
+         "value": {
+          "stringValue": "chat"
+         }
+        },
+        {
+         "key": "gen_ai.system",
+         "value": {
+          "stringValue": "openai"
+         }
+        },
+        {
+         "key": "gen_ai.request.model",
+         "value": {
+          "stringValue": "tools"
+         }
+        },
+        {
+         "key": "server.address",
+         "value": {
+          "stringValue": "127.0.0.1"
+         }
+        },
+        {
+         "key": "server.port",
+         "value": {
+          "intValue": "55089"
+         }
+        },
+        {
+         "key": "gen_ai.response.model",
+         "value": {
+          "stringValue": "tools-2026"
+         }
+        },
+        {
+         "key": "gen_ai.response.finish_reasons",
+         "value": {
+          "arrayValue": {
+           "values": [
+            {
+             "stringValue": "tool_calls"
+            }
+           ]
+          }
+         }
+        },
+        {
+         "key": "gen_ai.response.id",
+         "value": {
+          "stringValue": "chatcmpl-fake"
+         }
+        },
+        {
+         "key": "gen_ai.usage.input_tokens",
+         "value": {
+          "intValue": "12"
+         }
+        },
+        {
+         "key": "gen_ai.usage.output_tokens",
+         "value": {
+          "intValue": "6"
+         }
+        }
+       ],
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "709b574d0c7fb4b27d81e27f336f0799",
+       "spanId": "0affd73dedca4bbb",
+       "name": "chat gpt-4o",
+       "kind": "SPAN_KIND_CLIENT",
+       "startTimeUnixNano": "1790435868673676000",
+       "endTimeUnixNano": "1790435868674437000",
+       "attributes": [
+        {
+         "key": "gen_ai.operation.name",
+         "value": {
+          "stringValue": "chat"
+         }
+        },
+        {
+         "key": "gen_ai.system",
+         "value": {
+          "stringValue": "openai"
+         }
+        },
+        {
+         "key": "gen_ai.request.model",
+         "value": {
+          "stringValue": "gpt-4o"
+         }
+        },
+        {
+         "key": "server.address",
+         "value": {
+          "stringValue": "127.0.0.1"
+         }
+        },
+        {
+         "key": "server.port",
+         "value": {
+          "intValue": "9"
+         }
+        },
+        {
+         "key": "error.type",
+         "value": {
+          "stringValue": "APIConnectionError"
+         }
+        }
+       ],
+       "status": {
+        "message": "Connection error.",
+        "code": "STATUS_CODE_ERROR"
+       },
+       "flags": 256
+      }
+     ],
+     "schemaUrl": "https://opentelemetry.io/schemas/1.30.0"
+    },
+    {
+     "scope": {
+      "name": "workflow"
+     },
+     "spans": [
+      {
+       "traceId": "41207b193a2e4d42774e7841e4c303b1",
+       "spanId": "cadd1e21831ec984",
+       "name": "traiter-mail-0",
+       "kind": "SPAN_KIND_INTERNAL",
+       "startTimeUnixNano": "1790435868605835000",
+       "endTimeUnixNano": "1790435868655706000",
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "45ac4ab072d53f6880a7500b98193d93",
+       "spanId": "b7e1b696ee331051",
+       "name": "traiter-mail-1",
+       "kind": "SPAN_KIND_INTERNAL",
+       "startTimeUnixNano": "1790435868655751000",
+       "endTimeUnixNano": "1790435868660593000",
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "51a0f91c134245dac129d9e4d52653ad",
+       "spanId": "4157f788d19d9246",
+       "name": "traiter-mail-2",
+       "kind": "SPAN_KIND_INTERNAL",
+       "startTimeUnixNano": "1790435868660624000",
+       "endTimeUnixNano": "1790435868664820000",
+       "status": {},
+       "flags": 256
+      },
+      {
+       "traceId": "166489983b9fd835920355703faebd2e",
+       "spanId": "fc79b87eb286ba82",
+       "name": "agent",
+       "kind": "SPAN_KIND_INTERNAL",
+       "startTimeUnixNano": "1790435868664851000",
+       "endTimeUnixNano": "1790435868667531000",
+       "status": {},
+       "flags": 256
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

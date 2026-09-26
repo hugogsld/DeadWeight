@@ -1,11 +1,12 @@
 # Jeu de données réaliste (D0.3)
 
-`v1/events.jsonl` : 1 332 appels sur 7 jours, 13 applications, 3 fournisseurs, au schéma
+`v1/events.jsonl` : 1 554 appels sur 7 jours, 21 applications, 3 fournisseurs, au schéma
+`v1/events.jsonl` : 1 436 appels sur 7 jours, 22 applications, 3 fournisseurs, au schéma
 `schemas/event.schema.json`. `v1/labels.json` : pour chaque scénario, les règles attendues
 (`[]` = ne doit rien déclencher), les événements concernés et le découpage réel en traces.
 
 Régénérer : `python3 fixtures/dataset/gen_dataset.py` (déterministe, graine fixe).
-Une nouvelle version = un nouveau dossier `v2/`, on ne réécrit jamais `v1`.
+Extension additive R13–R16 (#71) : nouveaux événements et apps uniquement ; les scénarios historiques restent inchangés.
 
 | Scénario | App | Règles attendues | Ce qu'il teste |
 |---|---|---|---|
@@ -24,9 +25,49 @@ Une nouvelle version = un nouveau dossier `v2/`, on ne réécrit jamais `v1`.
 | research_agent | research-agent | — | outils qui progressent puis réponse finale (négatif R5, R6) |
 | travel_agent | travel-agent | — | ordre des outils variable (négatif R6) |
 | upstream_errors | * | — | 429/500/529 : capturés, exclus du coût |
+| reasoning_trivia | trivia-bot | R7 | gpt-5, 1 800-3 000 tokens de raisonnement facturés pour une addition en une phrase |
+| reasoning_used_well | analysis-bot | — | négatif R7 : raisonnement minoritaire, réponses visibles longues et variées |
+| status_poll | status-poll | R8 | 6 appels identiques (requête ET réponse), en dessous du seuil de taille de R4 |
+| status_poll_varies | status-poll-live | — | négatif R8 : même demande mais réponse différente à chaque fois |
+| checkout_retries | checkout-bot | R9 | 15 réponses tronquées (finish_reason=length), facturées, relancées en moins de 30 s |
+| notify_retries_unbilled | notify-bot | — | négatif R9 : échecs upstream jamais facturés, malgré des relances rapides |
+| brainstorm_bot | brainstorm-bot | R12 | 40 appels sans max_tokens, médiane ~600 tokens, une réponse sur six dépasse 2 000 |
+| capped_writer | capped-writer | — | négatif R12 : max_tokens fixé et sorties homogènes |
 
 Les traces sans en-tête ont `trace = {id: null, source: null}` : la vérité est dans
 `labels.json > traces`, c'est ce que D1.4 doit retrouver.
 
 Correctif v1 (26/09, D2.1) : les réponses de `contract-bot` et `support-chat` étaient trop
 répétitives (« Réponse 1. ») et faisaient déclencher R1 à tort. Elles sont maintenant uniques.
+
+Extension v1 (26/09, R7/R8/R9/R12) : 8 scénarios ajoutés (8 nouvelles applications), toujours
+dans `v1/` — les 1 332 événements et les 15 scénarios d'origine restent identiques (voir
+`test_generation_is_deterministic` et le test de non-régression par règle). Nécessite un champ
+`usage.reasoning_tokens` optionnel dans `fixtures/gen_events.py::event()` (défaut `None`,
+rétrocompatible) pour simuler les modèles de raisonnement de `reasoning_trivia`.
+## Extension #71
+
+| App | Signal attendu | Contre-exemple |
+|---|---|---|
+| wide-tools | R13 : 9 outils sur 10 inutilisés, définitions volumineuses répétées | focused-tools : 8 outils utilisés |
+| night-batch | R14 : 3 rafales de 10 appels à 02h UTC | day-burst : mêmes rafales à 14h UTC |
+| image-titles | R15 : entrée élevée et titre court | image-analysis : réponse longue et différente |
+| systematic-review | R16 : 6 relectures courtes après génération | useful-followup : approfondissements longs |
+
+## Structure du workflow — R10
+
+`serial-independent` : quatre étapes de 2 s, en série, gain théorique de 6 s.
+`serial-dependent` : reprise de la réponse précédente, aucun conseil de parallélisation.
+Ces scénarios portent `requires_header` : leurs traces sont explicites ; sans
+en-tête, leur regroupement ne fait pas partie de la vérité attendue de l'heuristique.
+Les 1 332 événements historiques et tous les scénarios antérieurs sont conservés.
+
+R11 : `item-loop` contient dix éléments courts distincts ; `item-long-analysis`
+conserve dix sorties longues et ne déclenche pas. Instructions / 4 : estimation, pas tokenisation.
+
+R17 : `rewrite-chain` traduit la réponse précédente ; `research-followup` demande
+une nouvelle recherche. Les verdicts de `systematic-review` restent exclusivement R16.
+
+R18 : `heavy-harness` répète 24 fois des instructions dominantes avec du cache actif ;
+`lean-harness` garde des instructions légères. Le coût fixe est borné selon la part
+déjà cachée ; ce coût ne constitue pas une économie intégralement réalisable.
