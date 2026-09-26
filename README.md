@@ -174,7 +174,8 @@ peu sous-estimé sur cette part.
 
 Pour chaque constat : une seule modification (règles à la place d'un LLM qui aiguille, modèle plus petit,
 plafond de longueur), **testée sur votre historique** (mêmes entrées rejouées, comparées aux anciennes
-réponses), puis un diff et un texte de micro-PR par modification validée, et le message Slack. Chaque chiffre
+réponses), puis un diff et un texte de micro-PR par modification validée, le message Slack (gains prouvés
+seulement ; `--demo` montre aussi les pistes refusées) et `propositions.html`, la page développeur qui montre tout. Chaque chiffre
 porte son statut : mesuré, estimé (hypothèse nommée) ou non testé. `--open-prs` ouvre réellement les PR (gh).
 
 ## Prix des modèles

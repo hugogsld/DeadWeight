@@ -40,6 +40,14 @@ def test_slack_totals_only_proven_measured_gains(proposals):
     assert "précision +" not in text                      # un niveau, pas une variation
     assert "~" in text                                    # les estimations restent marquées
     assert text.count("✅") == sum(p["verdict"] == "pass" for p in proposals)
+    assert "⛔" not in text and "◻️" not in text and "page développeur" in text  # un décideur ne voit que les gains
+
+
+def test_demo_mode_and_dev_page_show_everything(proposals):
+    from optimize.devpage import render
+    assert "⛔" in message(proposals, show_all=True)
+    page = render(proposals)
+    assert page.count('class="card"') == len(proposals) and "Refusée" in page and "Non testée" in page
 
 
 def _repo(tmp_path):
