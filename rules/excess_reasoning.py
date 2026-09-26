@@ -115,8 +115,8 @@ def detect(events, pricing=None):
             "model": model,
             "template": template,
             "severity": "candidate",
-            "title": (f"{len(ok)} appels à {model} facturent {share * 100:.0f} % de leurs tokens de sortie "
-                      f"en raisonnement invisible, pour une réponse visible d'environ {med_visible:.0f} tokens."
+            "title": (f"{len(ok)} appels à {model} facturent {share * 100:.0f} % de leurs jetons de sortie "
+                      f"en raisonnement invisible, pour une réponse visible d'environ {med_visible:.0f} jetons."
                       f"{saving_txt}"),
             "proven": False,
             "event_ids": [e["event_id"] for e in ok],

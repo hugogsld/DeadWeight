@@ -94,7 +94,7 @@ def detect(events, pricing=None):
         truncated = sum(e["response"].get("finish_reason") == "length" for e in evts) / len(evts)
         cap = math.ceil(med * CAP_MULTIPLIER)
         saving, missing = _saving(evts, cap, pricing)
-        saving_txt = (f" Plafonner autour de {cap} tokens économiserait environ {saving:.2f} $ par mois, "
+        saving_txt = (f" Plafonner autour de {cap} jetons économiserait environ {saving:.2f} $ par mois, "
                       "non démontré sans rejeu."
                       if saving is not None else " Économie non chiffrable et non démontrée.")
         findings.append({
@@ -105,7 +105,7 @@ def detect(events, pricing=None):
             "template": template,
             "severity": "trim",
             "title": (f"{len(evts)} appels à {model} sans plafond de longueur : réponse typique "
-                      f"d'environ {med:.0f} tokens, mais le 90e centile atteint {p90:.0f}."
+                      f"d'environ {med:.0f} jetons, mais le 90e centile atteint {p90:.0f}."
                       f"{saving_txt}"),
             "proven": False,
             "event_ids": [e["event_id"] for e in evts],
