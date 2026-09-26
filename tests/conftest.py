@@ -16,6 +16,10 @@ SECRET_RESPONSE_HEADERS = {"openai-organization", "openai-project", "set-cookie"
 
 
 def scrub_response(response):
+    # une erreur n'est jamais enregistree : rejouee, elle ferait echouer le test pour toujours,
+    # et le corps d'une 401 recopie la cle fautive ("Incorrect API key provided: sk-...")
+    if response.get("status", {}).get("code", 200) >= 400:
+        return None
     headers = response.get("headers", {})
     for name in list(headers):
         if name.lower() in SECRET_RESPONSE_HEADERS:
