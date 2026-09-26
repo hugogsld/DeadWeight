@@ -51,7 +51,14 @@
       "type": ["number", "null"],
       "minimum": 0
     },
-    "provider": { "enum": ["openai", "anthropic", "gemini"] },
+    "provider": {
+      "description": "FORMAT de requete, pas le fournisseur : Mistral, Groq, vLLM, Ollama... parlent le format openai.",
+      "enum": ["openai", "anthropic", "gemini"]
+    },
+    "upstream": {
+      "description": "Hote reellement appele (api.openai.com, api.mistral.ai, localhost:11434...). Rempli par la passerelle.",
+      "type": ["string", "null"]
+    },
     "endpoint": { "type": "string" },
     "model": { "description": "Modele demande par le client.", "type": "string", "minLength": 1 },
     "model_resolved": { "description": "Modele annonce dans la reponse (ex. snapshot date).", "type": ["string", "null"] },
