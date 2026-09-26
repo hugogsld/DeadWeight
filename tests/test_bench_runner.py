@@ -135,3 +135,22 @@ def test_dry_run_estimate_uses_origin_tokens_for_hosted_candidates(error_server)
     estimate = dry_run_estimate(candidate, _cases(1000))
     assert estimate['estimated_cost_usd'] > 0
     assert estimate['n_calls_planned'] == 1000
+
+
+def test_models_refusing_temperature_are_retried_without_it(monkeypatch):
+    """gpt-5 et o-series refusent temperature=0 (400) : une relance sans le paramètre."""
+    from bench import client as client_mod
+    sent = []
+
+    def fake_call(self, body):
+        sent.append(dict(body))
+        if 'temperature' in body:
+            return client_mod.CallResult(None, 1.0, None, None, 'http_400')
+        return client_mod.CallResult('spam', 1.0, 10, 1, None)
+
+    monkeypatch.setattr(client_mod.CandidateLLM, '_call', fake_call)
+    llm = client_mod.CandidateLLM.__new__(client_mod.CandidateLLM)
+    llm.model = 'gpt-5-nano'
+    result = llm.complete([{'role': 'user', 'content': 'x'}])
+    assert result.content == 'spam' and result.error is None
+    assert 'temperature' in sent[0] and 'temperature' not in sent[1]

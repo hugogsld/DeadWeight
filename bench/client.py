@@ -33,7 +33,14 @@ class CandidateLLM:
         self.timeout_s = timeout_s
 
     def complete(self, messages):
-        body = {'model': self.model, 'temperature': 0, 'messages': list(messages)}
+        # temperature 0 pour des réponses stables ; les modèles à raisonnement (gpt-5, o-series)
+        # la refusent (400) : on relance alors une fois sans.
+        result = self._call({'model': self.model, 'temperature': 0, 'messages': list(messages)})
+        if result.error == 'http_400':
+            result = self._call({'model': self.model, 'messages': list(messages)})
+        return result
+
+    def _call(self, body):
         headers = {'Content-Type': 'application/json'}
         if self.api_key:
             headers['Authorization'] = 'Bearer ' + self.api_key
