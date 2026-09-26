@@ -2,13 +2,16 @@
 import json
 from pathlib import Path
 
+import jsonschema
 import pytest
 
 from proof.extract import extract_rules
 from proof.replay import HARD_MAX_CALLS, MIN_REPLAY, Throttle, main, replay
 from rules.low_entropy import detect
 
-DATASET = Path(__file__).resolve().parents[1] / 'fixtures/dataset/v1/events.jsonl'
+ROOT = Path(__file__).resolve().parents[1]
+DATASET = ROOT / 'fixtures/dataset/v1/events.jsonl'
+PROOF_SCHEMA = json.loads((ROOT / 'schemas/proof.schema.json').read_text())
 
 
 @pytest.fixture(autouse=True)
@@ -135,3 +138,10 @@ def test_cli_writes_proofs_and_exits_zero_on_reject(tmp_path, capsys):
     assert len(written) == 2
     out = capsys.readouterr().out
     assert 'VERDICT   PASS' in out and 'VERDICT   REJECT' in out
+
+
+def test_pass_and_reject_proofs_match_the_contract(dataset):
+    events, findings = dataset
+    for app in ('mail-triage', 'reviews'):  # PASS, et REJECT avec coût non mesurable (null)
+        finding = findings[app]
+        jsonschema.validate(replay(finding, events, extract_rules(finding, events)), PROOF_SCHEMA)
