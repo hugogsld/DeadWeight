@@ -95,7 +95,7 @@ returns **PASS at 98.0% agreement**.
 
 Add `--no-llm` to the patcher to run the whole pipeline with no API key at all.
 
-## Gateway (D1.1, D1.2, D1.4) — OpenAI pass-through proxy
+## Gateway (D1.1, D1.2, D1.3, D1.4) — OpenAI, Anthropic and Gemini pass-through proxy
 
 The gateway sits between your application and OpenAI. You change one line — the
 `base_url` — and every call is relayed unchanged, streaming included, while a copy
@@ -107,21 +107,30 @@ is captured in the event format of `schemas/event.schema.json`.
 Then, in your application:
 
     client = OpenAI(base_url="http://127.0.0.1:8080/v1")   # same API key as before
+    client = Anthropic(base_url="http://127.0.0.1:8080/anthropic")
+    client = genai.Client(http_options={"base_url": "http://127.0.0.1:8080/gemini"})
+
+The three providers produce the same event: the rules and the report never need to know
+which one a call came from. Anthropic `POST /v1/messages` and Gemini
+`models/<model>:generateContent` / `:streamGenerateContent` are captured (Gemini streaming
+both with `?alt=sse` and as a JSON array).
 
 | Variable | Default | |
 | --- | --- | --- |
 | `GATEWAY_HOST` / `GATEWAY_PORT` | `127.0.0.1` / `8080` | listen address |
-| `GATEWAY_OPENAI_UPSTREAM` | `https://api.openai.com` | where calls are relayed |
+| `GATEWAY_OPENAI_UPSTREAM` | `https://api.openai.com` | where OpenAI calls are relayed |
+| `GATEWAY_ANTHROPIC_UPSTREAM` | `https://api.anthropic.com` | where `/anthropic/...` is relayed |
+| `GATEWAY_GEMINI_UPSTREAM` | `https://generativelanguage.googleapis.com` | where `/gemini/...` is relayed |
 | `GATEWAY_DB` | `out/events.db` | SQLite file where captured calls are stored |
 | `GATEWAY_LOG_LEVEL` | `INFO` | one summary line per call, never content or headers |
 
 Optional headers: `x-deadweight-app` (groups calls by application, default `default`)
 and `x-deadweight-trace` (groups calls of one workflow). They are not forwarded to OpenAI.
 
-**Your API key is never stored.** The `Authorization` header is relayed as is and never
-persisted, logged or written to an event; a key echoed back in an OpenAI error message is
-masked before capture. Only `POST /v1/chat/completions` is captured; every other route is
-relayed without capture. With streaming, token counts are only known if the client sets
+**Your API key is never stored.** The `Authorization` header (Anthropic `x-api-key`,
+Gemini `x-goog-api-key` or `?key=`) is relayed as is and never persisted, logged or written
+to an event; a key echoed back in an error message is masked before capture. Only the
+completion routes above are captured; every other route is relayed without capture. With streaming, token counts are only known if the client sets
 `stream_options: {"include_usage": true}` — the gateway never alters the request.
 
 Every captured call is written to SQLite in a background thread, never on the response
