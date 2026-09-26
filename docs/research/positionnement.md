@@ -1,0 +1,2 @@
+> **À lire avant de citer quoi que ce soit** : recherche web du 26/09/2026. Les faits juridiques les plus récents (arrêt *Trump v. Slaughter* du 29/06/2026, courrier noyb du 30/06/2026, qualification SecNumCloud d'OVHcloud au 01/09/2026, Cloud and AI Development Act du 03/06/2026) et les statistiques de marché viennent en partie de sources secondaires : **à vérifier sur la source primaire avant tout usage dans le pitch ou devant un client**. Les pièges à éviter de chaque section font partie du résultat.
+
