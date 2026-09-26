@@ -1,0 +1,83 @@
+"""D4.1 : rapport d'audit d'une page, lisible par un directeur technique."""
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+from report.audit import build_report, render_html
+
+ROOT = Path(__file__).resolve().parent.parent
+DATASET = ROOT / "fixtures/dataset/v1/events.jsonl"
+EVENTS = [json.loads(line) for line in DATASET.read_text().splitlines()]
+RULE_CODES = ["low_entropy_output", "oversized_model", "raw_context", "no_cache",
+              "unbounded_loop", "agent_where_chain"]
+
+
+def test_findings_sorted_by_monthly_cost_desc_unknown_last():
+    costs = [f["chiffres"]["cout_mensuel_usd"] for f in build_report(EVENTS)["constats"]]
+    known = [c for c in costs if c is not None]
+    assert known == sorted(known, reverse=True)
+    assert costs[:len(known)] == known
+
+
+def test_each_finding_has_four_figures_and_a_sentence():
+    for f in build_report(EVENTS)["constats"]:
+        assert {"cout_mensuel_usd", "latence_mediane_ms", "latence_p95_ms", "nb_appels"} <= set(f["chiffres"])
+        assert f["titre"] and f["phrase"] and f["action"]
+
+
+def test_clean_apps_are_listed():
+    clean = {a["app_id"] for a in build_report(EVENTS)["rien_a_signaler"]}
+    assert {"eng-copilot", "ticket-summary", "translate"} <= clean
+    assert "mail-triage" not in clean
+
+
+def test_header_summarises_the_traffic():
+    head = build_report(EVENTS)["resume"]
+    assert head["nb_appels"] == len(EVENTS)
+    assert head["nb_applications"] == len({e["app_id"] for e in EVENTS})
+    assert head["debut"] < head["fin"]
+
+
+def test_html_has_no_internal_jargon():
+    html = render_html(build_report(EVENTS))
+    for code in RULE_CODES:
+        assert code not in html
+    assert "Rien à signaler" in html
+
+
+def test_missing_figures_are_explained_not_hidden():
+    html = render_html(build_report(EVENTS))
+    assert "non disponible" in html or all(
+        f["chiffres"]["cout_mensuel_usd"] is not None for f in build_report(EVENTS)["constats"])
+
+
+def test_html_escapes_client_content():
+    evil = [dict(e, app_id="<script>x</script>") for e in EVENTS[:5]]
+    assert "<script>x" not in render_html(build_report(evil))
+
+
+def test_empty_traffic_does_not_crash():
+    report = build_report([])
+    assert report["constats"] == [] and "Aucun appel" in render_html(report)
+
+
+def test_cli_writes_the_page(tmp_path):
+    out = tmp_path / "audit.html"
+    subprocess.run([sys.executable, "-m", "report.audit", str(DATASET), "-o", str(out)],
+                   cwd=ROOT, check=True, capture_output=True)
+    assert out.read_text().startswith("<!doctype html>")
+
+
+def test_report_lists_the_checks_that_ran():
+    report = build_report(EVENTS)
+    assert "Une IA qui répond toujours la même chose" in report["verifications"]
+    assert "Vérifications effectuées" in render_html(report)
+
+
+def test_custom_detectors_and_global_missing_reason():
+    fake = [("no_cache", lambda evts: [])]
+    report = build_report(EVENTS, detectors=fake)
+    assert report["constats"] == [] and report["verifications"] == ["Les mêmes demandes payées plusieurs fois"]
+    if report["resume"]["global"]["cout_mensuel_usd"] is None:
+        assert "Coût total non disponible" in render_html(report)
