@@ -29,7 +29,8 @@
         "raw_context",
         "no_cache",
         "unbounded_loop",
-        "agent_where_chain"
+        "agent_where_chain",
+        "data_outside_eu"
       ],
       "description": "Les quatre premieres sont implementees (rules/low_entropy.py, oversized_model.py, raw_context.py, no_cache.py). unbounded_loop et agent_where_chain sont prevues par D2.4 (ROADMAP.md) et deja reservees ici par report/audit.py (RULE_TEXT) et tests/test_audit.py (RULE_CODES) ; aucune regle ne les emet encore."
     },

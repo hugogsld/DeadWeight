@@ -6,6 +6,7 @@
 Tables versionnées : fixtures/pricing.json (make prices) et fixtures/providers.json (M1.1).
 Rien n'est deviné : un champ inconnu vaut null, et la source de chaque fiche est citée.
 """
+import fnmatch
 import json
 import math
 from pathlib import Path
@@ -85,3 +86,36 @@ def coverage(pricing, providers):
     return {"modeles": len(fulls), "couverts": covered,
             "part": covered / len(fulls) if fulls else 0.0,
             "editeurs_sans_fiche": dict(sorted(missing.items(), key=lambda kv: -kv[1]))}
+
+
+# Format d'appel -> destination par défaut, pour les événements sans upstream (import, anciens jeux).
+DEFAULT_HOST = {"openai": "api.openai.com", "anthropic": "api.anthropic.com",
+                "gemini": "generativelanguage.googleapis.com"}
+LOCAL_HOSTS = {"deadweight", "localhost", "127.0.0.1", "::1"}
+
+
+def load_hosts(path=PROVIDERS_PATH):
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    return data["hotes"], data["motifs_hotes"]
+
+
+def destination(event, hosts):
+    """Levier 16 : où l'appel a été traité. {hote, ue, pays, note, certitude}.
+
+    ue : True (UE), False (hors UE), None (non garanti ou inconnu). certitude : « observee »
+    (upstream capturé par la passerelle) ou « deduite » (format d'appel, pas de upstream).
+    Hôte inconnu : ue None et note None, on ne prétend rien.
+    """
+    known, patterns = hosts
+    host, how = event.get("upstream"), "observee"
+    if not host:
+        host, how = DEFAULT_HOST.get(event.get("provider")), "deduite"
+    if not host:
+        return {"hote": None, "ue": None, "pays": None, "note": None, "certitude": how}
+    if host in LOCAL_HOSTS:
+        return {"hote": host, "ue": True, "pays": None, "note": "reste chez vous", "certitude": how}
+    sheet = known.get(host) or next((p for p in patterns if fnmatch.fnmatch(host, p["motif"])), None)
+    if sheet is None:
+        return {"hote": host, "ue": None, "pays": None, "note": None, "certitude": how}
+    return {"hote": host, "ue": sheet["ue"], "pays": sheet.get("pays"), "note": sheet["note"],
+            "editeur": sheet["editeur"], "certitude": how}

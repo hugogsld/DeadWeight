@@ -147,3 +147,38 @@ def alternatives_modele(events, pricing=None, providers=None, capabilities=None,
                     "suggestion_r2": finding["evidence"]["suggested_model"], **rec})
     out.sort(key=lambda r: -(r["cout_mensuel_usd"] or 0))
     return out[:top]
+
+
+def sovereign_alternative(events, simple, pricing=None, providers=None, capabilities=None):
+    """Levier 16 : le modèle d'un éditeur européen, sur sa propre route, pour ces appels.
+
+    Seulement pour une tâche jugée simple (R2) : le moins cher des modèles compatibles, quel
+    que soit son prix. Pour une tâche qui raisonne, None : sans indice de qualité (M1.2), le
+    prix ne dit rien du niveau d'un modèle (les plus chers de Mistral sont d'anciennes
+    générations), le choix revient au banc de modèles (M2.2).
+    """
+    if not simple:
+        return None
+    pricing = pricing if pricing is not None else load_pricing()
+    providers = providers if providers is not None else load_providers()
+    capabilities = capabilities if capabilities is not None else load_capabilities()
+    need = needs(events)
+    if need["contexte_min"] is None:
+        return None
+    before = chiffrer(events, pricing)["cout_mensuel_usd"]
+    pool = []
+    for name, caps in capabilities.items():
+        sheet = providers.get(name.split("/", 1)[0])
+        route = caps.get("route_editeur")
+        if ":" in name or not sheet or not sheet["souverain"] or not route or not compatible(route, need):
+            continue
+        cost = _cost_with(events, name, {name: {"in": route["in"], "out": route["out"]}})
+        if cost is not None:
+            pool.append((cost, name))
+    if not pool:
+        return None
+    cost, name = min(pool)
+    return {"modele": name, "cout_mensuel_usd": cost, "hebergeur": capabilities[name]["route_editeur"]["hebergeur"],
+            "facteur": round(before / cost, 1) if before and cost else None,
+            "raisonnement": capabilities[name]["raisonnement"],
+            "pays": providers[name.split("/", 1)[0]]["pays"]}
