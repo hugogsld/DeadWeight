@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from catalog import (FIELDS, coverage, editor_index, editor_of, info, load_pricing, load_providers,
+from catalog import (FIELDS, HOSTING, coverage, editor_index, editor_of, info, load_pricing, load_providers,
                      observed_latency)
 from catalog.__main__ import main
 
@@ -28,9 +28,12 @@ def test_every_provider_sheet_is_complete_and_sourced(tables):
     for prefix, sheet in providers.items():
         assert set(sheet) == set(FIELDS), prefix
         assert sheet["source"] in ("recherche", "siege"), prefix
-        assert sheet["hebergement_ue"] in (True, False, None)
-        if sheet["source"] == "siege":  # non vérifié : on ne prétend rien sur l'hébergement
+        assert sheet["hebergement_ue"] in HOSTING, prefix
+        if sheet["hebergement_ue"] == "sous_conditions":  # la condition doit être dite
+            assert sheet["option_ue"], prefix
+        if sheet["source"] == "siege":  # non vérifié : on ne prétend rien sur l'hébergement ni la route
             assert sheet["hebergement_ue"] is None and sheet["option_ue"] is None, prefix
+            assert sheet["route_openrouter"] is None, prefix
 
 
 @pytest.mark.parametrize("model, editor", [
@@ -46,7 +49,8 @@ def test_info_sovereignty_facts(tables):
     pricing, providers, index = tables
     claude = info("claude-sonnet-4-5", pricing, providers, index)
     assert claude["pays"] == "US" and claude["hebergement_ue"] is False and claude["prix"]["in"] > 0
-    assert info("gpt-4o", pricing, providers, index)["hebergement_ue"] is True
+    assert info("gpt-4o", pricing, providers, index)["hebergement_ue"] == "sous_conditions"  # comptes éligibles
+    assert info("gemini-2.5-flash", pricing, providers, index)["hebergement_ue"] == "sous_conditions"  # Vertex
     mistral = [k for k in pricing if k.startswith("mistralai/")][0]
     assert info(mistral, pricing, providers, index)["souverain"] is True
     unknown = info("modele-inconnu", pricing, providers, index)

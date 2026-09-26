@@ -15,7 +15,8 @@ from collector.pricing import aliases
 from report.cost import _DATED, PRICING_PATH, lookup
 
 PROVIDERS_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "providers.json"
-FIELDS = ("nom", "pays", "hebergement_ue", "souverain", "option_ue", "source", "date")
+FIELDS = ("nom", "pays", "hebergement_ue", "souverain", "option_ue", "route_openrouter", "source", "date")
+HOSTING = (True, False, "sous_conditions", None)
 
 
 def load_pricing(path=PRICING_PATH):
