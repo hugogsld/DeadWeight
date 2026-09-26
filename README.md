@@ -95,7 +95,7 @@ returns **PASS at 98.0% agreement**.
 
 Add `--no-llm` to the patcher to run the whole pipeline with no API key at all.
 
-## Gateway (D1.1, D1.2) — OpenAI pass-through proxy
+## Gateway (D1.1, D1.2, D1.4) — OpenAI pass-through proxy
 
 The gateway sits between your application and OpenAI. You change one line — the
 `base_url` — and every call is relayed unchanged, streaming included, while a copy
@@ -133,10 +133,19 @@ path. The database stays on your machine. Once your normal traffic has run for a
 
 Stop the gateway with Ctrl+C or SIGTERM: pending events are flushed before it exits.
 
+**Traces.** `export` groups the calls of one workflow into traces (`trace.id`, `trace.step`),
+which the loop and context rules need. If your application sets `x-deadweight-trace`, that
+id is used as is. Otherwise the gateway infers it: a call continues an earlier one when it
+carries that call's last input message followed by its answer — what every chat client and
+agent loop sends back — within 30 minutes, same app and same system prompt. Isolated calls
+stay out of traces. Details and known blind spots in `gateway/traces.py`; on the reference
+dataset it recovers 79 / 79 traces with no header and no false positive. `--raw` exports
+without grouping.
+
 Checks, no API key needed (a local fake OpenAI stands in):
 
     .venv/bin/pip install pytest jsonschema openai
-    .venv/bin/python -m pytest tests/test_gateway.py tests/test_store.py
+    .venv/bin/python -m pytest tests/test_gateway.py tests/test_store.py tests/test_traces.py
     .venv/bin/python -m gateway.bench                   # added latency, with and without SQLite
 
 Measured on a laptop, p95 added over a direct call: **+0.3 ms** sequential and **+3.0 ms**
