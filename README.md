@@ -359,6 +359,40 @@ Optional fallback model for uncovered inputs, via any OpenAI-compatible endpoint
 The fallback is the only thing that calls an API: hard cap of 200 calls per replay
 (`--max-calls` cannot exceed it) and a minimum interval between two calls.
 
+## Banc de modèles (M2.2) — tester un modèle avant de le recommander
+
+Avant que M2 (recommandations) propose de remplacer un modèle, le banc le teste pour de
+vrai sur l'échantillon d'entrées **réelles** d'un groupe (`app_id` x modèle x gabarit de
+prompt, comme `low_entropy_output`) : mêmes entrées, réponse du modèle d'origine comme
+référence. Aucun appel réseau tant que `--dry-run` n'est pas levé.
+
+    python -m bench run fixtures/dataset/v1/events.jsonl --app mail-triage --model gpt-4o \
+        --dry-run                                    # ce qui serait appelé, coût estimé, 0 appel
+    python -m bench run fixtures/dataset/v1/events.jsonl --app mail-triage --model gpt-4o \
+        --candidates small,local --max-cases 50 --out out/bench.json
+
+Type de tâche détecté automatiquement à partir des références : **classification** (peu de
+réponses distinctes, comme `low_entropy_output`) jugée par égalité stricte après
+normalisation, seuil **0.95** ; **texte libre** jugé par recouvrement de tokens (F1), seuil
+**0.5** indicatif seulement — un point d'extension pour un LLM-juge est documenté dans
+`bench/scoring.py` mais pas implémenté (bruit et coût à ce stade). Chaque candidat est
+mesuré : latence p50/p95, taux d'erreur, coût pour 1000 appels (`report.cost.lookup` sur
+`fixtures/pricing.json`, `0 $` pour l'exécution locale), et marqué de son origine
+(FR/EU/US/CN, `bench/candidates.json`, curé depuis `docs/research/modeles.md`). Plafond dur
+d'appels par candidat (`bench.runner.HARD_MAX_CALLS`, comme `proof.replay.Throttle`).
+
+Candidats réels, un point de terminaison OpenAI-compatible par nature de fournisseur :
+
+    export OPENROUTER_API_KEY=...                 # une seule clé pour les ~10 candidats OpenRouter
+    export OPENAI_API_KEY=... MISTRAL_API_KEY=...  # candidats en API directe (gpt-5-*, ministral-8b)
+    ollama pull llama3.3:70b && ollama serve        # candidats locaux : http://localhost:11434/v1, aucune clé
+    python -m bench run events.jsonl --app mon-app --model gpt-4o --max-calls 50 --min-interval 1
+
+`bench/candidates.json` est une bibliothèque : `gateway/bench.py` mesure la latence de la
+passerelle, ce banc mesure des modèles candidats sur du trafic — deux choses différentes
+malgré le nom voisin. M2 (catalogue, recommandations) appelle ce module comme une
+bibliothèque ; il ne le remplace pas.
+
 ## Short-circuit (D3.3) — the gateway answers proven calls itself
 
 Off by default. Point the gateway at the replay output: only **pass** proofs are loaded.
