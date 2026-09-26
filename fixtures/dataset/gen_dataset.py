@@ -143,7 +143,7 @@ def conversations(ds, app, model, expected, grow, note):
             else:
                 messages = history[-4:]
                 in_tok = 900 + RNG.randint(-80, 80)
-            answer = f"Reponse {turn + 1}."
+            answer = f"Reponse {turn + 1} a la conv {c} : [contenu specifique]"
             conv.append(ds.emit(app=app, provider="gemini", model=model,
                                 system="Tu es un assistant.", messages=messages, content=answer,
                                 in_tok=in_tok, out_tok=RNG.randint(30, 90),

@@ -27,3 +27,6 @@ Une nouvelle version = un nouveau dossier `v2/`, on ne réécrit jamais `v1`.
 
 Les traces sans en-tête ont `trace = {id: null, source: null}` : la vérité est dans
 `labels.json > traces`, c'est ce que D1.4 doit retrouver.
+
+Correctif v1 (26/09, D2.1) : les réponses de `contract-bot` et `support-chat` étaient trop
+répétitives (« Réponse 1. ») et faisaient déclencher R1 à tort. Elles sont maintenant uniques.
