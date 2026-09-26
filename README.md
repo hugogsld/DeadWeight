@@ -172,6 +172,22 @@ Optional fallback model for uncovered inputs, via any OpenAI-compatible endpoint
 The fallback is the only thing that calls an API: hard cap of 200 calls per replay
 (`--max-calls` cannot exceed it) and a minimum interval between two calls.
 
+## Short-circuit (D3.3) — the gateway answers proven calls itself
+
+Off by default. Point the gateway at the replay output: only **pass** proofs are loaded.
+
+    GATEWAY_SHORTCIRCUIT=out/ .venv/bin/python -m gateway
+
+A call is answered by the gateway, without reaching OpenAI, only when it falls in the
+proven group (same `x-deadweight-app`, model and system prompt template) **and** a rule
+covers its input. Tools, images, JSON output, `n > 1` and uncovered inputs are relayed
+unchanged. Streaming works. The response carries `x-deadweight-shortcircuit: <finding_id>`
+and is still captured, with `upstream: "deadweight"`, `model_resolved: "deadweight-rules"`
+and zero tokens.
+
+On the D0.3 dataset (`mail-triage`): **0.24 ms p95** instead of 764 ms for the original
+gpt-4o call, no upstream request.
+
 ## Stack
 
 **n8n** — the audited target: the only orchestrator exposing both workflow JSON and

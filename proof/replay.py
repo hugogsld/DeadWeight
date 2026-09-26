@@ -204,6 +204,8 @@ def replay(finding, events, rules, fallback=None, fallback_model=None, throttle=
     return {
         'patch_id': rules_id,
         'finding_id': finding.get('finding_id'),
+        'template': finding.get('template'),
+        'rules': rules.get('categories', []),
         'app_id': finding.get('app_id'),
         'model': finding.get('model'),
         'source': 'evenements passerelle, hors exemples d\'extraction',
