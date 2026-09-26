@@ -3,7 +3,7 @@ PY := $(shell command -v python3.11 || command -v python3)
 VENV := .venv
 BIN := $(VENV)/bin
 
-.PHONY: dev install test lint record audit demo prices
+.PHONY: dev install test lint record audit demo prices catalog
 
 dev: install .env.local
 	@set -a; . ./.env.local; set +a; \
@@ -45,3 +45,7 @@ demo: install
 # prix OpenRouter (API publique, sans clé) -> fixtures/pricing.json ; anciens modèles conservés
 prices: install
 	$(BIN)/python -m collector.pricing
+
+# M1 : rafraîchit les prix puis contrôle le catalogue (origine, hébergement, couverture)
+catalog: prices
+	$(BIN)/python -m catalog
