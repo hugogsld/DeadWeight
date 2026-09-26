@@ -119,6 +119,19 @@ Installe, lance la démo, puis une vraie passerelle devant trois fournisseurs si
 Gemini) : trafic simple, en streaming et en boucle d'agent, capture, traces, rapport, rejeu, miroir et
 court-circuit. Aucune clé, aucun appel payant. La CI le lance à chaque PR.
 
+## Workflows de test
+
+De vrais workflows d'agents, passés par la passerelle pour tester Deadweight hors des fixtures, sont
+dans le repo **[Workflow-test-hackathon-agentique-25-09-2026](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026)** :
+
+| Workflow | Ce qu'il fait |
+| --- | --- |
+| [workflow 1 - Miguel short](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short) | pipeline de production de shorts vidéo piloté par des agents Claude Code (snapshot) |
+| [workflow 2 - Recap Gmail](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%202%20-%20Recap%20Gmail) | un agent lit les mails des dernières 24 h et rédige un récap |
+| [workflow 3 - OpenAI story flow](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%203%20-%20OpenAI%20story%20flow) | exemple officiel `deterministic.py` du SDK Agents d'OpenAI : trois agents à la suite |
+
+Ce que chaque test a donné, et les problèmes à corriger : [docs/retours-tests-workflows.md](docs/retours-tests-workflows.md).
+
 ## Prix des modèles
 
 Les coûts viennent de `fixtures/pricing.json`, le catalogue public d'OpenRouter (prix d'entrée,
