@@ -113,6 +113,13 @@ de sortie et du cache, en dollars par million de jetons). Pour le rafraîchir :
 Les noms des API sont reconnus tels quels (`claude-sonnet-4-5`, `gpt-4o-2024-08-06`). Si un
 modèle reste inconnu, le rapport chiffre les autres appels et indique la part couverte.
 
+Origine et hébergement de chaque éditeur (pays, traitement possible dans l'UE, option souveraine)
+dans `fixtures/providers.json`, chaque fiche avec sa source ; un point non vérifié vaut `null`.
+Pour rafraîchir les prix et contrôler le catalogue, puis voir la latence mesurée sur votre trafic :
+
+    make catalog
+    .venv/bin/python -m catalog --events events.jsonl
+
 ## Confidentialité
 
 - **La clé n’est jamais stockée** par la passerelle : l’en-tête d’autorisation est
