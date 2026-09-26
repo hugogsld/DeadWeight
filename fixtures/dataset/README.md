@@ -64,3 +64,6 @@ Les 1 332 événements historiques et tous les scénarios antérieurs sont conse
 
 R11 : `item-loop` contient dix éléments courts distincts ; `item-long-analysis`
 conserve dix sorties longues et ne déclenche pas. Instructions / 4 : estimation, pas tokenisation.
+
+R17 : `rewrite-chain` traduit la réponse précédente ; `research-followup` demande
+une nouvelle recherche. Les verdicts de `systematic-review` restent exclusivement R16.

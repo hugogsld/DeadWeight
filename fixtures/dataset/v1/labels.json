@@ -2772,5 +2772,75 @@
       "ds_01686"
     ],
     "traces": {}
+  },
+  {
+    "scenario": "rewrite-chain",
+    "app_id": "rewrite-chain",
+    "expected_rules": [
+      "mergeable_steps"
+    ],
+    "note": "Transformation seule de la réponse.",
+    "event_ids": [
+      "ds_01687",
+      "ds_01688",
+      "ds_01689",
+      "ds_01690",
+      "ds_01691",
+      "ds_01692",
+      "ds_01693",
+      "ds_01694"
+    ],
+    "traces": {
+      "rewrite-chain-0": [
+        "ds_01687",
+        "ds_01688"
+      ],
+      "rewrite-chain-1": [
+        "ds_01689",
+        "ds_01690"
+      ],
+      "rewrite-chain-2": [
+        "ds_01691",
+        "ds_01692"
+      ],
+      "rewrite-chain-3": [
+        "ds_01693",
+        "ds_01694"
+      ]
+    }
+  },
+  {
+    "scenario": "research-followup",
+    "app_id": "research-followup",
+    "expected_rules": [],
+    "note": "Nouvelle recherche, fusion non présumée.",
+    "event_ids": [
+      "ds_01695",
+      "ds_01696",
+      "ds_01697",
+      "ds_01698",
+      "ds_01699",
+      "ds_01700",
+      "ds_01701",
+      "ds_01702"
+    ],
+    "traces": {
+      "research-followup-0": [
+        "ds_01695",
+        "ds_01696"
+      ],
+      "research-followup-1": [
+        "ds_01697",
+        "ds_01698"
+      ],
+      "research-followup-2": [
+        "ds_01699",
+        "ds_01700"
+      ],
+      "research-followup-3": [
+        "ds_01701",
+        "ds_01702"
+      ]
+    }
   }
 ]

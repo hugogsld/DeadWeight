@@ -566,6 +566,28 @@ def item_scenarios(ds):
         ds.scenario(app, app, ['per_item_calls'] if short else [], es,
                     'Dix éléments courts, système répété.' if short else 'Analyses longues : regroupement non présumé.')
 
+
+def merge_scenarios(ds):
+    for transform in (True, False):
+        app = 'rewrite-chain' if transform else 'research-followup'
+        es, traces = [], {}
+        for i in range(4):
+            tid = f'{app}-{i}'
+            response = f'Dossier {i} : ' + 'Le rapport expose les conclusions particulières de cette étude. ' * 3
+            question = user(f'Rédige une étude sur le dossier {i}')
+            a = ds.emit(app=app, provider='openai', model='gpt-4o-mini', system='Assistant de rédaction.',
+                        messages=[question], content=response, in_tok=200, out_tok=80,
+                        offset_s=820000 + i * 60, latency_ms=1200, trace=(tid, 'header', 0))
+            b = ds.emit(app=app, provider='openai', model='gpt-4o-mini', system='Assistant de rédaction.',
+                        messages=[question, {'role': 'assistant', 'content': response},
+                                  user('Traduis cette réponse en anglais.' if transform else 'Cherche des éléments nouveaux sur les ventes.')],
+                        content=f'Result of the detailed study for file {i}.', in_tok=300, out_tok=60,
+                        offset_s=820002 + i * 60, latency_ms=1000, trace=(tid, 'header', 1))
+            es += [a, b]
+            traces[tid] = [a, b]
+        ds.scenario(app, app, ['mergeable_steps'] if transform else [], es,
+                    'Transformation seule de la réponse.' if transform else 'Nouvelle recherche, fusion non présumée.', traces)
+
 def main():
     ds = Dataset()
     mail_triage(ds)
@@ -600,6 +622,7 @@ def main():
     judge_scenarios(ds)
     parallel_scenarios(ds)
     item_scenarios(ds)
+    merge_scenarios(ds)
 
     ds.events.sort(key=lambda e: e["ts_start"])
     OUT.mkdir(parents=True, exist_ok=True)

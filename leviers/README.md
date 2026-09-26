@@ -27,5 +27,5 @@ Fichiers générés par `python leviers/_generer.py` : modifier la liste dans ce
 | 14 | [Les autres API du workflow (recherche, scraping, enrichissement)](14-autres-api.md) | Appels d'autres API | Doublons : 100 % ; choix du fournisseur : ÷3 | Appels parallélisables | Calcul exact | Mis de côté (C1, C2) |
 | 15 | [Des définitions d'outils envoyées à chaque appel](15-definitions-outils.md) | Forme des briques d'IA | 10 à 40 % de l'entrée d'un agent | Faible | Calcul | Détection faite (R13), gain estimé à confirmer |
 | 16 | [Des données qui partent hors d'Europe](16-souverainete.md) | Conformité | — | — | Catalogue (origine, hébergement) | Bloc M (Hugo) |
-| 17 | [Autres gains sur la forme du workflow](17-forme-du-workflow.md) | Forme du workflow | Variable | Variable | Graphe + historique | À faire, après B1 |
+| 17 | [Autres gains sur la forme du workflow](17-forme-du-workflow.md) | Forme du workflow | Variable | Variable | Graphe + historique | Détection faite (R17), fusion à tester |
 | 18 | [Images en haute résolution, relecture par un LLM juge](18-images-et-relecture.md) | Usage des LLM | Images : ÷5 à ÷10 ; relecture : ×2 évité | Moyenne | Calcul + banc | Détection faite (R15, R16), qualité et gains à confirmer |

@@ -62,6 +62,8 @@ def _figures(events):
 
 # Texte humain par regle : aucun code de regle ne doit apparaitre dans la page.
 RULE_TEXT = {
+    'mergeable_steps': ('Une réponse retravaillée par un deuxième appel',
+        'Tester une consigne qui produit directement la forme finale et comparer la qualité.'),
     'per_item_calls': ('Un appel séparé pour chaque élément',
         'Tester un appel groupé ou un traitement par lots, puis vérifier la qualité.'),
     'parallelizable_steps': ('Des étapes indépendantes attendent leur tour',
