@@ -25,12 +25,48 @@ Statuts : `ouvert` → `en cours (#PR)` → `corrigé (#PR)`, ou `abandonné (ra
 | SDK OpenAI officiel → passerelle → vraie API OpenAI | appel simple + streaming, `gpt-4o-mini` | relais identique, streaming, clé jamais capturée (D1.1) |
 | **Récap Gmail** ([repo workflows](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026), `workflow 2 - Recap Gmail`) | **51 appels réels** `gpt-4o-mini` : 47 tris de mails (un mot parmi 5) + 4 appels d'un agent de récap avec outil `read_email` | capture (D1.2), traces sans en-tête (D1.4), règles, rapport (D4.1), rejeu (D3.2) |
 | Jeu de données D0.3 | 1 332 événements générés | les six règles, cas positifs et négatifs |
+| **Miguel shorts-factory** (`workflow 1 - Miguel short`) | **aucun appel capturé** : lecture du code d'orchestration et du relevé de coûts réel (316 lignes, 7 lots de production) | ce que Deadweight verrait, et ce qu'il ne peut pas voir, sur un pipeline d'agents en production |
 
 Résultat global sur le récap Gmail : la chaîne complète tourne sur du vrai trafic.
 R1 « une IA qui répond toujours la même chose » est détectée sur le tri (47 appels,
 5 réponses : info 16, newsletter 14, urgent 9, a_traiter 6, spam 2). L'agent de
 récap n'est pas signalé, à raison. Ses appels sont regroupés en 2 traces sans aucun
 en-tête. Coût réel des 51 appels : 0,0049 $.
+
+### Fiche : Miguel shorts-factory (26/09)
+
+- **Source** : snapshot de `migueltorrezd/shorts-factory` @ `34edd0a`, dossier
+  `workflow 1 - Miguel short` du repo workflows.
+- **Ce qu'il fait** : transforme une vidéo filmée en trois shorts (YouTube,
+  Instagram, TikTok), puis les emballe, les archive et les programme.
+  Orchestration : `workflow/daily-shorts.js`, un Workflow Claude Code qui lance
+  un agent Claude Opus 5.5 par tâche.
+- **Trafic capturé** : aucun. Le faire tourner demande une vraie vidéo, les
+  comptes Modal, ElevenLabs, Notion, Google Drive et Zernio de Miguel, et il
+  **publie sur ses réseaux** : pas lancé. Test fait sur le code et sur
+  `factory/runs/*/costs.jsonl`.
+- **Appels de modèles** : agents Claude Opus 5.5 via Claude Code (le cœur du
+  pipeline), `claude -p` (lecteurs indépendants), GPT-6 Astra via `codex exec`
+  (détourage), Gemini en direct via le SDK `google-genai` (contrôle qualité,
+  **en pause** depuis le 22/09). Aucun appel OpenAI direct.
+- **Ce que Deadweight signalerait** (lecture du code, non mesuré) : une
+  famille d'agents Opus dont le prompt dit lui-même qu'ils ne décident rien.
+  | Agent | Ce que dit son prompt | Remplaçable par |
+  | --- | --- | --- |
+  | `wait:` (sleeper) | « exécute `sleep 600`, puis réponds le seul mot *slept* ». Existe parce que le script n'a pas d'horloge | un minuteur dans l'orchestrateur |
+  | `marker:` | « tu es aussi petit qu'un agent peut l'être » : une commande, ne juge rien | l'appel direct du script |
+  | `watch:` | lance la même commande jusqu'à 4 fois, « ne juge rien » | une boucle dans le script |
+  | `probe:` | lit au plus deux fichiers et revient | une lecture de fichier |
+  | `costs:report` | « lance UNE commande », ne peut pas échouer | l'appel direct du script |
+  | `prep:launch`, `render:` | lancent un script et renvoient son résultat | l'appel direct du script |
+  Restent de vrais agents : `design:`, `author:` (création), `metadata:`
+  (rédaction), la revue du détourage par Astra.
+- **Coût** : le relevé de Miguel annonce **1,48 $ pour tout le lot 24**
+  (« every number below was measured »), 6,25 $ sur 7 lots. **Aucune ligne
+  pour les agents Claude Opus ni pour GPT-6 Astra** : seuls Modal, Gemini et
+  ElevenLabs sont comptés. Le poste le plus lourd du pipeline est invisible
+  dans son propre bilan.
+- **Problèmes** : 7, 8, 9.
 
 ## Problèmes ouverts
 
@@ -42,6 +78,9 @@ en-tête. Coût réel des 51 appels : 0,0049 $.
 | 4 | Le conseil « laissez tourner une heure » est faux pour un workflow par lots | moyenne | `report/audit.py` | Récap Gmail | ouvert |
 | 5 | Choix de R5 à valider en équipe | basse | `rules/unbounded_loop.py` | tests D2.4 | ouvert |
 | 6 | Heuristique de traces jamais confrontée à un historique réécrit | basse | `gateway/traces.py` | aucun (à tester) | ouvert |
+| 7 | Deadweight ne voit pas les agents lancés par Claude Code, `claude -p` ou `codex exec` | haute | installation (D4.2), `gateway/` | Miguel shorts-factory | ouvert |
+| 8 | Les agents qui n'exécutent qu'une seule commande échappent à toutes les règles | haute | `rules/agent_where_chain.py` | Miguel shorts-factory | ouvert |
+| 9 | Agents facturés à l'abonnement : le coût en dollars par token ne reflète pas ce qu'ils coûtent | moyenne | `report/cost.py`, `report/audit.py` | Miguel shorts-factory | ouvert |
 
 ### 1. Le rejeu affiche une projection mensuelle absurde
 
@@ -143,6 +182,65 @@ modifie les anciens messages (LangChain `ConversationSummaryMemory`, par exemple
 Dans ce cas, la réponse précédente n'apparaît plus telle quelle et la trace est
 coupée, ce qui fait rater R3, R5 et R6. Prochain workflow de test à écrire : un
 chat avec mémoire résumée.
+
+### 7. Deadweight ne voit pas les agents lancés par des outils en ligne de commande
+
+**Constat.** Dans shorts-factory, les appels de modèles partent de Claude Code
+(le Workflow et ses agents), de `claude -p` et de `codex exec`, pas d'un SDK
+dans le code de Miguel. Il n'y a aucun `base_url` à changer dans son code : le
+point 1 du critère de réussite du weekend (« changer une variable `base_url` »)
+ne s'applique pas tel quel.
+
+**Cause.** Ces outils lisent leur adresse dans l'environnement :
+`ANTHROPIC_BASE_URL` pour Claude Code et `claude -p`, `OPENAI_BASE_URL` pour
+Codex. La passerelle sait déjà relayer Anthropic sous `/anthropic` (D1.3), mais
+rien ne l'explique et ce n'est pas testé.
+
+**Correction.**
+- Tester Claude Code à travers la passerelle :
+  `ANTHROPIC_BASE_URL=http://127.0.0.1:8080/anthropic claude -p "..."`. Vérifier
+  le streaming, les appels d'outils, et que l'authentification par abonnement
+  (jeton OAuth, pas une clé `sk-ant-`) est relayée sans être capturée.
+- Ajouter au README d'installation une section « agents en ligne de commande »
+  avec ces deux variables.
+- Pour un test réel, demander à Miguel de lancer **un** lot avec ces variables :
+  c'est le seul moyen de mesurer ses agents sans toucher à son code.
+
+### 8. Les agents qui n'exécutent qu'une seule commande échappent à toutes les règles
+
+**Constat.** Les gaspillages les plus nets de shorts-factory (`wait:`,
+`marker:`, `costs:report`, `probe:` : fiche ci-dessus) sont des agents Opus
+qui font **un seul** appel d'outil, toujours le même, puis rendent un résultat
+fixe. Aucune règle ne les attrape :
+- R6 `agent_where_chain` exige au moins 2 appels d'outils par trace
+  (`MIN_TOOL_CALLS = 2`), un seuil choisi pour ne pas viser la recherche
+  documentaire « un appel puis une réponse » ;
+- R5 ne voit une boucle qu'à l'intérieur d'une trace ; le sleeper relancé toutes
+  les 10 minutes, ce sont des traces séparées ;
+- R1 pourrait voir le sleeper (il répond toujours *slept*), mais seulement si
+  ses appels partagent un gabarit, alors que son prompt contient la raison de
+  l'attente, qui change.
+
+**Correction.** Nouvelle règle, ou extension de R6 : « agent à commande fixe ».
+Sur au moins 10 traces d'une même application, si chaque trace fait **un** appel
+d'outil dont le nom **et les arguments normalisés** sont identiques (au chemin de
+lot près), puis rend une réponse courte, alors un appel direct du script suffit.
+Les arguments distinguent ce cas de la recherche documentaire, dont la requête
+change à chaque fois. Cas de test : les prompts de `daily-shorts.js`.
+
+### 9. Agents facturés à l'abonnement : le coût en dollars ne dit pas ce qu'ils coûtent
+
+**Constat.** Les agents de Miguel tournent sous Claude Code : son code gère un
+« usage cap » (plafond d'usage) et endort le lot jusqu'à sa remise à zéro. Ce
+qui coûte, c'est le **quota** et le **temps perdu**, pas une facture au token.
+Ni son relevé (qui les ignore) ni Deadweight (qui ne compte que des dollars par
+token) ne le montrent.
+
+**Correction.** Pour les appels Anthropic sans prix facturé : afficher les
+tokens consommés et leur équivalent au prix public, avec la mention « équivalent,
+non facturé ». Ajouter au rapport la **part des appels** d'une application
+qu'un constat permettrait d'éviter : sur un plafond d'usage, c'est la mesure
+qui parle.
 
 ## Problèmes corrigés
 
