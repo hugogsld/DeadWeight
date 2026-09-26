@@ -38,6 +38,15 @@ PROVIDERS = {
     "lmChatXAiGrok": ("openai", "api.x.ai"),
     "lmChatOllama": ("openai", "localhost:11434"),
     "lmOllama": ("openai", "localhost:11434"),
+    "lmOpenHuggingFaceInference": ("openai", "api-inference.huggingface.co"),
+    # nœuds qui appellent le fournisseur eux-mêmes
+    "openAi": ("openai", "api.openai.com"),
+    "n8n-nodes-base.openAi": ("openai", "api.openai.com"),
+    "anthropic": ("anthropic", "api.anthropic.com"),
+    "googleGemini": ("gemini", "generativelanguage.googleapis.com"),
+    "mistralAi": ("openai", "api.mistral.ai"),
+    "ollama": ("openai", "localhost:11434"),
+    "n8n-nodes-base.perplexity": ("openai", "api.perplexity.ai"),
 }
 
 FINISH = {"stop": "stop", "end_turn": "stop", "stop_sequence": "stop", "STOP": "stop",

@@ -180,6 +180,16 @@ même étiquette, les règles gardent donc leur signal. Envoyez-nous alors seule
 
     python3 -m importers.n8n purge private/n8n/<id>
 
+Pour vérifier notre lecture sur des workflows réels, la bibliothèque publique n8n.io (sans clé) :
+
+    python3 -m importers.n8n library fetch --limit 1000     # les plus consultés de la catégorie AI
+    python3 -m importers.n8n library coverage               # nœuds LLM, fournisseur, modèle lu
+
+Les workflows vont dans `private/n8n-library/` (ignoré par git : ils appartiennent à leurs
+auteurs). `coverage` liste ce qu'on ne sait pas lire : fournisseurs inconnus, nœuds d'IA non
+reconnus, modèle introuvable. Un modèle laissé au réglage par défaut n'est pas écrit dans le
+workflow (et ce défaut change selon la version de n8n) : seul l'historique d'exécution le donne.
+
 ## Confidentialité
 
 - **La clé n’est jamais stockée** par la passerelle : l’en-tête d’autorisation est
