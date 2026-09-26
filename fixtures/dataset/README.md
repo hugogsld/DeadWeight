@@ -67,3 +67,7 @@ conserve dix sorties longues et ne déclenche pas. Instructions / 4 : estimation
 
 R17 : `rewrite-chain` traduit la réponse précédente ; `research-followup` demande
 une nouvelle recherche. Les verdicts de `systematic-review` restent exclusivement R16.
+
+R18 : `heavy-harness` répète 24 fois des instructions dominantes avec du cache actif ;
+`lean-harness` garde des instructions légères. Le coût fixe est borné selon la part
+déjà cachée ; ce coût ne constitue pas une économie intégralement réalisable.

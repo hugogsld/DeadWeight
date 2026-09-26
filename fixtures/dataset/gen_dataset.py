@@ -588,6 +588,21 @@ def merge_scenarios(ds):
         ds.scenario(app, app, ['mergeable_steps'] if transform else [], es,
                     'Transformation seule de la réponse.' if transform else 'Nouvelle recherche, fusion non présumée.', traces)
 
+
+def harness_scenarios(ds):
+    for heavy in (True, False):
+        app = 'heavy-harness' if heavy else 'lean-harness'
+        es = []
+        for i in range(24):
+            es.append(ds.emit(app=app, provider='openai', model='gpt-4o-mini',
+                              system='Instructions générales de traitement. ' * (150 if heavy else 5),
+                              messages=[user(f'Dossier {i} avec des observations particulières.')],
+                              content=f'Analyse détaillée adaptée au dossier {i}', in_tok=1700 if heavy else 200,
+                              out_tok=100, cached=1000 if heavy else 0,
+                              offset_s=830000 + i * 60, latency_ms=1500))
+        ds.scenario(app, app, ['harness_overhead'] if heavy else [], es,
+                    'Part fixe dominante, cache déjà partiellement actif.' if heavy else 'Instructions courtes, pas de surcharge dominante.')
+
 def main():
     ds = Dataset()
     mail_triage(ds)
@@ -623,6 +638,7 @@ def main():
     parallel_scenarios(ds)
     item_scenarios(ds)
     merge_scenarios(ds)
+    harness_scenarios(ds)
 
     ds.events.sort(key=lambda e: e["ts_start"])
     OUT.mkdir(parents=True, exist_ok=True)

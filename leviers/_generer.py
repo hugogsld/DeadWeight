@@ -145,7 +145,7 @@ LEVIERS = [
          comment_prouver="Banc de modèles sur l'alternative.", suite="Argument fort pour les clients français."),
     dict(fichier="17-forme-du-workflow", titre="Autres gains sur la forme du workflow", famille="Forme du workflow",
          argent="Variable", latence="Variable", preuve="Graphe + historique", donnees="Historique n8n (B1)",
-         etat="Détection faite (R17), fusion à tester", regle="—",
+         etat="Détection faite (R17, R18), fusion et instructions minimales à tester", regle="—",
          signal="Étapes LLM enchaînées fusionnables, étapes dont le résultat ne sert à rien, déclencheur trop "
                 "fréquent (exécutions à vide), filtre simple qui éviterait le LLM.",
          detection="Graphe du workflow et historique des exécutions.",

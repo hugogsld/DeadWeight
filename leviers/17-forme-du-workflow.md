@@ -7,7 +7,7 @@
 | Gain latence | Variable |
 | Comment prouver | Graphe + historique |
 | Données nécessaires | Historique n8n (B1) |
-| État | Détection faite (R17), fusion à tester |
+| État | Détection faite (R17, R18), fusion et instructions minimales à tester |
 | Règle | — |
 
 ## Le signal

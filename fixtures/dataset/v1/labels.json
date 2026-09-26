@@ -2842,5 +2842,73 @@
         "ds_01702"
       ]
     }
+  },
+  {
+    "scenario": "heavy-harness",
+    "app_id": "heavy-harness",
+    "expected_rules": [
+      "harness_overhead"
+    ],
+    "note": "Part fixe dominante, cache déjà partiellement actif.",
+    "event_ids": [
+      "ds_01703",
+      "ds_01704",
+      "ds_01705",
+      "ds_01706",
+      "ds_01707",
+      "ds_01708",
+      "ds_01709",
+      "ds_01710",
+      "ds_01711",
+      "ds_01712",
+      "ds_01713",
+      "ds_01714",
+      "ds_01715",
+      "ds_01716",
+      "ds_01717",
+      "ds_01718",
+      "ds_01719",
+      "ds_01720",
+      "ds_01721",
+      "ds_01722",
+      "ds_01723",
+      "ds_01724",
+      "ds_01725",
+      "ds_01726"
+    ],
+    "traces": {}
+  },
+  {
+    "scenario": "lean-harness",
+    "app_id": "lean-harness",
+    "expected_rules": [],
+    "note": "Instructions courtes, pas de surcharge dominante.",
+    "event_ids": [
+      "ds_01727",
+      "ds_01728",
+      "ds_01729",
+      "ds_01730",
+      "ds_01731",
+      "ds_01732",
+      "ds_01733",
+      "ds_01734",
+      "ds_01735",
+      "ds_01736",
+      "ds_01737",
+      "ds_01738",
+      "ds_01739",
+      "ds_01740",
+      "ds_01741",
+      "ds_01742",
+      "ds_01743",
+      "ds_01744",
+      "ds_01745",
+      "ds_01746",
+      "ds_01747",
+      "ds_01748",
+      "ds_01749",
+      "ds_01750"
+    ],
+    "traces": {}
   }
 ]
