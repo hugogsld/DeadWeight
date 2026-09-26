@@ -3,6 +3,20 @@
 Journal des tests de Deadweight sur de vrais workflows : ce qu'on a rencontré, et
 comment on compte le résoudre. État vérifié sur `main` au commit `11d0ed0`.
 
+Les workflows testés sont dans le repo **[Workflow-test-hackathon-agentique-25-09-2026](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026)**,
+un dossier par workflow (repo privé : demander l'accès à Thibaud) :
+
+- [workflow 1 - Miguel short](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short) : snapshot de la
+  shorts-factory de Miguel (pipeline vidéo piloté par des agents Claude Code) ;
+- [workflow 2 - Recap Gmail](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%202%20-%20Recap%20Gmail) : récap des mails des
+  dernières 24 h par un agent ;
+- [workflow 3 - OpenAI story flow](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%203%20-%20OpenAI%20story%20flow) : exemple
+  officiel `deterministic.py` du SDK Agents d'OpenAI.
+
+**Test réel** veut dire : le workflow a tourné, son trafic est passé par la passerelle,
+et le rapport et le rejeu ont été lancés dessus. Les constats marqués « lecture du
+code » n'ont pas été mesurés.
+
 ## Comment utiliser cette page
 
 1. **Tester** : faire passer un workflow par la passerelle, puis lancer le rapport
@@ -23,10 +37,10 @@ Statuts : `ouvert` → `en cours (#PR)` → `corrigé (#PR)`, ou `abandonné (ra
 | Test | Trafic | Ce qu'il vérifie |
 | --- | --- | --- |
 | SDK OpenAI officiel → passerelle → vraie API OpenAI | appel simple + streaming, `gpt-4o-mini` | relais identique, streaming, clé jamais capturée (D1.1) |
-| **Récap Gmail** ([repo workflows](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026), `workflow 2 - Recap Gmail`) | **51 appels réels** `gpt-4o-mini` : 47 tris de mails (un mot parmi 5) + 4 appels d'un agent de récap avec outil `read_email` | capture (D1.2), traces sans en-tête (D1.4), règles, rapport (D4.1), rejeu (D3.2) |
+| **Récap Gmail** ([`workflow 2 - Recap Gmail`](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%202%20-%20Recap%20Gmail)), test réel | **51 appels réels** `gpt-4o-mini` : 47 tris de mails (un mot parmi 5) + 4 appels d'un agent de récap avec outil `read_email` | capture (D1.2), traces sans en-tête (D1.4), règles, rapport (D4.1), rejeu (D3.2) |
 | Jeu de données D0.3 | 1 332 événements générés | les six règles, cas positifs et négatifs |
-| **Miguel shorts-factory** (`workflow 1 - Miguel short`) | **aucun appel capturé** : lecture du code d'orchestration et du relevé de coûts réel (316 lignes, 7 lots de production) | ce que Deadweight verrait, et ce qu'il ne peut pas voir, sur un pipeline d'agents en production |
-| **OpenAI story flow** (`workflow 3 - OpenAI story flow`) | **77 appels réels** `gpt-4o-mini` : 30 exécutions de l'exemple officiel `deterministic.py` du SDK Agents (plan → vérification → histoire) | capture, traces (D1.4), R1, rejeu, API Responses |
+| **Miguel shorts-factory** ([`workflow 1 - Miguel short`](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short)), lecture du code | **aucun appel capturé** : lecture du code d'orchestration et du relevé de coûts réel (316 lignes, 7 lots de production) | ce que Deadweight verrait, et ce qu'il ne peut pas voir, sur un pipeline d'agents en production |
+| **OpenAI story flow** ([`workflow 3 - OpenAI story flow`](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%203%20-%20OpenAI%20story%20flow)), test réel | **77 appels réels** `gpt-4o-mini` : 30 exécutions de l'exemple officiel `deterministic.py` du SDK Agents (plan → vérification → histoire) | capture, traces (D1.4), R1, rejeu, API Responses |
 
 Résultat global sur le récap Gmail : la chaîne complète tourne sur du vrai trafic.
 R1 « une IA qui répond toujours la même chose » est détectée sur le tri (47 appels,
@@ -91,6 +105,15 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
     `true` 30 fois sur 30, le contrôle de qualité n'a jamais rien arrêté ;
   - **aucune trace** reconstituée (0 sur 77), donc R6 « toujours le même chemin »
     ne peut pas voir cette chaîne fixe.
+- **Ce que montrent les données** (les 77 appels relus un par un) :
+  - `good_quality` vaut `true` **30 fois sur 30** : la moitié du contrôle ne
+    décide jamais rien ;
+  - le vérificateur s'est **contredit** sur la même demande (« last lighthouse
+    keeper on a flooded Earth » : pas SF au lot 1, SF au lot 2), ce qui a bloqué
+    l'histoire la première fois ;
+  - la règle « la **demande** de l'utilisateur contient *sci-fi* » reproduit
+    `is_scifi` **29 fois sur 30**. Appliquée au **plan**, qui est ce que le
+    vérificateur reçoit, la même règle tombe juste **14 fois sur 30**.
 - **Rejeu** : `REJECT`. 24 des 30 vérifications servent d'exemples, il en reste 6
   à rejouer pour un minimum de 30. Règles extraites :
   `elysium|alex|mira|human` → science-fiction, `clara|bakery|whisker|hotel` →
@@ -100,7 +123,7 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
 - **API Responses** : une exécution avec le réglage par défaut du SDK
   (`set_default_openai_api("responses")`) a répondu normalement à l'utilisateur.
   La passerelle a relayé, et **0 événement capturé** (77 avant, 77 après).
-- **Problèmes** : 1 et 3 (confirmés), 10, 11, 12.
+- **Problèmes** : 1 et 3 (confirmés), 10, 11, 12, 13, 14.
 
 ## Problèmes ouverts
 
@@ -112,12 +135,14 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
 | 4 | Le conseil « laissez tourner une heure » est faux pour un workflow par lots | moyenne | `report/audit.py` | Récap Gmail | ouvert |
 | 5 | Choix de R5 à valider en équipe | basse | `rules/unbounded_loop.py` | tests D2.4 | ouvert |
 | 6 | Heuristique de traces jamais confrontée à un historique réécrit | basse | `gateway/traces.py` | aucun (à tester) | ouvert |
-| 7 | Deadweight ne voit pas les agents lancés par Claude Code, `claude -p` ou `codex exec` | haute | installation (D4.2), `gateway/` | Miguel shorts-factory | ouvert |
-| 8 | Les agents qui n'exécutent qu'une seule commande échappent à toutes les règles | haute | `rules/agent_where_chain.py` | Miguel shorts-factory | ouvert |
-| 9 | Agents facturés à l'abonnement : le coût en dollars par token ne reflète pas ce qu'ils coûtent | moyenne | `report/cost.py`, `report/audit.py` | Miguel shorts-factory | ouvert |
+| 7 | Deadweight ne voit pas les agents lancés par Claude Code, `claude -p` ou `codex exec` | haute | installation (D4.2), `gateway/` | Miguel shorts-factory (lecture du code) | ouvert |
+| 8 | Les agents qui n'exécutent qu'une seule commande échappent à toutes les règles | haute | `rules/agent_where_chain.py` | Miguel shorts-factory (lecture du code) | ouvert |
+| 9 | Agents facturés à l'abonnement : le coût en dollars par token ne reflète pas ce qu'ils coûtent | moyenne | `report/cost.py`, `report/audit.py` | Miguel shorts-factory (lecture du code) | ouvert |
 | 10 | Les agents qui se passent le relais (la sortie de l'un devient l'entrée de l'autre) ne sont pas regroupés en trace | haute | `gateway/traces.py` | OpenAI story flow | ouvert |
 | 11 | L'API Responses d'OpenAI, celle du SDK Agents par défaut, n'est pas capturée | haute | `gateway/proxy.py`, `gateway/capture.py` | OpenAI story flow | ouvert |
 | 12 | L'extraction de règles hors ligne apprend des noms propres | moyenne | `proof/extract.py` | OpenAI story flow | ouvert |
+| 13 | La bonne règle se trouve en amont : l'extraction ne regarde que l'entrée de l'appel signalé | moyenne | `proof/extract.py`, `gateway/traces.py` | OpenAI story flow | ouvert |
+| 14 | Sortie structurée : un champ qui ne change jamais n'est pas signalé | moyenne | `rules/low_entropy.py` | OpenAI story flow | ouvert |
 
 ### 1. Le rejeu affiche une projection mensuelle absurde
 
@@ -345,6 +370,41 @@ discriminants sont des noms propres, présents dans un seul exemple.
 - Écarter les mots en majuscule en milieu de phrase (noms propres).
 - Dans la preuve, afficher les règles en clair à côté du verdict : un humain voit
   tout de suite que `clara|bakery` ne décrit pas « pas de science-fiction ».
+
+### 13. La bonne règle se trouve en amont : l'extraction ne regarde que l'entrée de l'appel signalé
+
+**Constat.** Sur les 30 vérifications réelles du story flow, la règle « la demande
+de l'utilisateur contient *sci-fi* » reproduit la réponse `is_scifi` du
+vérificateur **29 fois sur 30**. Mais cette demande est reçue par l'agent 1, pas
+par le vérificateur. Ce que reçoit le vérificateur, le plan, ne contient
+« sci-fi » ou « science fiction » que dans des cas qui donnent **14 sur 30**.
+L'extraction (D3.1) ne lit que l'entrée de l'appel signalé : elle ne peut pas
+trouver la règle à 29 sur 30, et se rabat sur des noms propres (problème 12).
+
+**Cause.** Dans une chaîne d'agents, l'information qui décide est souvent dans
+l'entrée **d'origine** de la chaîne, avant qu'un premier agent la reformule.
+
+**Correction.** Une fois le problème 10 corrigé (traces reliant les agents qui
+se passent le relais), donner à l'extraction et au rejeu, pour chaque appel
+signalé, **l'entrée de la première étape de sa trace** en plus de sa propre
+entrée. Critère de fin : sur `workflow 3`, une règle d'au moins 95 % d'accord,
+construite sur la demande d'origine.
+
+### 14. Sortie structurée : un champ qui ne change jamais n'est pas signalé
+
+**Constat.** Le vérificateur du story flow rend un JSON à deux champs.
+`good_quality` vaut `true` **30 fois sur 30**. R1 ne voit qu'une sortie globale
+à 2 valeurs et dit « aiguillage », sans dire que la moitié du contrôle ne décide
+jamais rien. Le contrôle qualité paie des tokens pour un champ constant.
+
+**Cause.** R1 compte les sorties entières, normalisées comme du texte. Il ne
+regarde pas à l'intérieur d'une réponse structurée.
+
+**Correction.** Si les sorties d'un groupe sont du JSON avec les mêmes clés,
+calculer aussi la distribution **par champ**. Un champ constant sur au moins
+MIN_CALLS appels devient une ligne du constat : « le champ `good_quality` vaut
+`true` dans 30 appels sur 30 : il ne décide jamais rien ». Critère de fin : cette
+phrase apparaît dans le rapport sur `workflow 3`.
 
 ## Problèmes corrigés
 
