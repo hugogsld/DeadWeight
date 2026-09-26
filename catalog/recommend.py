@@ -167,8 +167,8 @@ def sovereign_alternative(events, simple, pricing=None, providers=None, capabili
     providers = providers if providers is not None else load_providers()
     capabilities = capabilities if capabilities is not None else load_capabilities()
     need = needs(events)
-    if need["contexte_min"] is None:
-        return None
+    if need["contexte_min"] is None or window_seconds(events) < MIN_WINDOW_SECONDS:
+        return None  # sans taille connue ou sur moins d'une heure : pas de chiffre mensuel honnête
     before = chiffrer(events, pricing)["cout_mensuel_usd"]
     pool = []
     for name, caps in capabilities.items():

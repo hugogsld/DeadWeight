@@ -17,7 +17,7 @@ from collections import defaultdict
 from catalog import destination, editor_index, editor_of, load_hosts, load_pricing, load_providers
 from catalog.capabilities import load as load_capabilities
 from catalog.recommend import sovereign_alternative
-from report.cost import chiffrer
+from report.cost import MIN_WINDOW_SECONDS, chiffrer, window_seconds
 from rules import oversized_model
 from rules.low_entropy import template_of
 
@@ -76,7 +76,8 @@ def detect(events, pricing=None, providers=None, capabilities=None):
                 "meme_modele_en_ue": same_model_eu,
                 "tache_simple": is_simple,
                 "alternative_europeenne": alt,
-                "cout_mensuel_usd": chiffrer(evts, pricing)["cout_mensuel_usd"],
+                "cout_mensuel_usd": (chiffrer(evts, pricing)["cout_mensuel_usd"]
+                                     if window_seconds(evts) >= MIN_WINDOW_SECONDS else None),
             },
         })
     return findings

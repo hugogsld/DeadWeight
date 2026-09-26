@@ -84,3 +84,13 @@ def test_report_keeps_sovereignty_apart_from_waste(events):
     page = render_html(report)
     assert page.count("Où partent vos données") == 1 and "api.anthropic.com (US)" in page
     assert "Destination déduite du format" in page  # le jeu de test n'a pas d'upstream
+
+
+def test_no_monthly_figure_on_less_than_an_hour(events):
+    short = copy.deepcopy([e for e in events if e["app_id"] == "mail-triage"])
+    for i, e in enumerate(short):
+        t = f"2026-09-20T09:00:{i * 30 // len(short):02d}"
+        e["ts_start"], e["ts_end"] = t + "Z", t + ".5Z"
+    ev = detect(short)[0]["evidence"]
+    assert ev["cout_mensuel_usd"] is None and ev["alternative_europeenne"] is None
+    assert ev["meme_modele_en_ue"]  # la piste « même modèle en UE » ne dépend d'aucun chiffre
