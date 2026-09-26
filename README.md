@@ -161,6 +161,18 @@ enregistrées, combien il y en a et sur quelle période. `fetch` écrit
 elle reprend sans retélécharger. Le dossier `private/` est ignoré par git : relisez-le avant
 de nous l'envoyer, il contient les messages traités par vos workflows.
 
+Puis la conversion en événements, et le même rapport que pour la passerelle :
+
+    python3 -m importers.n8n convert private/n8n/<id>
+    python -m report.audit private/n8n/<id>/events.jsonl -o out/audit.html
+
+Chaque appel d'un nœud « Chat Model » (OpenAI, Anthropic, Gemini, Mistral, Groq, Ollama…)
+devient un événement : prompt, réponse, jetons, durée ; l'exécution n8n sert de trace (exacte),
+`app_id` = `n8n:<workflow>/<nœud racine>`. n8n ne garde pas les appels d'outils du modèle : on
+les reconstitue depuis les nœuds outils. Il ne sépare pas non plus la part servie par le cache :
+le coût est donc un plafond (tout au prix plein). `comprehension.json` dit ce qui a été lu :
+jetons réels, estimés par n8n, appels illisibles — et le **taux d'appels LLM compris**.
+
 ## Confidentialité
 
 - **La clé n’est jamais stockée** par la passerelle : l’en-tête d’autorisation est
