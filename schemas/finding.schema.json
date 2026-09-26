@@ -1,31 +1,25 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "finding",
+  "description": "Sortie de detect(events) pour chacune des six regles de rules/ (Lot 2 de ROADMAP.md), consommee par report/audit.py. N'a rien a voir avec le pipeline prototype n8n : voir schemas/finding.n8n.schema.json pour ce dernier.",
   "type": "object",
   "required": [
     "finding_id",
-    "workflow_id",
-    "node_id",
     "rule",
+    "app_id",
+    "model",
+    "template",
     "severity",
-    "evidence",
-    "proposed_action"
+    "title",
+    "proven",
+    "event_ids",
+    "evidence"
   ],
   "properties": {
     "finding_id": {
-      "type": "string"
-    },
-    "workflow_id": {
-      "type": "string"
-    },
-    "workflow_name": {
-      "type": "string"
-    },
-    "node_id": {
-      "type": "string"
-    },
-    "node_name": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifiant stable, deterministe pour un meme regroupement (ex: f_<app>_<template>_<regle>)."
     },
     "rule": {
       "type": "string",
@@ -36,30 +30,49 @@
         "no_cache",
         "unbounded_loop",
         "agent_where_chain"
-      ]
+      ],
+      "description": "Les quatre premieres sont implementees (rules/low_entropy.py, oversized_model.py, raw_context.py, no_cache.py). unbounded_loop et agent_where_chain sont prevues par D2.4 (ROADMAP.md) et deja reservees ici par report/audit.py (RULE_TEXT) et tests/test_audit.py (RULE_CODES) ; aucune regle ne les emet encore."
+    },
+    "app_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "model": {
+      "type": "string",
+      "minLength": 1
+    },
+    "template": {
+      "type": ["string", "null"],
+      "description": "Empreinte du gabarit de prompt regroupant les evenements. null quand la regle regroupe par (app_id, model) sans gabarit unique (raw_context, no_cache apres fusion)."
     },
     "severity": {
       "type": "string",
-      "enum": [
-        "cut",
-        "trim",
-        "keep"
-      ]
+      "enum": ["cut", "trim", "candidate"],
+      "description": "cut/trim : verdict tranche par l'algorithme. candidate : constat statistique non prouve, qui attend un rejeu (proven=false)."
     },
     "title": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "description": "Phrase humaine, sans jargon de regle (report/audit.py l'affiche telle quelle)."
+    },
+    "proven": {
+      "type": "boolean",
+      "description": "true seulement apres verification par rejeu (prover/, D3.2) ; toutes les regles actuelles emettent false."
+    },
+    "event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "description": "event_id des evenements du dataset qui appuient le constat (voir schemas/event.schema.json)."
     },
     "evidence": {
-      "type": "object"
-    },
-    "current_cost_month_usd": {
-      "type": "number"
-    },
-    "est_saving_month_usd": {
-      "type": "number"
-    },
-    "proposed_action": {
-      "type": "string"
+      "type": "object",
+      "minProperties": 1,
+      "description": "Chiffres et echantillons propres a chaque regle, non normalises entre regles. Cles observees sur fixtures/dataset/v1/events.jsonl : low_entropy_output -> calls, distinct_outputs, distinct_raw_outputs, entropy_bits, max_entropy_bits, output_distribution, samples ; oversized_model -> calls, median_output_tokens, median_input_tokens, distinct_outputs, premium_by, suggested_model, est_saving_month_usd, saving_missing ; raw_context -> traces, mean_slope_tokens_per_turn, per_trace (ou, avant fusion : trace_id, slope_tokens_per_turn, r_squared, turns, first_input_tokens, last_input_tokens, estimated_unused_input_share, estimate_method) ; no_cache -> distinct_prompts, calls, repetitions, per_prompt (ou, avant fusion : mean_input_tokens, cached_calls, unknown_cache_calls)."
     }
-  }
+  },
+  "additionalProperties": false
 }
