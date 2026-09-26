@@ -67,7 +67,7 @@ def _finding(app_id, model, template, evts, outputs, raw):
         "model": model,
         "template": template,
         "severity": "cut" if cut else "trim",
-        "title": (f"{n} appels a {model} ne produisent que {len(dist)} reponses differentes : "
+        "title": (f"{n} appels à {model} ne produisent que {len(dist)} réponses différentes : "
                   f"c'est un aiguillage, pas du raisonnement"),
         "proven": False,
         "event_ids": [e["event_id"] for e in evts],

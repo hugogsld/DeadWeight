@@ -113,3 +113,10 @@ OpenTelemetry GenAI traces. Patch strategies other than `rule_switch`.
 ## Team
 
 Built in one afternoon at Le Wagon Paris. Three people, three lanes, four JSON contracts.
+
+## Rapport d'audit (D4.1)
+
+    python -m report.audit fixtures/dataset/v1/events.jsonl -o out/audit.html
+
+Lance toutes les règles présentes dans `rules/`, chiffre chaque constat et écrit une page HTML
+autonome dans `out/audit.html`.

@@ -1,0 +1,199 @@
+"""Rapport d'audit d'une page (D4.1).
+
+    python -m report.audit <events.jsonl> [-o out/audit.html]
+
+Lance toutes les regles presentes dans rules/, chiffre chaque constat avec
+report/cost.py, et ecrit une page HTML autonome lisible sans explication :
+constats tries par cout mensuel decroissant, puis ce qu'on n'a PAS signale.
+"""
+import argparse
+import html
+import importlib
+import json
+import pkgutil
+from datetime import datetime
+from pathlib import Path
+
+import rules
+from report.cost import chiffrer
+
+# Texte humain par regle : aucun code de regle ne doit apparaitre dans la page.
+RULE_TEXT = {
+    "low_entropy_output": ("Une IA qui répond toujours la même chose",
+                           "Remplacer par quelques règles fixes, avec l'IA en secours pour les cas imprévus."),
+    "oversized_model": ("Un modèle haut de gamme pour une tâche simple",
+                        "Tester un modèle plus petit sur ces appels ; l'économie reste à démontrer par rejeu."),
+    "raw_context": ("Tout l'historique renvoyé à chaque message",
+                    "Ne renvoyer que la partie utile du contexte (résumé ou fenêtre glissante)."),
+    "no_cache": ("Les mêmes demandes payées plusieurs fois",
+                 "Mettre en cache les réponses ou activer le cache de prompt du fournisseur."),
+    "unbounded_loop": ("Un agent qui tourne en rond",
+                       "Fixer un nombre maximal d'étapes et une condition d'arrêt explicite."),
+    "agent_where_chain": ("Un agent qui suit toujours le même chemin",
+                          "Remplacer l'agent par une chaîne d'étapes fixe."),
+}
+DEFAULT_TEXT = ("Usage à examiner", "Examiner ces appels avec l'équipe concernée.")
+
+
+def _discover_detectors():
+    """Toute regle ajoutee dans rules/ avec une fonction detect() entre dans le rapport."""
+    found = []
+    for mod in pkgutil.iter_modules(rules.__path__):
+        detect = getattr(importlib.import_module(f"rules.{mod.name}"), "detect", None)
+        if callable(detect):
+            found.append((mod.name, detect))
+    return found
+
+
+def _check_title(module_name):
+    code = next((c for c in RULE_TEXT if c.startswith(module_name)), None)
+    return RULE_TEXT[code][0] if code else module_name.replace("_", " ")
+
+
+def _missing_reasons(manquants):
+    """Raisons dedupliquees, sans l'identifiant d'evenement."""
+    return sorted({m.split(": ", 1)[-1] for m in manquants})
+
+
+def build_report(events, detectors=None):
+    """detectors : liste de (nom, detect). Par defaut, toutes les regles de rules/."""
+    events = list(events)
+    by_id = {e["event_id"]: e for e in events}
+    detectors = detectors if detectors is not None else _discover_detectors()
+    findings = []
+    for _, detect in detectors:
+        findings.extend(detect(events))
+
+    constats = []
+    for f in findings:
+        chiffres = chiffrer([by_id[i] for i in f["event_ids"] if i in by_id])
+        titre, action = RULE_TEXT.get(f["rule"], DEFAULT_TEXT)
+        constats.append({
+            "app_id": f["app_id"], "model": f["model"], "titre": titre, "phrase": f["title"],
+            "action": action, "prouve": f.get("proven", False), "gravite": f.get("severity"),
+            "chiffres": chiffres, "raisons_manquantes": _missing_reasons(chiffres["manquants"]),
+        })
+    constats.sort(key=lambda c: (c["chiffres"]["cout_mensuel_usd"] is None,
+                                 -(c["chiffres"]["cout_mensuel_usd"] or 0)))
+
+    flagged = {c["app_id"] for c in constats}
+    apps = sorted({e["app_id"] for e in events})
+    clean = [{"app_id": a, "chiffres": chiffrer([e for e in events if e["app_id"] == a])}
+             for a in apps if a not in flagged]
+
+    starts = sorted(e["ts_start"] for e in events)
+    global_figures = chiffrer(events) if events else None
+    return {
+        "verifications": [_check_title(name) for name, _ in detectors],
+        "raisons_globales": _missing_reasons(global_figures["manquants"]) if global_figures else [],
+        "resume": {"nb_appels": len(events), "nb_applications": len(apps),
+                   "debut": starts[0] if starts else None, "fin": starts[-1] if starts else None,
+                   "global": global_figures},
+        "constats": constats,
+        "rien_a_signaler": clean,
+    }
+
+
+# ---------- rendu ----------
+
+def _usd(v):
+    return "non disponible" if v is None else f"{v:,.0f} $".replace(",", " ") if v >= 10 else f"{v:.2f} $"
+
+
+def _ms(v):
+    return "non disponible" if v is None else f"{v / 1000:.1f} s" if v >= 1000 else f"{v:.0f} ms"
+
+
+def _day(ts):
+    return datetime.fromisoformat(ts.replace("Z", "+00:00")).strftime("%d/%m/%Y") if ts else "—"
+
+
+CSS = """
+:root{--ink:#16181d;--mute:#5d6470;--line:#e3e5e9;--bg:#fff;--warn:#b4441c;--ok:#1f7a4d}
+@media (prefers-color-scheme:dark){:root{--ink:#eceef1;--mute:#9aa1ad;--line:#2c3038;--bg:#121418}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);
+font:15px/1.5 -apple-system,Segoe UI,Helvetica,Arial,sans-serif}
+main{max-width:860px;margin:0 auto;padding:32px 16px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 8px}
+.sub{color:var(--mute);margin:0 0 20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 8px}
+.kpi{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.kpi b{display:block;font-size:20px}.kpi span{color:var(--mute);font-size:13px}
+.card{border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:14px 16px;margin:10px 0}
+.card h3{margin:0;font-size:16px}.card .app{color:var(--mute);font-size:13px}
+.card p{margin:6px 0}.nums{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:14px;margin:8px 0}
+.nums b{font-variant-numeric:tabular-nums}.todo{font-size:14px}.note{color:var(--mute);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{text-align:left;padding:6px 4px;border-bottom:1px solid var(--line)}
+th{color:var(--mute);font-weight:500}.clean td:first-child{color:var(--ok)}
+@media print{main{padding:0}.card{break-inside:avoid}}
+"""
+
+
+def _card(c):
+    n, e = c["chiffres"], html.escape
+    notes = []
+    if not c["prouve"]:
+        notes.append("Constat statistique, pas encore vérifié par rejeu.")
+    if c["raisons_manquantes"]:
+        notes.append("Chiffre manquant : " + "; ".join(c["raisons_manquantes"]) + ".")
+    return f"""<div class="card"><h3>{e(c['titre'])}</h3>
+<div class="app">Application {e(c['app_id'])} · modèle {e(c['model'])}</div>
+<p>{e(c['phrase'])}</p>
+<div class="nums"><span>Coût mensuel <b>{_usd(n['cout_mensuel_usd'])}</b></span>
+<span>Latence médiane <b>{_ms(n['latence_mediane_ms'])}</b></span>
+<span>Latence p95 <b>{_ms(n['latence_p95_ms'])}</b></span>
+<span>Appels <b>{n['nb_appels']}</b></span></div>
+<p class="todo"><b>Que faire :</b> {e(c['action'])}</p>
+{''.join(f'<p class="note">{e(x)}</p>' for x in notes)}</div>"""
+
+
+def render_html(report):
+    r, e = report["resume"], html.escape
+    if not r["nb_appels"]:
+        body = "<p>Aucun appel capturé pour l'instant : laissez tourner le trafic puis relancez le rapport.</p>"
+    else:
+        g = r["global"]
+        missing = (f'<p class="note">Coût total non disponible : '
+                   f'{e("; ".join(report["raisons_globales"]))}.</p>' if report["raisons_globales"] else "")
+        checks = e(", ".join(report["verifications"])) or "aucune"
+        cards = "".join(_card(c) for c in report["constats"]) or "<p>Aucun gaspillage détecté.</p>"
+        rows = "".join(
+            f"<tr><td>{e(a['app_id'])}</td><td>{a['chiffres']['nb_appels']}</td>"
+            f"<td>{_usd(a['chiffres']['cout_mensuel_usd'])}</td></tr>" for a in report["rien_a_signaler"])
+        body = f"""<div class="kpis">
+<div class="kpi"><b>{r['nb_appels']}</b><span>appels observés</span></div>
+<div class="kpi"><b>{r['nb_applications']}</b><span>applications</span></div>
+<div class="kpi"><b>{_usd(g['cout_mensuel_usd'])}</b><span>coût mensuel total</span></div>
+<div class="kpi"><b>{len(report['constats'])}</b><span>constats</span></div></div>
+{missing}
+<p class="note">Vérifications effectuées : {checks}.</p>
+<h2>Constats, du plus coûteux au moins coûteux</h2>{cards}
+<h2>Rien à signaler</h2>
+<p class="note">Ces applications ne déclenchent aucune des vérifications ci-dessus.</p>
+<table class="clean"><tr><th>Application</th><th>Appels</th><th>Coût mensuel</th></tr>{rows}</table>"""
+    return f"""<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Audit Deadweight</title><style>{CSS}</style></head><body><main>
+<h1>Audit des appels d'IA</h1>
+<p class="sub">Période observée : du {_day(r['debut'])} au {_day(r['fin'])}. Coûts projetés sur 30 jours au volume observé, en dollars, à partir des prix publics des modèles.</p>
+{body}
+<p class="note">Aucune donnée n'a quitté votre infrastructure pour produire ce rapport.</p>
+</main></body></html>
+"""
+
+
+def main():
+    ap = argparse.ArgumentParser(description="Rapport d'audit d'une page")
+    ap.add_argument("events", help="fichier .jsonl d'evenements")
+    ap.add_argument("-o", "--out", default="out/audit.html")
+    args = ap.parse_args()
+    lines = Path(args.events).read_text(encoding="utf-8").splitlines()
+    report = build_report(json.loads(line) for line in lines if line.strip())
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(render_html(report), encoding="utf-8")
+    print(f"{len(report['constats'])} constat(s), rapport ecrit dans {out}")
+
+
+if __name__ == "__main__":
+    main()
