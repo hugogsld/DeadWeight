@@ -4,7 +4,7 @@ Journal des tests de Deadweight sur de vrais workflows : ce qu'on a rencontré, 
 comment on compte le résoudre. État vérifié sur `main` au commit `11d0ed0`.
 
 Les workflows testés sont dans le repo **[Workflow-test-hackathon-agentique-25-09-2026](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026)**,
-un dossier par workflow (repo privé : demander l'accès à Thibaud) :
+un dossier par workflow :
 
 - [workflow 1 - Miguel short](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short) : snapshot de la
   shorts-factory de Miguel (pipeline vidéo piloté par des agents Claude Code) ;
