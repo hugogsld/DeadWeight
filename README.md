@@ -111,6 +111,14 @@ par rejeu ceux qui peuvent l'être, et publie un plan d'action priorisé en têt
 détail de sa démarche. Il ne calcule rien lui-même : un plan qui cite un chiffre absent des
 vérifications est refusé et l'agent doit se corriger. Sans clé, le rapport est le même, sans plan.
 
+## Test de bout en bout
+
+    make e2e
+
+Installe, lance la démo, puis une vraie passerelle devant trois fournisseurs simulés (OpenAI, Anthropic,
+Gemini) : trafic simple, en streaming et en boucle d'agent, capture, traces, rapport, rejeu, miroir et
+court-circuit. Aucune clé, aucun appel payant. La CI le lance à chaque PR.
+
 ## Prix des modèles
 
 Les coûts viennent de `fixtures/pricing.json`, le catalogue public d'OpenRouter (prix d'entrée,
