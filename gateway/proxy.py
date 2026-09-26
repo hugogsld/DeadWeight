@@ -22,13 +22,17 @@ from aiohttp import ClientError, ClientSession, ClientTimeout, TCPConnector, web
 from yarl import URL
 
 from gateway import shortcircuit
-from gateway.capture import StreamAccumulator, build_event
+from gateway.capture import StreamAccumulator, build_event, fmt
 from gateway.store import EventStore
 
 log = logging.getLogger("deadweight.gateway")
 
 UPSTREAM = os.environ.get("GATEWAY_OPENAI_UPSTREAM", "https://api.openai.com").rstrip("/")
-CAPTURED = {("POST", "/v1/chat/completions")}
+# D1.3 : le client pointe son SDK sur /anthropic ou /gemini ; tout le reste part chez OpenAI.
+UPSTREAMS = {
+    "anthropic": os.environ.get("GATEWAY_ANTHROPIC_UPSTREAM", "https://api.anthropic.com").rstrip("/"),
+    "gemini": os.environ.get("GATEWAY_GEMINI_UPSTREAM", "https://generativelanguage.googleapis.com").rstrip("/"),
+}
 
 # En-têtes propres à un saut HTTP : jamais relayés.
 HOP = {"connection", "keep-alive", "proxy-authenticate", "proxy-authorization", "te",
@@ -38,7 +42,7 @@ REQ_DROP = HOP | {"accept-encoding"}
 RESP_DROP = HOP | {"content-encoding"}
 
 
-UPSTREAM_KEY = web.AppKey("upstream", str)
+UPSTREAM_KEY = web.AppKey("upstreams", dict)
 SINK = web.AppKey("on_event", object)
 SESSION = web.AppKey("session", ClientSession)
 SHORTCUT = web.AppKey("shortcut", dict)
@@ -53,6 +57,26 @@ def log_event(event):
     u = event["usage"]
     log.info("%s %s %s %d %.0fms tokens=%s/%s", event["app_id"], event["endpoint"], event["model"],
              event["http_status"], event["latency_ms"], u["input_tokens"], u["output_tokens"])
+
+
+def route(path):
+    """Chemin reçu -> (fournisseur, chemin à appeler chez lui)."""
+    for provider in UPSTREAMS:
+        prefix = "/" + provider
+        if path == prefix or path.startswith(prefix + "/"):
+            return provider, path[len(prefix):] or "/"
+    return "openai", path
+
+
+def is_captured(provider, method, path):
+    if method != "POST":
+        return False
+    if provider == "openai":
+        return path == "/v1/chat/completions"
+    if provider == "anthropic":
+        return path == "/v1/messages"
+    # Gemini : /v1beta/models/<modele>:generateContent ou :streamGenerateContent
+    return path.endswith((":generateContent", ":streamGenerateContent")) and "/models/" in path
 
 
 def _emit(app, event):
@@ -85,19 +109,23 @@ async def relay(request):
     app = request.app
     t0 = time.perf_counter()
     ts_start = _now()
-    captured = (request.method, request.path) in CAPTURED
+    provider, path = route(request.path)
+    captured = is_captured(provider, request.method, path)
     body = await request.read()
 
     headers = {k: v for k, v in request.headers.items()
                if k.lower() not in REQ_DROP and not k.lower().startswith("x-deadweight-")}
     headers["Accept-Encoding"] = "identity"
-    url = app[UPSTREAM_KEY] + request.path_qs
+    base = app[UPSTREAM_KEY][provider]
+    # la requête part telle quelle, ?key= de Gemini compris ; seul `path` (sans requête) va dans l'événement
+    url = base + path + ("?" + request.query_string if request.query_string else "")
 
-    meta = dict(req_body=body, upstream=URL(app[UPSTREAM_KEY]).host, app_id=request.headers.get("x-deadweight-app") or "default",
+    meta = dict(req_body=body, upstream=URL(base).host, app_id=request.headers.get("x-deadweight-app") or "default",
                 trace_id=request.headers.get("x-deadweight-trace") or None,
-                endpoint=request.path, ts_start=ts_start)
+                endpoint=path, ts_start=ts_start, provider=provider)
 
-    hit = shortcircuit.match(app[SHORTCUT], body, meta["app_id"]) if captured else None
+    # D3.3 ne sait répondre qu'au format OpenAI
+    hit = shortcircuit.match(app[SHORTCUT], body, meta["app_id"]) if captured and provider == "openai" else None
     if hit is not None:
         return await _answer(request, meta, t0, *hit)
 
@@ -119,8 +147,10 @@ async def relay(request):
         for k, v in upstream.headers.items():
             if k.lower() not in RESP_DROP:
                 resp.headers.add(k, v)
-        streaming = upstream.headers.get("content-type", "").startswith("text/event-stream")
-        acc = StreamAccumulator() if streaming and captured else None
+        # Gemini sans ?alt=sse streame un tableau JSON : relayé morceau par morceau lui aussi
+        streaming = (upstream.headers.get("content-type", "").startswith("text/event-stream")
+                     or path.endswith(":streamGenerateContent"))
+        acc = fmt(provider).Accumulator() if streaming and captured else None
 
         if streaming:
             await resp.prepare(request)
@@ -160,11 +190,13 @@ async def _close(app):
     await app[SESSION].close()
 
 
-def make_app(upstream=None, on_event=None, store=None, shortcut=None):
+def make_app(upstream=None, on_event=None, store=None, shortcut=None, upstreams=None):
     """``store`` : EventStore où persister ; ``on_event`` : sink supplémentaire (log par défaut) ;
-    ``shortcut`` : preuves du court-circuit D3.3 (sinon GATEWAY_SHORTCIRCUIT, sinon désactivé)."""
+    ``shortcut`` : preuves du court-circuit D3.3 (sinon GATEWAY_SHORTCIRCUIT, sinon désactivé) ;
+    ``upstream`` : OpenAI ; ``upstreams`` : {"anthropic": url, "gemini": url} (tests)."""
     app = web.Application(client_max_size=64 * 1024 * 1024)
-    app[UPSTREAM_KEY] = (upstream or UPSTREAM).rstrip("/")
+    app[UPSTREAM_KEY] = {"openai": (upstream or UPSTREAM).rstrip("/"), **UPSTREAMS,
+                         **{k: v.rstrip("/") for k, v in (upstreams or {}).items()}}
     sink = on_event or log_event
     if store is None:
         app[SINK] = sink
@@ -193,8 +225,8 @@ def main():
     host = os.environ.get("GATEWAY_HOST", "127.0.0.1")
     port = int(os.environ.get("GATEWAY_PORT", "8080"))
     store = EventStore()
-    print(f"Deadweight gateway -> {UPSTREAM}   base_url: http://{host}:{port}/v1   "
-          f"events: {store.path}", flush=True)
+    print(f"Deadweight gateway   OpenAI: http://{host}:{port}/v1   Anthropic: http://{host}:{port}/anthropic"
+          f"   Gemini: http://{host}:{port}/gemini   events: {store.path}", flush=True)
     web.run_app(make_app(store=store), host=host, port=port, access_log=None, print=None)
 
 
