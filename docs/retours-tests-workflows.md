@@ -1,10 +1,24 @@
 # Retours de tests sur des workflows réels
 
-Ce document liste ce qu'on a rencontré en faisant passer de vrais workflows par
-Deadweight le 26/09, et comment le résoudre. État vérifié sur `main` au commit
-`11d0ed0`. À compléter à chaque nouveau test.
+Journal des tests de Deadweight sur de vrais workflows : ce qu'on a rencontré, et
+comment on compte le résoudre. État vérifié sur `main` au commit `11d0ed0`.
 
-## Ce qui a été testé
+## Comment utiliser cette page
+
+1. **Tester** : faire passer un workflow par la passerelle, puis lancer le rapport
+   et le rejeu. L'ajouter au tableau « Workflows testés », avec le modèle en bas de page.
+2. **Noter** chaque problème dans « Problèmes ouverts », avec un **constat chiffré**
+   (commande lancée, chiffre obtenu, chiffre attendu), sa **cause** et une
+   **solution envisagée**. Statut : `ouvert`.
+3. **Regrouper** avant de corriger : si un problème revient sur plusieurs workflows,
+   compléter sa fiche plutôt que d'en créer une nouvelle.
+4. **Corriger** une fois la série de tests faite, par ordre de gravité, une PR par
+   problème. Statut `en cours` avec le numéro de PR, puis déplacer la fiche dans
+   « Problèmes corrigés » une fois fusionnée.
+
+Statuts : `ouvert` → `en cours (#PR)` → `corrigé (#PR)`, ou `abandonné (raison)`.
+
+## Workflows testés
 
 | Test | Trafic | Ce qu'il vérifie |
 | --- | --- | --- |
@@ -20,14 +34,14 @@ en-tête. Coût réel des 51 appels : 0,0049 $.
 
 ## Problèmes ouverts
 
-| # | Problème | Gravité | Où |
-| --- | --- | --- | --- |
-| 1 | Le rejeu affiche encore une projection mensuelle absurde | haute | `proof/replay.py` |
-| 2 | R1 conseille des « règles fixes » que le rejeu refuse ensuite | haute | `report/audit.py`, `proof/` |
-| 3 | Le rejeu ne peut presque jamais conclure sous ~90 appels | moyenne | `proof/replay.py`, `rules/low_entropy.py` |
-| 4 | Le conseil « laissez tourner une heure » est faux pour un workflow par lots | moyenne | `report/audit.py` |
-| 5 | Choix de R5 à valider en équipe | basse | `rules/unbounded_loop.py` |
-| 6 | Heuristique de traces jamais confrontée à un historique réécrit | basse | `gateway/traces.py` |
+| # | Problème | Gravité | Où | Vu sur | Statut |
+| --- | --- | --- | --- | --- | --- |
+| 1 | Le rejeu affiche encore une projection mensuelle absurde | haute | `proof/replay.py` | Récap Gmail | ouvert |
+| 2 | R1 conseille des « règles fixes » que le rejeu refuse ensuite | haute | `report/audit.py`, `proof/` | Récap Gmail | ouvert |
+| 3 | Le rejeu ne peut presque jamais conclure sous ~90 appels | moyenne | `proof/replay.py`, `rules/low_entropy.py` | Récap Gmail | ouvert |
+| 4 | Le conseil « laissez tourner une heure » est faux pour un workflow par lots | moyenne | `report/audit.py` | Récap Gmail | ouvert |
+| 5 | Choix de R5 à valider en équipe | basse | `rules/unbounded_loop.py` | tests D2.4 | ouvert |
+| 6 | Heuristique de traces jamais confrontée à un historique réécrit | basse | `gateway/traces.py` | aucun (à tester) | ouvert |
 
 ### 1. Le rejeu affiche une projection mensuelle absurde
 
@@ -164,3 +178,21 @@ Gardés pour la traçabilité : chacun a été vu en testant.
 - **Gmail** : l'accès IMAP passe par un mot de passe d'application (validation en
   deux étapes obligatoire). Google envoie alors des « Security alert » : c'est
   attendu, à vérifier quand même.
+
+## Modèle pour un nouveau workflow testé
+
+Recopier ce bloc, le remplir, puis ajouter une ligne au tableau « Workflows testés ».
+
+```markdown
+### Workflow : <nom> (<date>, <testeur>)
+
+- **Source** : <lien du repo ou dossier>
+- **Ce qu'il fait** : <une phrase>
+- **Trafic capturé** : <nb d'appels>, <modèles>, <streaming oui/non>, <outils oui/non>, <sur quelle durée>
+- **Règles attendues** : <celles qui doivent se déclencher, et celles qui ne doivent PAS>
+- **Règles obtenues** : <sortie de report.audit>
+- **Rejeu** : <verdict et accord de proof.replay, s'il y a un constat R1>
+- **Coût** : <coût réel dépensé> contre <coût affiché par le rapport>
+- **Problèmes** : <numéros des fiches ouvertes ou complétées>
+```
+
