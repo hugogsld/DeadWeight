@@ -1,8 +1,9 @@
 """Faux serveurs OpenAI-compatibles pour tester le banc sans reseau ni cle.
 
-    echo      : renvoie le dernier message utilisateur tel quel (le candidat "est d'accord")
-    fixed     : renvoie toujours le meme texte, different de la reference ("est en desaccord")
-    error     : repond 500 a chaque appel
+    echo          : renvoie le dernier message utilisateur tel quel (le candidat "est d'accord")
+    fixed         : renvoie toujours le meme texte, different de la reference ("est en desaccord")
+    error         : repond 500 a chaque appel
+    unauthorized  : repond 401 a chaque appel (cle absente ou refusee, probleme 17)
 """
 import json
 import threading
@@ -19,6 +20,9 @@ class _Handler(BaseHTTPRequestHandler):
         behavior = self.server.behavior
         if behavior == 'error':
             self._send(500, {'error': {'message': 'boom'}})
+            return
+        if behavior == 'unauthorized':
+            self._send(401, {'error': {'message': 'Incorrect API key provided'}})
             return
         if behavior == 'fixed':
             content = self.server.fixed_answer
@@ -39,7 +43,7 @@ class _Handler(BaseHTTPRequestHandler):
 
 
 class FakeCandidateServer:
-    """behavior : 'echo' | 'fixed' | 'error'."""
+    """behavior : 'echo' | 'fixed' | 'error' | 'unauthorized'."""
 
     def __init__(self, behavior='echo', fixed_answer='AUTRE_REPONSE'):
         self.httpd = ThreadingHTTPServer(('127.0.0.1', 0), _Handler)

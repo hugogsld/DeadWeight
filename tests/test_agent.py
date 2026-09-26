@@ -168,3 +168,43 @@ def test_plan_is_refused_until_every_provable_finding_was_replayed():
     result = run_agent(tools, ScriptedLLM(script))
     assert "ne l'ont pas été" in result["journal"][0]["resultat"]["erreur"]
     assert result["statut"] == "terminé" and result["plan"]["actions"][0]["statut"] == "prouvé par rejeu"
+
+
+# ── Problème 16 (retest du récap Gmail) ─────────────────────────────────────
+def test_saving_cited_as_coverage_is_refused():
+    """Vu en vrai : « couverture 69,7 % » alors que 69,7 était l'économie."""
+    tools = tried()
+    tools.attempted.discard(TRIAGE)
+    outputs = [tools.prouver(TRIAGE)]
+    saving = outputs[0]["economie_pct"]
+    from agent.loop import mislabeled_numbers
+    bad = plan("x", f"La couverture des règles est de {saving} %.")
+    good = plan("x", f"Économie de {saving} %, couverture {outputs[0]['couverture_regles_pct']} %.")
+    if saving != outputs[0]["couverture_regles_pct"]:
+        assert mislabeled_numbers(bad, outputs)
+    assert mislabeled_numbers(good, outputs) == []
+
+
+def test_cache_advice_without_a_duplicate_finding_is_refused():
+    from agent.loop import unjustified_cache_recommendation
+    tools = tried()
+    tools._findings = [(f, c) for f, c in tools.findings() if f["rule"] not in ("no_cache", "duplicate_calls")]
+    advice = {"resume": "x", "actions": [{"priorite": 1, "finding_id": TRIAGE, "action": "Garder en mémoire les réponses",
+                                          "justification": "cas récurrents"}]}
+    assert "cache" in unjustified_cache_recommendation(advice, tools)
+    assert unjustified_cache_recommendation(plan("x", "Accord 100 %."), tools) is None
+
+
+def test_agent_proof_is_shown_on_the_finding_card_with_the_extraction_method():
+    report = audit(EVENTS, llm=ScriptedLLM(happy_script()), model_name="gpt-5-mini")
+    card = next(c for c in report["constats"] if c["finding_id"] == TRIAGE)
+    assert card["preuve_agent"]["verdict"] == "pass" and card["preuve_agent"]["methode"] == "offline"
+    import html
+    page = html.unescape(render_html(report))
+    assert "Rejoué par l'agent auditeur : PASS, 100 % d'accord (règles extraites sans IA)." in page
+
+
+def test_journal_states_the_real_number_of_checks():
+    page = render_html(audit(EVENTS, llm=ScriptedLLM(happy_script()), model_name="gpt-5-mini"))
+    from report.audit import _discover_detectors
+    assert f"a lancé les {len(_discover_detectors())} vérifications" in page and "six vérifications" not in page

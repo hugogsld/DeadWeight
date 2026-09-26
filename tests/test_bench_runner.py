@@ -9,7 +9,7 @@ import pytest
 from bench.client import CandidateLLM
 from bench.models import BenchCase, Candidate
 from bench.report import dry_run_estimate, rank, to_dict
-from bench.runner import HARD_MAX_CALLS, Throttle, run_candidate
+from bench.runner import AUTH_ERROR_CODES, HARD_MAX_CALLS, Throttle, run_candidate
 from tests.bench_servers import FakeCandidateServer
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,6 +44,13 @@ def fixed_server():
 @pytest.fixture
 def error_server():
     server = FakeCandidateServer(behavior='error')
+    yield server
+    server.stop()
+
+
+@pytest.fixture
+def unauthorized_server():
+    server = FakeCandidateServer(behavior='unauthorized')
     yield server
     server.stop()
 
@@ -111,6 +118,40 @@ def test_no_cases_is_not_tested_never_a_crash(echo_server):
     candidate = _candidate(echo_server)
     result = run_candidate(candidate, [], 'classification')
     assert result.verdict == 'not_tested' and result.score is None
+
+
+# --- probleme 17 : cle absente ou refusee ---------------------------------------
+
+def test_all_calls_failing_auth_is_not_tested_not_rejected(unauthorized_server):
+    """Un candidat dont tous les appels echouent en authentification (cle absente ou refusee)
+    n'est pas mesure : ce n'est pas un rejet de qualite (verdict `not_tested`, pas
+    `reject score=0`)."""
+    candidate = _candidate(unauthorized_server)  # api_key_env=None : aucune cle envoyee
+    result = run_candidate(candidate, _cases(10), 'classification')
+    assert result.verdict == 'not_tested' and result.score is None
+    assert result.n_calls == 10 and result.n_errors == 10
+    assert 'clé absente' in result.reasons[0].lower()
+
+
+def test_mixed_auth_and_other_errors_stay_rejected(monkeypatch):
+    """Si les echecs ne sont pas tous des echecs d'authentification, on reste sur le rejet
+    de qualite habituel : la nuance ne s'applique qu'a un echec d'authentification pur."""
+    from bench import client as client_mod
+
+    calls = {'n': 0}
+
+    def fake_call(self, body):
+        calls['n'] += 1
+        code = 'http_401' if calls['n'] == 1 else 'http_500'
+        assert code in AUTH_ERROR_CODES or code == 'http_500'
+        return client_mod.CallResult(None, 1.0, None, None, code)
+
+    monkeypatch.setattr(client_mod.CandidateLLM, '_call', fake_call)
+    candidate = Candidate(id='test-mixed', kind='openai', model='gpt-5-nano',
+                          base_url_env='DW_BENCH_TEST_UNSET', default_base_url='http://127.0.0.1:1/v1',
+                          api_key_env=None, size_class='small', origin='US', note='fixture de test')
+    result = run_candidate(candidate, _cases(2), 'classification')
+    assert result.verdict == 'reject' and result.score == 0.0
 
 
 # --- classement et dry-run --------------------------------------------------------
