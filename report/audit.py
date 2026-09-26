@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 import rules
+from catalog.recommend import recommend
 from report.cost import MONTH_SECONDS, chiffrer
 
 # En dessous d'une heure de trafic, projeter sur un mois multiplie du bruit :
@@ -108,12 +109,16 @@ def build_report(events, detectors=None):
 
     constats = []
     for f in findings:
-        chiffres = _figures([by_id[i] for i in f["event_ids"] if i in by_id])
+        evts = [by_id[i] for i in f["event_ids"] if i in by_id]
+        chiffres = _figures(evts)
         titre, action = RULE_TEXT.get(f["rule"], DEFAULT_TEXT)
+        # M2 : alternatives hors famille, seulement là où R2 a jugé la tâche simple
+        alternatives = recommend(evts)["options"] if f["rule"] == "oversized_model" and evts else None
         constats.append({
             "app_id": f["app_id"], "model": f["model"], "titre": titre, "phrase": f["title"],
             "action": action, "prouve": f.get("proven", False), "gravite": f.get("severity"),
             "chiffres": chiffres, "raisons_manquantes": _missing_reasons(chiffres["manquants"]),
+            "alternatives": alternatives,
         })
     constats.sort(key=lambda c: (_cost(c["chiffres"]) is None, -(_cost(c["chiffres"]) or 0)))
 
@@ -183,6 +188,28 @@ th{color:var(--mute);font-weight:500}.clean td:first-child{color:var(--ok)}
 """
 
 
+ALT_LABELS = {"moins_cher": "moins cher", "meilleur_compromis": "même éditeur", "souverain": "souverain"}
+
+
+def _alternatives(options):
+    """M2 : une ligne par modèle proposé, options identiques regroupées."""
+    by_model = {}
+    for key, o in (options or {}).items():
+        if o:
+            by_model.setdefault(o["modele"], (o, []))[1].append(ALT_LABELS[key])
+    if not by_model:
+        return ""
+    ue = {True: "traitement UE possible", False: "pas de traitement UE en direct", None: "hébergement UE non vérifié"}
+    items = []
+    for name, (o, labels) in by_model.items():
+        factor = f", ×{o['facteur']} moins cher" if o["facteur"] else ""
+        items.append(f"<li>{html.escape(' et '.join(labels))} : <b>{html.escape(name)}</b> "
+                     f"({html.escape(o['pays'] or '?')}, {ue[o['hebergement_ue']]}) — "
+                     f"{_usd(o['cout_mensuel_usd'])} par mois{factor}</li>")
+    return ('<p class="todo"><b>Autres modèles compatibles</b> (capacités vérifiées, qualité non prouvée : '
+            f'à rejouer avant de changer) :</p><ul>{"".join(items)}</ul>')
+
+
 def _card(c):
     n, e = c["chiffres"], html.escape
     notes = []
@@ -198,6 +225,7 @@ def _card(c):
 <span>Latence p95 <b>{_ms(n['latence_p95_ms'])}</b></span>
 <span>Appels <b>{n['nb_appels']}</b></span></div>
 <p class="todo"><b>Que faire :</b> {e(c['action'])}</p>
+{_alternatives(c.get('alternatives'))}
 {''.join(f'<p class="note">{e(x)}</p>' for x in notes)}</div>"""
 
 

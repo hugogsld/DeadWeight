@@ -46,6 +46,7 @@ demo: install
 prices: install
 	$(BIN)/python -m collector.pricing
 
-# M1 : rafraîchit les prix puis contrôle le catalogue (origine, hébergement, couverture)
+# M1/M2 : rafraîchit prix et capacités (OpenRouter, sans clé), puis contrôle le catalogue
 catalog: prices
+	$(BIN)/python -m catalog.capabilities
 	$(BIN)/python -m catalog

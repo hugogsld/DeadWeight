@@ -1,0 +1,2750 @@
+{
+ "aion-labs/aion-2.0": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "aion-labs/aion-3.0": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "aion-labs/aion-3.0-mini": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "aion-labs/aion-3.5": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "aion-labs/aion-3.5-mini": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "aion-labs/aion-rp-llama-3.1-8b": {
+  "contexte": 32768,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "amazon/nova-2-lite-v1": {
+  "contexte": 1000000,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "amazon/nova-lite-v1": {
+  "contexte": 300000,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "amazon/nova-micro-v1": {
+  "contexte": 128000,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "amazon/nova-premier-v1": {
+  "contexte": 1000000,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "amazon/nova-pro-v1": {
+  "contexte": 300000,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "anthracite-org/magnum-v4-72b": {
+  "contexte": 32768,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "anthropic/claude-fable-5": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-fable-5.1": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-fable-5.1:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-fable-5:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-haiku-4.5": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-haiku-4.5:batch": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.1": {
+  "contexte": 200000,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.1:batch": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.5": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.5:batch": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.6": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.6:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.7": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.7:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.8": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-4.8:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-5": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-5.5": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-5.5:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-opus-5:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-sonnet-4": {
+  "contexte": 200000,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "anthropic/claude-sonnet-4.5": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-sonnet-4.5:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-sonnet-4.6": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-sonnet-4.6:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-sonnet-5": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "anthropic/claude-sonnet-5:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "arcee-ai/trinity-large-thinking": {
+  "contexte": 262144,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "baidu/ernie-4.5-vl-424b-a47b": {
+  "contexte": 123000,
+  "images": true,
+  "json": false,
+  "outils": false
+ },
+ "bytedance-seed/seed-1.6": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "bytedance-seed/seed-1.6-flash": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "bytedance-seed/seed-2-1-turbo": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "bytedance-seed/seed-2.0-code": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "bytedance-seed/seed-2.0-lite": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "bytedance-seed/seed-2.0-mini": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "bytedance/ui-tars-1.5-7b": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "cognitivecomputations/dolphin-mistral-24b-venice-edition": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "cohere/command-a": {
+  "contexte": 256000,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "cohere/command-a-plus": {
+  "contexte": 192000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "cohere/command-r-08-2024": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "cohere/command-r-plus-08-2024": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "cohere/command-r7b-12-2024": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "cohere/north-mini-code:free": {
+  "contexte": 256000,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "deepseek/deepseek-chat": {
+  "contexte": 163840,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-chat-v3-0324": {
+  "contexte": 163840,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-chat-v3.1": {
+  "contexte": 163840,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-r1": {
+  "contexte": 64000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-r1-0528": {
+  "contexte": 163840,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-r1-distill-llama-70b": {
+  "contexte": 8192,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "deepseek/deepseek-v3.1-terminus": {
+  "contexte": 163840,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-v3.2": {
+  "contexte": 163840,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-v3.2-exp": {
+  "contexte": 163840,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-v4-flash": {
+  "contexte": 1048576,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-v4-flash-0731": {
+  "contexte": 1310720,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-v4-flash-vision-exp": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-v4-pro": {
+  "contexte": 1048576,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-v4-pro-0813": {
+  "contexte": 1048576,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-v4.1-flash": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "deepseek/deepseek-v4.1-flash:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "dots-studio/dots-3-note-preview:free": {
+  "contexte": 512000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "fireworks/ember-1": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-2.5-flash": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-2.5-flash-image": {
+  "contexte": 32768,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "google/gemini-2.5-flash-lite": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-2.5-flash-lite:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-2.5-flash:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-2.5-pro": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-2.5-pro-preview": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-2.5-pro:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3-flash-preview": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3-flash-preview:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3-pro-image": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3-pro-image-preview": {
+  "contexte": 65536,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "google/gemini-3.1-flash-image": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "google/gemini-3.1-flash-image-preview": {
+  "contexte": 65536,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "google/gemini-3.1-flash-lite": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.1-flash-lite-image": {
+  "contexte": 65536,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "google/gemini-3.1-flash-lite-preview": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.1-flash-lite:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.1-pro-preview": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.1-pro-preview-customtools": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.1-pro-preview:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.5-flash": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.5-flash-lite": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.5-flash-lite:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.5-flash:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.6-flash": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.6-flash:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.7-flash": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.7-flash:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.8-flash": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemini-3.8-flash:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemma-2-27b-it": {
+  "contexte": 8192,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "google/gemma-3-12b-it": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemma-3-27b-it": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemma-3-4b-it": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "google/gemma-4-26b-a4b-it": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemma-4-26b-a4b-it:free": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemma-4-31b-it": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/gemma-4-31b-it:free": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "google/lyria-3-clip-preview": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "google/lyria-3-pro-preview": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "gryphe/mythomax-l2-13b": {
+  "contexte": 8192,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "ibm-granite/granite-4.0-h-micro": {
+  "contexte": 131000,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "ibm-granite/granite-4.2-8b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "inception/mercury-2": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "inception/mercury-2.5": {
+  "contexte": 260000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "inclusionai/ling-3.0-flash": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "inclusionai/ling-3.0-flash-fin": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "inclusionai/ling-3.0-flash-fin:free": {
+  "contexte": 262144,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "inclusionai/ling-3.0-flash-sante:free": {
+  "contexte": 262144,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "inclusionai/ling-3.0-flash-vl": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "inference-net/schematron-v2-small": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "inference-net/schematron-v2-turbo": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "kwaipilot/kat-coder-pro-v2.5": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "liquid/lfm-2.5-2.6b:free": {
+  "contexte": 65536,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "mancer/weaver": {
+  "contexte": 8000,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "meituan/longcat-2.0": {
+  "contexte": 1048756,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "meta-llama/llama-3.1-70b-instruct": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "meta-llama/llama-3.1-8b-instruct": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "meta-llama/llama-3.2-1b-instruct": {
+  "contexte": 60000,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "meta-llama/llama-3.2-3b-instruct": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "meta-llama/llama-3.3-70b-instruct": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "meta-llama/llama-4-maverick": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "meta-llama/llama-4-scout": {
+  "contexte": 1310720,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "meta-llama/llama-guard-4-12b": {
+  "contexte": 163840,
+  "images": true,
+  "json": false,
+  "outils": false
+ },
+ "meta/muse-glimmer-30b": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "meta/muse-spark-1.1": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "meta/muse-spark-1.2": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "meta/muse-spark-1.2-contributor": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "meta/muse-spark-1.3": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "meta/muse-spark-1.3-contributor": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "microsoft/phi-4": {
+  "contexte": 16384,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "microsoft/wizardlm-2-8x22b": {
+  "contexte": 65535,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "minimax/minimax-01": {
+  "contexte": 1000192,
+  "images": true,
+  "json": false,
+  "outils": false
+ },
+ "minimax/minimax-m1": {
+  "contexte": 1000000,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "minimax/minimax-m2": {
+  "contexte": 204800,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "minimax/minimax-m2-her": {
+  "contexte": 65536,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "minimax/minimax-m2.1": {
+  "contexte": 204800,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "minimax/minimax-m2.5": {
+  "contexte": 204800,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "minimax/minimax-m2.7": {
+  "contexte": 204800,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "minimax/minimax-m3": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/codestral-2508": {
+  "contexte": 256000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/codestral-2508:batch": {
+  "contexte": 256000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/devstral-2512": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/ministral-14b-2512": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/ministral-3b-2512": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/ministral-8b-2512": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/ministral-8b-2512:batch": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-large": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-large-2407": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-large-2512": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-large-2512:batch": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-medium-3": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-medium-3-5": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-medium-3-5:batch": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-medium-3.1": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-medium-3.1:batch": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-nemo": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-saba": {
+  "contexte": 32768,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-small-24b-instruct-2501": {
+  "contexte": 32768,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "mistralai/mistral-small-2603": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-small-2603:batch": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mistral-small-3.1-24b-instruct": {
+  "contexte": 128000,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "mistralai/mistral-small-3.2-24b-instruct": {
+  "contexte": 256000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/mixtral-8x22b-instruct": {
+  "contexte": 65536,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "mistralai/voxtral-small-24b-2507": {
+  "contexte": 32768,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "moonshotai/kimi-k2": {
+  "contexte": 131072,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "moonshotai/kimi-k2-0905": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "moonshotai/kimi-k2-thinking": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "moonshotai/kimi-k2.5": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "moonshotai/kimi-k2.6": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "moonshotai/kimi-k2.7-code": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "moonshotai/kimi-k3": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "moonshotai/kimi-k3:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "morph/morph-v3-fast": {
+  "contexte": 81920,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "morph/morph-v3-large": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "nousresearch/hermes-3-llama-3.1-405b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "nousresearch/hermes-3-llama-3.1-70b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "nousresearch/hermes-4-405b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "nvidia/nemotron-3-nano-30b-a3b": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": {
+  "contexte": 256000,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "nvidia/nemotron-3-super-120b-a12b": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "nvidia/nemotron-3-super-120b-a12b:free": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "nvidia/nemotron-3-ultra-550b-a55b": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "nvidia/nemotron-3-ultra-550b-a55b:free": {
+  "contexte": 1000000,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "nvidia/nemotron-3.5-content-safety": {
+  "contexte": 131072,
+  "images": true,
+  "json": false,
+  "outils": false
+ },
+ "nvidia/nemotron-3.5-content-safety:free": {
+  "contexte": 128000,
+  "images": true,
+  "json": false,
+  "outils": false
+ },
+ "nvidia/nemotron-3.5-lightning": {
+  "contexte": 1000000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "nvidia/nemotron-3.5-lightning:free": {
+  "contexte": 1000000,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "openai/gpt-3.5-turbo": {
+  "contexte": 16385,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-3.5-turbo-0613": {
+  "contexte": 4095,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-3.5-turbo-16k": {
+  "contexte": 16385,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-3.5-turbo-instruct": {
+  "contexte": 4095,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "openai/gpt-3.5-turbo:batch": {
+  "contexte": 16385,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4": {
+  "contexte": 8191,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4-turbo": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4-turbo:batch": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4.1": {
+  "contexte": 1047576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4.1-mini": {
+  "contexte": 1047576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4.1-mini:batch": {
+  "contexte": 1047576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4.1-nano": {
+  "contexte": 1047576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4.1-nano:batch": {
+  "contexte": 1047576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4.1:batch": {
+  "contexte": 1047576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4o": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4o-2024-05-13": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4o-2024-08-06": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4o-2024-11-20": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4o-mini": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4o-mini-2024-07-18": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4o-mini:batch": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-4o:batch": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5-image": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "openai/gpt-5-image-mini": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "openai/gpt-5-mini": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5-mini:batch": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5-nano": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5-nano:batch": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5-pro": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5-pro:batch": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.1": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.1-codex": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.1-codex-max": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.1-codex-mini": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.1:batch": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.2": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.2-chat": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.2-codex": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.2-pro": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.2-pro:batch": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.2:batch": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.3-codex": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.4": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.4-image-2": {
+  "contexte": 272000,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "openai/gpt-5.4-mini": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.4-mini:batch": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.4-nano": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.4-nano:batch": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.4-pro": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.4-pro:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.4:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.5": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.5-pro": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.5-pro:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.5:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-luna": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-luna-pro": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-luna-pro:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-luna:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-sol": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-sol-pro": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-sol-pro:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-sol:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-terra": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-terra-pro": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-terra-pro:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5.6-terra:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-5:batch": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-astra": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-astra-pro": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-astra-pro:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-astra:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-luna": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-luna-pro": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-luna-pro:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-luna:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-sol": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-sol-pro": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-sol-pro:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-6-sol:batch": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-audio": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-audio-mini": {
+  "contexte": 128000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-chat-latest": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-oss-120b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-oss-120b:batch": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-oss-20b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-oss-20b:batch": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/gpt-oss-safeguard-20b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/o1": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/o1-pro": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "openai/o3": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/o3-mini": {
+  "contexte": 200000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/o3-mini-high": {
+  "contexte": 200000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/o3-mini:batch": {
+  "contexte": 200000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "openai/o3-pro": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/o3:batch": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/o4-mini": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/o4-mini-high": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openai/o4-mini:batch": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openrouter/auto": {
+  "contexte": 2000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openrouter/auto-beta": {
+  "contexte": 2000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openrouter/bodybuilder": {
+  "contexte": 128000,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "openrouter/free": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "openrouter/fusion": {
+  "contexte": 1000000,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "openrouter/pareto-code": {
+  "contexte": 2000000,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "perceptron/perceptron-mk1": {
+  "contexte": 32768,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "perceptron/perceptron-mk1.5": {
+  "contexte": 36864,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "perplexity/sonar": {
+  "contexte": 127072,
+  "images": true,
+  "json": false,
+  "outils": false
+ },
+ "perplexity/sonar-deep-research": {
+  "contexte": 128000,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "perplexity/sonar-pro": {
+  "contexte": 200000,
+  "images": true,
+  "json": false,
+  "outils": false
+ },
+ "perplexity/sonar-pro-search": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "perplexity/sonar-reasoning-pro": {
+  "contexte": 128000,
+  "images": true,
+  "json": false,
+  "outils": false
+ },
+ "poolside/laguna-s-2.1": {
+  "contexte": 1048576,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "poolside/laguna-s-2.1:free": {
+  "contexte": 262144,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "poolside/laguna-xs-2.1": {
+  "contexte": 262144,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "poolside/laguna-xs-2.1:free": {
+  "contexte": 262144,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "prism-ml/ternary-bonsai-2-27b": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen-2.5-72b-instruct": {
+  "contexte": 32768,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen-2.5-7b-instruct": {
+  "contexte": 32768,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen-2.5-coder-32b-instruct": {
+  "contexte": 32768,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "qwen/qwen-plus": {
+  "contexte": 1000000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen-plus-2025-07-28": {
+  "contexte": 1000000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen2.5-vl-72b-instruct": {
+  "contexte": 128000,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "qwen/qwen3-14b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-235b-a22b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-235b-a22b-2507": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-235b-a22b-thinking-2507": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-30b-a3b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-30b-a3b-instruct-2507": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-30b-a3b-thinking-2507": {
+  "contexte": 81920,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-32b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-8b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-coder": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-coder-30b-a3b-instruct": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-coder-flash": {
+  "contexte": 1000000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-coder-next": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-coder-plus": {
+  "contexte": 1000000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-max": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-max-thinking": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-next-80b-a3b-instruct": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-next-80b-a3b-thinking": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-vl-235b-a22b-instruct": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-vl-235b-a22b-thinking": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-vl-30b-a3b-instruct": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-vl-30b-a3b-thinking": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-vl-32b-instruct": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-vl-8b-instruct": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3-vl-8b-thinking": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.5-122b-a10b": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.5-27b": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.5-35b-a3b": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.5-397b-a17b": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.5-9b": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.5-flash-02-23": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.5-plus-02-15": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.5-plus-20260420": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.6-27b": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.6-35b-a3b": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.6-flash": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.6-max-preview": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.6-plus": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.7-flash": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.7-max": {
+  "contexte": 1000000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.7-plus": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.8-2.4t-a95b": {
+  "contexte": 1048576,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.8-27b": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.8-27b:free": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.8-flash": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.8-max-0902": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.8-max-prime": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "qwen/qwen3.8-omni-flash": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "rekaai/reka-edge": {
+  "contexte": 16384,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "rekaai/reka-flash-3": {
+  "contexte": 65536,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "relace/relace-apply-3": {
+  "contexte": 256000,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "relace/relace-search": {
+  "contexte": 256000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "sakana/fugu-max": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "sakana/fugu-ultra": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "sakana/fugu-ultra-v2": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "sakana/sakana-namazu": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "sao10k/l3-lunaris-8b": {
+  "contexte": 8192,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "sao10k/l3.1-euryale-70b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "sao10k/l3.3-euryale-70b": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "stealth/space-bunny-alpha": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "stepfun/step-3.5-flash": {
+  "contexte": 262144,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "stepfun/step-3.7-flash": {
+  "contexte": 262144,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "tencent/hunyuan-a13b-instruct": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "tencent/hy-mt2-1.8b": {
+  "contexte": 8192,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "tencent/hy-mt2-30b-a3b": {
+  "contexte": 8192,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "tencent/hy-mt2-7b": {
+  "contexte": 8192,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "tencent/hy3": {
+  "contexte": 262144,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "tencent/hy3-preview": {
+  "contexte": 262144,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "tencent/hy4-preview": {
+  "contexte": 1048576,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "thedrummer/cydonia-24b-v4.1": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "thedrummer/skyfall-36b-v2": {
+  "contexte": 32768,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "thedrummer/unslopnemo-12b": {
+  "contexte": 1024000,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "thinkingmachines/inkling": {
+  "contexte": 524288,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "thinkingmachines/inkling-small": {
+  "contexte": 524288,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "thinkingmachines/inkling-small:free": {
+  "contexte": 1048576,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "thinkingmachines/inkling:free": {
+  "contexte": 1048576,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "typesafe/jev-router": {
+  "contexte": 1000000,
+  "images": true,
+  "json": false,
+  "outils": false
+ },
+ "unbiased/pareto": {
+  "contexte": 262144,
+  "images": true,
+  "json": false,
+  "outils": true
+ },
+ "undi95/remm-slerp-l2-13b": {
+  "contexte": 6144,
+  "images": false,
+  "json": true,
+  "outils": false
+ },
+ "upstage/solar-mini4": {
+  "contexte": 524288,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "upstage/solar-pro-3": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "upstage/solar-pro4": {
+  "contexte": 524288,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "writer/palmyra-x5": {
+  "contexte": 1040000,
+  "images": false,
+  "json": false,
+  "outils": false
+ },
+ "x-ai/grok-4.20": {
+  "contexte": 2000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "x-ai/grok-4.20-multi-agent": {
+  "contexte": 2000000,
+  "images": true,
+  "json": true,
+  "outils": false
+ },
+ "x-ai/grok-4.3": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "x-ai/grok-4.3:batch": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "x-ai/grok-4.5": {
+  "contexte": 500000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "x-ai/grok-4.6": {
+  "contexte": 500000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "x-ai/grok-4.7": {
+  "contexte": 500000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "x-ai/grok-build-0.1": {
+  "contexte": 256000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "xiaomi/mimo-v2.5": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "xiaomi/mimo-v2.5-pro": {
+  "contexte": 1050000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "xiaomi/mimo-v2.6-flash": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "xiaomi/mimo-v2.6-pro": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "xiaomi/mimo-v2.6-pro-ultraspeed": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-4.5": {
+  "contexte": 131072,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-4.5-air": {
+  "contexte": 131072,
+  "images": false,
+  "json": false,
+  "outils": true
+ },
+ "z-ai/glm-4.5v": {
+  "contexte": 65536,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-4.6": {
+  "contexte": 204800,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-4.6v": {
+  "contexte": 131072,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-4.7": {
+  "contexte": 204800,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-4.7-flash": {
+  "contexte": 200000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5": {
+  "contexte": 204800,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5-turbo": {
+  "contexte": 202752,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5.1": {
+  "contexte": 204800,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5.2": {
+  "contexte": 1048576,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5.3": {
+  "contexte": 1310720,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5.3-flash": {
+  "contexte": 1310720,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5.3-flash:batch": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5.3-flashx": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5.3-prime": {
+  "contexte": 1000000,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5.3:batch": {
+  "contexte": 1048576,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "z-ai/glm-5v-turbo": {
+  "contexte": 202752,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~anthropic/claude-fable-latest": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~anthropic/claude-haiku-latest": {
+  "contexte": 200000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~anthropic/claude-opus-latest": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~anthropic/claude-sonnet-latest": {
+  "contexte": 1000000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~deepseek/deepseek-flash-latest": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~deepseek/deepseek-pro-latest": {
+  "contexte": 1048576,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "~deepseek/deepseek-v4-flash-latest": {
+  "contexte": 1310720,
+  "images": false,
+  "json": true,
+  "outils": true
+ },
+ "~google/gemini-flash-latest": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~google/gemini-pro-latest": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~moonshotai/kimi-latest": {
+  "contexte": 1048576,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~openai/gpt-astra-latest": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~openai/gpt-luna-latest": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~openai/gpt-mini-latest": {
+  "contexte": 400000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~openai/gpt-sol-latest": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~openai/gpt-terra-latest": {
+  "contexte": 1050000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~x-ai/grok-latest": {
+  "contexte": 500000,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~z-ai/glm-flash-latest": {
+  "contexte": 1310720,
+  "images": true,
+  "json": true,
+  "outils": true
+ },
+ "~z-ai/glm-latest": {
+  "contexte": 1310720,
+  "images": false,
+  "json": true,
+  "outils": true
+ }
+}
