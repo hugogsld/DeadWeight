@@ -31,7 +31,11 @@ Méthode :
 Règles absolues :
 - Tu ne calcules rien. Chaque chiffre que tu écris doit apparaître tel quel dans un résultat d'outil.
 - Tu écris en français clair, pour un dirigeant, sans jargon technique.
-- Un constat non prouvé est présenté comme une piste, jamais comme une certitude."""
+- Un constat non prouvé est une piste : n'écris jamais « preuve » ou « prouvé » pour lui. Seul un
+  verdict « pass » de l'outil prouver est une preuve.
+- Pas de sigles ni d'anglicismes (A/B, logs, p95, prompt) : écris « temps de réponse des appels les
+  plus lents », « test sur une partie du trafic », « historique de la conversation ».
+- Pour chaque outil, remplis « pourquoi » : une phrase qui explique ton choix au lecteur du rapport."""
 
 _NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
 _THOUSANDS = re.compile(r"(?<![\w.,])\d{1,3}(?:[ \u00a0\u202f]\d{3})+(?!\d)")  # « 315 220 », pas « p95 764 »
@@ -118,6 +122,8 @@ def run_agent(tools, llm, model_name=None, max_steps=MAX_STEPS):
             elif name == "publier_plan":
                 missing = unknown_numbers(args, outputs)
                 if not missing:
+                    for action in args.get("actions", []):
+                        action["statut"] = tools.proof_status(action.get("finding_id"))
                     journal.append(_entry(message, name, args, {"statut": "plan publié"}))
                     return _result(args, journal, "terminé", steps, model_name, usage)
                 result = {"erreur": "plan refusé : ces chiffres ne viennent d'aucun outil "
@@ -132,8 +138,9 @@ def run_agent(tools, llm, model_name=None, max_steps=MAX_STEPS):
 
 
 def _entry(message, name, args, result):
-    return {"pensee": (message.get("content") or "").strip() or None, "outil": name, "arguments": args,
-            "resultat": result}
+    why = (args or {}).get("pourquoi") if isinstance(args, dict) else None
+    return {"pensee": why or (message.get("content") or "").strip() or None, "outil": name,
+            "arguments": {k: v for k, v in (args or {}).items() if k != "pourquoi"}, "resultat": result}
 
 
 def _result(plan, journal, statut, steps, model_name, usage):

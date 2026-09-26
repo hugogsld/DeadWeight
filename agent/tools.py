@@ -31,23 +31,33 @@ def _cost(figures):
     return {"cout": "non mesurable"}
 
 
+def _saving(before, after):
+    return None if before is None or after is None or before <= 0 else round((before - after) / before * 100, 1)
+
+
 def _cut(text):
     text = " ".join(str(text or "").split())
     return text if len(text) <= EXCERPT else text[:EXCERPT] + "…"
 
 
+WHY = {"pourquoi": {"type": "string", "description": "Une phrase : pourquoi tu appelles cet outil maintenant."}}
+
+
+def _spec(name, description, props=None, required=()):
+    props = {**WHY, **(props or {})}
+    return {"name": name, "description": description,
+            "parameters": {"type": "object", "properties": props, "required": ["pourquoi", *required],
+                           "additionalProperties": False}}
+
+
 SPECS = [
-    {"name": "vue_ensemble", "description": "Applications observées : volume d'appels, modèles, coût.",
-     "parameters": {"type": "object", "properties": {}, "additionalProperties": False}},
-    {"name": "lancer_regles", "description": "Lance les six vérifications. Rend les constats avec leur coût, du plus cher au moins cher.",
-     "parameters": {"type": "object", "properties": {}, "additionalProperties": False}},
-    {"name": "detail_constat", "description": "Détail d'un constat : preuves chiffrées et trois extraits de conversation tronqués.",
-     "parameters": {"type": "object", "properties": {"finding_id": {"type": "string"}},
-                    "required": ["finding_id"], "additionalProperties": False}},
-    {"name": "prouver", "description": "Pour un constat « répond toujours la même chose » : extrait des règles fixes puis les rejoue "
-                                       "sur l'historique. Rend le taux d'accord, le verdict (seuil 95 %) et le coût avant/après.",
-     "parameters": {"type": "object", "properties": {"finding_id": {"type": "string"}},
-                    "required": ["finding_id"], "additionalProperties": False}},
+    _spec("vue_ensemble", "Applications observées : volume d'appels, modèles, coût."),
+    _spec("lancer_regles", "Lance les six vérifications. Rend les constats avec leur coût, du plus cher au moins cher."),
+    _spec("detail_constat", "Détail d'un constat : mesures et trois extraits de conversation tronqués.",
+          {"finding_id": {"type": "string"}}, ["finding_id"]),
+    _spec("prouver", "Pour un constat « répond toujours la même chose » : extrait des règles fixes puis les rejoue "
+                     "sur l'historique. Rend le taux d'accord, le verdict (seuil 95 %) et le coût avant/après.",
+          {"finding_id": {"type": "string"}}, ["finding_id"]),
     {"name": "publier_plan", "description": "Termine l'audit : plan d'action priorisé. Chaque chiffre cité doit venir d'un résultat d'outil.",
      "parameters": {"type": "object", "properties": {
          "resume": {"type": "string", "description": "Deux ou trois phrases pour un dirigeant."},
@@ -127,7 +137,15 @@ class AuditTools:
                 "cout_avant_mensuel_usd": _money(proof["cost_before_month_usd"]),
                 "cout_apres_mensuel_usd": _money(proof["cost_after_month_usd"]),
                 "facteur_cout": proof["cost_factor"],
+                "economie_pct": _saving(proof["cost_before_month_usd"], proof["cost_after_month_usd"]),
                 "p95_avant_ms": proof["p95_before_ms"], "p95_apres_ms": proof["p95_after_ms"]}
+
+    def proof_status(self, finding_id):
+        """Décidé par le code, jamais par le modèle."""
+        proof = self.proofs.get(finding_id)
+        if proof is None:
+            return "piste à vérifier"
+        return "prouvé par rejeu" if proof["verdict"] == "pass" else "rejeu refusé"
 
     def call(self, name, args):
         """Exécute un outil (sauf publier_plan, traité par la boucle). Jamais d'exception vers l'agent."""
@@ -135,6 +153,7 @@ class AuditTools:
                    "detail_constat": self.detail_constat, "prouver": self.prouver}.get(name)
         if handler is None:
             return {"erreur": f"outil inconnu : {name}"}
+        args = {k: v for k, v in args.items() if k != "pourquoi"}
         try:
             return handler(**args)
         except TypeError:

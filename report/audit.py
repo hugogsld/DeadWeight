@@ -216,7 +216,8 @@ def _agent_section(agent):
                 f'({e(agent.get("statut", ""))}) : les constats ci-dessous restent valables.</p>')
     plan = agent["plan"]
     actions = "".join(
-        f"<li><b>{e(a['action'])}</b><br><span class=\"note\">{e(a['justification'])}</span></li>"
+        f"<li><b>{e(a['action'])}</b> <span class=\"note\">[{e(a.get('statut', 'piste à vérifier'))}]</span>"
+        f"<br><span class=\"note\">{e(a['justification'])}</span></li>"
         for a in sorted(plan["actions"], key=lambda a: a["priorite"]))
     steps = "".join(
         f"<li>L'agent {e(TOOL_TEXT.get(j['outil'], j['outil']))}"

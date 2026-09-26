@@ -117,3 +117,29 @@ def test_tool_errors_reach_the_agent_not_the_user():
 def test_thousands_are_one_number_but_words_stay_apart():
     outputs = [{"cout_mensuel_usd": 315220.0, "p95_avant_ms": 764.3}]
     assert unknown_numbers(plan("x", "Coût de 315 220 $, p95 764 ms."), outputs) == []
+
+
+def test_proof_status_is_decided_by_code_not_by_the_model():
+    two = {"resume": "Deux pistes.", "actions": [
+        {"priorite": 1, "finding_id": TRIAGE, "action": "Règles fixes", "justification": "Accord 100.0 %."},
+        {"priorite": 2, "finding_id": "f_c1fe9dd8fa5ffbdfba75_raw_context", "action": "Envoyer moins",
+         "justification": "Le modèle affirme que c'est prouvé."}]}
+    llm = ScriptedLLM([(None, [call("prouver", {"finding_id": TRIAGE, "pourquoi": "le plus clair"})]),
+                       (None, [call("publier_plan", two)])])
+    result = run_agent(AuditTools(EVENTS), llm)
+    assert [a["statut"] for a in result["plan"]["actions"]] == ["prouvé par rejeu", "piste à vérifier"]
+    assert "[piste à vérifier]" in render_html({**audit(EVENTS), "agent": result})
+
+
+def test_why_goes_to_the_journal_not_to_the_tool():
+    llm = ScriptedLLM([(None, [call("detail_constat", {"finding_id": TRIAGE, "pourquoi": "le plus fréquent"})]),
+                       (None, [call("publier_plan", plan("Rien de prouvé.", "Piste."))])])
+    result = run_agent(AuditTools(EVENTS), llm)
+    first = result["journal"][0]
+    assert first["pensee"] == "le plus fréquent" and "erreur" not in first["resultat"]
+    assert "pourquoi" not in first["arguments"]
+
+
+def test_saving_is_computed_even_when_nothing_is_left_to_pay():
+    from agent.tools import _saving
+    assert _saving(0.3, 0.0) == 100.0 and _saving(0.3, 0.08) == 73.3 and _saving(None, 0.1) is None
