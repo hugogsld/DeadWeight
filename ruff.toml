@@ -1,5 +1,5 @@
 # Lint du code du weekend uniquement ; le prototype hackathon n'est pas controle.
-include = ["gateway/**/*.py", "rules/**/*.py", "report/**/*.py", "tests/**/*.py", "scripts/**/*.py",
+include = ["gateway/**/*.py", "rules/**/*.py", "report/**/*.py", "tests/**/*.py", "scripts/**/*.py", "connectors/**/*.py",
           "bench/**/*.py"]
 
 [lint]
