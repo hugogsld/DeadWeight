@@ -51,7 +51,6 @@ en-tête. Coût réel des 51 appels : 0,0049 $.
   **en pause** depuis le 22/09). Aucun appel OpenAI direct.
 - **Ce que Deadweight signalerait** (lecture du code, non mesuré) : une
   famille d'agents Opus dont le prompt dit lui-même qu'ils ne décident rien.
-  (rédaction), la revue du détourage par Astra.
 
 | Agent | Ce que dit son prompt | Remplaçable par |
 | --- | --- | --- |
