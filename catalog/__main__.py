@@ -25,7 +25,7 @@ def main(argv=None):
         print(f"\n{'modèle':32} {'appels':>6} {'p50':>8} {'p95':>8}  {'éditeur':12} pays  UE")
         for model, lat in observed_latency(events).items():
             sheet = info(model, pricing, providers, index)
-            ue = {True: "oui", False: "non", None: "?"}[sheet["hebergement_ue"]]
+            ue = {True: "oui", False: "non", "sous_conditions": "cond.", None: "?"}[sheet["hebergement_ue"]]
             print(f"{model:32} {lat['n']:>6} {lat['p50_ms']:>6.0f}ms {lat['p95_ms']:>6.0f}ms  "
                   f"{sheet['editeur'] or '?':12} {sheet['pays'] or '?':4}  {ue}")
     return 0
