@@ -16,7 +16,7 @@ Fichiers générés par `python leviers/_generer.py` : modifier la liste dans ce
 | 3 | [Un modèle qui réfléchit trop](03-raisonnement-excessif.md) | Usage des LLM | 50 à 80 % des appels concernés | Forte (le raisonnement précède la réponse) | Banc (effort bas vs haut) | En cours (R7) |
 | 4 | [Le cache de prompt non utilisé](04-cache-de-prompt.md) | Usage des LLM | Jusqu'à 90 % du coût d'entrée répété | Premier mot plus rapide | Calcul exact | Fait (R4) ; prix du cache branchés (OpenRouter) |
 | 5 | [Trop de contexte envoyé (historique, RAG)](05-contexte-et-rag.md) | Forme des briques d'IA | Coût d'entrée ÷2 à ÷10 | Moyenne | Banc (contexte réduit) | Symptôme détecté (R3) ; causes RAG à faire |
-| 6 | [Des étapes en série qui pourraient tourner en parallèle](06-etapes-paralleles.md) | Forme du workflow | Aucun | Le plus gros gain : ×2 à ×5 sur le workflow | Horaires d'exécution | À faire (R10, après B1) |
+| 6 | [Des étapes en série qui pourraient tourner en parallèle](06-etapes-paralleles.md) | Forme du workflow | Aucun | Le plus gros gain : ×2 à ×5 sur le workflow | Horaires d'exécution | Détection faite (R10), indépendance métier à confirmer |
 | 7 | [Les mêmes appels payés plusieurs fois](07-appels-identiques.md) | Usage des LLM | 100 % de chaque doublon | Réponse immédiate si mise en cache | Calcul exact | En cours (R8) |
 | 8 | [Un agent qui tourne en rond](08-agent-en-boucle.md) | Forme des briques d'IA | Chaque tour en trop | Forte | Traces | Fait (R5) |
 | 9 | [Un agent là où une chaîne fixe suffit](09-agent-ou-chaine.md) | Forme des briques d'IA | Coût d'orchestration | Moyenne | Traces | Fait (R6) |

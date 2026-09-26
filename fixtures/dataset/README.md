@@ -53,3 +53,11 @@ rétrocompatible) pour simuler les modèles de raisonnement de `reasoning_trivia
 | night-batch | R14 : 3 rafales de 10 appels à 02h UTC | day-burst : mêmes rafales à 14h UTC |
 | image-titles | R15 : entrée élevée et titre court | image-analysis : réponse longue et différente |
 | systematic-review | R16 : 6 relectures courtes après génération | useful-followup : approfondissements longs |
+
+## Structure du workflow — R10
+
+`serial-independent` : quatre étapes de 2 s, en série, gain théorique de 6 s.
+`serial-dependent` : reprise de la réponse précédente, aucun conseil de parallélisation.
+Ces scénarios portent `requires_header` : leurs traces sont explicites ; sans
+en-tête, leur regroupement ne fait pas partie de la vérité attendue de l'heuristique.
+Les 1 332 événements historiques et tous les scénarios antérieurs sont conservés.

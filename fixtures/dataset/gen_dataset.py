@@ -533,6 +533,25 @@ def judge_scenarios(ds):
                     'Six générations suivies de verdicts courts.' if reviewing else
                     'Six approfondissements utiles, ni verdict ni intention de relecture.', traces)
 
+
+def parallel_scenarios(ds):
+    for independent in (True, False):
+        app = 'serial-independent' if independent else 'serial-dependent'
+        evts = []
+        for i in range(4):
+            messages = [user(f'Analyse le dossier distinct {i}')]
+            if not independent and evts:
+                messages += [{'role': 'assistant', 'content': evts[-1]['response']['content']}]
+            evts.append(ds.emit(app=app, provider='openai', model='gpt-4o-mini',
+                                system='Analyse documentaire.', messages=messages,
+                                content=f'Conclusion argumentée et particulière pour le dossier {i}.',
+                                in_tok=200, out_tok=40, offset_s=800000 + i * 3,
+                                latency_ms=2000, trace=(app, 'header', i)))
+        ds.scenario(app, app, ['parallelizable_steps'] if independent else [], evts,
+                    'Étapes indépendantes, gain théorique de 6 secondes.' if independent else
+                    'Chaque étape dépend de la conclusion précédente.', {app: evts})
+        ds.scenarios[-1]['requires_header'] = True
+
 def main():
     ds = Dataset()
     mail_triage(ds)
@@ -565,6 +584,7 @@ def main():
     batch_scenarios(ds)
     image_scenarios(ds)
     judge_scenarios(ds)
+    parallel_scenarios(ds)
 
     ds.events.sort(key=lambda e: e["ts_start"])
     OUT.mkdir(parents=True, exist_ok=True)

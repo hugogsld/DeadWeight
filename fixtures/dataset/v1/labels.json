@@ -2688,5 +2688,49 @@
         "ds_01658"
       ]
     }
+  },
+  {
+    "scenario": "serial-independent",
+    "app_id": "serial-independent",
+    "expected_rules": [
+      "parallelizable_steps"
+    ],
+    "note": "Étapes indépendantes, gain théorique de 6 secondes.",
+    "event_ids": [
+      "ds_01659",
+      "ds_01660",
+      "ds_01661",
+      "ds_01662"
+    ],
+    "traces": {
+      "serial-independent": [
+        "ds_01659",
+        "ds_01660",
+        "ds_01661",
+        "ds_01662"
+      ]
+    },
+    "requires_header": true
+  },
+  {
+    "scenario": "serial-dependent",
+    "app_id": "serial-dependent",
+    "expected_rules": [],
+    "note": "Chaque étape dépend de la conclusion précédente.",
+    "event_ids": [
+      "ds_01663",
+      "ds_01664",
+      "ds_01665",
+      "ds_01666"
+    ],
+    "traces": {
+      "serial-dependent": [
+        "ds_01663",
+        "ds_01664",
+        "ds_01665",
+        "ds_01666"
+      ]
+    },
+    "requires_header": true
   }
 ]

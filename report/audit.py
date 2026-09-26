@@ -62,6 +62,8 @@ def _figures(events):
 
 # Texte humain par regle : aucun code de regle ne doit apparaitre dans la page.
 RULE_TEXT = {
+    'parallelizable_steps': ('Des étapes indépendantes attendent leur tour',
+        'Confirmer les dépendances puis tester une exécution parallèle.'),
     "llm_judge": ("Une deuxième IA relit presque chaque réponse",
                   "Tester une relecture par échantillon ou par règle, en vérifiant la qualité conservée."),
     "image_heavy": ("Des images très coûteuses pour une réponse simple",

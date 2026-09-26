@@ -63,7 +63,7 @@ LEVIERS = [
          suite="Détecter la forme du RAG (nombre et taille des extraits) dans les requêtes."),
     dict(fichier="06-etapes-paralleles", titre="Des étapes en série qui pourraient tourner en parallèle",
          famille="Forme du workflow", argent="Aucun", latence="Le plus gros gain : ×2 à ×5 sur le workflow",
-         preuve="Horaires d'exécution", donnees="Historique n8n (B1)", etat="À faire (R10, après B1)",
+         preuve="Horaires d'exécution", donnees="Historique n8n (B1)", etat="Détection faite (R10), indépendance métier à confirmer",
          regle="R10 (à venir)",
          signal="Deux étapes qui ne dépendent pas l'une de l'autre s'exécutent l'une après l'autre.",
          detection="Graphe du workflow (dépendances de données) + horaires réels de chaque nœud dans l'historique.",
