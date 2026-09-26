@@ -6,16 +6,25 @@ choisit quoi regarder et quoi prouver, il ne calcule rien.
 """
 import json
 
+from catalog.recommend import recommend
 from proof.extract import extract_rules
 from proof.replay import replay
 from report.audit import RULE_TEXT, _discover_detectors, _figures
 
 EXCERPT = 160  # caractères max par extrait de conversation montré à l'agent
 REPLAYABLE = {"low_entropy_output"}  # seules les règles d'aiguillage se prouvent par rejeu
+ALTERNATIVES = {"oversized_model"}  # bloc M : autres modèles, seulement là où R2 a jugé la tâche simple
+OPTION_NAMES = {"moins_cher": "le moins cher", "meilleur_compromis": "même éditeur", "souverain": "éditeur européen"}
 
 
 def _money(v):
     return None if v is None else round(v, 2)
+
+
+def _small_money(v):
+    """Montant d'un modèle de remplacement : deux chiffres significatifs sous 1 $, sinon « 0.0 »
+    cacherait l'ordre de grandeur et l'agent ne pourrait pas le citer (garde-fou A1.3)."""
+    return None if v is None else round(v, 2) if v >= 1 else float(f"{v:.2g}")
 
 
 def _pct(v):
@@ -54,6 +63,10 @@ SPECS = [
     _spec("vue_ensemble", "Applications observées : volume d'appels, modèles, coût."),
     _spec("lancer_regles", "Lance les six vérifications. Rend les constats avec leur coût, du plus cher au moins cher."),
     _spec("detail_constat", "Détail d'un constat : mesures et trois extraits de conversation tronqués.",
+          {"finding_id": {"type": "string"}}, ["finding_id"]),
+    _spec("alternatives_modele", "Pour un constat « modèle haut de gamme pour une tâche simple » : autres modèles "
+                                 "compatibles, tous fournisseurs (le moins cher, même éditeur, éditeur européen), "
+                                 "coût recalculé sur le trafic observé. Ce sont des pistes non prouvées.",
           {"finding_id": {"type": "string"}}, ["finding_id"]),
     _spec("prouver", "Pour un constat « répond toujours la même chose » : extrait des règles fixes puis les rejoue "
                      "sur l'historique. Rend le taux d'accord, le verdict (seuil 95 %) et le coût avant/après.",
@@ -106,7 +119,8 @@ class AuditTools:
         return {"a_prouver_avant_de_publier": self.unproven(), "constats": [
             {"finding_id": f["finding_id"], "verification": RULE_TEXT.get(f["rule"], (f["rule"],))[0],
              "app_id": f["app_id"], "modele": f["model"], "appels": c["nb_appels"],
-             "prouvable_par_rejeu": f["rule"] in REPLAYABLE, **_cost(c)}
+             "prouvable_par_rejeu": f["rule"] in REPLAYABLE,
+             "autres_modeles_disponibles": f["rule"] in ALTERNATIVES, **_cost(c)}
             for f, c in self.findings()]}
 
     def detail_constat(self, finding_id):
@@ -142,6 +156,32 @@ class AuditTools:
                 "economie_pct": _saving(proof["cost_before_month_usd"], proof["cost_after_month_usd"]),
                 "temps_reponse_appels_lents_avant_ms": proof["p95_before_ms"], "temps_reponse_appels_lents_apres_ms": proof["p95_after_ms"]}
 
+    def alternatives_modele(self, finding_id):
+        f, _ = self._finding(finding_id)
+        if f is None:
+            return {"erreur": f"constat inconnu : {finding_id}"}
+        if f["rule"] not in ALTERNATIVES:
+            return {"erreur": "seulement pour un modèle haut de gamme sur une tâche simple : ailleurs, "
+                              "changer de modèle risque de dégrader les réponses"}
+        rec = recommend([self.by_id[i] for i in f["event_ids"] if i in self.by_id])
+        options = []
+        for key, o in rec["options"].items():
+            if o:
+                options.append({
+                    "option": OPTION_NAMES[key], "modele": o["modele"],
+                    "cout_mensuel_usd": _small_money(o["cout_mensuel_usd"]), "facteur_cout": o["facteur"],
+                    "economie_pct": _saving(rec["cout_mensuel_usd"], o["cout_mensuel_usd"]),
+                    "pays_editeur": o["pays"],
+                    "donnees_en_europe": {True: "oui", False: "non", "sous_conditions": "sous conditions",
+                                          None: "non garanti"}[o["hebergement_ue"]],
+                    "cout_sous_estime": o["raisonnement"]})
+        return {"finding_id": finding_id, "modele_actuel": rec["modele"],
+                "cout_mensuel_actuel_usd": _small_money(rec["cout_mensuel_usd"]),
+                "options": options, "raison_si_aucune": rec["raison"],
+                "a_retenir": "pistes non prouvées : à tester sur une partie du trafic avant de changer ; "
+                             "cout_sous_estime = modèle qui réfléchit avant de répondre, sa réflexion est facturée "
+                             "en plus et n'est pas comptée ici"}
+
     def unproven(self):
         """Constats prouvables par rejeu que l'agent n'a pas encore tenté de prouver."""
         return [f["finding_id"] for f, _ in self.findings()
@@ -157,7 +197,8 @@ class AuditTools:
     def call(self, name, args):
         """Exécute un outil (sauf publier_plan, traité par la boucle). Jamais d'exception vers l'agent."""
         handler = {"vue_ensemble": self.vue_ensemble, "lancer_regles": self.lancer_regles,
-                   "detail_constat": self.detail_constat, "prouver": self.prouver}.get(name)
+                   "detail_constat": self.detail_constat, "prouver": self.prouver,
+                   "alternatives_modele": self.alternatives_modele}.get(name)
         if handler is None:
             return {"erreur": f"outil inconnu : {name}"}
         args = {k: v for k, v in args.items() if k != "pourquoi"}
