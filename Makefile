@@ -3,7 +3,7 @@ PY := $(shell command -v python3.11 || command -v python3)
 VENV := .venv
 BIN := $(VENV)/bin
 
-.PHONY: dev install test lint record
+.PHONY: dev install test lint record audit demo
 
 dev: install .env.local
 	@set -a; . ./.env.local; set +a; \
@@ -20,7 +20,7 @@ $(BIN)/.installed: requirements.txt gateway/requirements.txt
 
 .env.local:
 	cp .env.example .env.local
-	@echo ".env.local cree depuis .env.example : remplis tes cles."
+	@echo ".env.local cree depuis .env.example : aucune cle a remplir pour la passerelle ou la demo."
 
 test: install
 	$(BIN)/python -m pytest -q
@@ -31,3 +31,13 @@ lint: install
 # appelle les vraies API une fois et ecrit tests/cassettes/ (cles de .env.local, jamais ecrites)
 record: install .env.local
 	@set -a; . ./.env.local; set +a; $(BIN)/python -m pytest -q --record-mode=once
+
+# Même configuration que make dev ; export temporaire supprimé après le rapport.
+AUDIT_OUT ?= out/audit.html
+audit: install
+	@set -a; if [ -f .env.local ]; then . ./.env.local; fi; set +a; \
+	$(BIN)/python -m scripts.audit --out "$(AUDIT_OUT)"
+
+# Aucune clé et aucune modification de la base client ; ports locaux libres.
+demo: install
+	$(BIN)/python -m scripts.demo
