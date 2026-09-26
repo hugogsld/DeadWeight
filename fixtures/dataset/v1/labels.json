@@ -686,9 +686,10 @@
     "scenario": "contract-bot",
     "app_id": "contract-bot",
     "expected_rules": [
-      "raw_context"
+      "raw_context",
+      "context_reread"
     ],
-    "note": "Contrat renvoye a chaque tour : input lineaire (+1700 tokens/tour), reponses courtes.",
+    "note": "Contrat renvoye a chaque tour : input lineaire (+1700 tokens/tour), reponses courtes. 10 sessions de 8 tours avec en-tete : R19 le detecte aussi (contexte median > 8k, part du cout > 90 %, verifie vrai positif car meme phenomene que R3.",
     "event_ids": [
       "ds_00641",
       "ds_00642",
@@ -2910,5 +2911,327 @@
       "ds_01750"
     ],
     "traces": {}
+  },
+  {
+    "scenario": "code_agent_context_reread",
+    "app_id": "code-agent-cache-heavy",
+    "expected_rules": [
+      "context_reread"
+    ],
+    "note": "3 sessions de 20 tours, cache Anthropic qui grossit de 15k a plus de 240k jetons : le contexte relu domine le cout a chaque appel.",
+    "event_ids": [
+      "ds_01751",
+      "ds_01752",
+      "ds_01753",
+      "ds_01754",
+      "ds_01755",
+      "ds_01756",
+      "ds_01757",
+      "ds_01758",
+      "ds_01759",
+      "ds_01760",
+      "ds_01761",
+      "ds_01762",
+      "ds_01763",
+      "ds_01764",
+      "ds_01765",
+      "ds_01766",
+      "ds_01767",
+      "ds_01768",
+      "ds_01769",
+      "ds_01770",
+      "ds_01771",
+      "ds_01772",
+      "ds_01773",
+      "ds_01774",
+      "ds_01775",
+      "ds_01776",
+      "ds_01777",
+      "ds_01778",
+      "ds_01779",
+      "ds_01780",
+      "ds_01781",
+      "ds_01782",
+      "ds_01783",
+      "ds_01784",
+      "ds_01785",
+      "ds_01786",
+      "ds_01787",
+      "ds_01788",
+      "ds_01789",
+      "ds_01790",
+      "ds_01791",
+      "ds_01792",
+      "ds_01793",
+      "ds_01794",
+      "ds_01795",
+      "ds_01796",
+      "ds_01797",
+      "ds_01798",
+      "ds_01799",
+      "ds_01800",
+      "ds_01801",
+      "ds_01802",
+      "ds_01803",
+      "ds_01804",
+      "ds_01805",
+      "ds_01806",
+      "ds_01807",
+      "ds_01808",
+      "ds_01809",
+      "ds_01810"
+    ],
+    "traces": {
+      "code-agent-s0": [
+        "ds_01751",
+        "ds_01752",
+        "ds_01753",
+        "ds_01754",
+        "ds_01755",
+        "ds_01756",
+        "ds_01757",
+        "ds_01758",
+        "ds_01759",
+        "ds_01760",
+        "ds_01761",
+        "ds_01762",
+        "ds_01763",
+        "ds_01764",
+        "ds_01765",
+        "ds_01766",
+        "ds_01767",
+        "ds_01768",
+        "ds_01769",
+        "ds_01770"
+      ],
+      "code-agent-s1": [
+        "ds_01771",
+        "ds_01772",
+        "ds_01773",
+        "ds_01774",
+        "ds_01775",
+        "ds_01776",
+        "ds_01777",
+        "ds_01778",
+        "ds_01779",
+        "ds_01780",
+        "ds_01781",
+        "ds_01782",
+        "ds_01783",
+        "ds_01784",
+        "ds_01785",
+        "ds_01786",
+        "ds_01787",
+        "ds_01788",
+        "ds_01789",
+        "ds_01790"
+      ],
+      "code-agent-s2": [
+        "ds_01791",
+        "ds_01792",
+        "ds_01793",
+        "ds_01794",
+        "ds_01795",
+        "ds_01796",
+        "ds_01797",
+        "ds_01798",
+        "ds_01799",
+        "ds_01800",
+        "ds_01801",
+        "ds_01802",
+        "ds_01803",
+        "ds_01804",
+        "ds_01805",
+        "ds_01806",
+        "ds_01807",
+        "ds_01808",
+        "ds_01809",
+        "ds_01810"
+      ]
+    }
+  },
+  {
+    "scenario": "chat_short_sessions",
+    "app_id": "chat-short-sessions",
+    "expected_rules": [],
+    "note": "Negatif R19 : contexte par appel comparable au cas positif, mais sessions de 2 a 3 tours seulement (sous le seuil de 8) : pas de constat de relecture massive.",
+    "event_ids": [
+      "ds_01811",
+      "ds_01812",
+      "ds_01813",
+      "ds_01814",
+      "ds_01815",
+      "ds_01816",
+      "ds_01817",
+      "ds_01818",
+      "ds_01819",
+      "ds_01820",
+      "ds_01821",
+      "ds_01822",
+      "ds_01823",
+      "ds_01824",
+      "ds_01825",
+      "ds_01826",
+      "ds_01827",
+      "ds_01828",
+      "ds_01829",
+      "ds_01830",
+      "ds_01831",
+      "ds_01832",
+      "ds_01833",
+      "ds_01834",
+      "ds_01835",
+      "ds_01836",
+      "ds_01837",
+      "ds_01838",
+      "ds_01839",
+      "ds_01840",
+      "ds_01841",
+      "ds_01842",
+      "ds_01843",
+      "ds_01844",
+      "ds_01845",
+      "ds_01846",
+      "ds_01847",
+      "ds_01848",
+      "ds_01849",
+      "ds_01850",
+      "ds_01851",
+      "ds_01852",
+      "ds_01853",
+      "ds_01854",
+      "ds_01855",
+      "ds_01856",
+      "ds_01857",
+      "ds_01858",
+      "ds_01859",
+      "ds_01860",
+      "ds_01861",
+      "ds_01862",
+      "ds_01863",
+      "ds_01864",
+      "ds_01865",
+      "ds_01866",
+      "ds_01867",
+      "ds_01868",
+      "ds_01869",
+      "ds_01870",
+      "ds_01871",
+      "ds_01872"
+    ],
+    "traces": {
+      "chat-short-s0": [
+        "ds_01811",
+        "ds_01812",
+        "ds_01813"
+      ],
+      "chat-short-s1": [
+        "ds_01814",
+        "ds_01815"
+      ],
+      "chat-short-s2": [
+        "ds_01816",
+        "ds_01817"
+      ],
+      "chat-short-s3": [
+        "ds_01818",
+        "ds_01819",
+        "ds_01820"
+      ],
+      "chat-short-s4": [
+        "ds_01821",
+        "ds_01822"
+      ],
+      "chat-short-s5": [
+        "ds_01823",
+        "ds_01824",
+        "ds_01825"
+      ],
+      "chat-short-s6": [
+        "ds_01826",
+        "ds_01827",
+        "ds_01828"
+      ],
+      "chat-short-s7": [
+        "ds_01829",
+        "ds_01830"
+      ],
+      "chat-short-s8": [
+        "ds_01831",
+        "ds_01832"
+      ],
+      "chat-short-s9": [
+        "ds_01833",
+        "ds_01834"
+      ],
+      "chat-short-s10": [
+        "ds_01835",
+        "ds_01836",
+        "ds_01837"
+      ],
+      "chat-short-s11": [
+        "ds_01838",
+        "ds_01839"
+      ],
+      "chat-short-s12": [
+        "ds_01840",
+        "ds_01841"
+      ],
+      "chat-short-s13": [
+        "ds_01842",
+        "ds_01843",
+        "ds_01844"
+      ],
+      "chat-short-s14": [
+        "ds_01845",
+        "ds_01846",
+        "ds_01847"
+      ],
+      "chat-short-s15": [
+        "ds_01848",
+        "ds_01849",
+        "ds_01850"
+      ],
+      "chat-short-s16": [
+        "ds_01851",
+        "ds_01852"
+      ],
+      "chat-short-s17": [
+        "ds_01853",
+        "ds_01854",
+        "ds_01855"
+      ],
+      "chat-short-s18": [
+        "ds_01856",
+        "ds_01857",
+        "ds_01858"
+      ],
+      "chat-short-s19": [
+        "ds_01859",
+        "ds_01860"
+      ],
+      "chat-short-s20": [
+        "ds_01861",
+        "ds_01862",
+        "ds_01863"
+      ],
+      "chat-short-s21": [
+        "ds_01864",
+        "ds_01865"
+      ],
+      "chat-short-s22": [
+        "ds_01866",
+        "ds_01867",
+        "ds_01868"
+      ],
+      "chat-short-s23": [
+        "ds_01869",
+        "ds_01870"
+      ],
+      "chat-short-s24": [
+        "ds_01871",
+        "ds_01872"
+      ]
+    }
   }
 ]

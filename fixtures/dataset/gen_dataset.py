@@ -603,14 +603,74 @@ def harness_scenarios(ds):
         ds.scenario(app, app, ['harness_overhead'] if heavy else [], es,
                     'Part fixe dominante, cache déjà partiellement actif.' if heavy else 'Instructions courtes, pas de surcharge dominante.')
 
+
+# ---------- R19 ----------
+
+def code_agent_context_reread(ds):
+    """R19 positif : agent de code Anthropic, sessions longues, cache qui grossit et domine le cout."""
+    evts, traces = [], {}
+    for s in range(3):
+        session_id = f"code-agent-s{s}"
+        history, conv, t_off = [], [], spread(s, 3, jitter=3600)
+        for turn in range(20):
+            t_off += RNG.randint(20, 90)
+            history = history + [user(f"Etape {turn} de la session {s} : ...")]
+            cached = max(0, 15000 + 12000 * turn + RNG.randint(-500, 500))
+            fresh = RNG.randint(400, 900)
+            out = RNG.randint(120, 350)
+            answer = f"[reponse agent, etape {turn}, session {s}]"
+            conv.append(ds.emit(app="code-agent-cache-heavy", provider="anthropic", model="claude-sonnet-4-5",
+                                system="Agent de code. Utilise les outils si necessaire.",
+                                messages=list(history), content=answer,
+                                in_tok=fresh, out_tok=out, cached=cached,
+                                offset_s=t_off, latency_ms=lat(2200), finish_raw="end_turn",
+                                trace=(session_id, "header", turn)))
+            history = history + [{"role": "assistant", "content": answer}]
+        evts += conv
+        traces[session_id] = conv
+    ds.scenario("code_agent_context_reread", "code-agent-cache-heavy", ["context_reread"], evts,
+                "3 sessions de 20 tours, cache Anthropic qui grossit de 15k a plus de 240k jetons : "
+                "le contexte relu domine le cout a chaque appel.", traces)
+
+
+def chat_short_sessions(ds):
+    """Negatif R19 : contexte par appel comparable, mais sessions courtes (2-3 tours)."""
+    evts, traces = [], {}
+    for s in range(25):
+        session_id = f"chat-short-s{s}"
+        n_turns = RNG.choice([2, 3])
+        history, conv, t_off = [], [], spread(s, 25, jitter=1800)
+        for turn in range(n_turns):
+            t_off += RNG.randint(15, 60)
+            history = history + [user(f"Question {turn} de la session {s} : ...")]
+            cached = max(0, 9000 + RNG.randint(-300, 300))
+            fresh = RNG.randint(300, 600)
+            out = RNG.randint(80, 200)
+            answer = f"[reponse {turn}, session {s}]"
+            conv.append(ds.emit(app="chat-short-sessions", provider="anthropic", model="claude-sonnet-4-5",
+                                system="Assistant de support, une question a la fois.",
+                                messages=list(history), content=answer,
+                                in_tok=fresh, out_tok=out, cached=cached,
+                                offset_s=t_off, latency_ms=lat(1200), finish_raw="end_turn",
+                                trace=(session_id, "header", turn)))
+            history = history + [{"role": "assistant", "content": answer}]
+        evts += conv
+        traces[session_id] = conv
+    ds.scenario("chat_short_sessions", "chat-short-sessions", [], evts,
+                "Negatif R19 : contexte par appel comparable au cas positif, mais sessions de 2 a 3 tours "
+                "seulement (sous le seuil de 8) : pas de constat de relecture massive.", traces)
+
+
 def main():
     ds = Dataset()
     mail_triage(ds)
     ticket_summary(ds)
     reviews_opus(ds)
     eng_copilot(ds)
-    conversations(ds, "contract-bot", "gemini-2.5-pro", ["raw_context"], grow=True,
-                  note="Contrat renvoye a chaque tour : input lineaire (+1700 tokens/tour), reponses courtes.")
+    conversations(ds, "contract-bot", "gemini-2.5-pro", ["raw_context", "context_reread"], grow=True,
+                  note="Contrat renvoye a chaque tour : input lineaire (+1700 tokens/tour), reponses courtes. "
+                       "10 sessions de 8 tours avec en-tete : R19 le detecte aussi (contexte median > 8k, "
+                       "part du cout > 90 %, verifie vrai positif car meme phenomene que R3.")
     conversations(ds, "support-chat", "gemini-2.5-flash", [], grow=False,
                   note="Negatif R3 : fenetre glissante de 4 messages, input constant.")
     faq_bot(ds)
@@ -639,6 +699,8 @@ def main():
     item_scenarios(ds)
     merge_scenarios(ds)
     harness_scenarios(ds)
+    code_agent_context_reread(ds)
+    chat_short_sessions(ds)
 
     ds.events.sort(key=lambda e: e["ts_start"])
     OUT.mkdir(parents=True, exist_ok=True)
