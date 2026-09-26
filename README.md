@@ -95,6 +95,44 @@ returns **PASS at 98.0% agreement**.
 
 Add `--no-llm` to the patcher to run the whole pipeline with no API key at all.
 
+## Gateway (D1.1) — OpenAI pass-through proxy
+
+The gateway sits between your application and OpenAI. You change one line — the
+`base_url` — and every call is relayed unchanged, streaming included, while a copy
+is captured in the event format of `schemas/event.schema.json`.
+
+    python3 -m venv .venv && .venv/bin/pip install -r gateway/requirements.txt
+    .venv/bin/python -m gateway          # listens on http://127.0.0.1:8080
+
+Then, in your application:
+
+    client = OpenAI(base_url="http://127.0.0.1:8080/v1")   # same API key as before
+
+| Variable | Default | |
+| --- | --- | --- |
+| `GATEWAY_HOST` / `GATEWAY_PORT` | `127.0.0.1` / `8080` | listen address |
+| `GATEWAY_OPENAI_UPSTREAM` | `https://api.openai.com` | where calls are relayed |
+| `GATEWAY_LOG_LEVEL` | `INFO` | one summary line per call, never content or headers |
+
+Optional headers: `x-deadweight-app` (groups calls by application, default `default`)
+and `x-deadweight-trace` (groups calls of one workflow). They are not forwarded to OpenAI.
+
+**Your API key is never stored.** The `Authorization` header is relayed as is and never
+persisted, logged or written to an event; a key echoed back in an OpenAI error message is
+masked before capture. Only `POST /v1/chat/completions` is captured; every other route is
+relayed without capture. With streaming, token counts are only known if the client sets
+`stream_options: {"include_usage": true}` — the gateway never alters the request.
+
+Checks, no API key needed (a local fake OpenAI stands in):
+
+    .venv/bin/pip install pytest jsonschema openai
+    .venv/bin/python -m pytest tests/test_gateway.py   # byte-identical relay, no buffering, key never captured
+    .venv/bin/python -m gateway.bench                   # added latency, p50 / p95
+
+Measured on a laptop, capture on: **+0.2 ms p95** sequential, **+3.6 ms p95** at 20
+concurrent requests (target: < 30 ms). Checked against the real OpenAI API with the
+official SDK, plain and streaming.
+
 ## Stack
 
 **n8n** — the audited target: the only orchestrator exposing both workflow JSON and
