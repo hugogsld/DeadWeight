@@ -103,7 +103,7 @@ class AuditTools:
             for a, evts in sorted(apps.items(), key=lambda kv: -len(kv[1]))]}
 
     def lancer_regles(self):
-        return {"constats": [
+        return {"a_prouver_avant_de_publier": self.unproven(), "constats": [
             {"finding_id": f["finding_id"], "verification": RULE_TEXT.get(f["rule"], (f["rule"],))[0],
              "app_id": f["app_id"], "modele": f["model"], "appels": c["nb_appels"],
              "prouvable_par_rejeu": f["rule"] in REPLAYABLE, **_cost(c)}
