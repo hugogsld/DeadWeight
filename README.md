@@ -149,6 +149,25 @@ Par défaut, OpenTelemetry transmet l'usage (modèles, jetons, durées) et l'enc
 chiffre et on repère des pistes. Pour les preuves (rejeu, banc de modèles), activez la capture du contenu
 dans votre instrumentation. Méthode : `docs/analyser-un-workflow.md`.
 
+## Journaux Claude Code et Codex (B1)
+
+Si vos agents sont Claude Code ou Codex, leurs journaux de session contiennent déjà chaque appel
+de modèle. Zippez ceux d'un run, puis une commande (Python 3.9+, rien à installer) :
+
+    cd ~/.claude/projects && zip -r ~/run.zip <dossier-du-projet>     # Claude Code
+    cd ~/.codex && zip -r ~/run-codex.zip sessions/2026/09/26          # Codex, le jour du run
+
+    python3 -m connectors.agent_logs ~/run.zip ~/run-codex.zip -o private/agent-logs/events.jsonl
+    python -m report.audit private/agent-logs/events.jsonl -o out/audit.html
+
+Chaque appel devient un événement : modèle, jetons (cache compris), heure, messages du tour,
+réponse, appels d'outils ; la session sert de trace, un sous-agent a son propre `app_id`
+(`claude-code:<projet>/sous-agent`). Les clés d'API affichées dans les journaux sont masquées.
+`comprehension.json` dit, par outil, les appels lus, ignorés et pourquoi, et le niveau atteint.
+Limites : le prompt système et la liste des outils ne sont pas journalisés ; les jetons écrits en
+cache par Claude Code sont comptés au prix normal (facturés 1,25× à 2×), le coût est donc un
+peu sous-estimé sur cette part.
+
 ## Prix des modèles
 
 Les coûts viennent de `fixtures/pricing.json`, le catalogue public d'OpenRouter (prix d'entrée,
