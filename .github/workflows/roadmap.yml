@@ -1,4 +1,6 @@
-# Met a jour le tableau d'avancement de ROADMAP.md a chaque evenement d'issue ou de PR.
+# Publie le tableau d'avancement dans une issue epinglee a chaque evenement d'issue ou de PR.
+# main est protege (tout passe par une PR) : le bot n'ecrit plus dans ROADMAP.md, il edite l'issue.
+# Une modification faite avec GITHUB_TOKEN ne redeclenche pas de workflow : pas de boucle.
 # pull_request_target : tourne dans le contexte de main, n'execute jamais le code de la PR.
 name: roadmap
 
@@ -9,12 +11,11 @@ on:
     types: [opened, edited, closed, reopened]
   push:
     branches: [main]
-    paths-ignore: [ROADMAP.md]
   workflow_dispatch:
 
 permissions:
-  contents: write
-  issues: read
+  contents: read
+  issues: write
   pull-requests: read
 
 concurrency:
@@ -28,16 +29,18 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Recalculer le tableau
+      - name: Publier dans l'issue d'avancement
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TZ: Europe/Paris
-        run: python3 scripts/roadmap_status.py
-      - name: Commit si changement
         run: |
-          if git diff --quiet -- ROADMAP.md; then exit 0; fi
-          git config user.name "roadmap-bot"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore: avancement roadmap" -- ROADMAP.md
-          git pull --rebase origin main
-          git push origin HEAD:main
+          python3 scripts/roadmap_status.py --check > body.md
+          printf '\n\n_Mis à jour automatiquement à chaque issue ou PR. Plan détaillé : [ROADMAP.md](https://github.com/%s/blob/main/ROADMAP.md)._\n' "$GITHUB_REPOSITORY" >> body.md
+          N=$(gh issue list -R "$GITHUB_REPOSITORY" --state open --label roadmap-status --json number --jq '.[0].number // empty')
+          if [ -n "$N" ]; then
+            gh issue edit "$N" -R "$GITHUB_REPOSITORY" --body-file body.md
+          else
+            gh label create roadmap-status -R "$GITHUB_REPOSITORY" --color 0E8A16 --description "Tableau d'avancement tenu par le bot" 2>/dev/null || true
+            URL=$(gh issue create -R "$GITHUB_REPOSITORY" --title "Avancement du weekend (automatique)" --label roadmap-status --body-file body.md)
+            gh issue pin "$URL" -R "$GITHUB_REPOSITORY" || true
+          fi
