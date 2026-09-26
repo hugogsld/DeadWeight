@@ -16,6 +16,14 @@ Régénérer : `python3 fixtures/gen_events.py`. Vérifier : `pytest tests/test_
 - `app_id` vient de l'en-tête `x-deadweight-app`, sinon `"default"`. Trace : `x-deadweight-trace`.
 - Arguments d'outils toujours en chaîne JSON (format OpenAI).
 
+## `provider` = format, `upstream` = destination
+
+`provider` dit quel **format** de requête est utilisé, pas chez qui l'appel part. Le format
+`openai` est parlé par Mistral, DeepSeek, Groq, Together, OpenRouter, Azure OpenAI, vLLM,
+Ollama… `upstream` (optionnel) garde l'hôte réellement appelé, par exemple `api.mistral.ai`.
+La passerelle le remplit toujours ; le chiffrage et le rapport s'en servent pour ne pas
+confondre deux modèles de même nom chez deux hébergeurs.
+
 ## Normalisation par fournisseur
 
 | Champ | OpenAI | Anthropic | Gemini |

@@ -62,3 +62,9 @@ def test_schema_forbids_credentials():
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate(bad, SCHEMA)
     assert FORBIDDEN_KEYS.isdisjoint(set(_keys(EVENTS)))
+
+
+def test_upstream_is_optional_and_accepted():
+    with_upstream = dict(EVENTS[0], upstream="api.mistral.ai")
+    jsonschema.validate(with_upstream, SCHEMA)
+    assert "upstream" not in SCHEMA["required"]
