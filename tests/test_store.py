@@ -112,3 +112,20 @@ def test_close_flushes_pending_events(tmp_path):
         store.put({**EVENTS[0], "event_id": f"evt_{i}"})
     store.close()
     assert count(db) == 1200
+
+
+def test_malformed_event_does_not_kill_the_writer(tmp_path):
+    """Un événement cassé est perdu seul : ceux du même lot et des suivants sont écrits."""
+    db = str(tmp_path / "events.db")
+    store = EventStore(db)
+    store.put({"event_id": "cassé"})                                  # champs manquants
+    store.put({**EVENTS[0], "event_id": "evt_set", "app_id": {1, 2}})  # non sérialisable en JSON
+    for e in EVENTS[1:11]:
+        store.put(e)
+    time.sleep(0.1)
+    assert store._thread.is_alive()
+    for e in EVENTS[11:21]:
+        store.put(e)
+    store.close()
+    assert store.dropped == 2
+    assert count(db) == 20

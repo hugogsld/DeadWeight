@@ -90,13 +90,20 @@ class EventStore:
                 return
 
     def _write(self, batch):
-        rows = [(e["event_id"], e["ts_start"], e["app_id"], e["provider"], e["model"],
-                 e["trace"]["id"], e["http_status"], json.dumps(e, ensure_ascii=False))
-                for e in batch]
+        # Rien ne doit sortir d'ici : une exception tuerait le thread d'écriture
+        # sans bruit, et tous les événements suivants seraient perdus.
+        rows = []
+        for e in batch:
+            try:
+                rows.append((e["event_id"], e["ts_start"], e["app_id"], e["provider"], e["model"],
+                             e["trace"]["id"], e["http_status"], json.dumps(e, ensure_ascii=False)))
+            except Exception:  # événement malformé : on le perd seul, pas le lot
+                self.dropped += 1
+                log.exception("store: événement malformé ignoré")
         try:
             with self._db:
                 self._db.executemany("INSERT OR REPLACE INTO events VALUES (?,?,?,?,?,?,?,?)", rows)
-        except sqlite3.Error:
+        except Exception:
             self.dropped += len(rows)
             log.exception("store: écriture de %d événement(s) en échec", len(rows))
 
