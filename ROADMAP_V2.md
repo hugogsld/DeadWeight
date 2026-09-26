@@ -38,119 +38,155 @@ les intégrer sert la note (innovation, qualité) et la visibilité, pas une él
 
 ## Encore ouvert de la v1
 
-| Id | Livrable | Qui | État |
+Tout est fusionné (D0.1 à D4.3), sauf **D4.4, le test par un tiers**, dimanche vers 15 h 30. Depuis :
+prix OpenRouter avec cache et noms des API (`make prices`), jetons capturés en streaming, coût partiel au
+lieu de « non disponible », pas de projection mensuelle sur moins d'une heure de trafic.
+
+## Décisions du 26/09 après-midi
+
+- **Gardé** : A1 (agent auditeur), B1 (import de l'historique n8n, option « lire l'historique »), B3 (analyse
+  des vrais workflows, **grosse priorité**, B4 inclus), bloc M (catalogue et recommandations), Q1, D4.4, vidéo.
+- **Au bloc rendu, à la fin** : A2 (section « construit pendant le hackathon »), A3 (inscriptions).
+- **Coupé ou mis de côté** : B2 (convertisseur de logs), C1 et C2 (outils hors LLM), E1 (Pipelex),
+  E2 (voix), E3 (Dust), Q2. B5 (confidentialité) est réduit à un petit dossier `private/`, fait dans B1.
+- Premier gros workflow reçu : plan d'analyse et de test plus bas.
+
+Difficulté : ★ mécanique → ★★★★★ on ne sait pas encore faire. Durées en heures réelles, agent compris.
+
+## Récapitulatif
+
+| Id | Tâche | Difficulté | Temps | Stack technique | Qui |
+|---|---|---|---|---|---|
+| A1 | Agent auditeur | ★★★★ | 7 h | Python, SDK OpenAI (appel d'outils), JSON Schema, modules existants | Hugo (+ Claude pour les tests) |
+| B1 | Import de l'historique n8n | ★★★★ | 6 h | Python, API publique n8n v1, JSON de workflow n8n, schéma d'événement | Thibaud |
+| B3 | Analyse du premier workflow | ★★★ | 3 h | B1 + règles + rapport, revue humaine | toute l'équipe |
+| M1 | Catalogue : origine, hébergement, qualité, vitesse | ★★★ | 4 h | Python, API OpenRouter, API Artificial Analysis, tables JSON versionnées | Alexandre |
+| M2 | Recommandations de modèles | ★★★★ | 5 h | Python, M1, rejeu D3.2 | Alexandre |
+| Q1 | Boucle de bout en bout en CI | ★★ | 1 h | bash, GitHub Actions, faux fournisseurs | Codex |
+| — | Vrai trafic OpenAI par la passerelle | ★ | 15 min | `make dev`, clé réelle | Natan |
+| D4.4 | Test par un tiers | ★ | 2 h | aucun | Natan (observateur) |
+| A2, A3 | Section « construit pendant le hackathon », inscriptions | ★ | 45 min | README, Luma | Claude, Natan |
+| V1–V4 | Script, tournage, description, dépôt | ★★ | 4 h | enregistrement d'écran, montage | Natan + un volontaire |
+
+## A1 — Agent auditeur · ★★★★ · 7 h
+
+**Pourquoi** : le règlement exige un projet agentique (raisonnement, décision, orchestration). Aujourd'hui,
+l'audit est un enchaînement fixe : les six règles, le chiffrage, le rapport ; le rejeu se lance à la main ; le
+seul appel à un LLM est l'extraction des règles. A1 remplace l'enchaînement fixe par un agent qui enquête et
+arbitre, avec nos modules comme outils.
+
+**Ce qu'il fait** : il regarde le trafic, choisit quoi prouver en premier (le plus cher), lance le rejeu, lit
+le verdict. En cas de refus, il comprend pourquoi et tente autre chose (autres règles, modèle de secours, ou mode
+miroir pour observer plus longtemps). Il termine par un plan d'action priorisé (quoi faire d'abord, gain,
+risque), éventuellement posté sur Slack.
+
+**Stack** : Python ; SDK OpenAI avec appel d'outils (crédits partenaire) ; un modèle rapide et peu cher pour
+l'agent ; JSON Schema pour décrire les outils ; modules existants (`rules/`, `report.cost`, `proof.extract`,
+`proof.replay`, `gateway.mirror`, bloc M) ; pytest avec un faux LLM scripté.
+
+| Sous-tâche | Contenu | ★ | Temps |
 |---|---|---|---|
-| D1.3 | Anthropic et Gemini | Alexandre | conflit à résoudre avec main (consignes données), puis fusion |
-| D2.4 | R5 boucle + R6 agent inutile | Thibaud | relu, à passer de brouillon à prêt |
-| D4.2 | Installation dix minutes | Codex (Natan) | en cours |
-| D4.3 | Mode miroir | Alexandre après D1.3 | à partir du code du court-circuit (D3.3) |
-| D4.4 | Test par un tiers | Natan trouve le testeur | dimanche ~15 h 30 |
+| A1.1 Outils | Emballer l'existant en outils à réponses courtes : `lister_apps`, `lancer_regles`, `detail_constat` (extraits tronqués), `extraire_regles`, `rejouer`, `stats_miroir`, `alternatives_modele` (bloc M), `publier_plan` | ★★ | 1 h 30 |
+| A1.2 Boucle | Appel d'outils en boucle, budget (25 appels d'outil maximum), condition d'arrêt, deux tentatives maximum par constat refusé | ★★★ | 2 h |
+| A1.3 Garde-fous | Aucun chiffre inventé : chaque nombre du texte doit sortir d'un résultat d'outil (vérification automatique, sinon on régénère). Coût de l'audit affiché. Décider **avec quelle clé tourne l'agent** : celle du client (ses données restent chez son fournisseur) ou la nôtre | ★★★★ | 1 h |
+| A1.4 Journal | Section « Comment l'agent a mené l'audit » dans le rapport : étapes, outils appelés, décisions, avec un journal JSON | ★★ | 1 h |
+| A1.5 Intégration et tests | `make audit` passe par l'agent quand une clé est disponible, sinon rapport déterministe comme aujourd'hui ; tests hors ligne avec un faux LLM ; évaluation sur le jeu D0.3 (l'agent doit prioriser mail-triage) | ★★★ | 1 h 30 |
 
-## Les lots
+**Risques** : chiffres inventés (A1.3), non-déterminisme (tests avec un faux LLM), données client envoyées au
+modèle de l'agent (A1.3), coût et durée de l'audit.
 
-Difficulté comme en v1 : ★ mécanique → ★★★★★ on ne sait pas encore faire.
+## B1 — Import de l'historique n8n · ★★★★ · 6 h
 
-### Lot A — Éligibilité : un agent qui audite les agents (samedi, priorité 1)
+**Pourquoi** : un fichier de workflow ne contient aucun trafic. L'historique des exécutions, lui, contient les
+vrais appels, en vrai volume. La détection reste indépendante de n8n (la passerelle ne change pas) : B1 est un
+**importeur**, une deuxième source d'événements.
 
-- **A1 — Agent auditeur** · 3 h · ★★★. Un agent LLM (OpenAI, tool calling) qui orchestre l'audit : il a pour
-  outils `lister_apps`, `lancer_regle`, `extraire_regles`, `rejouer`, `alternatives_modele`, `ecrire_rapport` ;
-  il décide quels constats méritent une preuve, lance le rejeu, lit le verdict, et rédige les recommandations
-  en langage clair. Les chiffres restent calculés par le code, jamais par le modèle. Fin : `make audit` passe
-  par l'agent, et son raisonnement (étapes, outils appelés) apparaît dans le rapport.
-- **A2 — Section « Construit pendant le hackathon »** · 30 min · ★. README : ce qui vient du prototype du 12/09
-  (lecture n8n, entropie, rejeu n8n) et ce qui a été fait ce weekend (passerelle, capture, traces, six règles,
-  rejeu, court-circuit, rapport, installation). Fin : relu par les quatre.
-- **A3 — Inscriptions** · 15 min · non dev. Les quatre sont membres X-IA à jour et déclarés dans la même équipe
-  sur Luma. Fin : capture d'écran dans le fil de l'équipe.
+**Stack** : Python ; API publique n8n v1 (`GET /api/v1/executions?workflowId=…&includeData=true`, pagination par
+curseur, en-tête `X-N8N-API-KEY`) ; JSON de workflow n8n (nœuds, connexions `ai_languageModel` et `ai_tool`) ;
+schéma d'événement ; reprise de `detector/scan.py` (prototype), qui savait déjà trouver le modèle d'un nœud.
 
-### Lot B — Vrais workflows (samedi soir → dimanche midi, 30 % de la note)
+| Sous-tâche | Contenu | ★ | Temps |
+|---|---|---|---|
+| B1.1 Récupération | Une commande que **le client lance chez lui** (`python -m importers.n8n fetch --url … --workflow …`, clé en variable d'environnement) : elle écrit un fichier d'exécutions, qu'il peut auditer lui-même ou nous envoyer. Pagination, limite, reprise | ★★ | 1 h |
+| B1.2 Conversion | Workflow + exécutions → événements : trouver les nœuds LLM et leur sous-nœud modèle (fournisseur, modèle) ; dans `runData` du sous-nœud : messages envoyés, texte rendu, jetons (`tokenUsage`), heure, durée ; appels d'outils de l'agent (pour R5 et R6) ; `app_id` = workflow et nœud ; **`trace.id` = identifiant d'exécution** (regroupement exact, meilleur que la déduction de D1.4) ; erreurs | ★★★★ | 3 h |
+| B1.3 Taux de compréhension | Ce qu'on n'a pas su lire : nœuds ignorés, appels sans jetons, modèles inconnus. Un chiffre « X % des appels LLM du workflow compris » dans le rapport | ★★ | 1 h |
+| B1.4 Confidentialité | Dossier `private/` ignoré par git, option d'anonymisation (emails, téléphones) avant analyse, suppression après | ★★ | 30 min |
+| B1.5 Tests | Extrait anonymisé du vrai workflow en jeu de test, résultat attendu figé | ★★ | 30 min |
 
-Trois cas selon ce qu'on reçoit ; on prépare les trois.
+**Risques** : l'instance n'enregistre pas les exécutions réussies (réglage n8n) ou les a purgées — **à vérifier
+en premier** ; selon la version du nœud, les jetons ne sont pas toujours stockés ; formats qui varient d'une
+version de nœud à l'autre ; gros volumes ; données sensibles.
 
-- **B1 — Banc n8n** · 2 h · ★★★. n8n local (docker) dont les identifiants OpenAI pointent vers la passerelle.
-  On importe un export de workflow, on le lance sur N entrées d'exemple, le trafic est capturé. Fin : un
-  workflow n8n importé produit un rapport sans modifier le workflow.
-- **B2 — Convertisseur de logs** · 1 h · ★★. Export d'appels (JSON, CSV : prompt, réponse, modèle, date,
-  jetons) → événements au schéma. Fin : un export réel donne un rapport.
-- **B3 — Analyse workflow 1, puis 2** · 1 h 30 chacun · ★★★. Audit, lecture critique des constats
-  (vrais / faux positifs), fiche d'une page : coût actuel, coût après, latence, ce qu'on propose. Fin : fiche
-  validée par l'entreprise ou au moins relue par nous quatre.
-- **B4 — Trouver un 3ᵉ workflow** · 1 h · non dev. Modèles publics n8n/Make en marketing (tri de leads,
-  personnalisation d'emails, réponse aux avis), ou une entreprise du réseau. Fin : un workflow de plus en main.
-- **B5 — Confidentialité** · 30 min · ★. Dossier `private/` ignoré par git, données effacées après le test,
-  engagement écrit envoyé aux entreprises. **Aucun prompt client sur GitHub.**
+## M — Catalogue et recommandations · gros bloc, 9 h au total
 
-### Lot C — Au-delà des LLM : les autres outils du workflow (dimanche matin)
+M1 fournit les données, M2 décide. Pour le weekend, on peut s'arrêter à la version courte (★ ci-dessous).
 
-Un workflow marketing appelle aussi de la recherche web, du scraping, de l'enrichissement, de l'envoi d'emails.
-Ce sont souvent eux qui coûtent ou qui ralentissent.
+### M1 — Catalogue · ★★★ · 4 h
 
-- **C1 — Relais HTTP générique** · 2 h · ★★★. La passerelle relaie n'importe quelle API outil
-  (`/x/<hôte>/…`) et mesure appels, latence, erreurs, doublons, sans jamais stocker les clés. Fin : un appel
-  Tavily ou Firecrawl relayé apparaît dans les événements.
-- **C2 — Constats outils** · 1 h 30 · ★★. Même requête payée plusieurs fois, appels en série qui pourraient
-  être en parallèle, taux d'erreur, coût par appel (catalogue de prix des outils). Fin : un constat outil dans le
-  rapport, chiffré.
+**Stack** : Python ; API OpenRouter (prix et contexte, déjà branchée : `make prices`) ; API Artificial Analysis
+(indice de qualité, jetons/s, délai du premier jeton ; clé gratuite) ; tables JSON versionnées dans `fixtures/`.
 
-### Lot M — Catalogue de modèles et recommandations (samedi soir)
+| Sous-tâche | Contenu | ★ | Temps | Weekend |
+|---|---|---|---|---|
+| M1.1 Origine et hébergement | `fixtures/providers.json` : pour chaque éditeur (préfixe OpenRouter) le pays, l'hébergement UE possible, l'option souveraine, la source et la date. Environ 30 lignes, tirées de `docs/research/modeles.md` | ★ | 1 h | oui |
+| M1.2 Qualité et vitesse | Artificial Analysis → indice de qualité, vitesse, premier jeton ; table de correspondance des noms avec OpenRouter (le plus pénible) ; cache daté | ★★★ | 2 h | si le temps |
+| M1.3 Latence observée | Latence p50/p95 par modèle mesurée chez le client, depuis ses propres événements | ★ | 30 min | oui |
+| M1.4 Rafraîchissement | `make catalog`, tests | ★ | 30 min | oui |
 
-- **M1 — Catalogue** · 1 h 30 · ★★. Un fichier de données versionné : prix entrée/sortie/cache, latence (TTFT,
-  jetons/s), indicateur de qualité, fenêtre de contexte, **origine (FR/UE/US/CN) et hébergement UE possible**,
-  compatibilité API OpenAI, avec la source et la date de chaque chiffre. Fin : chaque modèle du jeu de données
-  y figure.
-- **M2 — Recommandations concrètes** · 2 h · ★★★. R2 (modèle surdimensionné) et le rapport proposent une
-  alternative précise avec son gain en coût et en latence, et une **option souveraine** (Mistral, hébergement
-  UE) quand elle existe. Fin : chaque constat R2 affiche « passer de X à Y : −N % de coût, origine ».
+### M2 — Recommandations · ★★★★ · 5 h
 
-### Lot E — Partenaires (dimanche, si A et B sont bouclés)
+**À quoi ça sert** : R2 propose déjà un modèle moins cher **de la même famille**. M2 ajoute les autres
+fournisseurs, un garde-fou qualité et l'option souveraine. **Quand c'est nécessaire** : si le pitch porte sur la
+souveraineté, ou si les vrais workflows utilisent des modèles sans petit frère au catalogue.
 
-- **E1 — Export Pipelex** · 2 h · ★★★★. Le remplacement prouvé (règles + modèle de secours) exporté en
-  pipeline Pipelex : c'est exactement leur promesse, des workflows agentiques déterministes. Fin : le pipeline
-  exporté tourne dans Pipelex sur l'exemple mail-triage.
-- **E2 — Résumé vocal Gradium** · 1 h · ★. Le rapport lu en 30 secondes. Utile dans la vidéo, sinon à couper.
-- **E3 — Agent Dust** · 1 h 30 · ★★. Poser des questions à son audit depuis Dust. Le moins prioritaire.
+| Sous-tâche | Contenu | ★ | Temps | Weekend |
+|---|---|---|---|---|
+| M2.1 Moteur | Candidats moins chers, capacités compatibles (outils, JSON, contexte ≥ plus gros prompt observé, images), qualité suffisante pour la tâche ; trois options : moins cher, meilleur compromis, souverain | ★★★ | 2 h | oui |
+| M2.2 Preuve | Rejouer un échantillon avec le modèle proposé (chemin « modèle de secours » de D3.2, clé du client) ; sinon « non prouvé » | ★★★★ | 2 h | non |
+| M2.3 Rendu | Dans le rapport, et comme outil `alternatives_modele` de l'agent A1 | ★★ | 1 h | oui |
 
-### Lot Q — Tests
+## B3 — Premier workflow : plan d'analyse et de test
 
-- **Q1 — Test de bout en bout en CI** · 1 h · ★★. `make demo` (faux serveur amont → passerelle → rapport)
-  lancé à chaque PR. Fin : la CI casse si le parcours d'installation casse.
-- **Q2 — Tests dorés sur les vrais workflows** · 1 h · ★★. Chaque workflow analysé devient un cas de test
-  anonymisé : constats attendus, faux positifs interdits. Fin : un workflow réel dans les tests.
-- **Q3 — Test par un tiers (D4.4)** · 2 h · non dev. Voir le protocole plus bas.
+But : savoir si notre système comprend tout le workflow, ce qu'il propose de modifier, et s'il a raison.
 
-### Lot V — Démo et dépôt (dimanche)
+1. **Réception** (15 min) — fichier dans `private/` ; format : workflow seul, ou avec ses exécutions ? taille,
+   nombre de nœuds.
+2. **Cartographie à la main, avant tout outil** (30 min) — nœuds, nœuds LLM, modèles, outils, sous-workflows,
+   déclencheurs ; schéma de la chaîne. **On écrit nos hypothèses** : ce qu'un expert changerait ici. C'est
+   la référence pour juger le système.
+3. **Données** (15 min) — des exécutions existent-elles ? combien, sur quelle période ? Sinon : demander
+   d'activer l'enregistrement des exécutions, ou le faire tourner sur des exemples (option de secours).
+4. **Conversion (B1)** — contrôles : nombre d'événements = nombre d'appels LLM dans les exécutions ; 100 %
+   conformes au schéma ; part des appels avec jetons ; part des modèles chiffrés ; **taux de compréhension**.
+5. **Audit** — six règles, chiffrage, rapport ; puis l'agent A1 dès qu'il existe.
+6. **Revue humaine** (45 min) — chaque constat : vrai ou faux positif ? Ce qu'on a manqué (faux négatifs) :
+   ce sont les prochaines règles. Comparaison avec les hypothèses de l'étape 2.
+7. **Preuve** — pour les nœuds qui classent : extraction des règles, rejeu, verdict.
+8. **Fiche d'une page** pour l'entreprise, et son retour : valident-ils ?
 
-- **V1 — Script de la vidéo** · 1 h · non dev. 2 minutes, structure proposée :
-  0:00 le problème (on paie des modèles haut de gamme pour trier des mails) ·
-  0:20 une ligne changée (`base_url`) · 0:35 l'agent auditeur au travail ·
-  1:00 le rapport sur un vrai workflow, chiffres · 1:30 la preuve par le rejeu et le court-circuit ·
-  1:50 l'appel à l'action.
-- **V2 — Tournage et montage** · 2 h · non dev. Samedi soir pour les plans d'écran, dimanche pour le montage.
-- **V3 — Description et README final** · 30 min · ★. Description de quelques lignes, instructions de test,
-  noms des quatre, section A2.
-- **V4 — Dépôt** · 15 min. **Dimanche 20 h**, jamais après 22 h.
+**Critères de réussite** : ≥ 90 % des appels LLM convertis ; 100 % conformes au schéma ; ≥ 95 % chiffrés ;
+chaque constat revu ; aucun faux positif grave ; liste écrite des manques. L'extrait anonymisé devient un test.
 
 ## Planning
 
-| | Samedi 14 h – 20 h | Dimanche 10 h – 14 h | Dimanche 14 h – 20 h |
+| | Samedi 16 h – 21 h | Dimanche 10 h – 14 h | Dimanche 14 h – 20 h |
 |---|---|---|---|
-| **Natan** | orchestration, relectures ; B4, B5, A3 ; testeur D4.4 | B3 avec l'équipe ; V1 | D4.4 (observer) ; V2, V3, V4 |
-| **Hugo** | **A1 agent auditeur** | E1 Pipelex | corrections après D4.4 |
-| **Thibaud** | D2.4 prête ; **B1 banc n8n** | C1, C2 | gel, relectures |
-| **Alexandre** | D1.3 fusionné ; D4.3 miroir | M1, M2 catalogue | E2 si le temps |
-| **Codex** | D4.2 | Q1 | — |
-| **Claude** | relectures et fusions ; B2 convertisseur | Q2 ; A2 | relecture finale du README |
+| **Natan** | B3 étapes 1-3 (cartographie, hypothèses) ; testeur D4.4 ; vrai trafic OpenAI | B3 revue ; V1 | D4.4 ; V2, V3, V4 ; A3 |
+| **Hugo** | **A1.1, A1.2** | A1.3, A1.4, A1.5 | corrections après D4.4 |
+| **Thibaud** | **B1.1, B1.2** | B1.3, B1.4, B1.5 ; B3 étapes 4-7 | gel, relectures |
+| **Alexandre** | M1.1, M1.3, M1.4 | M2.1, M2.3 | M1.2 si le temps |
+| **Codex** | Q1 | — | — |
+| **Claude** | relectures, fusions ; aide B1.2 et A1.5 | aide B3 ; A2 | relecture finale du README |
 
-**Gel dimanche 14 h** : plus de nouvelle fonctionnalité. Ensuite, corrections, D4.4, vidéo et dépôt.
+**Gel dimanche 14 h** : plus de nouvelle fonctionnalité. Ensuite, corrections, D4.4, vidéo et dépôt (20 h).
 
 ## Ordre de coupe si on déborde
 
-1. E3, puis E2, puis E1 (partenaires).
-2. C2, puis C1 (outils hors LLM) — on les garde pour la finale.
-3. M2 (on garde le catalogue M1 dans le rapport).
-4. B3 sur le 2ᵉ et le 3ᵉ workflow — un seul vrai workflow bien analysé suffit.
+1. M1.2, puis M2.2 (déjà hors weekend), puis M2.1 et M2.3 (R2 suffit).
+2. A1.4 (le journal) — mais jamais A1.1 à A1.3 : sans agent, pas d'éligibilité.
+3. B1.3 et B1.5 — on garde la conversion et un vrai workflow analysé.
 
-**On ne coupe jamais A1, A2, un vrai workflow (B3), D4.4, la vidéo et le dépôt.**
+**On ne coupe jamais A1 (hors A1.4), B1.1-B1.2, B3 sur un workflow, A2, A3, D4.4, la vidéo et le dépôt.**
 
 ## D4.4 — protocole du test par un tiers
 
