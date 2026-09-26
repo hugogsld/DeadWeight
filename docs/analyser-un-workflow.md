@@ -39,7 +39,7 @@ avec l'étape, le service, le montant. Le `costs.jsonl` de Miguel en est un bon 
 | Connecteur | Niveau atteint | Pour qui | État |
 |---|---|---|---|
 | **Passerelle** (`base_url`) | 3, en direct | toute application codée | fait |
-| **OpenTelemetry** (conventions GenAI) | 1 par défaut, 2 si le client active la capture du contenu, 3 par les spans | LangChain, SDK d'agents OpenAI, Vercel AI, LiteLLM, Langfuse… un seul connecteur pour des dizaines de frameworks | en cours (Natan + Claude) |
+| **OpenTelemetry** (conventions GenAI) | 1 par défaut, 2 si le client active la capture du contenu, 3 par les spans | LangChain, SDK d'agents OpenAI, Vercel AI, LiteLLM, Langfuse… un seul connecteur pour des dizaines de frameworks | fait : import de fichier et réception en direct (`/v1/traces`, JSON) ; le signal « logs » reste à lire |
 | **Journaux Claude Code et Codex** | 3 | équipes qui automatisent avec ces outils | à faire (Alexandre), premier cas : Miguel |
 | **Historique n8n** | 2 à 3 selon les nœuds | workflows no-code | à faire (Alexandre), après Claude Code |
 | **Exports d'usage des fournisseurs** | 1 | tout le monde : premier diagnostic sans rien installer | après le weekend |

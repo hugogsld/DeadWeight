@@ -132,6 +132,23 @@ dans le repo **[Workflow-test-hackathon-agentique-25-09-2026](https://github.com
 
 Ce que chaque test a donné, et les problèmes à corriger : [docs/retours-tests-workflows.md](docs/retours-tests-workflows.md).
 
+## OpenTelemetry
+
+Vos agents sont déjà instrumentés avec OpenTelemetry (LangChain, SDK d'agents OpenAI, Vercel AI, LiteLLM,
+Langfuse…) ? Deux façons de les auditer, sans rien changer à votre code :
+
+    # 1. un export de traces (OTLP/JSON)
+    .venv/bin/python -m connectors.otel traces.json -o out/otel-events.jsonl
+    .venv/bin/python -m agent.audit out/otel-events.jsonl -o out/audit.html
+
+    # 2. en direct : ajoutez la passerelle comme destination de vos traces
+    OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://127.0.0.1:8080/v1/traces
+    OTEL_EXPORTER_OTLP_PROTOCOL=http/json
+
+Par défaut, OpenTelemetry transmet l'usage (modèles, jetons, durées) et l'enchaînement des appels : on
+chiffre et on repère des pistes. Pour les preuves (rejeu, banc de modèles), activez la capture du contenu
+dans votre instrumentation. Méthode : `docs/analyser-un-workflow.md`.
+
 ## Prix des modèles
 
 Les coûts viennent de `fixtures/pricing.json`, le catalogue public d'OpenRouter (prix d'entrée,
