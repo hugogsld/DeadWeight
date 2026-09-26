@@ -10,7 +10,7 @@ Comment apparaître dans le tableau : créer une issue dont le titre commence pa
 Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépendent.
 
 <!-- STATUT:DEBUT -->
-**6 / 17 livrables du plan de base faits** (18 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:43.
+**7 / 17 livrables du plan de base faits** (21 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:44.
 
 | Id | Livrable | Durée | Dépend de | Statut | Qui | Issue / PR |
 |---|---|---|---|---|---|---|
@@ -22,7 +22,7 @@ Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépend
 | D1.3 | Anthropic et Gemini | 4 h | D1.1 | Bloqué (attend D1.1) | — | — |
 | D1.4 | Regroupement par trace | 3 h | D1.2 | Bloqué (attend D1.2) | — | — |
 | D2.1 | R1 entropie | 2 h | D0.3 | **Fait** | Natanlsr3, claude | #7 · PR #9 |
-| D2.2 | R2 modèle surdimensionné | 3 h | D0.3 | **En relecture** | Natanlsr3, claude | #17 · PR #18 |
+| D2.2 | R2 modèle surdimensionné | 3 h | D0.3 | **Fait** | Natanlsr3, claude | #17 · PR #18 |
 | D2.3 | R3 contexte brut + R4 absence de cache | 3 h | D0.3 | **Fait** | Natanlsr3, codex | #8 · PR #15 |
 | D2.4 | R5 boucle + R6 agent inutile | 5 h | D0.3, D1.4 | Bloqué (attend D1.4) | — | — |
 | D2.5 | Chiffrage coût et latence | 3 h | D0.1 | **Fait** | Natanlsr3 | #4 · PR #6 |
