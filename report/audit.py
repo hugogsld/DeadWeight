@@ -215,12 +215,18 @@ def _alternatives(options):
     for (name, host), (o, labels) in by_route.items():
         where = (f"via {host}, {ue.get(o['hebergement_ue'], 'hébergement UE non vérifié')}" if host
                  else "au prix du moins cher des hébergeurs, hébergement non garanti")
-        factor = f", ×{o['facteur']} moins cher" if o["facteur"] else ""
+        measured = (o.get("banc") or {}).get("facteur_mesure")
+        monthly = o["cout_mensuel_usd"]
+        if measured:  # le banc a mesuré les vrais jetons (réflexion comprise) : ce sont ces chiffres qui comptent
+            monthly = (o["cout_mensuel_usd"] + o["economie_usd"]) / measured  # coût actuel ÷ facteur mesuré
+            factor = f", ×{measured} moins cher mesuré au banc (estimation ×{o['facteur']})"
+        else:
+            factor = f", ×{o['facteur']} moins cher" if o["facteur"] else ""
         caveat = (" <i>Modèle à raisonnement : jetons de réflexion non comptés, coût sous-estimé.</i>"
                   if o["raisonnement"] and not o.get("banc") else "")
         items.append(f"<li>{html.escape(' et '.join(labels))} : <b>{html.escape(name)}</b> "
                      f"({html.escape(o['pays'] or '?')}, {html.escape(where)}) — "
-                     f"{_usd(o['cout_mensuel_usd'])} par mois{factor}.{caveat}{_bench_verdict(o.get('banc'))}</li>")
+                     f"{_usd(monthly)} par mois{factor}.{caveat}{_bench_verdict(o.get('banc'))}</li>")
     tested = all(o.get("banc") for o, _ in by_route.values())
     quality = ("qualité mesurée au banc sur votre trafic" if tested
                else "qualité non prouvée : à tester au banc avant de changer")

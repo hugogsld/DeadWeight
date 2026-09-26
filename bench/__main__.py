@@ -85,6 +85,8 @@ def main(argv=None):
     opt.add_argument('--max-calls', type=int, default=None)
     opt.add_argument('--min-interval', type=float, default=DEFAULT_MIN_INTERVAL_S)
     opt.add_argument('--dry-run', action='store_true')
+    opt.add_argument('--options', default=None,
+                     help='options a tester, separees par des virgules (moins_cher,meilleur_compromis,souverain)')
     opt.add_argument('--out', default='out/banc', help='dossier ou ecrire banc-<finding>.json (lu par le rapport)')
     args = ap.parse_args(argv)
     if args.command == 'm2':
@@ -124,15 +126,16 @@ def _m2(args):
     if finding is None:
         print(f"{args.finding} : aucun constat « modele trop gros » de ce nom", file=sys.stderr)
         return 1
+    keys = set(args.options.split(',')) if args.options else None
     if args.dry_run:
-        plan = m2.dry_run(events, finding, args.max_cases)
+        plan = m2.dry_run(events, finding, args.max_cases, keys=keys)
         print(f"{plan['n_cases']} cas de test, aucun appel effectue")
         for key, p in plan['options'].items():
             cost = p['estimated_cost_usd']
             print(f"  {key:20} {p['model']:45} via {p['route'] or 'le moins cher'}  "
                   f"{'~%.4f $' % cost if cost is not None else p['note']}")
         return 0
-    result = m2.prove(events, finding, args.max_cases, args.max_calls, args.min_interval)
+    result = m2.prove(events, finding, args.max_cases, args.max_calls, args.min_interval, keys=keys)
     if result['raison']:
         print(f"aucune option a tester : {result['raison']}")
     for key, r in result['options'].items():

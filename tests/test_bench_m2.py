@@ -38,7 +38,7 @@ def fake_client(answers, wrong=()):
     seen = []
 
     class Client:
-        def __init__(self, base_url, api_key, model, route=None):
+        def __init__(self, base_url, api_key, model, route=None, max_tokens=None):
             self.model, self.route = model, route
 
         def complete(self, messages):
@@ -102,3 +102,53 @@ def test_cli_dry_run_calls_nothing(capsys):
 
 def test_cli_unknown_finding(capsys):
     assert main(["m2", str(DATASET), "--finding", "inconnu"]) == 1
+
+
+def test_only_requested_options_are_tested(events, finding):
+    Client, seen = fake_client(answers(events, finding))
+    result = m2.prove(events, finding, max_cases=5, client_cls=Client, keys={"moins_cher"})
+    assert set(result["options"]) == {"moins_cher"} and len(seen) == 5
+    page = render_html(build_report(events, banc={FINDING: result}))
+    assert "qualité non prouvée : à tester au banc" in page  # les options non testées restent non prouvées
+
+
+def test_all_calls_failing_is_not_a_quality_verdict(events, finding):
+    class Refused:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def complete(self, messages):
+            return CallResult(None, 60.0, None, None, "http_402")
+    result = m2.prove(events, finding, max_cases=5, client_cls=Refused, keys={"moins_cher"})
+    option = result["options"]["moins_cher"]
+    assert option["verdict"] == "not_tested" and option["score"] is None
+    assert "Banc : non testé" in render_html(build_report(events, banc={FINDING: result}))
+
+
+def test_candidates_get_an_output_cap(events, finding):
+    group = [e for e in events if e["event_id"] in set(finding["event_ids"])]
+    opts = recommend(group)["options"]
+    assert m2.candidate_for("meilleur_compromis", opts["meilleur_compromis"]).max_tokens == m2.MAX_TOKENS_REASONING
+    assert m2.candidate_for("souverain", opts["souverain"]).max_tokens == m2.MAX_TOKENS
+
+
+def test_accents_do_not_make_a_different_label():
+    from bench.scoring import score_case
+    assert score_case("classification", "Négatif", "negatif") == 1.0  # vu au banc réel (claude-haiku)
+    assert score_case("classification", "Étiquette : spam", "spam") == 0.0  # le format, lui, compte
+
+
+def test_measured_factor_replaces_the_estimate(events, finding):
+    class Thinker:  # répond juste, mais facture 300 jetons de réflexion
+        def __init__(self, *args, **kwargs):
+            self.answers = answers(events, finding)
+
+        def complete(self, messages):
+            return CallResult(self.answers[json.dumps(list(messages))], 5.0, 62, 302, None)
+    result = m2.prove(events, finding, max_cases=10, client_cls=Thinker, keys={"meilleur_compromis"})
+    option = result["options"]["meilleur_compromis"]
+    estimate = recommend([e for e in events if e["event_id"] in set(finding["event_ids"])])["options"][
+        "meilleur_compromis"]["facteur"]
+    assert option["facteur_mesure"] < estimate / 5
+    page = render_html(build_report(events, banc={FINDING: result}))
+    assert f"×{option['facteur_mesure']} moins cher mesuré au banc (estimation ×{estimate})" in page

@@ -16,6 +16,7 @@ class Candidate:
     origin: str  # FR | EU | US | CN
     note: str
     route: Optional[str] = None  # hébergeur OpenRouter imposé, sans repli (ex. « Mistral ») : on teste cette route
+    max_tokens: Optional[int] = None  # limite de sortie ; sans elle, OpenRouter réserve le maximum du modèle (402)
 
 
 @dataclass(frozen=True)
