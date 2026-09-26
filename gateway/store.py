@@ -4,7 +4,7 @@ La passerelle dépose chaque événement dans une file (``put`` ne bloque jamais
 un thread d'écriture les vide par lots dans SQLite. La base reste chez le client.
 
     python -m gateway.store count                 # nombre d'événements
-    python -m gateway.store export > events.jsonl # pour report.audit
+    python -m gateway.store export > events.jsonl # pour report.audit, traces regroupées (D1.4)
 """
 import argparse
 import json
@@ -14,6 +14,8 @@ import queue
 import sqlite3
 import sys
 import threading
+
+from gateway.traces import assign_traces
 
 log = logging.getLogger("deadweight.store")
 
@@ -129,13 +131,15 @@ def main():
     ap.add_argument("command", choices=["count", "export"])
     ap.add_argument("--db", default=DEFAULT_PATH)
     ap.add_argument("--app", help="filtrer sur un app_id")
+    ap.add_argument("--raw", action="store_true", help="export sans regroupement en traces")
     args = ap.parse_args()
     if not os.path.exists(args.db):
         sys.exit(f"{args.db} introuvable : lancer la passerelle d'abord (python -m gateway)")
     if args.command == "count":
         print(count(args.db, args.app))
     else:
-        for event in read_events(args.db, args.app):
+        events = read_events(args.db, args.app)
+        for event in (events if args.raw else assign_traces(events)):
             sys.stdout.write(json.dumps(event, ensure_ascii=False) + "\n")
 
 
