@@ -3,2748 +3,5432 @@
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "aion-labs/aion-3.0": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "aion-labs/aion-3.0-mini": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "aion-labs/aion-3.5": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "aion-labs/aion-3.5-mini": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "aion-labs/aion-rp-llama-3.1-8b": {
   "contexte": 32768,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "amazon/nova-2-lite-v1": {
   "contexte": 1000000,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "amazon/nova-lite-v1": {
   "contexte": 300000,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "amazon/nova-micro-v1": {
   "contexte": 128000,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "amazon/nova-premier-v1": {
   "contexte": 1000000,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "amazon/nova-pro-v1": {
   "contexte": 300000,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "anthracite-org/magnum-v4-72b": {
   "contexte": 32768,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "anthropic/claude-fable-5": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 10.0,
+   "json": true,
+   "out": 50.0,
+   "outils": true
+  }
  },
  "anthropic/claude-fable-5.1": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 10.0,
+   "json": true,
+   "out": 50.0,
+   "outils": true
+  }
  },
  "anthropic/claude-fable-5.1:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 25.0,
+   "outils": true
+  }
  },
  "anthropic/claude-fable-5:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 25.0,
+   "outils": true
+  }
  },
  "anthropic/claude-haiku-4.5": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "anthropic/claude-haiku-4.5:batch": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 0.5,
+   "json": true,
+   "out": 2.5,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-4.1": {
   "contexte": 200000,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "anthropic/claude-opus-4.1:batch": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 7.5,
+   "json": true,
+   "out": 37.5,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-4.5": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 25.0,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-4.5:batch": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 12.5,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-4.6": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 25.0,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-4.6:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 12.5,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-4.7": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 25.0,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-4.7:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 12.5,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-4.8": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 10.0,
+   "json": true,
+   "out": 50.0,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-4.8:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 12.5,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-5": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 10.0,
+   "json": true,
+   "out": 50.0,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-5.5": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 8.0,
+   "json": true,
+   "out": 40.0,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-5.5:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 2.0,
+   "json": true,
+   "out": 10.0,
+   "outils": true
+  }
  },
  "anthropic/claude-opus-5:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 12.5,
+   "outils": true
+  }
  },
  "anthropic/claude-sonnet-4": {
   "contexte": 200000,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "anthropic/claude-sonnet-4.5": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 3.0,
+   "json": true,
+   "out": 15.0,
+   "outils": true
+  }
  },
  "anthropic/claude-sonnet-4.5:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 1.5,
+   "json": true,
+   "out": 7.5,
+   "outils": true
+  }
  },
  "anthropic/claude-sonnet-4.6": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 3.0,
+   "json": true,
+   "out": 15.0,
+   "outils": true
+  }
  },
  "anthropic/claude-sonnet-4.6:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 1.5,
+   "json": true,
+   "out": 7.5,
+   "outils": true
+  }
  },
  "anthropic/claude-sonnet-5": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 2.0,
+   "json": true,
+   "out": 10.0,
+   "outils": true
+  }
  },
  "anthropic/claude-sonnet-5:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Anthropic",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "arcee-ai/trinity-large-thinking": {
   "contexte": 262144,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "baidu/ernie-4.5-vl-424b-a47b": {
   "contexte": 123000,
   "images": true,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "bytedance-seed/seed-1.6": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "bytedance-seed/seed-1.6-flash": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "bytedance-seed/seed-2-1-turbo": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "bytedance-seed/seed-2.0-code": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "bytedance-seed/seed-2.0-lite": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "bytedance-seed/seed-2.0-mini": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "bytedance/ui-tars-1.5-7b": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "cognitivecomputations/dolphin-mistral-24b-venice-edition": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "cohere/command-a": {
   "contexte": 256000,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "cohere/command-a-plus": {
   "contexte": 192000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "cohere/command-r-08-2024": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "cohere/command-r-plus-08-2024": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "cohere/command-r7b-12-2024": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "cohere/north-mini-code:free": {
   "contexte": 256000,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-chat": {
   "contexte": 163840,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "deepseek/deepseek-chat-v3-0324": {
   "contexte": 163840,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "deepseek/deepseek-chat-v3.1": {
   "contexte": 163840,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-r1": {
   "contexte": 64000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-r1-0528": {
   "contexte": 163840,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-r1-distill-llama-70b": {
   "contexte": 8192,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-v3.1-terminus": {
   "contexte": 163840,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-v3.2": {
   "contexte": 163840,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-v3.2-exp": {
   "contexte": 163840,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-v4-flash": {
   "contexte": 1048576,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-v4-flash-0731": {
   "contexte": 1310720,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-v4-flash-vision-exp": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-v4-pro": {
   "contexte": 1048576,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "deepseek/deepseek-v4-pro-0813": {
   "contexte": 1048576,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "DeepSeek",
+   "images": false,
+   "in": 0.66,
+   "json": true,
+   "out": 1.98,
+   "outils": true
+  }
  },
  "deepseek/deepseek-v4.1-flash": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "DeepSeek",
+   "images": true,
+   "in": 0.15,
+   "json": true,
+   "out": 0.6,
+   "outils": true
+  }
  },
  "deepseek/deepseek-v4.1-flash:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "dots-studio/dots-3-note-preview:free": {
   "contexte": 512000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "fireworks/ember-1": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "google/gemini-2.5-flash": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.54,
+   "json": true,
+   "out": 4.5,
+   "outils": true
+  }
  },
  "google/gemini-2.5-flash-image": {
   "contexte": 32768,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 32768,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.54,
+   "json": true,
+   "out": 4.5,
+   "outils": false
+  }
  },
  "google/gemini-2.5-flash-lite": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.18,
+   "json": true,
+   "out": 0.72,
+   "outils": true
+  }
  },
  "google/gemini-2.5-flash-lite:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.05,
+   "json": true,
+   "out": 0.2,
+   "outils": true
+  }
  },
  "google/gemini-2.5-flash:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.15,
+   "json": true,
+   "out": 1.25,
+   "outils": true
+  }
  },
  "google/gemini-2.5-pro": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 2.25,
+   "json": true,
+   "out": 18.0,
+   "outils": true
+  }
  },
  "google/gemini-2.5-pro-preview": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 2.25,
+   "json": true,
+   "out": 18.0,
+   "outils": true
+  }
  },
  "google/gemini-2.5-pro:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.625,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "google/gemini-3-flash-preview": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.9,
+   "json": true,
+   "out": 5.4,
+   "outils": true
+  }
  },
  "google/gemini-3-flash-preview:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.25,
+   "json": true,
+   "out": 1.5,
+   "outils": true
+  }
  },
  "google/gemini-3-pro-image": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 2.0,
+   "json": true,
+   "out": 12.0,
+   "outils": true
+  }
  },
  "google/gemini-3-pro-image-preview": {
   "contexte": 65536,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 65536,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 2.0,
+   "json": true,
+   "out": 12.0,
+   "outils": false
+  }
  },
  "google/gemini-3.1-flash-image": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 65536,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.5,
+   "json": true,
+   "out": 3.0,
+   "outils": false
+  }
  },
  "google/gemini-3.1-flash-image-preview": {
   "contexte": 65536,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 65536,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.5,
+   "json": true,
+   "out": 3.0,
+   "outils": false
+  }
  },
  "google/gemini-3.1-flash-lite": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.45,
+   "json": true,
+   "out": 2.7,
+   "outils": true
+  }
  },
  "google/gemini-3.1-flash-lite-image": {
   "contexte": 65536,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 65536,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.25,
+   "json": true,
+   "out": 1.5,
+   "outils": false
+  }
  },
  "google/gemini-3.1-flash-lite-preview": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.45,
+   "json": true,
+   "out": 2.7,
+   "outils": true
+  }
  },
  "google/gemini-3.1-flash-lite:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.125,
+   "json": true,
+   "out": 0.75,
+   "outils": true
+  }
  },
  "google/gemini-3.1-pro-preview": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 3.6,
+   "json": true,
+   "out": 21.6,
+   "outils": true
+  }
  },
  "google/gemini-3.1-pro-preview-customtools": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 2.0,
+   "json": true,
+   "out": 12.0,
+   "outils": true
+  }
  },
  "google/gemini-3.1-pro-preview:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 6.0,
+   "outils": true
+  }
  },
  "google/gemini-3.5-flash": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 2.7,
+   "json": true,
+   "out": 16.2,
+   "outils": true
+  }
  },
  "google/gemini-3.5-flash-lite": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.54,
+   "json": true,
+   "out": 4.5,
+   "outils": true
+  }
  },
  "google/gemini-3.5-flash-lite:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.15,
+   "json": true,
+   "out": 1.25,
+   "outils": true
+  }
  },
  "google/gemini-3.5-flash:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.75,
+   "json": true,
+   "out": 4.5,
+   "outils": true
+  }
  },
  "google/gemini-3.6-flash": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 1.35,
+   "json": true,
+   "out": 6.75,
+   "outils": true
+  }
  },
  "google/gemini-3.6-flash:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.375,
+   "json": true,
+   "out": 1.875,
+   "outils": true
+  }
  },
  "google/gemini-3.7-flash": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 1.35,
+   "json": true,
+   "out": 6.75,
+   "outils": true
+  }
  },
  "google/gemini-3.7-flash:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.375,
+   "json": true,
+   "out": 1.875,
+   "outils": true
+  }
  },
  "google/gemini-3.8-flash": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 1.35,
+   "json": true,
+   "out": 6.75,
+   "outils": true
+  }
  },
  "google/gemini-3.8-flash:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.375,
+   "json": true,
+   "out": 1.875,
+   "outils": true
+  }
  },
  "google/gemma-2-27b-it": {
   "contexte": 8192,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "google/gemma-3-12b-it": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "google/gemma-3-27b-it": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "google/gemma-3-4b-it": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "google/gemma-4-26b-a4b-it": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Google",
+   "images": true,
+   "in": 0.15,
+   "json": true,
+   "out": 0.6,
+   "outils": true
+  }
  },
  "google/gemma-4-26b-a4b-it:free": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.0,
+   "json": true,
+   "out": 0.0,
+   "outils": true
+  }
  },
  "google/gemma-4-31b-it": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "google/gemma-4-31b-it:free": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.0,
+   "json": true,
+   "out": 0.0,
+   "outils": true
+  }
  },
  "google/lyria-3-clip-preview": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.0,
+   "json": true,
+   "out": 0.0,
+   "outils": false
+  }
  },
  "google/lyria-3-pro-preview": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1048576,
+   "hebergeur": "Google AI Studio",
+   "images": true,
+   "in": 0.0,
+   "json": true,
+   "out": 0.0,
+   "outils": false
+  }
  },
  "gryphe/mythomax-l2-13b": {
   "contexte": 8192,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "ibm-granite/granite-4.0-h-micro": {
   "contexte": 131000,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "ibm-granite/granite-4.2-8b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "inception/mercury-2": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "inception/mercury-2.5": {
   "contexte": 260000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "inclusionai/ling-3.0-flash": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "inclusionai/ling-3.0-flash-fin": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "inclusionai/ling-3.0-flash-fin:free": {
   "contexte": 262144,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "inclusionai/ling-3.0-flash-sante:free": {
   "contexte": 262144,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "inclusionai/ling-3.0-flash-vl": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "inference-net/schematron-v2-small": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "inference-net/schematron-v2-turbo": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "kwaipilot/kat-coder-pro-v2.5": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "liquid/lfm-2.5-2.6b:free": {
   "contexte": 65536,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "mancer/weaver": {
   "contexte": 8000,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "meituan/longcat-2.0": {
   "contexte": 1048756,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "meta-llama/llama-3.1-70b-instruct": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "meta-llama/llama-3.1-8b-instruct": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "meta-llama/llama-3.2-1b-instruct": {
   "contexte": 60000,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "meta-llama/llama-3.2-3b-instruct": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "meta-llama/llama-3.3-70b-instruct": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "meta-llama/llama-4-maverick": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "meta-llama/llama-4-scout": {
   "contexte": 1310720,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "meta-llama/llama-guard-4-12b": {
   "contexte": 163840,
   "images": true,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "meta/muse-glimmer-30b": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "meta/muse-spark-1.1": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "meta/muse-spark-1.2": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "meta/muse-spark-1.2-contributor": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "meta/muse-spark-1.3": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "meta/muse-spark-1.3-contributor": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "microsoft/phi-4": {
   "contexte": 16384,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "microsoft/wizardlm-2-8x22b": {
   "contexte": 65535,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "minimax/minimax-01": {
   "contexte": 1000192,
   "images": true,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "minimax/minimax-m1": {
   "contexte": 1000000,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "minimax/minimax-m2": {
   "contexte": 204800,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "minimax/minimax-m2-her": {
   "contexte": 65536,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "minimax/minimax-m2.1": {
   "contexte": 204800,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "minimax/minimax-m2.5": {
   "contexte": 204800,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "minimax/minimax-m2.7": {
   "contexte": 204800,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "minimax/minimax-m3": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "mistralai/codestral-2508": {
   "contexte": 256000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 256000,
+   "hebergeur": "Mistral",
+   "images": false,
+   "in": 0.33,
+   "json": true,
+   "out": 0.99,
+   "outils": true
+  }
  },
  "mistralai/codestral-2508:batch": {
   "contexte": 256000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 256000,
+   "hebergeur": "Mistral",
+   "images": false,
+   "in": 0.15,
+   "json": true,
+   "out": 0.45,
+   "outils": true
+  }
  },
  "mistralai/devstral-2512": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": false,
+   "in": 0.4,
+   "json": true,
+   "out": 2.0,
+   "outils": true
+  }
  },
  "mistralai/ministral-14b-2512": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.22,
+   "json": true,
+   "out": 0.22,
+   "outils": true
+  }
  },
  "mistralai/ministral-3b-2512": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.11,
+   "json": true,
+   "out": 0.11,
+   "outils": true
+  }
  },
  "mistralai/ministral-8b-2512": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.165,
+   "json": true,
+   "out": 0.165,
+   "outils": true
+  }
  },
  "mistralai/ministral-8b-2512:batch": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.075,
+   "json": true,
+   "out": 0.075,
+   "outils": true
+  }
  },
  "mistralai/mistral-large": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "Mistral",
+   "images": false,
+   "in": 2.2,
+   "json": true,
+   "out": 6.6,
+   "outils": true
+  }
  },
  "mistralai/mistral-large-2407": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Mistral",
+   "images": false,
+   "in": 2.2,
+   "json": true,
+   "out": 6.6,
+   "outils": true
+  }
  },
  "mistralai/mistral-large-2512": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.55,
+   "json": true,
+   "out": 1.65,
+   "outils": true
+  }
  },
  "mistralai/mistral-large-2512:batch": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.25,
+   "json": true,
+   "out": 0.75,
+   "outils": true
+  }
  },
  "mistralai/mistral-medium-3": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.44,
+   "json": true,
+   "out": 2.2,
+   "outils": true
+  }
  },
  "mistralai/mistral-medium-3-5": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 1.65,
+   "json": true,
+   "out": 8.25,
+   "outils": true
+  }
  },
  "mistralai/mistral-medium-3-5:batch": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.75,
+   "json": true,
+   "out": 3.75,
+   "outils": true
+  }
  },
  "mistralai/mistral-medium-3.1": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.44,
+   "json": true,
+   "out": 2.2,
+   "outils": true
+  }
  },
  "mistralai/mistral-medium-3.1:batch": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.2,
+   "json": true,
+   "out": 1.0,
+   "outils": true
+  }
  },
  "mistralai/mistral-nemo": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Mistral",
+   "images": false,
+   "in": 0.15,
+   "json": true,
+   "out": 0.15,
+   "outils": true
+  }
  },
  "mistralai/mistral-saba": {
   "contexte": 32768,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 32768,
+   "hebergeur": "Mistral",
+   "images": false,
+   "in": 0.22,
+   "json": true,
+   "out": 0.66,
+   "outils": true
+  }
  },
  "mistralai/mistral-small-24b-instruct-2501": {
   "contexte": 32768,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "mistralai/mistral-small-2603": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.165,
+   "json": true,
+   "out": 0.66,
+   "outils": true
+  }
  },
  "mistralai/mistral-small-2603:batch": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.075,
+   "json": true,
+   "out": 0.3,
+   "outils": true
+  }
  },
  "mistralai/mistral-small-3.1-24b-instruct": {
   "contexte": 128000,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "mistralai/mistral-small-3.2-24b-instruct": {
   "contexte": 256000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 32768,
+   "hebergeur": "Mistral",
+   "images": true,
+   "in": 0.1,
+   "json": true,
+   "out": 0.3,
+   "outils": true
+  }
  },
  "mistralai/mixtral-8x22b-instruct": {
   "contexte": 65536,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 65536,
+   "hebergeur": "Mistral",
+   "images": false,
+   "in": 2.2,
+   "json": true,
+   "out": 6.6,
+   "outils": true
+  }
  },
  "mistralai/voxtral-small-24b-2507": {
   "contexte": 32768,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 32000,
+   "hebergeur": "Mistral",
+   "images": false,
+   "in": 0.11,
+   "json": true,
+   "out": 0.33,
+   "outils": true
+  }
  },
  "moonshotai/kimi-k2": {
   "contexte": 131072,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "moonshotai/kimi-k2-0905": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "moonshotai/kimi-k2-thinking": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "moonshotai/kimi-k2.5": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "moonshotai/kimi-k2.6": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "moonshotai/kimi-k2.7-code": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "moonshotai/kimi-k3": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "moonshotai/kimi-k3:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "morph/morph-v3-fast": {
   "contexte": 81920,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "morph/morph-v3-large": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "nousresearch/hermes-3-llama-3.1-405b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "nousresearch/hermes-3-llama-3.1-70b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "nousresearch/hermes-4-405b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3-nano-30b-a3b": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free": {
   "contexte": 256000,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3-super-120b-a12b": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3-super-120b-a12b:free": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3-ultra-550b-a55b": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3-ultra-550b-a55b:free": {
   "contexte": 1000000,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3.5-content-safety": {
   "contexte": 131072,
   "images": true,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3.5-content-safety:free": {
   "contexte": 128000,
   "images": true,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3.5-lightning": {
   "contexte": 1000000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "nvidia/nemotron-3.5-lightning:free": {
   "contexte": 1000000,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/gpt-3.5-turbo": {
   "contexte": 16385,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 16385,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 0.5,
+   "json": true,
+   "out": 1.5,
+   "outils": true
+  }
  },
  "openai/gpt-3.5-turbo-0613": {
   "contexte": 4095,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "openai/gpt-3.5-turbo-16k": {
   "contexte": 16385,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 16385,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 3.0,
+   "json": true,
+   "out": 4.0,
+   "outils": true
+  }
  },
  "openai/gpt-3.5-turbo-instruct": {
   "contexte": 4095,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 4095,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 1.5,
+   "json": true,
+   "out": 2.0,
+   "outils": false
+  }
  },
  "openai/gpt-3.5-turbo:batch": {
   "contexte": 16385,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 16385,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 0.25,
+   "json": true,
+   "out": 0.75,
+   "outils": true
+  }
  },
  "openai/gpt-4": {
   "contexte": 8191,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 8191,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 30.0,
+   "json": true,
+   "out": 60.0,
+   "outils": true
+  }
  },
  "openai/gpt-4-turbo": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 10.0,
+   "json": true,
+   "out": 30.0,
+   "outils": true
+  }
  },
  "openai/gpt-4-turbo:batch": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 15.0,
+   "outils": true
+  }
  },
  "openai/gpt-4.1": {
   "contexte": 1047576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1047576,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 2.0,
+   "json": true,
+   "out": 8.0,
+   "outils": true
+  }
  },
  "openai/gpt-4.1-mini": {
   "contexte": 1047576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1047576,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.4,
+   "json": true,
+   "out": 1.6,
+   "outils": true
+  }
  },
  "openai/gpt-4.1-mini:batch": {
   "contexte": 1047576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1047576,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.2,
+   "json": true,
+   "out": 0.8,
+   "outils": true
+  }
  },
  "openai/gpt-4.1-nano": {
   "contexte": 1047576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1047576,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.1,
+   "json": true,
+   "out": 0.4,
+   "outils": true
+  }
  },
  "openai/gpt-4.1-nano:batch": {
   "contexte": 1047576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1047576,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.05,
+   "json": true,
+   "out": 0.2,
+   "outils": true
+  }
  },
  "openai/gpt-4.1:batch": {
   "contexte": 1047576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1047576,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 4.0,
+   "outils": true
+  }
  },
  "openai/gpt-4o": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 10.0,
+   "outils": true
+  }
  },
  "openai/gpt-4o-2024-05-13": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 15.0,
+   "outils": true
+  }
  },
  "openai/gpt-4o-2024-08-06": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 10.0,
+   "outils": true
+  }
  },
  "openai/gpt-4o-2024-11-20": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 10.0,
+   "outils": true
+  }
  },
  "openai/gpt-4o-mini": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.15,
+   "json": true,
+   "out": 0.6,
+   "outils": true
+  }
  },
  "openai/gpt-4o-mini-2024-07-18": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.15,
+   "json": true,
+   "out": 0.6,
+   "outils": true
+  }
  },
  "openai/gpt-4o-mini:batch": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.075,
+   "json": true,
+   "out": 0.3,
+   "outils": true
+  }
  },
  "openai/gpt-4o:batch": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.25,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "openai/gpt-5": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.25,
+   "json": true,
+   "out": 10.0,
+   "outils": true
+  }
  },
  "openai/gpt-5-image": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 10.0,
+   "json": true,
+   "out": 10.0,
+   "outils": false
+  }
  },
  "openai/gpt-5-image-mini": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 2.0,
+   "outils": false
+  }
  },
  "openai/gpt-5-mini": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.25,
+   "json": true,
+   "out": 2.0,
+   "outils": true
+  }
  },
  "openai/gpt-5-mini:batch": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.125,
+   "json": true,
+   "out": 1.0,
+   "outils": true
+  }
  },
  "openai/gpt-5-nano": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.05,
+   "json": true,
+   "out": 0.4,
+   "outils": true
+  }
  },
  "openai/gpt-5-nano:batch": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.025,
+   "json": true,
+   "out": 0.2,
+   "outils": true
+  }
  },
  "openai/gpt-5-pro": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 15.0,
+   "json": true,
+   "out": 120.0,
+   "outils": true
+  }
  },
  "openai/gpt-5-pro:batch": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 7.5,
+   "json": true,
+   "out": 60.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.1": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 20.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.1-codex": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/gpt-5.1-codex-max": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/gpt-5.1-codex-mini": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/gpt-5.1:batch": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.625,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.2": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 3.5,
+   "json": true,
+   "out": 28.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.2-chat": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "openai/gpt-5.2-codex": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/gpt-5.2-pro": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 21.0,
+   "json": true,
+   "out": 168.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.2-pro:batch": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 10.5,
+   "json": true,
+   "out": 84.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.2:batch": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.875,
+   "json": true,
+   "out": 7.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.3-codex": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 3.5,
+   "json": true,
+   "out": 28.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.4": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 30.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.4-image-2": {
   "contexte": 272000,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 272000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 8.0,
+   "json": true,
+   "out": 15.0,
+   "outils": false
+  }
  },
  "openai/gpt-5.4-mini": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.5,
+   "json": true,
+   "out": 9.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.4-mini:batch": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.375,
+   "json": true,
+   "out": 2.25,
+   "outils": true
+  }
  },
  "openai/gpt-5.4-nano": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.2,
+   "json": true,
+   "out": 1.25,
+   "outils": true
+  }
  },
  "openai/gpt-5.4-nano:batch": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.1,
+   "json": true,
+   "out": 0.625,
+   "outils": true
+  }
  },
  "openai/gpt-5.4-pro": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 30.0,
+   "json": true,
+   "out": 180.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.4-pro:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 15.0,
+   "json": true,
+   "out": 90.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.4:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.25,
+   "json": true,
+   "out": 7.5,
+   "outils": true
+  }
  },
  "openai/gpt-5.5": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 12.5,
+   "json": true,
+   "out": 75.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.5-pro": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 30.0,
+   "json": true,
+   "out": 180.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.5-pro:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 15.0,
+   "json": true,
+   "out": 90.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.5:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 2.5,
+   "json": true,
+   "out": 15.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-luna": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.4,
+   "json": true,
+   "out": 2.4,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-luna-pro": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.4,
+   "json": true,
+   "out": 2.4,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-luna-pro:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.1,
+   "json": true,
+   "out": 0.6,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-luna:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.1,
+   "json": true,
+   "out": 0.6,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-sol": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 4.0,
+   "json": true,
+   "out": 20.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-sol-pro": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 4.0,
+   "json": true,
+   "out": 20.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-sol-pro:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-sol:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-terra": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 4.0,
+   "json": true,
+   "out": 24.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-terra-pro": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 4.0,
+   "json": true,
+   "out": 24.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-terra-pro:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 6.0,
+   "outils": true
+  }
  },
  "openai/gpt-5.6-terra:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 6.0,
+   "outils": true
+  }
  },
  "openai/gpt-5:batch": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.625,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-astra": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 20.0,
+   "json": true,
+   "out": 100.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-astra-pro": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 20.0,
+   "json": true,
+   "out": 100.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-astra-pro:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 25.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-astra:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 25.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-luna": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.2,
+   "json": true,
+   "out": 1.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-luna-pro": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.2,
+   "json": true,
+   "out": 1.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-luna-pro:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.05,
+   "json": true,
+   "out": 0.25,
+   "outils": true
+  }
  },
  "openai/gpt-6-luna:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.05,
+   "json": true,
+   "out": 0.25,
+   "outils": true
+  }
  },
  "openai/gpt-6-sol": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 4.0,
+   "json": true,
+   "out": 20.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-sol-pro": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 4.0,
+   "json": true,
+   "out": 20.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-sol-pro:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "openai/gpt-6-sol:batch": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1050000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 5.0,
+   "outils": true
+  }
  },
  "openai/gpt-audio": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 2.5,
+   "json": true,
+   "out": 10.0,
+   "outils": true
+  }
  },
  "openai/gpt-audio-mini": {
   "contexte": 128000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 128000,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 0.6,
+   "json": true,
+   "out": 2.4,
+   "outils": true
+  }
  },
  "openai/gpt-chat-latest": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 400000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 5.0,
+   "json": true,
+   "out": 30.0,
+   "outils": true
+  }
  },
  "openai/gpt-oss-120b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/gpt-oss-120b:batch": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/gpt-oss-20b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/gpt-oss-20b:batch": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/gpt-oss-safeguard-20b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openai/o1": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 15.0,
+   "json": true,
+   "out": 60.0,
+   "outils": true
+  }
  },
  "openai/o1-pro": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 150.0,
+   "json": true,
+   "out": 600.0,
+   "outils": false
+  }
  },
  "openai/o3": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 2.0,
+   "json": true,
+   "out": 8.0,
+   "outils": true
+  }
  },
  "openai/o3-mini": {
   "contexte": 200000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 1.1,
+   "json": true,
+   "out": 4.4,
+   "outils": true
+  }
  },
  "openai/o3-mini-high": {
   "contexte": 200000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 1.1,
+   "json": true,
+   "out": 4.4,
+   "outils": true
+  }
  },
  "openai/o3-mini:batch": {
   "contexte": 200000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": false,
+   "in": 0.55,
+   "json": true,
+   "out": 2.2,
+   "outils": true
+  }
  },
  "openai/o3-pro": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 20.0,
+   "json": true,
+   "out": 80.0,
+   "outils": true
+  }
  },
  "openai/o3:batch": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.0,
+   "json": true,
+   "out": 4.0,
+   "outils": true
+  }
  },
  "openai/o4-mini": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.1,
+   "json": true,
+   "out": 4.4,
+   "outils": true
+  }
  },
  "openai/o4-mini-high": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 1.1,
+   "json": true,
+   "out": 4.4,
+   "outils": true
+  }
  },
  "openai/o4-mini:batch": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 200000,
+   "hebergeur": "OpenAI",
+   "images": true,
+   "in": 0.55,
+   "json": true,
+   "out": 2.2,
+   "outils": true
+  }
  },
  "openrouter/auto": {
   "contexte": 2000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openrouter/auto-beta": {
   "contexte": 2000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openrouter/bodybuilder": {
   "contexte": 128000,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "openrouter/free": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "openrouter/fusion": {
   "contexte": 1000000,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "openrouter/pareto-code": {
   "contexte": 2000000,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "perceptron/perceptron-mk1": {
   "contexte": 32768,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "perceptron/perceptron-mk1.5": {
   "contexte": 36864,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "perplexity/sonar": {
   "contexte": 127072,
   "images": true,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "perplexity/sonar-deep-research": {
   "contexte": 128000,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "perplexity/sonar-pro": {
   "contexte": 200000,
   "images": true,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "perplexity/sonar-pro-search": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "perplexity/sonar-reasoning-pro": {
   "contexte": 128000,
   "images": true,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "poolside/laguna-s-2.1": {
   "contexte": 1048576,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "poolside/laguna-s-2.1:free": {
   "contexte": 262144,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "poolside/laguna-xs-2.1": {
   "contexte": 262144,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "poolside/laguna-xs-2.1:free": {
   "contexte": 262144,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "prism-ml/ternary-bonsai-2-27b": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "qwen/qwen-2.5-72b-instruct": {
   "contexte": 32768,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "qwen/qwen-2.5-7b-instruct": {
   "contexte": 32768,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "qwen/qwen-2.5-coder-32b-instruct": {
   "contexte": 32768,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "qwen/qwen-plus": {
   "contexte": 1000000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.26,
+   "json": true,
+   "out": 0.78,
+   "outils": true
+  }
  },
  "qwen/qwen-plus-2025-07-28": {
   "contexte": 1000000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.26,
+   "json": true,
+   "out": 0.78,
+   "outils": true
+  }
  },
  "qwen/qwen2.5-vl-72b-instruct": {
   "contexte": 128000,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "qwen/qwen3-14b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.2275,
+   "json": true,
+   "out": 0.91,
+   "outils": true
+  }
  },
  "qwen/qwen3-235b-a22b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.455,
+   "json": true,
+   "out": 1.82,
+   "outils": true
+  }
  },
  "qwen/qwen3-235b-a22b-2507": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.1495,
+   "json": true,
+   "out": 0.598,
+   "outils": true
+  }
  },
  "qwen/qwen3-235b-a22b-thinking-2507": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.23,
+   "json": true,
+   "out": 2.3,
+   "outils": true
+  }
  },
  "qwen/qwen3-30b-a3b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.13,
+   "json": true,
+   "out": 0.52,
+   "outils": true
+  }
  },
  "qwen/qwen3-30b-a3b-instruct-2507": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.13,
+   "json": true,
+   "out": 0.52,
+   "outils": true
+  }
  },
  "qwen/qwen3-30b-a3b-thinking-2507": {
   "contexte": 81920,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 81920,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.2,
+   "json": true,
+   "out": 2.4,
+   "outils": true
+  }
  },
  "qwen/qwen3-32b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "qwen/qwen3-8b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.117,
+   "json": true,
+   "out": 0.455,
+   "outils": true
+  }
  },
  "qwen/qwen3-coder": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.975,
+   "json": true,
+   "out": 4.875,
+   "outils": true
+  }
  },
  "qwen/qwen3-coder-30b-a3b-instruct": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.2925,
+   "json": true,
+   "out": 1.4625,
+   "outils": true
+  }
  },
  "qwen/qwen3-coder-flash": {
   "contexte": 1000000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.195,
+   "json": true,
+   "out": 0.975,
+   "outils": true
+  }
  },
  "qwen/qwen3-coder-next": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.3,
+   "json": true,
+   "out": 1.5,
+   "outils": true
+  }
  },
  "qwen/qwen3-coder-plus": {
   "contexte": 1000000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.65,
+   "json": true,
+   "out": 3.25,
+   "outils": true
+  }
  },
  "qwen/qwen3-max": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.78,
+   "json": true,
+   "out": 3.9,
+   "outils": true
+  }
  },
  "qwen/qwen3-max-thinking": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.78,
+   "json": true,
+   "out": 3.9,
+   "outils": true
+  }
  },
  "qwen/qwen3-next-80b-a3b-instruct": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.0975,
+   "json": true,
+   "out": 0.78,
+   "outils": true
+  }
  },
  "qwen/qwen3-next-80b-a3b-thinking": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 0.15,
+   "json": true,
+   "out": 1.2,
+   "outils": true
+  }
  },
  "qwen/qwen3-vl-235b-a22b-instruct": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.26,
+   "json": true,
+   "out": 1.04,
+   "outils": true
+  }
  },
  "qwen/qwen3-vl-235b-a22b-thinking": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.4,
+   "json": true,
+   "out": 4.0,
+   "outils": true
+  }
  },
  "qwen/qwen3-vl-30b-a3b-instruct": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.13,
+   "json": true,
+   "out": 0.52,
+   "outils": true
+  }
  },
  "qwen/qwen3-vl-30b-a3b-thinking": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.2,
+   "json": true,
+   "out": 2.4,
+   "outils": true
+  }
  },
  "qwen/qwen3-vl-32b-instruct": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.104,
+   "json": true,
+   "out": 0.416,
+   "outils": true
+  }
  },
  "qwen/qwen3-vl-8b-instruct": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.117,
+   "json": true,
+   "out": 0.455,
+   "outils": true
+  }
  },
  "qwen/qwen3-vl-8b-thinking": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 131072,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.18,
+   "json": true,
+   "out": 2.1,
+   "outils": true
+  }
  },
  "qwen/qwen3.5-122b-a10b": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.26,
+   "json": true,
+   "out": 2.08,
+   "outils": true
+  }
  },
  "qwen/qwen3.5-27b": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.195,
+   "json": true,
+   "out": 1.56,
+   "outils": true
+  }
  },
  "qwen/qwen3.5-35b-a3b": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.1625,
+   "json": true,
+   "out": 1.3,
+   "outils": true
+  }
  },
  "qwen/qwen3.5-397b-a17b": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.39,
+   "json": true,
+   "out": 2.34,
+   "outils": true
+  }
  },
  "qwen/qwen3.5-9b": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "qwen/qwen3.5-flash-02-23": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.065,
+   "json": true,
+   "out": 0.26,
+   "outils": true
+  }
  },
  "qwen/qwen3.5-plus-02-15": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.26,
+   "json": true,
+   "out": 1.56,
+   "outils": true
+  }
  },
  "qwen/qwen3.5-plus-20260420": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.3,
+   "json": true,
+   "out": 1.8,
+   "outils": true
+  }
  },
  "qwen/qwen3.6-27b": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.45,
+   "json": true,
+   "out": 2.7,
+   "outils": true
+  }
  },
  "qwen/qwen3.6-35b-a3b": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "qwen/qwen3.6-flash": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.1875,
+   "json": true,
+   "out": 1.125,
+   "outils": true
+  }
  },
  "qwen/qwen3.6-max-preview": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 262144,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 1.027,
+   "json": true,
+   "out": 6.162,
+   "outils": true
+  }
  },
  "qwen/qwen3.6-plus": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.325,
+   "json": true,
+   "out": 1.95,
+   "outils": true
+  }
  },
  "qwen/qwen3.7-flash": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.03,
+   "json": true,
+   "out": 0.13,
+   "outils": true
+  }
  },
  "qwen/qwen3.7-max": {
   "contexte": 1000000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 1.475,
+   "json": true,
+   "out": 4.425,
+   "outils": true
+  }
  },
  "qwen/qwen3.7-plus": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.32,
+   "json": true,
+   "out": 1.28,
+   "outils": true
+  }
  },
  "qwen/qwen3.8-2.4t-a95b": {
   "contexte": 1048576,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": false,
+   "in": 2.0,
+   "json": true,
+   "out": 6.0,
+   "outils": true
+  }
  },
  "qwen/qwen3.8-27b": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.425,
+   "json": true,
+   "out": 2.55,
+   "outils": true
+  }
  },
  "qwen/qwen3.8-27b:free": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "qwen/qwen3.8-flash": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.15,
+   "json": true,
+   "out": 0.47,
+   "outils": true
+  }
  },
  "qwen/qwen3.8-max-0902": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 2.0,
+   "json": true,
+   "out": 6.0,
+   "outils": true
+  }
  },
  "qwen/qwen3.8-max-prime": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 4.0,
+   "json": true,
+   "out": 12.0,
+   "outils": true
+  }
  },
  "qwen/qwen3.8-omni-flash": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": {
+   "contexte": 1000000,
+   "hebergeur": "Alibaba",
+   "images": true,
+   "in": 0.15,
+   "json": true,
+   "out": 0.47,
+   "outils": true
+  }
  },
  "rekaai/reka-edge": {
   "contexte": 16384,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "rekaai/reka-flash-3": {
   "contexte": 65536,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "relace/relace-apply-3": {
   "contexte": 256000,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "relace/relace-search": {
   "contexte": 256000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "sakana/fugu-max": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "sakana/fugu-ultra": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "sakana/fugu-ultra-v2": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "sakana/sakana-namazu": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "sao10k/l3-lunaris-8b": {
   "contexte": 8192,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "sao10k/l3.1-euryale-70b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "sao10k/l3.3-euryale-70b": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "stealth/space-bunny-alpha": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "stepfun/step-3.5-flash": {
   "contexte": 262144,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "stepfun/step-3.7-flash": {
   "contexte": 262144,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "tencent/hunyuan-a13b-instruct": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "tencent/hy-mt2-1.8b": {
   "contexte": 8192,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "tencent/hy-mt2-30b-a3b": {
   "contexte": 8192,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "tencent/hy-mt2-7b": {
   "contexte": 8192,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "tencent/hy3": {
   "contexte": 262144,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "tencent/hy3-preview": {
   "contexte": 262144,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "tencent/hy4-preview": {
   "contexte": 1048576,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "thedrummer/cydonia-24b-v4.1": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "thedrummer/skyfall-36b-v2": {
   "contexte": 32768,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "thedrummer/unslopnemo-12b": {
   "contexte": 1024000,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "thinkingmachines/inkling": {
   "contexte": 524288,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "thinkingmachines/inkling-small": {
   "contexte": 524288,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "thinkingmachines/inkling-small:free": {
   "contexte": 1048576,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "thinkingmachines/inkling:free": {
   "contexte": 1048576,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "typesafe/jev-router": {
   "contexte": 1000000,
   "images": true,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "unbiased/pareto": {
   "contexte": 262144,
   "images": true,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "undi95/remm-slerp-l2-13b": {
   "contexte": 6144,
   "images": false,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "upstage/solar-mini4": {
   "contexte": 524288,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "upstage/solar-pro-3": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "upstage/solar-pro4": {
   "contexte": 524288,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "writer/palmyra-x5": {
   "contexte": 1040000,
   "images": false,
   "json": false,
-  "outils": false
+  "outils": false,
+  "raisonnement": false,
+  "route_editeur": null
  },
  "x-ai/grok-4.20": {
   "contexte": 2000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "x-ai/grok-4.20-multi-agent": {
   "contexte": 2000000,
   "images": true,
   "json": true,
-  "outils": false
+  "outils": false,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "x-ai/grok-4.3": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "x-ai/grok-4.3:batch": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "x-ai/grok-4.5": {
   "contexte": 500000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "x-ai/grok-4.6": {
   "contexte": 500000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "x-ai/grok-4.7": {
   "contexte": 500000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "x-ai/grok-build-0.1": {
   "contexte": 256000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "xiaomi/mimo-v2.5": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "xiaomi/mimo-v2.5-pro": {
   "contexte": 1050000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "xiaomi/mimo-v2.6-flash": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "xiaomi/mimo-v2.6-pro": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "xiaomi/mimo-v2.6-pro-ultraspeed": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-4.5": {
   "contexte": 131072,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-4.5-air": {
   "contexte": 131072,
   "images": false,
   "json": false,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-4.5v": {
   "contexte": 65536,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-4.6": {
   "contexte": 204800,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-4.6v": {
   "contexte": 131072,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-4.7": {
   "contexte": 204800,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-4.7-flash": {
   "contexte": 200000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5": {
   "contexte": 204800,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5-turbo": {
   "contexte": 202752,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5.1": {
   "contexte": 204800,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5.2": {
   "contexte": 1048576,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5.3": {
   "contexte": 1310720,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5.3-flash": {
   "contexte": 1310720,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5.3-flash:batch": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5.3-flashx": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5.3-prime": {
   "contexte": 1000000,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5.3:batch": {
   "contexte": 1048576,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "z-ai/glm-5v-turbo": {
   "contexte": 202752,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~anthropic/claude-fable-latest": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~anthropic/claude-haiku-latest": {
   "contexte": 200000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~anthropic/claude-opus-latest": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~anthropic/claude-sonnet-latest": {
   "contexte": 1000000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~deepseek/deepseek-flash-latest": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~deepseek/deepseek-pro-latest": {
   "contexte": 1048576,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~deepseek/deepseek-v4-flash-latest": {
   "contexte": 1310720,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~google/gemini-flash-latest": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~google/gemini-pro-latest": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~moonshotai/kimi-latest": {
   "contexte": 1048576,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~openai/gpt-astra-latest": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~openai/gpt-luna-latest": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~openai/gpt-mini-latest": {
   "contexte": 400000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~openai/gpt-sol-latest": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~openai/gpt-terra-latest": {
   "contexte": 1050000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~x-ai/grok-latest": {
   "contexte": 500000,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~z-ai/glm-flash-latest": {
   "contexte": 1310720,
   "images": true,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  },
  "~z-ai/glm-latest": {
   "contexte": 1310720,
   "images": false,
   "json": true,
-  "outils": true
+  "outils": true,
+  "raisonnement": true,
+  "route_editeur": null
  }
 }

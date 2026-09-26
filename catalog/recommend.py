@@ -7,9 +7,14 @@ pour les tâches que R2 a jugées simples (garde-fou qualité), sous trois contr
 - éditeur documenté : seules les fiches sourcées par la recherche (source « recherche ») ;
 - coût : recalculé par report.cost sur les jetons réels du client, pas sur un prix affiché.
 
-Trois options : la moins chère ; le meilleur compromis, c'est-à-dire la moins chère chez le
-même éditeur, par son API (hors poids ouverts, servis par des hébergeurs tiers) ; la souveraine
-(éditeur européen).
+Trois options :
+- la moins chère, au prix du moins cher des hébergeurs OpenRouter : l'hébergement dépend
+  alors de la route choisie, il n'est pas garanti (hebergement_ue null) ;
+- le meilleur compromis : la moins chère chez le même éditeur, par sa propre route (prix et
+  capacités de cette route, pas ceux d'un hébergeur tiers) ;
+- la souveraine : la moins chère d'un éditeur européen, par sa propre route.
+Modèle à raisonnement : il facture des jetons de réflexion que le trafic observé ne contient
+pas, donc son coût est sous-estimé ; l'option le signale (raisonnement: true).
 Sans indice de qualité (M1.2), rien n'est prouvé : la preuve est le rejeu (M2.2).
 """
 import copy
@@ -20,9 +25,7 @@ from report.cost import chiffrer, lookup
 from rules import oversized_model
 
 JSON_FORMATS = {"json_object", "json_schema"}
-# Poids ouverts publiés par un éditeur qui a sa propre API : servis par des hébergeurs tiers,
-# ils n'héritent ni de l'API ni de l'hébergement UE de l'éditeur.
-OPEN_WEIGHTS = ("openai/gpt-oss", "google/gemma")
+ANY_HOST = "prix du moins cher des hébergeurs OpenRouter : l'hébergement dépend de la route choisie"
 
 
 def needs(events):
@@ -77,38 +80,50 @@ def recommend(events, pricing=None, providers=None, capabilities=None):
         result["raison"] = "jetons non capturés : taille de contexte nécessaire inconnue"
         return result
 
-    candidates = []
+    any_host, own_route = [], []  # (coût, nom) au prix le plus bas / au prix de la route de l'éditeur
     for name in pricing:
         if "/" not in name or name.startswith("~") or ":" in name:
             continue
         sheet = providers.get(name.split("/", 1)[0])
-        if not sheet or sheet["source"] != "recherche" or pricing[name] == current_price:
+        caps = capabilities.get(name)
+        if not sheet or sheet["source"] != "recherche" or pricing[name] == current_price or caps is None:
             continue
-        if not compatible(capabilities.get(name), need):
-            continue
-        cost = _cost_with(events, name, pricing)
-        if cost is not None and cost < before:
-            candidates.append((cost, name))
-    candidates.sort()
+        if compatible(caps, need):
+            cost = _cost_with(events, name, pricing)
+            if cost is not None and cost < before:
+                any_host.append((cost, name))
+        route = caps.get("route_editeur")
+        if route and compatible(route, need):
+            cost = _cost_with(events, name, {name: {"in": route["in"], "out": route["out"]}})
+            if cost is not None and cost < before:
+                own_route.append((cost, name))
+    any_host.sort()
+    own_route.sort()
 
-    def option(pool):
+    def option(pool, via_editor):
         if not pool:
             return None
         cost, name = pool[0]
         sheet = info(name, pricing, providers, index)
-        if name.startswith(OPEN_WEIGHTS):
-            sheet.update(hebergement_ue=None, option_ue="poids ouverts : dépend de l'hébergeur choisi")
+        if via_editor:
+            host = capabilities[name]["route_editeur"]["hebergeur"]
+        else:
+            host = None
+            sheet.update(hebergement_ue=None, option_ue=ANY_HOST)
         return {"modele": name, "cout_mensuel_usd": cost, "economie_usd": before - cost,
-                "facteur": round(before / cost, 1) if cost > 0 else None,
+                "facteur": round(before / cost, 1) if cost > 0 else None, "hebergeur": host,
+                "raisonnement": capabilities[name]["raisonnement"],
                 **{k: sheet[k] for k in ("editeur", "pays", "hebergement_ue", "souverain", "option_ue")}}
 
+    def editor(name):
+        return name.split("/", 1)[0]
+
     result["options"] = {
-        "moins_cher": option(candidates),
-        "meilleur_compromis": option([c for c in candidates if c[1].split("/", 1)[0] == current_editor
-                                      and not c[1].startswith(OPEN_WEIGHTS)]),
-        "souverain": option([c for c in candidates if providers[c[1].split("/", 1)[0]]["souverain"]]),
+        "moins_cher": option(any_host, False),
+        "meilleur_compromis": option([c for c in own_route if editor(c[1]) == current_editor], True),
+        "souverain": option([c for c in own_route if providers[editor(c[1])]["souverain"]], True),
     }
-    if not candidates:
+    if not any_host and not own_route:
         result["raison"] = "aucun modèle compatible moins cher au catalogue"
     return result
 

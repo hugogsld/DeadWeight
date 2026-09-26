@@ -124,7 +124,10 @@ Quand le rapport signale un modèle surdimensionné pour une tâche simple, il p
 modèles, tous fournisseurs confondus : le moins cher, le moins cher chez le même éditeur, et le
 moins cher d'un éditeur européen. Chacun sait faire ce que fait votre trafic (outils, JSON, images,
 taille du plus gros appel, d'après `fixtures/capabilities.json`) et son coût est recalculé sur vos
-propres jetons. Leur qualité n'est pas prouvée : à vérifier par rejeu avant de changer de modèle.
+propres jetons. Les options « même éditeur » et « souverain » sont chiffrées au prix de la route de
+l'éditeur lui-même, pas à celui d'un hébergeur tiers moins cher. Un modèle à raisonnement est
+signalé : ses jetons de réflexion ne sont pas dans votre trafic, son coût est donc sous-estimé.
+Leur qualité n'est pas prouvée : à vérifier par rejeu avant de changer de modèle.
 
 ## Confidentialité
 

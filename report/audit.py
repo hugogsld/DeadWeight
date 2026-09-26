@@ -156,7 +156,12 @@ def _cost_label(n, monthly="Coût mensuel"):
 
 
 def _usd(v):
-    return "non disponible" if v is None else f"{v:,.0f} $".replace(",", " ") if v >= 10 else f"{v:.2f} $"
+    if v is None:
+        return "non disponible"
+    if v >= 10:
+        return f"{v:,.0f} $".replace(",", " ")
+    # sous un centime, « 0.00 $ » cacherait l'ordre de grandeur : deux chiffres significatifs
+    return f"{v:.2f} $" if v >= 0.01 or v == 0 else f"{v:.2g} $"
 
 
 def _ms(v):
@@ -192,20 +197,25 @@ ALT_LABELS = {"moins_cher": "moins cher", "meilleur_compromis": "même éditeur"
 
 
 def _alternatives(options):
-    """M2 : une ligne par modèle proposé, options identiques regroupées."""
-    by_model = {}
+    """M2 : une ligne par modèle et par route, options identiques regroupées."""
+    by_route = {}
     for key, o in (options or {}).items():
         if o:
-            by_model.setdefault(o["modele"], (o, []))[1].append(ALT_LABELS[key])
-    if not by_model:
+            by_route.setdefault((o["modele"], o["hebergeur"]), (o, []))[1].append(ALT_LABELS[key])
+    if not by_route:
         return ""
-    ue = {True: "traitement UE possible", False: "pas de traitement UE en direct", None: "hébergement UE non vérifié"}
+    ue = {True: "traitement UE possible", "sous_conditions": "traitement UE sous conditions",
+          False: "pas de traitement UE en direct"}
     items = []
-    for name, (o, labels) in by_model.items():
+    for (name, host), (o, labels) in by_route.items():
+        where = (f"via {host}, {ue.get(o['hebergement_ue'], 'hébergement UE non vérifié')}" if host
+                 else "au prix du moins cher des hébergeurs, hébergement non garanti")
         factor = f", ×{o['facteur']} moins cher" if o["facteur"] else ""
+        caveat = (" <i>Modèle à raisonnement : jetons de réflexion non comptés, coût sous-estimé.</i>"
+                  if o["raisonnement"] else "")
         items.append(f"<li>{html.escape(' et '.join(labels))} : <b>{html.escape(name)}</b> "
-                     f"({html.escape(o['pays'] or '?')}, {ue[o['hebergement_ue']]}) — "
-                     f"{_usd(o['cout_mensuel_usd'])} par mois{factor}</li>")
+                     f"({html.escape(o['pays'] or '?')}, {html.escape(where)}) — "
+                     f"{_usd(o['cout_mensuel_usd'])} par mois{factor}.{caveat}</li>")
     return ('<p class="todo"><b>Autres modèles compatibles</b> (capacités vérifiées, qualité non prouvée : '
             f'à rejouer avant de changer) :</p><ul>{"".join(items)}</ul>')
 
