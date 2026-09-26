@@ -7,6 +7,9 @@ complétion est reconstituée à côté pour la capture.
 
 L'en-tête Authorization du client est relayé tel quel. Il n'est jamais
 stocké, jamais journalisé, jamais mis dans l'événement.
+
+Chaque événement est écrit dans SQLite par gateway.store (D1.2), hors du
+chemin critique ; GATEWAY_DB en donne le chemin.
 """
 import asyncio
 import json
@@ -20,6 +23,7 @@ from yarl import URL
 
 from gateway import shortcircuit
 from gateway.capture import StreamAccumulator, build_event
+from gateway.store import EventStore
 
 log = logging.getLogger("deadweight.gateway")
 
@@ -156,10 +160,23 @@ async def _close(app):
     await app[SESSION].close()
 
 
-def make_app(upstream=None, on_event=None, shortcut=None):
+def make_app(upstream=None, on_event=None, store=None, shortcut=None):
+    """``store`` : EventStore où persister ; ``on_event`` : sink supplémentaire (log par défaut) ;
+    ``shortcut`` : preuves du court-circuit D3.3 (sinon GATEWAY_SHORTCIRCUIT, sinon désactivé)."""
     app = web.Application(client_max_size=64 * 1024 * 1024)
     app[UPSTREAM_KEY] = (upstream or UPSTREAM).rstrip("/")
-    app[SINK] = on_event or log_event
+    sink = on_event or log_event
+    if store is None:
+        app[SINK] = sink
+    else:
+        def both(event):
+            store.put(event)
+            sink(event)
+        app[SINK] = both
+
+        async def close_store(app):
+            await asyncio.get_running_loop().run_in_executor(None, store.close)
+        app.on_cleanup.append(close_store)
     path = shortcut or os.environ.get("GATEWAY_SHORTCIRCUIT")
     app[SHORTCUT] = shortcircuit.load(path) if path else {}
     if app[SHORTCUT]:
@@ -175,8 +192,10 @@ def main():
                         format="%(asctime)s %(name)s %(message)s")
     host = os.environ.get("GATEWAY_HOST", "127.0.0.1")
     port = int(os.environ.get("GATEWAY_PORT", "8080"))
-    print(f"Deadweight gateway -> {UPSTREAM}   base_url: http://{host}:{port}/v1", flush=True)
-    web.run_app(make_app(), host=host, port=port, access_log=None, print=None)
+    store = EventStore()
+    print(f"Deadweight gateway -> {UPSTREAM}   base_url: http://{host}:{port}/v1   "
+          f"events: {store.path}", flush=True)
+    web.run_app(make_app(store=store), host=host, port=port, access_log=None, print=None)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ Comment apparaître dans le tableau : créer une issue dont le titre commence pa
 Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépendent.
 
 <!-- STATUT:DEBUT -->
-**9 / 17 livrables du plan de base faits** (29 h sur 57 h). Mis à jour automatiquement le 26/09 à 12:22.
+**9 / 17 livrables du plan de base faits** (29 h sur 57 h). Mis à jour automatiquement le 26/09 à 12:50.
 
 | Id | Livrable | Durée | Dépend de | Statut | Qui | Issue / PR |
 |---|---|---|---|---|---|---|
@@ -19,15 +19,15 @@ Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépend
 | D0.3 | Jeu de données réaliste | 4 h | D0.1 | **Fait** | Natanlsr3 | #3 · PR #5 |
 | D1.1 | Proxy passe-plat OpenAI, streaming | 5 h | D0.2 | **Fait** | claude, thibaudgregori | #23 · PR #24 |
 | D1.2 | Capture et persistance | 3 h | D0.1, D1.1 | **En relecture** | claude, thibaudgregori | #25 · PR #27 |
-| D1.3 | Anthropic et Gemini | 4 h | D1.1 | **En cours** | alexandre-zenou, claude | #28 |
-| D1.4 | Regroupement par trace | 3 h | D1.2 | Bloqué (attend D1.2) | — | — |
+| D1.3 | Anthropic et Gemini | 4 h | D1.1 | **En relecture** | alexandre-zenou, claude | #28 · PR #35 |
+| D1.4 | Regroupement par trace | 3 h | D1.2 | **En relecture** | claude, thibaudgregori | #29 · PR #30 |
 | D2.1 | R1 entropie | 2 h | D0.3 | **Fait** | Natanlsr3, claude | #7 · PR #9 |
 | D2.2 | R2 modèle surdimensionné | 3 h | D0.3 | **Fait** | Natanlsr3, claude | #17 · PR #18 |
 | D2.3 | R3 contexte brut + R4 absence de cache | 3 h | D0.3 | **Fait** | Natanlsr3, codex | #8 · PR #15 |
-| D2.4 | R5 boucle + R6 agent inutile | 5 h | D0.3, D1.4 | Bloqué (attend D1.4) | — | — |
+| D2.4 | R5 boucle + R6 agent inutile | 5 h | D0.3, D1.4 | **En cours** | claude, thibaudgregori | #31 · PR #32 |
 | D2.5 | Chiffrage coût et latence | 3 h | D0.1 | **Fait** | Natanlsr3 | #4 · PR #6 |
 | D3.1 | Extraction des règles | 3 h | D2.1 | **Fait** | Natanlsr3, codex | #16 · PR #20 |
-| D3.2 | Rejeu et seuil 0,95 | 4 h | D3.1 | **En cours** | claude, hugogsld | #26 |
+| D3.2 | Rejeu et seuil 0,95 | 4 h | D3.1 | **En relecture** | claude, hugogsld | #26 · PR #34 |
 | D3.3 | Court-circuit *(hors plan)* | 4 h | D3.2 | Bloqué (attend D3.2) | — | — |
 | D4.1 | Rapport d'audit | 3 h | D2.5 | **Fait** | Natanlsr3, claude | #12 · PR #13 |
 | D4.2 | Installation dix minutes | 4 h | D1.1, D4.1 | Prenable | — | — |

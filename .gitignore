@@ -1,7 +1,13 @@
-.env
+# secrets : aucun fichier .env* dans le repo, sauf l'exemple
+.env*
+!.env.example
+
 .venv/
 __pycache__/
 *.pyc
+.pytest_cache/
+.ruff_cache/
 node_modules/
 out/
-.env
+*.db
+.DS_Store
