@@ -27,7 +27,7 @@ Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépend
 | D2.4 | R5 boucle + R6 agent inutile | 5 h | D0.3, D1.4 | Bloqué (attend D1.4) | — | — |
 | D2.5 | Chiffrage coût et latence | 3 h | D0.1 | **Fait** | Natanlsr3 | #4 · PR #6 |
 | D3.1 | Extraction des règles | 3 h | D2.1 | **Fait** | Natanlsr3, codex | #16 · PR #20 |
-| D3.2 | Rejeu et seuil 0,95 | 4 h | D3.1 | Prenable | — | — |
+| D3.2 | Rejeu et seuil 0,95 | 4 h | D3.1 | **En cours** | claude, hugogsld | #26 |
 | D3.3 | Court-circuit *(hors plan)* | 4 h | D3.2 | Bloqué (attend D3.2) | — | — |
 | D4.1 | Rapport d'audit | 3 h | D2.5 | **Fait** | Natanlsr3, claude | #12 · PR #13 |
 | D4.2 | Installation dix minutes | 4 h | D1.1, D4.1 | Prenable | — | — |
