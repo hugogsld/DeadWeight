@@ -15,7 +15,32 @@ from datetime import datetime
 from pathlib import Path
 
 import rules
-from report.cost import chiffrer
+from report.cost import MONTH_SECONDS, chiffrer
+
+# En dessous d'une heure de trafic, projeter sur un mois multiplie du bruit :
+# 36 appels en 0,3 s donnaient 315 220 $/mois. On affiche alors le coût réellement dépensé.
+MIN_WINDOW_SECONDS = 60 * 60
+
+
+def _window_seconds(events):
+    if not events:
+        return 0
+    start = min(datetime.fromisoformat(e["ts_start"].replace("Z", "+00:00")) for e in events)
+    end = max(datetime.fromisoformat(e["ts_end"].replace("Z", "+00:00")) for e in events)
+    return (end - start).total_seconds()
+
+
+def _figures(events):
+    """chiffrer(), sans projection mensuelle sur moins d'une heure de trafic."""
+    c = chiffrer(events)
+    window = _window_seconds(events)
+    if c["cout_mensuel_usd"] is None or window >= MIN_WINDOW_SECONDS:
+        return c
+    # pas de « : » dans la raison, _missing_reasons coupe dessus
+    reason = (f"moins d'une heure de trafic observée ({max(window / 60, 0.1):.1f} min), "
+              "projection sur un mois non fiable, laissez tourner la passerelle au moins une heure")
+    return {**c, "cout_mensuel_usd": None, "cout_observe_usd": c["cout_mensuel_usd"] * window / MONTH_SECONDS,
+            "manquants": [*c["manquants"], reason]}
 
 # Texte humain par regle : aucun code de regle ne doit apparaitre dans la page.
 RULE_TEXT = {
@@ -66,23 +91,22 @@ def build_report(events, detectors=None):
 
     constats = []
     for f in findings:
-        chiffres = chiffrer([by_id[i] for i in f["event_ids"] if i in by_id])
+        chiffres = _figures([by_id[i] for i in f["event_ids"] if i in by_id])
         titre, action = RULE_TEXT.get(f["rule"], DEFAULT_TEXT)
         constats.append({
             "app_id": f["app_id"], "model": f["model"], "titre": titre, "phrase": f["title"],
             "action": action, "prouve": f.get("proven", False), "gravite": f.get("severity"),
             "chiffres": chiffres, "raisons_manquantes": _missing_reasons(chiffres["manquants"]),
         })
-    constats.sort(key=lambda c: (c["chiffres"]["cout_mensuel_usd"] is None,
-                                 -(c["chiffres"]["cout_mensuel_usd"] or 0)))
+    constats.sort(key=lambda c: (_cost(c["chiffres"]) is None, -(_cost(c["chiffres"]) or 0)))
 
     flagged = {c["app_id"] for c in constats}
     apps = sorted({e["app_id"] for e in events})
-    clean = [{"app_id": a, "chiffres": chiffrer([e for e in events if e["app_id"] == a])}
+    clean = [{"app_id": a, "chiffres": _figures([e for e in events if e["app_id"] == a])}
              for a in apps if a not in flagged]
 
     starts = sorted(e["ts_start"] for e in events)
-    global_figures = chiffrer(events) if events else None
+    global_figures = _figures(events) if events else None
     return {
         "verifications": [_check_title(name) for name, _ in detectors],
         "raisons_globales": _missing_reasons(global_figures["manquants"]) if global_figures else [],
@@ -95,6 +119,15 @@ def build_report(events, detectors=None):
 
 
 # ---------- rendu ----------
+
+def _cost(n):
+    """Coût mensuel projeté, sinon coût observé (fenêtre courte)."""
+    return n["cout_mensuel_usd"] if n["cout_mensuel_usd"] is not None else n.get("cout_observe_usd")
+
+
+def _cost_label(n, monthly="Coût mensuel"):
+    return (monthly, n["cout_mensuel_usd"]) if n.get("cout_observe_usd") is None else ("Coût observé", n["cout_observe_usd"])
+
 
 def _usd(v):
     return "non disponible" if v is None else f"{v:,.0f} $".replace(",", " ") if v >= 10 else f"{v:.2f} $"
@@ -139,7 +172,7 @@ def _card(c):
     return f"""<div class="card"><h3>{e(c['titre'])}</h3>
 <div class="app">Application {e(c['app_id'])} · modèle {e(c['model'])}</div>
 <p>{e(c['phrase'])}</p>
-<div class="nums"><span>Coût mensuel <b>{_usd(n['cout_mensuel_usd'])}</b></span>
+<div class="nums"><span>{_cost_label(n)[0]} <b>{_usd(_cost_label(n)[1])}</b></span>
 <span>Latence médiane <b>{_ms(n['latence_mediane_ms'])}</b></span>
 <span>Latence p95 <b>{_ms(n['latence_p95_ms'])}</b></span>
 <span>Appels <b>{n['nb_appels']}</b></span></div>
@@ -159,11 +192,11 @@ def render_html(report):
         cards = "".join(_card(c) for c in report["constats"]) or "<p>Aucun gaspillage détecté.</p>"
         rows = "".join(
             f"<tr><td>{e(a['app_id'])}</td><td>{a['chiffres']['nb_appels']}</td>"
-            f"<td>{_usd(a['chiffres']['cout_mensuel_usd'])}</td></tr>" for a in report["rien_a_signaler"])
+            f"<td>{_usd(_cost(a['chiffres']))}</td></tr>" for a in report["rien_a_signaler"])
         body = f"""<div class="kpis">
 <div class="kpi"><b>{r['nb_appels']}</b><span>appels observés</span></div>
 <div class="kpi"><b>{r['nb_applications']}</b><span>applications</span></div>
-<div class="kpi"><b>{_usd(g['cout_mensuel_usd'])}</b><span>coût mensuel total</span></div>
+<div class="kpi"><b>{_usd(_cost_label(g)[1])}</b><span>{_cost_label(g, "coût mensuel")[0].lower()} total</span></div>
 <div class="kpi"><b>{len(report['constats'])}</b><span>constats</span></div></div>
 {missing}
 <p class="note">Vérifications effectuées : {checks}.</p>
