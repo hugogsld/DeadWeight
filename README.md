@@ -194,6 +194,41 @@ l'éditeur lui-même, pas à celui d'un hébergeur tiers moins cher. Un modèle 
 signalé : ses jetons de réflexion ne sont pas dans votre trafic, son coût est donc sous-estimé.
 Leur qualité n'est pas prouvée : à vérifier par rejeu avant de changer de modèle.
 
+## Importer l'historique n8n (B1)
+
+Sans passerelle : si vos agents tournent dans n8n, l'historique des exécutions contient déjà
+vos vrais appels LLM. Deux commandes, à lancer chez vous, avec seulement Python 3.9+ (rien à
+installer). La clé se crée dans n8n, *Settings → n8n API*, et reste dans votre environnement.
+
+    export N8N_API_KEY=...
+    python3 -m importers.n8n check --url https://votre-n8n.exemple.com
+    python3 -m importers.n8n fetch --url https://votre-n8n.exemple.com --workflow <id> [--limit 500] [--since 2026-09-01]
+
+`check` dit, pour chaque workflow, s'il appelle un LLM, si les exécutions réussies sont
+enregistrées, combien il y en a et sur quelle période. `fetch` écrit
+`private/n8n/<id>/workflow.json` et `executions.jsonl` (une exécution par ligne) ; relancée,
+elle reprend sans retélécharger. Le dossier `private/` est ignoré par git : relisez-le avant
+de nous l'envoyer, il contient les messages traités par vos workflows.
+
+Puis la conversion en événements, et le même rapport que pour la passerelle :
+
+    python3 -m importers.n8n convert private/n8n/<id>
+    python -m report.audit private/n8n/<id>/events.jsonl -o out/audit.html
+
+Chaque appel d'un nœud « Chat Model » (OpenAI, Anthropic, Gemini, Mistral, Groq, Ollama…)
+devient un événement : prompt, réponse, jetons, durée ; l'exécution n8n sert de trace (exacte),
+`app_id` = `n8n:<workflow>/<nœud racine>`. n8n ne garde pas les appels d'outils du modèle : on
+les reconstitue depuis les nœuds outils. Il ne sépare pas non plus la part servie par le cache :
+le coût est donc un plafond (tout au prix plein). `comprehension.json` dit ce qui a été lu :
+jetons réels, estimés par n8n, appels illisibles — et le **taux d'appels LLM compris**.
+
+Données personnelles : `convert --anonymize` remplace emails, téléphones, IBAN et numéros de
+carte par des étiquettes stables (`[email-1]`, `[telephone-2]`…) ; une même valeur garde la
+même étiquette, les règles gardent donc leur signal. Envoyez-nous alors seulement
+`events.jsonl`, pas `executions.jsonl` (brut). Après l'analyse :
+
+    python3 -m importers.n8n purge private/n8n/<id>
+
 ## Confidentialité
 
 - **La clé n’est jamais stockée** par la passerelle : l’en-tête d’autorisation est
