@@ -19,7 +19,8 @@ def iso(dt):
 def event(n, *, app, provider, model, system, messages, content, in_tok, out_tok,
           offset_s, latency_ms, tools=None, tool_calls=None, finish="stop",
           finish_raw=None, trace=(None, None, None), cached=0, stream=False,
-          ttft=None, http_status=200, error=None, temperature=0.0, max_tokens=None):
+          ttft=None, http_status=200, error=None, temperature=0.0, max_tokens=None,
+          reasoning_tok=None):
     start = T0 + timedelta(seconds=offset_s)
     trace_id, trace_source, step = trace
     return {
@@ -53,7 +54,7 @@ def event(n, *, app, provider, model, system, messages, content, in_tok, out_tok
             "finish_reason_raw": finish_raw or finish,
         },
         "usage": {"input_tokens": in_tok, "output_tokens": out_tok,
-                  "cached_input_tokens": cached, "reasoning_tokens": None},
+                  "cached_input_tokens": cached, "reasoning_tokens": reasoning_tok},
         "http_status": http_status,
         "error": error,
     }

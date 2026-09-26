@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parent.parent
 DATASET = ROOT / "fixtures/dataset/v1/events.jsonl"
 EVENTS = [json.loads(line) for line in DATASET.read_text().splitlines()]
 RULE_CODES = ["low_entropy_output", "oversized_model", "raw_context", "no_cache",
-              "unbounded_loop", "agent_where_chain"]
+              "unbounded_loop", "agent_where_chain",
+              "excess_reasoning", "duplicate_calls", "paid_errors", "verbose_output"]
 
 
 def test_findings_sorted_by_monthly_cost_desc_unknown_last():
