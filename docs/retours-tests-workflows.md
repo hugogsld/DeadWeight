@@ -26,6 +26,7 @@ Statuts : `ouvert` → `en cours (#PR)` → `corrigé (#PR)`, ou `abandonné (ra
 | **Récap Gmail** ([repo workflows](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026), `workflow 2 - Recap Gmail`) | **51 appels réels** `gpt-4o-mini` : 47 tris de mails (un mot parmi 5) + 4 appels d'un agent de récap avec outil `read_email` | capture (D1.2), traces sans en-tête (D1.4), règles, rapport (D4.1), rejeu (D3.2) |
 | Jeu de données D0.3 | 1 332 événements générés | les six règles, cas positifs et négatifs |
 | **Miguel shorts-factory** (`workflow 1 - Miguel short`) | **aucun appel capturé** : lecture du code d'orchestration et du relevé de coûts réel (316 lignes, 7 lots de production) | ce que Deadweight verrait, et ce qu'il ne peut pas voir, sur un pipeline d'agents en production |
+| **OpenAI story flow** (`workflow 3 - OpenAI story flow`) | **77 appels réels** `gpt-4o-mini` : 30 exécutions de l'exemple officiel `deterministic.py` du SDK Agents (plan → vérification → histoire) | capture, traces (D1.4), R1, rejeu, API Responses |
 
 Résultat global sur le récap Gmail : la chaîne complète tourne sur du vrai trafic.
 R1 « une IA qui répond toujours la même chose » est détectée sur le tri (47 appels,
@@ -70,19 +71,53 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
   dans son propre bilan.
 - **Problèmes** : 7, 8, 9.
 
+### Fiche : OpenAI story flow (26/09)
+
+- **Source** : exemple officiel `examples/agent_patterns/deterministic.py` de
+  [openai-agents-python](https://github.com/openai/openai-agents-python) @ `588826c`,
+  dossier `workflow 3 - OpenAI story flow` du repo workflows.
+- **Ce qu'il fait** : trois agents à la suite. Un plan d'histoire, puis un
+  vérificateur qui rend `{good_quality, is_scifi}`, puis, si les deux sont vrais,
+  l'histoire.
+- **Trafic capturé** : 2 lots de 15 demandes (9 de science-fiction, 6 d'autres
+  genres), soit **77 appels réels** `gpt-4o-mini` : 30 plans, 30 vérifications,
+  17 histoires. Sans streaming, 0 erreur, 2 min de trafic par lot. Coût réel :
+  environ 0,01 $ par lot.
+- **Règles obtenues** :
+  - après 1 lot (38 appels) : **aucun constat**. Le vérificateur ne rend que 2
+    réponses sur 15 appels, mais R1 demande au moins 30 appels d'un même gabarit ;
+  - après 2 lots (77 appels) : **R1 sur le vérificateur**, « 30 appels ne
+    produisent que 2 réponses différentes ». Mesuré à côté : `good_quality` vaut
+    `true` 30 fois sur 30, le contrôle de qualité n'a jamais rien arrêté ;
+  - **aucune trace** reconstituée (0 sur 77), donc R6 « toujours le même chemin »
+    ne peut pas voir cette chaîne fixe.
+- **Rejeu** : `REJECT`. 24 des 30 vérifications servent d'exemples, il en reste 6
+  à rejouer pour un minimum de 30. Règles extraites :
+  `elysium|alex|mira|human` → science-fiction, `clara|bakery|whisker|hotel` →
+  pas de science-fiction. Ce sont des noms de personnages de ce lot, pas des
+  critères. Coût affiché : `20.0539 → 10.0269 USD/mois` pour un coût réel de
+  0,0023 $.
+- **API Responses** : une exécution avec le réglage par défaut du SDK
+  (`set_default_openai_api("responses")`) a répondu normalement à l'utilisateur.
+  La passerelle a relayé, et **0 événement capturé** (77 avant, 77 après).
+- **Problèmes** : 1 et 3 (confirmés), 10, 11, 12.
+
 ## Problèmes ouverts
 
 | # | Problème | Gravité | Où | Vu sur | Statut |
 | --- | --- | --- | --- | --- | --- |
-| 1 | Le rejeu affiche encore une projection mensuelle absurde | haute | `proof/replay.py` | Récap Gmail | ouvert |
+| 1 | Le rejeu affiche encore une projection mensuelle absurde | haute | `proof/replay.py` | Récap Gmail, OpenAI story flow | ouvert |
 | 2 | R1 conseille des « règles fixes » que le rejeu refuse ensuite | haute | `report/audit.py`, `proof/` | Récap Gmail | ouvert |
-| 3 | Le rejeu ne peut presque jamais conclure sous ~90 appels | moyenne | `proof/replay.py`, `rules/low_entropy.py` | Récap Gmail | ouvert |
+| 3 | Le rejeu ne peut presque jamais conclure sous ~90 appels | moyenne | `proof/replay.py`, `rules/low_entropy.py` | Récap Gmail, OpenAI story flow | ouvert |
 | 4 | Le conseil « laissez tourner une heure » est faux pour un workflow par lots | moyenne | `report/audit.py` | Récap Gmail | ouvert |
 | 5 | Choix de R5 à valider en équipe | basse | `rules/unbounded_loop.py` | tests D2.4 | ouvert |
 | 6 | Heuristique de traces jamais confrontée à un historique réécrit | basse | `gateway/traces.py` | aucun (à tester) | ouvert |
 | 7 | Deadweight ne voit pas les agents lancés par Claude Code, `claude -p` ou `codex exec` | haute | installation (D4.2), `gateway/` | Miguel shorts-factory | ouvert |
 | 8 | Les agents qui n'exécutent qu'une seule commande échappent à toutes les règles | haute | `rules/agent_where_chain.py` | Miguel shorts-factory | ouvert |
 | 9 | Agents facturés à l'abonnement : le coût en dollars par token ne reflète pas ce qu'ils coûtent | moyenne | `report/cost.py`, `report/audit.py` | Miguel shorts-factory | ouvert |
+| 10 | Les agents qui se passent le relais (la sortie de l'un devient l'entrée de l'autre) ne sont pas regroupés en trace | haute | `gateway/traces.py` | OpenAI story flow | ouvert |
+| 11 | L'API Responses d'OpenAI, celle du SDK Agents par défaut, n'est pas capturée | haute | `gateway/proxy.py`, `gateway/capture.py` | OpenAI story flow | ouvert |
+| 12 | L'extraction de règles hors ligne apprend des noms propres | moyenne | `proof/extract.py` | OpenAI story flow | ouvert |
 
 ### 1. Le rejeu affiche une projection mensuelle absurde
 
@@ -244,6 +279,73 @@ non facturé ». Ajouter au rapport la **part des appels** d'une application
 qu'un constat permettrait d'éviter : sur un plafond d'usage, c'est la mesure
 qui parle.
 
+### 10. Les agents qui se passent le relais ne sont pas regroupés en trace
+
+**Constat.** Dans l'OpenAI story flow, **0 appel sur 77** est regroupé en trace,
+alors que chaque histoire enchaîne 2 ou 3 agents. Vérifié dans les données :
+chaque appel contient **un seul message**, et ce message est **mot pour mot la
+réponse de l'agent précédent** (15 vérifications sur 15, 8 histoires sur 8, sur
+le premier lot).
+
+**Cause.** L'heuristique de D1.4 ne relie B à A que si B **prolonge la
+conversation** de A (le dernier message reçu par A, puis sa réponse, dans
+l'historique de B), avec le **même prompt système**. Ici chaque agent démarre une
+conversation neuve, avec son propre prompt système : c'est le schéma « chaîne
+d'agents » du SDK OpenAI (`Runner.run(agent_suivant, resultat.final_output)`).
+Conséquence directe : R6 ne peut pas voir la chaîne la plus fixe qui soit.
+
+**Correction.** Deuxième voie de regroupement, dans `gateway/traces.py` : B
+continue A si un message utilisateur de B est **identique** à la réponse de A (au
+moins 200 caractères, pour ne pas relier deux « ok »), même application, B
+démarre moins de WINDOW_S secondes après la fin de A. Le prompt système peut
+changer, puisque c'est un autre agent. Cas de test : `out/workflow3.jsonl`, qui
+doit donner 30 traces de 2 ou 3 appels.
+
+### 11. L'API Responses d'OpenAI n'est pas capturée
+
+**Constat.** Le SDK Agents d'OpenAI utilise par défaut l'API **Responses**
+(`/v1/responses`), pas `chat/completions`. Une exécution du story flow avec ce
+réglage par défaut : réponse normale pour l'utilisateur, relais par la passerelle,
+**0 événement capturé**. Pour tester, il a fallu forcer
+`set_default_openai_api("chat_completions")`.
+
+**Cause.** `gateway/proxy.py` ne capture que `POST /v1/chat/completions` côté
+OpenAI. Tout le reste est relayé sans être vu.
+
+**Impact.** Un client qui construit ses agents avec le SDK officiel d'OpenAI,
+la façon recommandée aujourd'hui, **n'est pas audité du tout**, sans aucun
+message d'erreur. Le rapport dirait « rien à signaler ».
+
+**Correction.**
+- Capturer `POST /v1/responses` : normaliser `input` (chaîne ou liste d'items),
+  `instructions` (→ `request.system`), les `output` de type `message` et
+  `function_call`, et `usage` (`input_tokens`, `output_tokens`,
+  `input_tokens_details.cached_tokens`). Le streaming Responses a ses propres
+  événements (`response.output_text.delta`, `response.completed`).
+- En attendant, compter les appels relayés **non capturés** par route, et
+  l'écrire dans le rapport : « 3 appels vers /v1/responses n'ont pas été
+  analysés ». Un trou visible vaut mieux qu'un « rien à signaler » faux.
+
+### 12. L'extraction de règles hors ligne apprend des noms propres
+
+**Constat.** Sur le vérificateur du story flow, l'extraction hors ligne a produit
+`elysium|alex|mira|human` pour « science-fiction » et
+`clara|bakery|whisker|hotel` pour « pas de science-fiction ». Ce sont les noms des
+personnages et des lieux des exemples de ce lot. Ces règles ne valent rien sur
+une nouvelle histoire. Le rejeu les refuse, mais pour une autre raison (trop peu
+d'entrées), et affiche 100 % d'accord sur les 3 entrées qu'elles couvrent.
+
+**Cause.** L'extraction retient les mots les plus propres à chaque catégorie
+dans les exemples. Avec 12 exemples par catégorie, les mots les plus
+discriminants sont des noms propres, présents dans un seul exemple.
+
+**Correction.**
+- Ne garder un mot que s'il apparaît dans **au moins 3 exemples différents**
+  de la catégorie. Un nom de personnage n'apparaît qu'une fois.
+- Écarter les mots en majuscule en milieu de phrase (noms propres).
+- Dans la preuve, afficher les règles en clair à côté du verdict : un humain voit
+  tout de suite que `clara|bakery` ne décrit pas « pas de science-fiction ».
+
 ## Problèmes corrigés
 
 Gardés pour la traçabilité : chacun a été vu en testant.
@@ -267,6 +369,7 @@ Gardés pour la traçabilité : chacun a été vu en testant.
   deux fois et OpenAI renvoie un 401 avec une clé masquée de plus de 700
   caractères. Une clé `sk-proj-…` fait 164 caractères : afficher sa longueur
   avant de l'utiliser.
+- **Arrêter la bonne passerelle.** Sur macOS, le processus s'appelle `Python` (majuscule) : `pkill -f "python -m gateway"` ne le trouve pas, et une ancienne passerelle continue d'occuper le port. Vérifier avec `lsof -iTCP:8080 -sTCP:LISTEN`.
 - **Ctrl+C ne coupe pas une passerelle lancée en arrière-plan dans un script**
   (bash ignore SIGINT pour les tâches de fond). Utiliser `kill -TERM` : la
   passerelle vide sa file et s'arrête proprement.
