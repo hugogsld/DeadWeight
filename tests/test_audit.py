@@ -101,7 +101,7 @@ def test_short_traffic_shows_observed_cost_not_a_monthly_projection():
     report = build_report(burst, detectors=[])
     g = report["resume"]["global"]
     assert g["cout_mensuel_usd"] is None and g["cout_observe_usd"] > 0
-    assert any("moins d'une heure" in r for r in report["raisons_globales"])
+    assert any("moins d'une journée" in r for r in report["raisons_globales"])
     page = render_html(report)
     assert "coût observé total" in page and "315" not in page
 
@@ -109,10 +109,43 @@ def test_short_traffic_shows_observed_cost_not_a_monthly_projection():
 def test_unpriced_calls_give_a_partial_cost_not_nothing():
     from report.cost import chiffrer
     priced = [e for e in EVENTS if e["error"] is None and chiffrer([e])["cout_mensuel_usd"]][:10]
-    events = [{**e, "ts_start": f"2026-09-26T{8 + i:02d}:00:00Z", "ts_end": f"2026-09-26T{8 + i:02d}:00:01Z"}
-              for i, e in enumerate(priced)]
+    events = [{**e, "ts_start": f"2026-09-{10 + i:02d}T08:00:00Z", "ts_end": f"2026-09-{10 + i:02d}T08:00:01Z"}
+              for i, e in enumerate(priced)]  # dix jours : au-delà du minimum d'une journée pour projeter
     events[0] = {**events[0], "model": "modele-maison-inconnu"}
     g = build_report(events, detectors=[])["resume"]["global"]
     assert g["cout_mensuel_usd"] > 0 and g["part_chiffree"] == 0.9
     page = render_html(build_report(events, detectors=[]))
     assert "partiel, 90 % des appels" in page and "modele-maison-inconnu" in page
+
+
+
+def _run(day, hour, minute, n, base):
+    return [{**base, "event_id": f"r{day}{hour}{minute}_{i}", "app_id": "recap",
+             "ts_start": f"2026-09-{day:02d}T{hour:02d}:{minute + i // 60:02d}:{i % 60:02d}Z",
+             "ts_end": f"2026-09-{day:02d}T{hour:02d}:{minute + i // 60:02d}:{i % 60:02d}.500Z"} for i in range(n)]
+
+
+def test_batch_workflow_under_a_day_gives_cost_per_run_not_a_month():
+    """Retour du 26/09 : deux passages d'un récap quotidien en 76 min étaient projetés 38 fois trop haut."""
+    from report.cost import chiffrer
+    base = next(e for e in EVENTS if e["error"] is None and chiffrer([e])["cout_mensuel_usd"])
+    events = _run(26, 16, 4, 51, base) + _run(26, 17, 20, 37, base)
+    g = build_report(events, detectors=[])["resume"]["global"]
+    assert g["cout_mensuel_usd"] is None and g["passages"] == 2
+    assert abs(g["cout_par_passage_usd"] * 2 - g["cout_observe_usd"]) < 1e-12
+    assert "2 passages" in render_html(build_report(events, detectors=[]))
+
+
+def test_findings_are_projected_over_the_same_period_as_the_total():
+    """Une application active une heure sur dix jours ne se projette pas comme si elle tournait sans arrêt."""
+    from report.audit import _figures
+    from report.cost import chiffrer, window_seconds
+    base = next(e for e in EVENTS if e["error"] is None and chiffrer([e])["cout_mensuel_usd"])
+    busy = _run(12, 9, 0, 40, base)                                      # une heure d'activité
+    other = [{**base, "event_id": f"o{d}", "app_id": "autre", "ts_start": f"2026-09-{d:02d}T08:00:00Z",
+              "ts_end": f"2026-09-{d:02d}T08:00:01Z"} for d in range(10, 21)]  # dix jours
+    period = window_seconds(busy + other)
+    alone, shared = _figures(busy), _figures(busy, period)
+    assert alone["cout_mensuel_usd"] is None                            # moins d'un jour seul
+    total = _figures(busy + other, period)["cout_mensuel_usd"]
+    assert shared["cout_mensuel_usd"] <= total                          # jamais plus que le total

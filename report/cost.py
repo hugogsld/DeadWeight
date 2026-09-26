@@ -13,8 +13,11 @@ from statistics import median
 
 PRICING_PATH = Path(__file__).resolve().parents[1] / 'fixtures' / 'pricing.json'
 MONTH_SECONDS = 30 * 24 * 60 * 60
-# En dessous d'une heure de trafic, une projection sur un mois n'est pas fiable.
-MIN_WINDOW_SECONDS = 60 * 60
+# En dessous d'une journée observée, une projection sur un mois n'est pas fiable : un workflow par lots
+# (un récap par jour) passé deux fois en une heure serait projeté 38 fois trop haut (retour du 26/09).
+MIN_WINDOW_SECONDS = 24 * 60 * 60
+# Deux appels séparés par plus de 30 minutes de silence appartiennent à deux passages différents.
+RUN_GAP_SECONDS = 30 * 60
 # suffixes de version datée : claude-sonnet-4-5-20250929, gpt-4o-2024-08-06, gemini-2.0-flash-001
 _DATED = re.compile(r"(-\d{8}|-\d{4}-\d{2}-\d{2}|@\d{8}|-0\d\d)$")
 
@@ -120,6 +123,12 @@ def chiffrer(events, pricing=None):
     if not missing:
         result['cout_mensuel_usd'] = math.fsum(costs) * MONTH_SECONDS / duration
     return result
+
+
+def runs(events):
+    """Passages : rafales d'appels séparées par au moins RUN_GAP_SECONDS de silence."""
+    starts = sorted(datetime.fromisoformat(e["ts_start"].replace("Z", "+00:00")) for e in events)
+    return sum(1 for a, b in zip(starts, starts[1:]) if (b - a).total_seconds() >= RUN_GAP_SECONDS) + bool(starts)
 
 
 def window_seconds(events):
