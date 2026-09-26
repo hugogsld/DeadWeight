@@ -10,7 +10,7 @@ Comment apparaître dans le tableau : créer une issue dont le titre commence pa
 Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépendent.
 
 <!-- STATUT:DEBUT -->
-**4 / 17 livrables du plan de base faits** (12 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:31.
+**5 / 17 livrables du plan de base faits** (15 h sur 57 h). Mis à jour automatiquement le 26/09 à 11:35.
 
 | Id | Livrable | Durée | Dépend de | Statut | Qui | Issue / PR |
 |---|---|---|---|---|---|---|
@@ -29,8 +29,8 @@ Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépend
 | D3.1 | Extraction des règles | 3 h | D2.1 | Prenable | — | — |
 | D3.2 | Rejeu et seuil 0,95 | 4 h | D3.1 | Bloqué (attend D3.1) | — | — |
 | D3.3 | Court-circuit *(hors plan)* | 4 h | D3.2 | Bloqué (attend D3.2) | — | — |
-| D4.1 | Rapport d'audit | 3 h | D2.5 | **En relecture** | Natanlsr3, claude | #12 · PR #13 |
-| D4.2 | Installation dix minutes | 4 h | D1.1, D4.1 | Bloqué (attend D1.1, D4.1) | — | — |
+| D4.1 | Rapport d'audit | 3 h | D2.5 | **Fait** | Natanlsr3, claude | #12 · PR #13 |
+| D4.2 | Installation dix minutes | 4 h | D1.1, D4.1 | Bloqué (attend D1.1) | — | — |
 | D4.3 | Mode miroir *(hors plan)* | 3 h | D1.2 | Bloqué (attend D1.2) | — | — |
 | D4.4 | Test par un tiers | 2 h | D4.2 | Bloqué (attend D4.2) | — | — |
 <!-- STATUT:FIN -->
