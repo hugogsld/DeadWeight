@@ -1,5 +1,7 @@
 # Deadweight — roadmap weekend 26-27 septembre
 
+> **Suite : [ROADMAP_V2.md](ROADMAP_V2.md)**, samedi après-midi → dimanche après-midi, recalibrée.
+
 4 personnes, 15 h chacune, 60 h au total. Découpé en livrables de 2 à 4 h, chacun prenable indépendamment.
 Source : document de Natan du 25/09. **Le tableau d'avancement à jour vit dans l'issue épinglée « Avancement du weekend (automatique) »** : `main` est protégé, le bot ne peut plus écrire ici.
 
