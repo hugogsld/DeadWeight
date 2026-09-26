@@ -42,7 +42,8 @@ DELIVERABLES = [
 # Roadmap v2 (ROADMAP_V2.md) : lots A, B, C, M (modeles), E (partenaires), Q (tests), V (video)
 DELIVERABLES_V2 = [
     ("A1", "Agent auditeur", 7, [], False),
-    ("B1", "Import de l'historique n8n", 6, [], False),
+    ("B1", "Connecteurs Claude Code / Codex puis n8n", 7, [], False),
+    ("B2", "Connecteur OpenTelemetry", 4, [], False),
     ("B3", "Analyse du premier workflow", 3, [], False),
     ("M1", "Catalogue : origine, hébergement, qualité, vitesse", 4, [], False),
     ("M2", "Recommandations de modèles", 5, ["M1"], False),
