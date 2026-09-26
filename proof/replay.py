@@ -217,9 +217,8 @@ def replay(finding, events, rules, fallback=None, fallback_model=None, throttle=
         'rules_coverage': round(matched / n, 4) if n else 0.0,
         'fallback_model': fallback_model if fallback is not None else None,
         'disagreements': disagreements,
-        'currency': 'USD',
-        'cost_before_month_eur': round(before, 4) if before is not None else None,
-        'cost_after_month_eur': round(after, 4) if after is not None else None,
+        'cost_before_month_usd': round(before, 4) if before is not None else None,
+        'cost_after_month_usd': round(after, 4) if after is not None else None,
         'cost_factor': round(before / after, 1) if before and after else None,
         'cost_missing': missing,
         'p95_before_ms': _p95([e['latency_ms'] for e, _, _ in pairs]),
@@ -240,7 +239,7 @@ def _print(proof):
     print(f"  couvert   {proof['rules_coverage']:.0%} des entrées sans aucun modèle ; "
           f"{n - proof['n_replaced']} restent sur l'appel d'origine")
     if proof['cost_factor']:
-        print(f"  coût      {proof['cost_before_month_eur']} → {proof['cost_after_month_eur']} "
+        print(f"  coût      {proof['cost_before_month_usd']} → {proof['cost_after_month_usd']} "
               f"USD/mois  (/{proof['cost_factor']})")
     else:
         print('  coût      non mesurable : ' + '; '.join(proof['cost_missing'][:3]))

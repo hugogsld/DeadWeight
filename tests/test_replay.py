@@ -59,9 +59,9 @@ def test_dataset_mail_triage_passes_on_held_out_events(dataset):
     assert proof['verdict'] == 'pass' and proof['reasons'] == []
     assert proof['n_replayed'] == finding['evidence']['calls'] - len(finding['evidence']['samples'])
     assert proof['agreement_rate'] >= .95 and proof['n_replaced'] >= MIN_REPLAY
-    assert proof['cost_after_month_eur'] < proof['cost_before_month_eur']
+    assert proof['cost_after_month_usd'] < proof['cost_before_month_usd']
     for field in ('patch_id', 'finding_id', 'n_replayed', 'agreement_rate', 'threshold',
-                  'p95_before_ms', 'p95_after_ms', 'cost_before_month_eur', 'cost_after_month_eur'):
+                  'p95_before_ms', 'p95_after_ms', 'cost_before_month_usd', 'cost_after_month_usd'):
         assert proof[field] is not None
 
 
@@ -70,7 +70,7 @@ def test_dataset_reviews_rejected_as_a_result_with_unmeasured_cost(dataset):
     finding = findings['reviews']
     proof = replay(finding, events, extract_rules(finding, events))
     assert proof['verdict'] == 'reject' and proof['reasons']
-    assert proof['cost_before_month_eur'] is None and proof['cost_factor'] is None
+    assert proof['cost_before_month_usd'] is None and proof['cost_factor'] is None
     assert any('catalogue' in m for m in proof['cost_missing'])
 
 
@@ -99,7 +99,7 @@ def test_unmatched_stays_on_original_and_is_not_compared():
     proof = replay(_finding(events), events, RULES)
     assert proof['n_replaced'] == 30 and proof['agreement_rate'] == 1
     assert proof['verdict'] == 'pass'
-    assert proof['cost_after_month_eur'] == pytest.approx(proof['cost_before_month_eur'] / 4, rel=1e-3)
+    assert proof['cost_after_month_usd'] == pytest.approx(proof['cost_before_month_usd'] / 4, rel=1e-3)
 
 
 def test_too_few_replaced_rejects_even_at_full_agreement():
@@ -125,7 +125,7 @@ def test_fallback_error_counts_as_disagreement_without_leaking():
     proof = replay(_finding(events), events, RULES, fallback, 'gpt-4o-mini',
                    Throttle(max_calls=50, min_interval_s=0))
     assert proof['agreement_rate'] == 0 and proof['verdict'] == 'reject'
-    assert proof['cost_after_month_eur'] is None
+    assert proof['cost_after_month_usd'] is None
     assert 'secret-api-key' not in json.dumps(proof)
 
 
