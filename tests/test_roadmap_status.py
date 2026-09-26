@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-from roadmap_status import BEGIN, END, compute, render, replace_block  # noqa: E402
+from roadmap_status import BEGIN, DELIVERABLES_V2, END, compute, render, replace_block  # noqa: E402
 
 
 def issue(n, title, state="open", assignees=(), labels=()):
@@ -46,3 +46,17 @@ def test_render_counts_base_plan_only():
 def test_replace_block_keeps_the_rest():
     text = f"avant\n{BEGIN}\nvieux\n{END}\napres"
     assert replace_block(text, "neuf") == f"avant\n{BEGIN}\nneuf\n{END}\napres"
+
+
+def test_v2_ids_are_tracked_and_can_wait_on_v1():
+    issues = [issue(20, "A1 — Agent auditeur", assignees=["hugo"]), issue(21, "D4.2 — Installation", "closed")]
+    rows = compute(issues, [pr(22, "M1 — Catalogue de modèles")], DELIVERABLES_V2)
+    assert status(rows, "A1") == "En cours"
+    assert status(rows, "M1") == "En relecture"
+    assert status(rows, "M2").startswith("Bloqué (attend M1")
+    assert status(rows, "Q1") == "Prenable"  # D4.2 fait, dans l'autre plan
+
+
+def test_v2_ids_do_not_leak_into_v1():
+    rows = compute([], [pr(1, "A1 — Agent auditeur", "merged", True)])
+    assert all(r["id"].startswith("D") for r in rows)

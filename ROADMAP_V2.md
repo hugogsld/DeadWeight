@@ -4,7 +4,9 @@ La v1 (`ROADMAP.md`) prévoyait 60 h ; on l'a quasiment bouclée en une matinée
 Cette v2 est **recalibrée sur ce rythme** : les durées sont des heures réelles d'une personne avec son agent,
 pas des estimations « à la main ». Même règles de repo que la v1 (une tâche = une issue = une branche = une PR).
 
-Suivi en continu : issue épinglée « Avancement du weekend (automatique) ».
+Suivi en continu : issue épinglée « Avancement du weekend (automatique) », v2 et v1. Pour y apparaître,
+même règle qu'en v1 : issue dont le titre commence par l'identifiant (`A1 — Agent auditeur`), assignée,
+et PR au même début de titre avec `Closes #<issue>`.
 
 ## Ce qui change
 
@@ -90,13 +92,13 @@ Ce sont souvent eux qui coûtent ou qui ralentissent.
   être en parallèle, taux d'erreur, coût par appel (catalogue de prix des outils). Fin : un constat outil dans le
   rapport, chiffré.
 
-### Lot D — Catalogue de modèles et recommandations (samedi soir)
+### Lot M — Catalogue de modèles et recommandations (samedi soir)
 
-- **D1 — Catalogue** · 1 h 30 · ★★. Un fichier de données versionné : prix entrée/sortie/cache, latence (TTFT,
+- **M1 — Catalogue** · 1 h 30 · ★★. Un fichier de données versionné : prix entrée/sortie/cache, latence (TTFT,
   jetons/s), indicateur de qualité, fenêtre de contexte, **origine (FR/UE/US/CN) et hébergement UE possible**,
   compatibilité API OpenAI, avec la source et la date de chaque chiffre. Fin : chaque modèle du jeu de données
   y figure.
-- **D2 — Recommandations concrètes** · 2 h · ★★★. R2 (modèle surdimensionné) et le rapport proposent une
+- **M2 — Recommandations concrètes** · 2 h · ★★★. R2 (modèle surdimensionné) et le rapport proposent une
   alternative précise avec son gain en coût et en latence, et une **option souveraine** (Mistral, hébergement
   UE) quand elle existe. Fin : chaque constat R2 affiche « passer de X à Y : −N % de coût, origine ».
 
@@ -135,7 +137,7 @@ Ce sont souvent eux qui coûtent ou qui ralentissent.
 | **Natan** | orchestration, relectures ; B4, B5, A3 ; testeur D4.4 | B3 avec l'équipe ; V1 | D4.4 (observer) ; V2, V3, V4 |
 | **Hugo** | **A1 agent auditeur** | E1 Pipelex | corrections après D4.4 |
 | **Thibaud** | D2.4 prête ; **B1 banc n8n** | C1, C2 | gel, relectures |
-| **Alexandre** | D1.3 fusionné ; D4.3 miroir | D1, D2 catalogue | E2 si le temps |
+| **Alexandre** | D1.3 fusionné ; D4.3 miroir | M1, M2 catalogue | E2 si le temps |
 | **Codex** | D4.2 | Q1 | — |
 | **Claude** | relectures et fusions ; B2 convertisseur | Q2 ; A2 | relecture finale du README |
 
@@ -145,7 +147,7 @@ Ce sont souvent eux qui coûtent ou qui ralentissent.
 
 1. E3, puis E2, puis E1 (partenaires).
 2. C2, puis C1 (outils hors LLM) — on les garde pour la finale.
-3. D2 (on garde le catalogue D1 dans le rapport).
+3. M2 (on garde le catalogue M1 dans le rapport).
 4. B3 sur le 2ᵉ et le 3ᵉ workflow — un seul vrai workflow bien analysé suffit.
 
 **On ne coupe jamais A1, A2, un vrai workflow (B3), D4.4, la vidéo et le dépôt.**
@@ -172,3 +174,80 @@ Ce sont souvent eux qui coûtent ou qui ralentissent.
 | Faire lire le rapport à quelqu'un hors équipe (critère de D4.1 jamais vérifié) | n'importe qui, 15 min |
 | Script, tournage, montage de la vidéo | Natan + un volontaire |
 | Liste des 5 entreprises pour la validation, message d'approche | Natan |
+
+## Pistes de réflexion
+
+À trancher à quatre, idéalement samedi soir : ça décide ce qu'on montre dans la vidéo et ce qu'on construit
+dimanche. Rien ici n'est encore décidé.
+
+### 1. Recadrer le problème qu'on résout
+
+Ce qu'on a construit : une passerelle qui regarde les appels LLM d'un workflow agentique, trouve six formes de
+gaspillage, **prouve** par le rejeu qu'un remplacement donne les mêmes réponses, et peut court-circuiter le
+modèle. La question de départ reste la bonne : *est-ce que ça avait besoin d'être un agent ?*
+
+Mais le même produit peut se vendre sur quatre problèmes différents. Il faut en choisir un pour le pitch :
+
+| Problème | Ce que le client dit | Ce qu'on montre | Qui achète |
+|---|---|---|---|
+| **Coût** | « la facture OpenAI double tous les trimestres » | coût par mois avant/après, prouvé | CTO, CFO de scale-up |
+| **Visibilité** | « on ne sait pas ce que font nos agents » | inventaire, traces, boucles | responsable ops / automatisation |
+| **Fiabilité** | « nos agents se trompent sans qu'on le voie » | taux d'accord, rejeu, mode miroir | produit, qualité |
+| **Souveraineté** | « nos données partent aux États-Unis » | origine et hébergement de chaque appel, alternative UE | DSI, conformité, secteur public |
+
+Question à trancher : **une phrase de problème**, un client type, et ce qu'on ne fait pas.
+
+### 2. Selon la verticale, la stack à optimiser change
+
+Un workflow agentique n'est pas qu'un modèle : c'est une chaîne d'outils, et chaque verticale a la sienne.
+
+| Verticale | Workflow typique | Outils autour du LLM | Ce qu'on optimiserait | Ce qui compte pour le client |
+|---|---|---|---|---|
+| Marketing / growth | enrichissement de leads, emails personnalisés, veille | recherche web (Tavily, Exa, Brave), scraping (Firecrawl, Apify), enrichissement (Clay, Apollo, Dropcontact), envoi (Lemlist, Brevo) | doublons d'enrichissement et de scraping, recherche payée deux fois, modèle haut de gamme pour écrire une accroche | coût par lead, délai |
+| Support client | tri des tickets, réponse avec base de connaissances | helpdesk, RAG, embeddings | tri par LLM → règles ; contexte brut → RAG ciblé ; cache | temps de réponse, justesse |
+| E-commerce | fiches produit, tri des avis, réponses aux avis | catalogue, images | génération en lot (API batch), petit modèle | coût par fiche |
+| Juridique / finance | extraction de documents, conformité | OCR, stockage documentaire | modèle adapté à l'extraction, **hébergement UE** | souveraineté, exactitude |
+| Recrutement | tri de CV, premiers échanges | ATS, messagerie | tri par LLM → règles ; biais à surveiller | équité, délai |
+
+Question à trancher : **quelle verticale pour la démo et les premiers clients ?** Critères : accès à de vrais
+workflows, volume d'appels, sensibilité au coût ou à la souveraineté, capacité à payer.
+
+### 3. Au-delà du choix du modèle : la façon de l'utiliser
+
+À modèle égal, l'usage change la facture. Pistes de nouvelles règles :
+
+- **Cache** : jusqu'à ~90 % du coût d'entrée évitable sur un préfixe répété, mais seuils et activation propres
+  à chaque fournisseur (automatique chez OpenAI et Gemini, explicite chez Anthropic et Mistral).
+- **API batch** pour ce qui n'est pas urgent (génération de fiches, enrichissement de nuit).
+- **Sorties structurées** plutôt que du texte libre relu par un deuxième appel.
+- **Taille du contexte** : ce qu'on envoie et ne sert à rien (R3 le fait en partie).
+- **Appels en série qui pourraient être parallèles** : la latence, pas le coût.
+- **Routage** : petit modèle d'abord, grand modèle seulement si besoin.
+- **Hors LLM** : règles, puis classifieur léger, puis embeddings, puis petit modèle ; le grand modèle en dernier.
+  Pour classer, l'écart de coût va de ×10 à plus de ×100.
+
+### 4. La souveraineté, un argument à part entière
+
+La recherche (`docs/research/modeles.md`) montre que **l'hébergement compte plus que le fournisseur** :
+l'API directe d'Anthropic n'a pas d'hébergement UE (tout part aux États-Unis) ; OpenAI et Gemini en proposent un ;
+Mistral, Scaleway et OVHcloud sont les seules options entièrement françaises. Pour un client français, « passer de
+X à Y » peut se justifier par la conformité avant le prix. D'où la colonne origine / hébergement du catalogue (M1).
+
+### 5. Ce qui sort sur le marché
+
+Chaque mois arrivent de nouvelles briques : passerelles et routeurs (LiteLLM, Portkey, OpenRouter),
+observabilité (Langfuse, Helicone), serveurs MCP, SDK d'agents, fonctions natives des fournisseurs (cache
+automatique, routage). Deux conséquences :
+
+- **Se différencier** : les autres mesurent, routent ou mettent en cache. Nous, on répond à « fallait-il un
+  agent ? » et on **prouve** le remplacement avant de le proposer. C'est ce qu'il faut répéter dans le pitch.
+- **S'appuyer dessus plutôt que les refaire** : lire les traces d'un outil d'observabilité existant, exporter
+  vers Pipelex, être un serveur MCP que les agents appellent. À surveiller : un fournisseur qui intègre nativement
+  une de nos règles la rend inutile.
+
+Question à trancher : **qu'est-ce qu'on implémente nous-mêmes, et sur quoi on se branche ?**
+
+### 6. Ce qu'on garde pour après le weekend
+
+Relais des outils hors LLM (lot C) si on le coupe, verticales non choisies, intégrations d'observabilité,
+mode serveur MCP, validation auprès de cinq entreprises, préparation de la finale X-IA (octobre-novembre).
