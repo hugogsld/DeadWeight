@@ -20,9 +20,16 @@ def _sample_key(event_id):
 
 
 def _usable_messages(event):
-    messages = event.get('request', {}).get('messages', [])
-    return [{'role': m['role'], 'content': m.get('content') or ''}
-            for m in messages if isinstance(m, dict) and m.get('role') in ('user', 'assistant', 'tool')]
+    """La conversation telle que le client l'a envoyée. Le prompt système est un champ à part
+    du schéma d'événement (request.system) : sans lui, le candidat ne connaît pas la tâche."""
+    request = event.get('request', {})
+    messages = request.get('messages', [])
+    turns = [{'role': m['role'], 'content': m.get('content') or ''}
+             for m in messages if isinstance(m, dict) and m.get('role') in ('user', 'assistant', 'tool')]
+    if not turns:
+        return []
+    system = request.get('system')
+    return ([{'role': 'system', 'content': system}] if system else []) + turns
 
 
 def build_test_cases(events, app_id, model, template=None, max_cases=DEFAULT_MAX_CASES):

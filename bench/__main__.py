@@ -4,6 +4,9 @@
         [--template GABARIT] [--candidates small,local] [--max-cases 50] \\
         [--max-calls 50] [--min-interval 1] [--dry-run] [--out out/bench.json]
 
+    python -m bench m2 events.jsonl --finding FINDING_ID [--max-cases 50] [--max-calls 50] \\
+        [--min-interval 1] [--dry-run] [--out out/banc]     # les options de M2 au banc
+
 --dry-run n'emet aucun appel : il affiche ce qui serait appele et un cout estime.
 """
 import argparse
@@ -11,6 +14,7 @@ import json
 import sys
 from pathlib import Path
 
+from bench import m2
 from bench.catalog import load_candidates
 from bench.pricing import load_prices
 from bench.report import dry_run_estimate, rank, to_dict
@@ -74,7 +78,17 @@ def main(argv=None):
     run.add_argument('--min-interval', type=float, default=DEFAULT_MIN_INTERVAL_S)
     run.add_argument('--dry-run', action='store_true')
     run.add_argument('--out', default=None, help='ecrit le rapport JSON a ce chemin')
+    opt = sub.add_parser('m2', help="teste les options de recommend() pour un constat « modele trop gros »")
+    opt.add_argument('events', help='evenements au schema v1 (jsonl)')
+    opt.add_argument('--finding', required=True)
+    opt.add_argument('--max-cases', type=int, default=DEFAULT_MAX_CASES)
+    opt.add_argument('--max-calls', type=int, default=None)
+    opt.add_argument('--min-interval', type=float, default=DEFAULT_MIN_INTERVAL_S)
+    opt.add_argument('--dry-run', action='store_true')
+    opt.add_argument('--out', default='out/banc', help='dossier ou ecrire banc-<finding>.json (lu par le rapport)')
     args = ap.parse_args(argv)
+    if args.command == 'm2':
+        return _m2(args)
 
     events = _load_events(args.events)
     cases = build_test_cases(events, args.app, args.model, args.template, args.max_cases)
@@ -99,6 +113,36 @@ def main(argv=None):
         Path(args.out).parent.mkdir(parents=True, exist_ok=True)
         Path(args.out).write_text(json.dumps(report, indent=2, ensure_ascii=False))
         print(f"\n            -> {args.out}")
+    return 0
+
+
+def _m2(args):
+    from rules.oversized_model import detect
+
+    events = _load_events(args.events)
+    finding = next((f for f in detect(events) if f['finding_id'] == args.finding), None)
+    if finding is None:
+        print(f"{args.finding} : aucun constat « modele trop gros » de ce nom", file=sys.stderr)
+        return 1
+    if args.dry_run:
+        plan = m2.dry_run(events, finding, args.max_cases)
+        print(f"{plan['n_cases']} cas de test, aucun appel effectue")
+        for key, p in plan['options'].items():
+            cost = p['estimated_cost_usd']
+            print(f"  {key:20} {p['model']:45} via {p['route'] or 'le moins cher'}  "
+                  f"{'~%.4f $' % cost if cost is not None else p['note']}")
+        return 0
+    result = m2.prove(events, finding, args.max_cases, args.max_calls, args.min_interval)
+    if result['raison']:
+        print(f"aucune option a tester : {result['raison']}")
+    for key, r in result['options'].items():
+        print(f"  {key:20} {r['model']:45} {r['verdict']:11} score={r['score']} erreurs={r['n_errors']}")
+        for reason in r['reasons']:
+            print(f'      - {reason}')
+    out = Path(args.out) / f"banc-{args.finding}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(result, indent=2, ensure_ascii=False))
+    print(f"            -> {out} (make audit / python -m report.audit --banc {args.out})")
     return 0
 
 

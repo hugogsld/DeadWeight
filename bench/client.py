@@ -26,11 +26,12 @@ class CallResult(NamedTuple):
 class CandidateLLM:
     """base_url inclut le prefixe API (ex. /v1). api_key peut etre None."""
 
-    def __init__(self, base_url, api_key, model, timeout_s=DEFAULT_TIMEOUT_S):
+    def __init__(self, base_url, api_key, model, timeout_s=DEFAULT_TIMEOUT_S, route=None):
         self.base_url = base_url.rstrip('/')
         self.api_key = api_key
         self.model = model
         self.timeout_s = timeout_s
+        self.route = route  # OpenRouter : hébergeur imposé, sans repli vers un autre
 
     def complete(self, messages):
         # temperature 0 pour des réponses stables ; les modèles à raisonnement (gpt-5, o-series)
@@ -41,6 +42,8 @@ class CandidateLLM:
         return result
 
     def _call(self, body):
+        if self.route:
+            body = {**body, 'provider': {'order': [self.route], 'allow_fallbacks': False}}
         headers = {'Content-Type': 'application/json'}
         if self.api_key:
             headers['Authorization'] = 'Bearer ' + self.api_key

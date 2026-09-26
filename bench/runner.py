@@ -56,7 +56,8 @@ def _cost(candidate, calls_usage, prices):
 def run_candidate(candidate, cases, task_type, throttle=None, prices=None, client_cls=CandidateLLM):
     """N'echoue jamais par exception : un candidat en panne devient un verdict reject."""
     throttle = throttle or Throttle()
-    client = client_cls(resolve_base_url(candidate), resolve_api_key(candidate), candidate.model)
+    route = {'route': candidate.route} if candidate.route else {}
+    client = client_cls(resolve_base_url(candidate), resolve_api_key(candidate), candidate.model, **route)
 
     scores, latencies, calls_usage = [], [], []
     n_calls = errors = 0

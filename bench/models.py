@@ -15,6 +15,7 @@ class Candidate:
     size_class: str  # local | small | medium
     origin: str  # FR | EU | US | CN
     note: str
+    route: Optional[str] = None  # hébergeur OpenRouter imposé, sans repli (ex. « Mistral ») : on teste cette route
 
 
 @dataclass(frozen=True)

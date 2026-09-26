@@ -393,6 +393,15 @@ passerelle, ce banc mesure des modèles candidats sur du trafic — deux choses 
 malgré le nom voisin. M2 (catalogue, recommandations) appelle ce module comme une
 bibliothèque ; il ne le remplace pas.
 
+Les options que M2 propose pour un constat « modèle trop gros » passent au banc telles
+quelles, chacune sur la route qu'elle recommande (Mistral via Mistral, au prix de Mistral),
+puis le rapport affiche le verdict mesuré au lieu de « qualité non prouvée » :
+
+    export OPENROUTER_API_KEY=...
+    python -m bench m2 events.jsonl --finding <finding_id> --dry-run   # ce qui serait appelé, et son coût
+    python -m bench m2 events.jsonl --finding <finding_id>             # écrit out/banc/banc-<finding_id>.json
+    python -m report.audit events.jsonl --banc out/banc
+
 ## Short-circuit (D3.3) — the gateway answers proven calls itself
 
 Off by default. Point the gateway at the replay output: only **pass** proofs are loaded.
