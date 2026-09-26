@@ -85,4 +85,4 @@ def test_dataset_v1_positives_and_negatives():
     assert "status-poll" in flagged
     assert "status-poll-live" not in flagged
     expected = {label["app_id"] for label in LABELS if "duplicate_calls" in label["expected_rules"]}
-    assert expected == {"status-poll"}
+    assert expected == {"status-poll", "mail-triage"}  # mail-triage : 4 vrais doublons (mails générés identiques)

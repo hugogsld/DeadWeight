@@ -4,7 +4,8 @@
     "app_id": "mail-triage",
     "expected_rules": [
       "low_entropy_output",
-      "oversized_model"
+      "oversized_model",
+      "duplicate_calls"
     ],
     "note": "Classifieur 3 sorties sur 400 appels, gpt-4o. Sorties bruitees (casse, point) : sans normalisation on compte 13 sorties au lieu de 3.",
     "event_ids": [
@@ -2439,5 +2440,253 @@
       "ds_01554"
     ],
     "traces": {}
+  },
+  {
+    "scenario": "wide-tools",
+    "app_id": "wide-tools",
+    "expected_rules": [
+      "tool_bloat"
+    ],
+    "note": "Catalogue volumineux répété ; 9 outils jamais appelés sur 10.",
+    "event_ids": [
+      "ds_01555",
+      "ds_01556",
+      "ds_01557",
+      "ds_01558"
+    ],
+    "traces": {
+      "wide-tools": [
+        "ds_01555",
+        "ds_01556",
+        "ds_01557",
+        "ds_01558"
+      ]
+    }
+  },
+  {
+    "scenario": "focused-tools",
+    "app_id": "focused-tools",
+    "expected_rules": [],
+    "note": "Catalogue volumineux répété ; 8 outils utilisés sur 10.",
+    "event_ids": [
+      "ds_01559",
+      "ds_01560",
+      "ds_01561",
+      "ds_01562"
+    ],
+    "traces": {
+      "focused-tools": [
+        "ds_01559",
+        "ds_01560",
+        "ds_01561",
+        "ds_01562"
+      ]
+    }
+  },
+  {
+    "scenario": "night-batch",
+    "app_id": "night-batch",
+    "expected_rules": [
+      "batch_eligible"
+    ],
+    "note": "Trois rafales identiques à 02h UTC.",
+    "event_ids": [
+      "ds_01563",
+      "ds_01564",
+      "ds_01565",
+      "ds_01566",
+      "ds_01567",
+      "ds_01568",
+      "ds_01569",
+      "ds_01570",
+      "ds_01571",
+      "ds_01572",
+      "ds_01573",
+      "ds_01574",
+      "ds_01575",
+      "ds_01576",
+      "ds_01577",
+      "ds_01578",
+      "ds_01579",
+      "ds_01580",
+      "ds_01581",
+      "ds_01582",
+      "ds_01583",
+      "ds_01584",
+      "ds_01585",
+      "ds_01586",
+      "ds_01587",
+      "ds_01588",
+      "ds_01589",
+      "ds_01590",
+      "ds_01591",
+      "ds_01592"
+    ],
+    "traces": {}
+  },
+  {
+    "scenario": "day-burst",
+    "app_id": "day-burst",
+    "expected_rules": [],
+    "note": "Même régularité à 14h UTC : urgence inconnue, pas de conseil batch.",
+    "event_ids": [
+      "ds_01593",
+      "ds_01594",
+      "ds_01595",
+      "ds_01596",
+      "ds_01597",
+      "ds_01598",
+      "ds_01599",
+      "ds_01600",
+      "ds_01601",
+      "ds_01602",
+      "ds_01603",
+      "ds_01604",
+      "ds_01605",
+      "ds_01606",
+      "ds_01607",
+      "ds_01608",
+      "ds_01609",
+      "ds_01610",
+      "ds_01611",
+      "ds_01612",
+      "ds_01613",
+      "ds_01614",
+      "ds_01615",
+      "ds_01616",
+      "ds_01617",
+      "ds_01618",
+      "ds_01619",
+      "ds_01620",
+      "ds_01621",
+      "ds_01622"
+    ],
+    "traces": {}
+  },
+  {
+    "scenario": "image-titles",
+    "app_id": "image-titles",
+    "expected_rules": [
+      "image_heavy"
+    ],
+    "note": "Entrée de 4096 tokens par image, réponse courte.",
+    "event_ids": [
+      "ds_01623",
+      "ds_01624",
+      "ds_01625",
+      "ds_01626",
+      "ds_01627",
+      "ds_01628"
+    ],
+    "traces": {}
+  },
+  {
+    "scenario": "image-analysis",
+    "app_id": "image-analysis",
+    "expected_rules": [],
+    "note": "Même entrée, longue analyse différente : pas de conseil de réduction.",
+    "event_ids": [
+      "ds_01629",
+      "ds_01630",
+      "ds_01631",
+      "ds_01632",
+      "ds_01633",
+      "ds_01634"
+    ],
+    "traces": {}
+  },
+  {
+    "scenario": "systematic-review",
+    "app_id": "systematic-review",
+    "expected_rules": [
+      "llm_judge"
+    ],
+    "note": "Six générations suivies de verdicts courts.",
+    "event_ids": [
+      "ds_01635",
+      "ds_01636",
+      "ds_01637",
+      "ds_01638",
+      "ds_01639",
+      "ds_01640",
+      "ds_01641",
+      "ds_01642",
+      "ds_01643",
+      "ds_01644",
+      "ds_01645",
+      "ds_01646"
+    ],
+    "traces": {
+      "systematic-review-0": [
+        "ds_01635",
+        "ds_01636"
+      ],
+      "systematic-review-1": [
+        "ds_01637",
+        "ds_01638"
+      ],
+      "systematic-review-2": [
+        "ds_01639",
+        "ds_01640"
+      ],
+      "systematic-review-3": [
+        "ds_01641",
+        "ds_01642"
+      ],
+      "systematic-review-4": [
+        "ds_01643",
+        "ds_01644"
+      ],
+      "systematic-review-5": [
+        "ds_01645",
+        "ds_01646"
+      ]
+    }
+  },
+  {
+    "scenario": "useful-followup",
+    "app_id": "useful-followup",
+    "expected_rules": [],
+    "note": "Six approfondissements utiles, ni verdict ni intention de relecture.",
+    "event_ids": [
+      "ds_01647",
+      "ds_01648",
+      "ds_01649",
+      "ds_01650",
+      "ds_01651",
+      "ds_01652",
+      "ds_01653",
+      "ds_01654",
+      "ds_01655",
+      "ds_01656",
+      "ds_01657",
+      "ds_01658"
+    ],
+    "traces": {
+      "useful-followup-0": [
+        "ds_01647",
+        "ds_01648"
+      ],
+      "useful-followup-1": [
+        "ds_01649",
+        "ds_01650"
+      ],
+      "useful-followup-2": [
+        "ds_01651",
+        "ds_01652"
+      ],
+      "useful-followup-3": [
+        "ds_01653",
+        "ds_01654"
+      ],
+      "useful-followup-4": [
+        "ds_01655",
+        "ds_01656"
+      ],
+      "useful-followup-5": [
+        "ds_01657",
+        "ds_01658"
+      ]
+    }
   }
 ]

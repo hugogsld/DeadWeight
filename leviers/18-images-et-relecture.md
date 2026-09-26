@@ -7,8 +7,8 @@
 | Gain latence | Moyenne |
 | Comment prouver | Calcul + banc |
 | Données nécessaires | Événements |
-| État | À faire |
-| Règle | — |
+| État | Détection faite (R15, R16), qualité et gains à confirmer |
+| Règle | R15 image_heavy ; R16 llm_judge |
 
 ## Le signal
 Vision en détail haut pour lire un titre ; un deuxième LLM qui juge chaque réponse.

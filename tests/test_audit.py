@@ -11,7 +11,8 @@ DATASET = ROOT / "fixtures/dataset/v1/events.jsonl"
 EVENTS = [json.loads(line) for line in DATASET.read_text().splitlines()]
 RULE_CODES = ["low_entropy_output", "oversized_model", "raw_context", "no_cache",
               "unbounded_loop", "agent_where_chain",
-              "excess_reasoning", "duplicate_calls", "paid_errors", "verbose_output"]
+              "excess_reasoning", "duplicate_calls", "paid_errors", "verbose_output",
+              "tool_bloat", "batch_eligible", "image_heavy", "llm_judge"]
 
 
 def test_findings_sorted_by_monthly_cost_desc_unknown_last():
@@ -48,9 +49,16 @@ def test_html_has_no_internal_jargon():
 
 
 def test_missing_figures_are_explained_not_hidden():
-    html = render_html(build_report(EVENTS))
-    assert "non disponible" in html or all(
-        f["chiffres"]["cout_mensuel_usd"] is not None for f in build_report(EVENTS)["constats"])
+    report = build_report(EVENTS)
+    html = render_html(report)
+    for f in report["constats"]:
+        if f["chiffres"]["cout_mensuel_usd"] is None:
+            assert f["raisons_manquantes"]
+            if f["chiffres"].get("cout_observe_usd") is not None:
+                assert "Coût observé" in html
+                assert "projection sur un mois non fiable" in html
+            else:
+                assert "non disponible" in html
 
 
 def test_html_escapes_client_content():
