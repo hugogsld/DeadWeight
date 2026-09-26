@@ -18,14 +18,15 @@ from rules.low_entropy import template_of
 RESOLVED = "deadweight-rules"
 
 
-def load(path):
-    """{(app_id, model, template): (finding_id, route)} depuis les preuves PASS."""
+def load(path, verdicts=("pass",)):
+    """{(app_id, model, template): (finding_id, route)} depuis les preuves PASS.
+    Le mode miroir (D4.3) charge aussi les REJECT : il sert justement à les observer."""
     path = Path(path)
     files = sorted(path.glob("proof-*.json")) if path.is_dir() else [path]
     table = {}
     for f in files:
         proof = json.loads(f.read_text())
-        if proof.get("verdict") != "pass" or not proof.get("rules"):
+        if proof.get("verdict") not in verdicts or not proof.get("rules"):
             continue
         key = (proof.get("app_id"), proof.get("model"), proof.get("template"))
         if None in key:
@@ -61,10 +62,15 @@ def match(table, req_body, app_id):
     if hit is None:
         return None
     finding_id, route = hit
-    text = "\n".join(m["content"] for m in request["messages"]
-                     if m["role"] == "user" and isinstance(m.get("content"), str))
+    text = user_text(request)
     out = route(text) if text.strip() else None
     return (finding_id, out) if out is not None else None
+
+
+def user_text(request):
+    """Texte des messages utilisateur d'une requête normalisée : ce que lisent les règles."""
+    return "\n".join(m["content"] for m in request["messages"]
+                     if m["role"] == "user" and isinstance(m.get("content"), str))
 
 
 def completion(output):

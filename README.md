@@ -335,6 +335,22 @@ and zero tokens.
 On the D0.3 dataset (`mail-triage`): **0.24 ms p95** instead of 764 ms for the original
 gpt-4o call, no upstream request.
 
+## Mirror mode (D4.3) — measure the rules on live traffic, never apply them
+
+The step before the short-circuit. Off by default; loads **pass and reject** proofs, since
+a rule refused at replay is exactly what you want to keep watching.
+
+    GATEWAY_MIRROR=out/ .venv/bin/python -m gateway
+    .venv/bin/python -m gateway.mirror stats        # agreement per finding
+
+Every captured call (OpenAI, Anthropic or Gemini) that falls in a proven group is compared
+with what the rules would have answered. **The client always gets the model's answer**:
+the mirror hooks into capture, not into the relay. `out/mirror.jsonl` (`GATEWAY_MIRROR_LOG`)
+holds the rules' label and whether it agreed — never the prompt or the model's text.
+`stats` says, per finding, how many calls were covered, the agreement rate, and whether it
+reaches the 0.95 threshold to switch on the short-circuit. Short-circuited calls are not
+mirrored (there is no model answer to compare).
+
 ## Stack
 
 **n8n** — the audited target: the only orchestrator exposing both workflow JSON and
