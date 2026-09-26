@@ -53,6 +53,22 @@ def _figures(events):
 
 # Texte humain par regle : aucun code de regle ne doit apparaitre dans la page.
 RULE_TEXT = {
+    'harness_overhead': ('Un cadre d’exécution lourd pour des tâches répétitives',
+        'Tester un appel direct avec des instructions minimales ; activer le cache et contrôler la qualité.'),
+    'mergeable_steps': ('Une réponse retravaillée par un deuxième appel',
+        'Tester une consigne qui produit directement la forme finale et comparer la qualité.'),
+    'per_item_calls': ('Un appel séparé pour chaque élément',
+        'Tester un appel groupé ou un traitement par lots, puis vérifier la qualité.'),
+    'parallelizable_steps': ('Des étapes indépendantes attendent leur tour',
+        'Confirmer les dépendances puis tester une exécution parallèle.'),
+    "llm_judge": ("Une deuxième IA relit presque chaque réponse",
+                  "Tester une relecture par échantillon ou par règle, en vérifiant la qualité conservée."),
+    "image_heavy": ("Des images très coûteuses pour une réponse simple",
+                    "Tester une résolution plus basse et vérifier que la réponse reste aussi fiable."),
+    "batch_eligible": ("Des tâches régulières pourraient attendre",
+                       "Confirmer le délai acceptable puis tester une API de traitement par lots à tarif réduit."),
+    "tool_bloat": ("Des descriptions d’outils renvoyées inutilement",
+                   "Ne passer que les outils utiles à l’étape et raccourcir leurs descriptions."),
     "low_entropy_output": ("Une IA qui répond toujours la même chose",
                            "Remplacer par quelques règles fixes, avec l'IA en secours pour les cas imprévus."),
     "oversized_model": ("Un modèle haut de gamme pour une tâche simple",
@@ -65,6 +81,14 @@ RULE_TEXT = {
                        "Fixer un nombre maximal d'étapes et une condition d'arrêt explicite."),
     "agent_where_chain": ("Un agent qui suit toujours le même chemin",
                           "Remplacer l'agent par une chaîne d'étapes fixe."),
+    "excess_reasoning": ("Un modèle qui réfléchit longtemps pour une réponse triviale",
+                        "Réduire l'effort de raisonnement demandé, à vérifier par rejeu."),
+    "duplicate_calls": ("La même question payée plusieurs fois, mot pour mot",
+                       "Mettre en cache la réponse plutôt que de rappeler le modèle."),
+    "paid_errors": ("Des échecs facturés puis payés une seconde fois en relance",
+                    "Corriger la cause de l'échec (limite de longueur, filtre) avant de relancer."),
+    "verbose_output": ("Des réponses bien plus longues que nécessaire",
+                       "Poser un plafond de longueur raisonnable, à vérifier par rejeu."),
 }
 DEFAULT_TEXT = ("Usage à examiner", "Examiner ces appels avec l'équipe concernée.")
 

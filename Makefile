@@ -3,7 +3,7 @@ PY := $(shell command -v python3.11 || command -v python3)
 VENV := .venv
 BIN := $(VENV)/bin
 
-.PHONY: dev install test lint record audit demo prices catalog
+.PHONY: dev install test lint record audit demo prices e2e catalog
 
 dev: install .env.local
 	@set -a; . ./.env.local; set +a; \
@@ -50,3 +50,7 @@ prices: install
 catalog: prices
 	$(BIN)/python -m catalog.capabilities
 	$(BIN)/python -m catalog
+
+# boucle complète de bout en bout (Q1) : passerelle réelle, trois fournisseurs simulés, rapport, preuve
+e2e: install
+	bash tests/e2e/run.sh
