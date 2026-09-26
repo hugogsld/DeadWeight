@@ -79,8 +79,8 @@ def test_plan_with_an_invented_number_is_refused_then_corrected():
 
 
 def test_unknown_numbers_accepts_rounding_and_small_counts():
-    outputs = [{"accord_pct": 100.0, "cout_avant_mensuel_usd": 0.3, "facteur_cout": 3.5, "p95_avant_ms": 764.3}]
-    ok = plan("Trois actions.", "Accord 100 %, coût 0,3 $ divisé par 3.5, p95 764 ms.")
+    outputs = [{"accord_pct": 100.0, "cout_avant_mensuel_usd": 0.3, "facteur_cout": 3.5, "temps_reponse_appels_lents_avant_ms": 764.3}]
+    ok = plan("Trois actions.", "Accord 100 %, coût 0,3 $ divisé par 3.5, temps de réponse 764 ms.")
     assert unknown_numbers(ok, outputs) == []
     assert unknown_numbers(plan("x", "Gain de 87 %"), outputs) == [87.0]
 
@@ -125,8 +125,8 @@ def test_tool_errors_reach_the_agent_not_the_user():
 
 
 def test_thousands_are_one_number_but_words_stay_apart():
-    outputs = [{"cout_mensuel_usd": 315220.0, "p95_avant_ms": 764.3}]
-    assert unknown_numbers(plan("x", "Coût de 315 220 $, p95 764 ms."), outputs) == []
+    outputs = [{"cout_mensuel_usd": 315220.0, "temps_reponse_appels_lents_avant_ms": 764.3}]
+    assert unknown_numbers(plan("x", "Coût de 315 220 $, temps de réponse 764 ms."), outputs) == []
 
 
 def test_proof_status_is_decided_by_code_not_by_the_model():

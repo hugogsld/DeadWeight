@@ -116,7 +116,7 @@ class AuditTools:
         samples = [self.by_id[i] for i in f["event_ids"][:3] if i in self.by_id]
         return {"finding_id": finding_id, "phrase": f["title"], "gravite": f.get("severity"),
                 "preuves": {k: v for k, v in f.get("evidence", {}).items() if isinstance(v, (int, float, str))},
-                "latence_mediane_ms": c["latence_mediane_ms"], "latence_p95_ms": c["latence_p95_ms"],
+                "latence_mediane_ms": c["latence_mediane_ms"], "temps_reponse_appels_lents_ms": c["latence_p95_ms"],
                 **_cost(c),
                 "extraits": [{"entree": _cut(" ".join(m.get("content") or "" for m in e["request"]["messages"]
                                                       if m["role"] == "user")),
@@ -140,7 +140,7 @@ class AuditTools:
                 "cout_apres_mensuel_usd": _money(proof["cost_after_month_usd"]),
                 "facteur_cout": proof["cost_factor"],
                 "economie_pct": _saving(proof["cost_before_month_usd"], proof["cost_after_month_usd"]),
-                "p95_avant_ms": proof["p95_before_ms"], "p95_apres_ms": proof["p95_after_ms"]}
+                "temps_reponse_appels_lents_avant_ms": proof["p95_before_ms"], "temps_reponse_appels_lents_apres_ms": proof["p95_after_ms"]}
 
     def unproven(self):
         """Constats prouvables par rejeu que l'agent n'a pas encore tenté de prouver."""
