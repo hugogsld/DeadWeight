@@ -1,6 +1,6 @@
 """Journaux de session Claude Code et Codex → événements + rapport de compréhension.
 
-    python -m importers.agent_logs <source> [<source>...] [--out private/agent-logs]
+    python -m connectors.agent_logs <source> [<source>...] [-o private/agent-logs/events.jsonl]
 
 Une source est un fichier .jsonl, un dossier (parcouru récursivement) ou une archive .zip.
 Le format est reconnu ligne à ligne : on peut mélanger Claude Code et Codex.
@@ -8,7 +8,7 @@ Le format est reconnu ligne à ligne : on peut mélanger Claude Code et Codex.
     ~/.claude/projects/<projet>/            Claude Code (sous-agents compris)
     ~/.codex/sessions/AAAA/MM/JJ/           Codex
 
-Écrit <out>/events.jsonl (lisible par report.audit) et <out>/comprehension.json.
+Écrit les événements (lisibles par report.audit ou agent.audit) et, à côté, comprehension.json.
 Les clés d'API qui apparaissent dans les journaux sont masquées ([secret]).
 """
 from __future__ import annotations
@@ -42,10 +42,11 @@ def lire(sources) -> tuple[list[dict], dict]:
 
 
 def main(argv=None) -> int:
-    p = argparse.ArgumentParser(prog="python -m importers.agent_logs",
+    p = argparse.ArgumentParser(prog="python -m connectors.agent_logs",
                                 description="Journaux Claude Code et Codex → événements.")
     p.add_argument("sources", nargs="+", help="fichier .jsonl, dossier ou archive .zip")
-    p.add_argument("--out", default="private/agent-logs", help="dossier de sortie (défaut : private/agent-logs)")
+    p.add_argument("-o", "--out", default="private/agent-logs/events.jsonl",
+                   help="fichier d'événements (défaut : private/agent-logs/events.jsonl) ; comprehension.json à côté")
     args = p.parse_args(argv)
 
     try:
@@ -58,20 +59,21 @@ def main(argv=None) -> int:
         return 1
 
     out = Path(args.out)
-    out.mkdir(parents=True, exist_ok=True)
-    with (out / "events.jsonl").open("w", encoding="utf-8") as f:
+    out.parent.mkdir(parents=True, exist_ok=True)
+    with out.open("w", encoding="utf-8") as f:
         for ev in events:
             f.write(jsonl_line(ev))
-    (out / "comprehension.json").write_text(json.dumps(reports, ensure_ascii=False, indent=2), encoding="utf-8")
+    summary = out.with_name("comprehension.json")
+    summary.write_text(json.dumps(reports, ensure_ascii=False, indent=2), encoding="utf-8")
 
     for name, r in reports.items():
         ignored = sum(r["ignores"].values())
         print(f"{name} : {r['fichiers']} fichier(s), {r['sessions']} session(s), {r['appels_lus']} appel(s) lus, "
-              f"{ignored} ignoré(s), niveau {r['niveau']}")
+              f"{ignored} ignoré(s), niveaux {r['niveaux']}")
         for reason, n in r["ignores"].items():
             print(f"    ignoré ×{n} : {reason}")
-    print(f"→ {out / 'events.jsonl'} ({len(events)} événements)")
-    print(f"rapport : python -m report.audit {out / 'events.jsonl'}")
+    print(f"→ {out} ({len(events)} événements), {summary}")
+    print(f"rapport : python -m report.audit {out}")
     return 0
 
 

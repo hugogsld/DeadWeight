@@ -1,6 +1,6 @@
 # Lint du code du weekend uniquement ; le prototype hackathon n'est pas controle.
 include = ["gateway/**/*.py", "rules/**/*.py", "report/**/*.py", "tests/**/*.py", "scripts/**/*.py", "connectors/**/*.py",
-          "bench/**/*.py", "importers/**/*.py"]
+          "bench/**/*.py"]
 
 [lint]
 ignore = ["E741"]  # noms d'une lettre (l, e) deja utilises dans les regles

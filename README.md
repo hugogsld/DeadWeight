@@ -157,7 +157,7 @@ de modèle. Zippez ceux d'un run, puis une commande (Python 3.9+, rien à instal
     cd ~/.claude/projects && zip -r ~/run.zip <dossier-du-projet>     # Claude Code
     cd ~/.codex && zip -r ~/run-codex.zip sessions/2026/09/26          # Codex, le jour du run
 
-    python3 -m importers.agent_logs ~/run.zip ~/run-codex.zip --out private/agent-logs
+    python3 -m connectors.agent_logs ~/run.zip ~/run-codex.zip -o private/agent-logs/events.jsonl
     python -m report.audit private/agent-logs/events.jsonl -o out/audit.html
 
 Chaque appel devient un événement : modèle, jetons (cache compris), heure, messages du tour,

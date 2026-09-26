@@ -6,9 +6,9 @@ from pathlib import Path
 import jsonschema
 import pytest
 
-from importers.agent_logs import claude_code, codex
-from importers.agent_logs.__main__ import jsonl_line, lire, main
-from importers.agent_logs.common import iter_files, mask_secrets
+from connectors.agent_logs import claude_code, codex
+from connectors.agent_logs.__main__ import jsonl_line, lire, main
+from connectors.agent_logs.common import iter_files, mask_secrets
 from report.audit import build_report
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -85,7 +85,8 @@ def test_rien_n_est_compte_deux_fois(cc):
         "ligne illisible (JSON invalide ou tronqué)": 1,
         "message fabriqué par Claude Code (erreur, interruption) : pas un appel facturé": 1,
     }
-    assert (r["fichiers"], r["sessions"], r["appels_lus"], r["niveau"]) == (2, 2, 4, 3)
+    assert (r["fichiers"], r["sessions"], r["appels_lus"], r["avec_jetons"], r["avec_contenu"]) == (2, 2, 4, 4, 4)
+    assert r["niveaux"] == [1, 2, 3]
     assert r["cout_annonce_par_claude_code_usd"] == 0.5
 
 
@@ -168,14 +169,14 @@ def test_texte_ordinaire_intact():
 
 
 def test_commande(tmp_path, capsys):
-    assert main([str(DATA), "--out", str(tmp_path)]) == 0
+    assert main([str(DATA), "-o", str(tmp_path / "events.jsonl")]) == 0
     out = capsys.readouterr().out
-    assert "claude-code : 2 fichier(s), 2 session(s), 4 appel(s) lus, 3 ignoré(s), niveau 3" in out
-    assert "codex : 2 fichier(s), 2 session(s), 3 appel(s) lus, 0 ignoré(s), niveau 3" in out
+    assert "claude-code : 2 fichier(s), 2 session(s), 4 appel(s) lus, 3 ignoré(s), niveaux [1, 2, 3]" in out
+    assert "codex : 2 fichier(s), 2 session(s), 3 appel(s) lus, 0 ignoré(s), niveaux [1, 2, 3]" in out
     assert len((tmp_path / "events.jsonl").read_text().split("\n")) == 8
     assert json.loads((tmp_path / "comprehension.json").read_text())["codex"]["appels_lus"] == 3
-    assert main([str(tmp_path / "absent")]) == 1
+    assert main([str(tmp_path / "absent"), "-o", str(tmp_path / "x.jsonl")]) == 1
     empty = tmp_path / "vide"
     empty.mkdir()
     (empty / "autre.jsonl").write_text('{"x": 1}\n')
-    assert main([str(empty)]) == 1
+    assert main([str(empty), "-o", str(tmp_path / "x.jsonl")]) == 1

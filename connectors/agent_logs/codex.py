@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import json
 
-from .common import Comprehension, iso, mask_secrets, num, parse_lines, ts
+from .common import Comprehension, iso, mask_secrets, num, number_steps, parse_lines, ts
 
 # fournisseur Codex → hôte appelé ; le format reste celui d'OpenAI
 UPSTREAMS = {"openai": "api.openai.com", "azure": "azure", "ollama": "localhost:11434",
@@ -57,11 +57,7 @@ def read(files, report: Comprehension | None = None) -> tuple[list[dict], Compre
             report.ignore("ligne illisible (JSON invalide ou tronqué)", bad)
         events.extend(_read_session(entries, name, report, seen))
     events.sort(key=lambda e: e["ts_start"])
-    steps: dict[str, int] = {}
-    for ev in events:
-        tid = ev["trace"]["id"]
-        ev["trace"]["step"] = steps.get(tid, 0)
-        steps[tid] = ev["trace"]["step"] + 1
+    number_steps(events, report)
     report.note("outils déclarés absents du journal : request.tools = []")
     report.note("request.messages = nouveaux messages du tour (le contexte complet envoyé n'est pas journalisé)")
     return events, report
@@ -171,8 +167,8 @@ def _event(key, session, provider, model, cwd, sub, system, seg_in, seg_out, sta
     report.sessions.add(session or "?")
     if messages or text or calls:
         report.with_content += 1
-    if session:
-        report.with_trace += 1
+    if num(usage.get("input_tokens")) is not None:
+        report.with_usage += 1
     if not model:
         report.add("modele_inconnu", 1)
     project = (cwd or "").rstrip("/").split("/")[-1] or "codex"

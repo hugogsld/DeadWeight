@@ -20,7 +20,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from .common import Comprehension, iso, mask_secrets, num, parse_lines, ts
+from .common import Comprehension, iso, mask_secrets, num, number_steps, parse_lines, ts
 
 FINISH = {"end_turn": "stop", "stop_sequence": "stop", "max_tokens": "length",
           "tool_use": "tool_calls", "pause_turn": "other", "refusal": "content_filter"}
@@ -122,11 +122,7 @@ def read(files, report: Comprehension | None = None) -> tuple[list[dict], Compre
     events = [_event(key, c, report) for key, c in calls.items()]
     events = [e for e in events if e is not None]
     events.sort(key=lambda e: e["ts_start"])
-    steps: dict[str, int] = {}
-    for ev in events:
-        tid = ev["trace"]["id"]
-        ev["trace"]["step"] = steps.get(tid, 0)
-        steps[tid] = ev["trace"]["step"] + 1
+    number_steps(events, report)
 
     if costs:
         report.extra["cout_annonce_par_claude_code_usd"] = round(sum(costs.values()), 4)
@@ -186,8 +182,8 @@ def _event(key: str, call: dict, report: Comprehension) -> dict | None:
     report.sessions.add(session or call["file"])
     if messages or text or tool_calls:
         report.with_content += 1
-    if session:
-        report.with_trace += 1
+    if num(usage.get("input_tokens")) is not None:
+        report.with_usage += 1
 
     return {
         "schema_version": "1",

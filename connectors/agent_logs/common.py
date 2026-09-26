@@ -91,7 +91,10 @@ def num(value) -> int | None:
 
 
 class Comprehension:
-    """Ce qu'on a lu, ce qu'on a ignoré et pourquoi, le niveau de données atteint."""
+    """Ce qu'on a lu, ce qu'on a ignoré et pourquoi, les niveaux de données atteints.
+
+    Mêmes clés que connectors/otel.py : appels_lus, ignores, avec_jetons, avec_contenu, niveaux.
+    """
 
     def __init__(self, source: str):
         self.source = source
@@ -99,28 +102,30 @@ class Comprehension:
         self.sessions: set[str] = set()
         self.calls = 0
         self.ignored: dict[str, int] = {}
+        self.with_usage = 0
         self.with_content = 0
-        self.with_trace = 0
+        self.chained = False
         self.notes: list[str] = []
-        self.extra: dict[str, int] = {}
+        self.extra: dict[str, float] = {}
 
     def ignore(self, reason: str, n: int = 1):
         self.ignored[reason] = self.ignored.get(reason, 0) + n
 
-    def add(self, key: str, n: int):
+    def add(self, key: str, n: float):
         self.extra[key] = self.extra.get(key, 0) + n
 
     def note(self, text: str):
         if text not in self.notes:
             self.notes.append(text)
 
-    def level(self) -> int | None:
-        """1 usage, 2 contenu, 3 structure (docs/analyser-un-workflow.md)."""
-        if not self.calls:
-            return None
-        if self.with_content and self.with_trace:
-            return 3
-        return 2 if self.with_content else 1
+    def levels(self) -> list[int]:
+        """1 usage, 2 contenu, 3 structure (docs/analyser-un-workflow.md), comme connectors/otel.py."""
+        levels = [1] if self.with_usage else []
+        if self.with_content:
+            levels.append(2)
+        if self.chained:
+            levels.append(3)
+        return levels
 
     def as_dict(self) -> dict:
         return {
@@ -129,7 +134,19 @@ class Comprehension:
             "sessions": len(self.sessions),
             "appels_lus": self.calls,
             "ignores": dict(sorted(self.ignored.items())),
-            "niveau": self.level(),
+            "avec_jetons": self.with_usage,
+            "avec_contenu": self.with_content,
+            "niveaux": self.levels(),
             **self.extra,
             "limites": self.notes,
         }
+
+
+def number_steps(events: list[dict], report: Comprehension):
+    """Étapes dans l'ordre chronologique, par trace ; niveau 3 dès qu'une trace enchaîne des appels."""
+    steps: dict[str, int] = {}
+    for ev in sorted(events, key=lambda e: e["ts_start"]):
+        tid = ev["trace"]["id"]
+        ev["trace"]["step"] = steps.get(tid, 0)
+        steps[tid] = ev["trace"]["step"] + 1
+    report.chained = any(n > 1 for tid, n in steps.items() if tid)
