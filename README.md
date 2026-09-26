@@ -158,3 +158,19 @@ Built in one afternoon at Le Wagon Paris. Three people, three lanes, four JSON c
 
 Lance toutes les règles présentes dans `rules/`, chiffre chaque constat et écrit une page HTML
 autonome dans `out/audit.html`.
+
+## Démarrer (D0.2)
+
+Python 3.11+ requis.
+
+    git clone https://github.com/hugogsld/DeadWeight.git && cd DeadWeight
+    make dev       # cree .venv, installe, cree .env.local depuis .env.example, lance la passerelle
+
+Tes clés vont dans `.env.local` (jamais commité). Personne ne tape `export`.
+
+    make test      # tests, sans réseau ni clé : les réponses fournisseurs sont rejouées
+    make lint      # ruff, sur gateway/ rules/ report/ tests/ scripts/
+    make record    # appelle les vraies API une fois et écrit tests/cassettes/
+
+Un test qui parle à un fournisseur se marque `@pytest.mark.vcr` : il rejoue sa cassette
+dans `tests/cassettes/`. Les clés sont retirées avant l'écriture (voir `tests/conftest.py`).

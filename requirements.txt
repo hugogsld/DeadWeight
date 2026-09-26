@@ -1,0 +1,8 @@
+# Installe par `make dev` dans .venv (Python 3.11)
+-r gateway/requirements.txt  # passerelle (D1.1)
+jsonschema==4.25.1
+openai>=1.40,<3     # prototype hackathon ; 3.x passe a httpx2, que vcrpy n'intercepte pas
+httpx>=0.27,<1
+pytest==8.4.2
+ruff==0.13.3
+pytest-recording==0.13.4  # enregistrement / rejeu des reponses fournisseurs (vcrpy)
