@@ -180,3 +180,28 @@ def test_commande(tmp_path, capsys):
     empty.mkdir()
     (empty / "autre.jsonl").write_text('{"x": 1}\n')
     assert main([str(empty), "-o", str(tmp_path / "x.jsonl")]) == 1
+
+
+def test_commande_expose_le_mode_de_facturation_par_outil(tmp_path, capsys):
+    """D2.6 (Problème 1) : jamais deviné — ici forcé par --billing, faute de vraie config Claude/Codex
+    dans l'environnement de test."""
+    assert main([str(DATA), "-o", str(tmp_path / "events.jsonl"), "--billing", "abonnement"]) == 0
+    out = capsys.readouterr().out
+    assert "facturation : abonnement (--billing (forcé))" in out
+    comprehension = json.loads((tmp_path / "comprehension.json").read_text())
+    assert comprehension["claude-code"]["billing"] == {"mode": "abonnement", "source": "--billing (forcé)"}
+    assert comprehension["codex"]["billing"] == {"mode": "abonnement", "source": "--billing (forcé)"}
+
+
+def test_commande_detecte_la_facturation_sans_override(tmp_path, monkeypatch):
+    """Sans --billing, la détection lit la configuration de l'outil : ici un HOME de test (jamais les
+    vrais fichiers de la machine), abonnement Claude Code, rien pour Codex."""
+    home = tmp_path / "home"
+    home.mkdir()
+    (home / ".claude.json").write_text(json.dumps({"oauthAccount": {"billingType": "stripe_subscription"}}))
+    monkeypatch.setenv("HOME", str(home))
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    assert main([str(DATA), "-o", str(tmp_path / "events.jsonl")]) == 0
+    comprehension = json.loads((tmp_path / "comprehension.json").read_text())
+    assert comprehension["claude-code"]["billing"]["mode"] == "abonnement"
+    assert comprehension["codex"]["billing"] == {"mode": "inconnu", "source": None}
