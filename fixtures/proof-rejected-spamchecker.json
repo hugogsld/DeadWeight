@@ -41,8 +41,8 @@
       "got": "no spam"
     }
   ],
-  "cost_before_month_eur": 0.0948,
-  "cost_after_month_eur": 0.0033,
+  "cost_before_month_usd": 0.0948,
+  "cost_after_month_usd": 0.0033,
   "cost_factor": 28.5,
   "latency_measured": true,
   "p95_before_ms": 1719.0,

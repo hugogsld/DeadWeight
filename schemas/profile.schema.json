@@ -72,7 +72,7 @@
           "latency_p95_ms": {
             "type": "number"
           },
-          "cost_est_month_eur": {
+          "cost_est_month_usd": {
             "type": "number"
           }
         }
