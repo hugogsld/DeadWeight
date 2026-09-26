@@ -16,7 +16,7 @@ from pathlib import Path
 
 import rules
 from catalog.recommend import recommend
-from report.cost import MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer, window_seconds
+from report.cost import MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer, runs, window_seconds
 
 # En dessous d'une heure de trafic, projeter sur un mois multiplie du bruit :
 # 36 appels en 0,3 s donnaient 315 220 $/mois. On affiche alors le coût réellement dépensé.
@@ -37,19 +37,34 @@ def _partial(events, c):
     return {**c, "cout_mensuel_usd": p["cout_mensuel_usd"], "part_chiffree": len(priced) / len(succeeded)}
 
 
-def _figures(events):
-    """chiffrer(), partiel plutôt que rien, sans projection mensuelle sur moins d'une heure."""
+def _figures(events, window=None):
+    """chiffrer(), partiel plutôt que rien. ``window`` : période d'observation de tout le rapport, la même
+    pour chaque constat (sinon une application active une heure sur sept jours serait projetée comme si
+    elle tournait sans arrêt, et la somme des constats dépasserait le total). Sous une journée observée :
+    coût réellement dépensé et coût par passage, jamais de projection mensuelle."""
     c = chiffrer(events)
     if c["cout_mensuel_usd"] is None and events:
         c = _partial(events, c)
-    window = window_seconds(events)
-    if c["cout_mensuel_usd"] is None or window >= MIN_WINDOW_SECONDS:
+    if c["cout_mensuel_usd"] is None:
         return c
+    own = window_seconds(events)
+    observed = c["cout_mensuel_usd"] * own / MONTH_SECONDS
+    ref = max(window or own, own)
+    if ref >= MIN_WINDOW_SECONDS:
+        return {**c, "cout_mensuel_usd": observed * MONTH_SECONDS / ref}
+    n = runs(events)
     # pas de « : » dans la raison, _missing_reasons coupe dessus
-    reason = (f"moins d'une heure de trafic observée ({max(window / 60, 0.1):.1f} min), "
-              "projection sur un mois non fiable, laissez tourner la passerelle au moins une heure")
-    return {**c, "cout_mensuel_usd": None, "cout_observe_usd": c["cout_mensuel_usd"] * window / MONTH_SECONDS,
-            "manquants": [*c["manquants"], reason]}
+    reason = (f"moins d'une journée de trafic observée ({_duration(ref)}, {n} passage{'s' if n > 1 else ''}), "
+              "projection sur un mois non fiable, laissez tourner la passerelle au moins une journée")
+    return {**c, "cout_mensuel_usd": None, "cout_observe_usd": observed, "passages": n,
+            "cout_par_passage_usd": observed / n if n else None, "manquants": [*c["manquants"], reason]}
+
+
+def _duration(seconds):
+    if seconds < 3600:
+        return f"{max(seconds / 60, 0.1):.1f} min"
+    return f"{seconds / 3600:.1f} h"
+
 
 # Texte humain par regle : aucun code de regle ne doit apparaitre dans la page.
 RULE_TEXT = {
@@ -130,10 +145,11 @@ def build_report(events, detectors=None, banc=None):
     findings = [f for f in findings if f["rule"] != "data_outside_eu"]
     souverainete.sort(key=lambda f: -f["evidence"]["calls"])
 
+    period = window_seconds(events)  # une seule période d'observation pour tout le rapport
     constats = []
     for f in findings:
         evts = [by_id[i] for i in f["event_ids"] if i in by_id]
-        chiffres = _figures(evts)
+        chiffres = _figures(evts, period)
         titre, action = RULE_TEXT.get(f["rule"], DEFAULT_TEXT)
         # M2 : alternatives hors famille, seulement là où R2 a jugé la tâche simple
         alternatives = recommend(evts)["options"] if f["rule"] == "oversized_model" and evts else None
@@ -151,11 +167,11 @@ def build_report(events, detectors=None, banc=None):
 
     flagged = {c["app_id"] for c in constats}
     apps = sorted({e["app_id"] for e in events})
-    clean = [{"app_id": a, "chiffres": _figures([e for e in events if e["app_id"] == a])}
+    clean = [{"app_id": a, "chiffres": _figures([e for e in events if e["app_id"] == a], period)}
              for a in apps if a not in flagged]
 
     starts = sorted(e["ts_start"] for e in events)
-    global_figures = _figures(events) if events else None
+    global_figures = _figures(events, period) if events else None
     return {
         "verifications": [_check_title(name) for name, _ in detectors],
         "raisons_globales": _missing_reasons(global_figures["manquants"]) if global_figures else [],
@@ -180,6 +196,8 @@ def _cost_label(n, monthly="Coût mensuel"):
                     else ("Coût observé", n["cout_observe_usd"]))
     if n.get("part_chiffree") is not None and value is not None:
         label += f" (partiel, {round(n['part_chiffree'] * 100)} % des appels)"
+    if n.get("cout_par_passage_usd") is not None and n.get("passages", 0) > 1:
+        label += f" ({n['passages']} passages, {_usd(n['cout_par_passage_usd'])} par passage)"
     return label, value
 
 

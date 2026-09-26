@@ -101,7 +101,7 @@ def test_le_rapport_chiffre_et_detecte(wf, executions):
             c["id"] = f"{ex['id']}-{k}"
             for runs in c["data"]["resultData"]["runData"].values():
                 for run in runs:
-                    run["startTime"] += k * 600_000
+                    run["startTime"] += k * 86_400_000  # un jour d'écart : période assez longue pour projeter
             many.append(c)
     report = build_report(convert(wf, many)[0])
     assert report["resume"]["global"]["cout_mensuel_usd"] > 0
