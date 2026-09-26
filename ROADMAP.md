@@ -10,7 +10,7 @@ Comment apparaître dans le tableau : créer une issue dont le titre commence pa
 Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépendent.
 
 <!-- STATUT:DEBUT -->
-**9 / 17 livrables du plan de base faits** (29 h sur 57 h). Mis à jour automatiquement le 26/09 à 12:24.
+**9 / 17 livrables du plan de base faits** (29 h sur 57 h). Mis à jour automatiquement le 26/09 à 12:27.
 
 | Id | Livrable | Durée | Dépend de | Statut | Qui | Issue / PR |
 |---|---|---|---|---|---|---|
@@ -20,7 +20,7 @@ Fusionner la PR passe le livrable en « Fait » et débloque ceux qui en dépend
 | D1.1 | Proxy passe-plat OpenAI, streaming | 5 h | D0.2 | **Fait** | claude, thibaudgregori | #23 · PR #24 |
 | D1.2 | Capture et persistance | 3 h | D0.1, D1.1 | **En relecture** | claude, thibaudgregori | #25 · PR #27 |
 | D1.3 | Anthropic et Gemini | 4 h | D1.1 | **En cours** | alexandre-zenou, claude | #28 |
-| D1.4 | Regroupement par trace | 3 h | D1.2 | **En cours** | claude, thibaudgregori | #29 |
+| D1.4 | Regroupement par trace | 3 h | D1.2 | **En relecture** | claude, thibaudgregori | #29 · PR #30 |
 | D2.1 | R1 entropie | 2 h | D0.3 | **Fait** | Natanlsr3, claude | #7 · PR #9 |
 | D2.2 | R2 modèle surdimensionné | 3 h | D0.3 | **Fait** | Natanlsr3, claude | #17 · PR #18 |
 | D2.3 | R3 contexte brut + R4 absence de cache | 3 h | D0.3 | **Fait** | Natanlsr3, codex | #8 · PR #15 |
