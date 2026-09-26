@@ -238,6 +238,7 @@ Les workflows vont dans `private/n8n-library/` (ignoré par git : ils appartienn
 auteurs). `coverage` liste ce qu'on ne sait pas lire : fournisseurs inconnus, nœuds d'IA non
 reconnus, modèle introuvable. Un modèle laissé au réglage par défaut n'est pas écrit dans le
 workflow (et ce défaut change selon la version de n8n) : seul l'historique d'exécution le donne.
+La liste des 1 000 workflows de test et ce qu'on y lit : [docs/bibliotheque-n8n.md](docs/bibliotheque-n8n.md).
 
 ## Confidentialité
 
