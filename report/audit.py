@@ -16,19 +16,10 @@ from pathlib import Path
 
 import rules
 from catalog.recommend import recommend
-from report.cost import MONTH_SECONDS, chiffrer
+from report.cost import MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer, window_seconds
 
 # En dessous d'une heure de trafic, projeter sur un mois multiplie du bruit :
 # 36 appels en 0,3 s donnaient 315 220 $/mois. On affiche alors le coût réellement dépensé.
-MIN_WINDOW_SECONDS = 60 * 60
-
-
-def _window_seconds(events):
-    if not events:
-        return 0
-    start = min(datetime.fromisoformat(e["ts_start"].replace("Z", "+00:00")) for e in events)
-    end = max(datetime.fromisoformat(e["ts_end"].replace("Z", "+00:00")) for e in events)
-    return (end - start).total_seconds()
 
 
 def _partial(events, c):
@@ -51,7 +42,7 @@ def _figures(events):
     c = chiffrer(events)
     if c["cout_mensuel_usd"] is None and events:
         c = _partial(events, c)
-    window = _window_seconds(events)
+    window = window_seconds(events)
     if c["cout_mensuel_usd"] is None or window >= MIN_WINDOW_SECONDS:
         return c
     # pas de « : » dans la raison, _missing_reasons coupe dessus
@@ -62,6 +53,22 @@ def _figures(events):
 
 # Texte humain par regle : aucun code de regle ne doit apparaitre dans la page.
 RULE_TEXT = {
+    'harness_overhead': ('Un cadre d’exécution lourd pour des tâches répétitives',
+        'Tester un appel direct avec des instructions minimales ; activer le cache et contrôler la qualité.'),
+    'mergeable_steps': ('Une réponse retravaillée par un deuxième appel',
+        'Tester une consigne qui produit directement la forme finale et comparer la qualité.'),
+    'per_item_calls': ('Un appel séparé pour chaque élément',
+        'Tester un appel groupé ou un traitement par lots, puis vérifier la qualité.'),
+    'parallelizable_steps': ('Des étapes indépendantes attendent leur tour',
+        'Confirmer les dépendances puis tester une exécution parallèle.'),
+    "llm_judge": ("Une deuxième IA relit presque chaque réponse",
+                  "Tester une relecture par échantillon ou par règle, en vérifiant la qualité conservée."),
+    "image_heavy": ("Des images très coûteuses pour une réponse simple",
+                    "Tester une résolution plus basse et vérifier que la réponse reste aussi fiable."),
+    "batch_eligible": ("Des tâches régulières pourraient attendre",
+                       "Confirmer le délai acceptable puis tester une API de traitement par lots à tarif réduit."),
+    "tool_bloat": ("Des descriptions d’outils renvoyées inutilement",
+                   "Ne passer que les outils utiles à l’étape et raccourcir leurs descriptions."),
     "low_entropy_output": ("Une IA qui répond toujours la même chose",
                            "Remplacer par quelques règles fixes, avec l'IA en secours pour les cas imprévus."),
     "oversized_model": ("Un modèle haut de gamme pour une tâche simple",
@@ -74,6 +81,14 @@ RULE_TEXT = {
                        "Fixer un nombre maximal d'étapes et une condition d'arrêt explicite."),
     "agent_where_chain": ("Un agent qui suit toujours le même chemin",
                           "Remplacer l'agent par une chaîne d'étapes fixe."),
+    "excess_reasoning": ("Un modèle qui réfléchit longtemps pour une réponse triviale",
+                        "Réduire l'effort de raisonnement demandé, à vérifier par rejeu."),
+    "duplicate_calls": ("La même question payée plusieurs fois, mot pour mot",
+                       "Mettre en cache la réponse plutôt que de rappeler le modèle."),
+    "paid_errors": ("Des échecs facturés puis payés une seconde fois en relance",
+                    "Corriger la cause de l'échec (limite de longueur, filtre) avant de relancer."),
+    "verbose_output": ("Des réponses bien plus longues que nécessaire",
+                       "Poser un plafond de longueur raisonnable, à vérifier par rejeu."),
     "data_outside_eu": ("Des données qui partent hors d'Europe",
                         "Passer par la région UE du fournisseur, ou tester un modèle européen au banc."),
 }
@@ -100,8 +115,9 @@ def _missing_reasons(manquants):
     return sorted({m.split(": ", 1)[-1] for m in manquants})
 
 
-def build_report(events, detectors=None):
-    """detectors : liste de (nom, detect). Par defaut, toutes les regles de rules/."""
+def build_report(events, detectors=None, banc=None):
+    """detectors : liste de (nom, detect). Par defaut, toutes les regles de rules/.
+    banc : {finding_id: résultat de bench.m2.prove} ; les options M2 testées portent leur verdict."""
     events = list(events)
     by_id = {e["event_id"]: e for e in events}
     detectors = detectors if detectors is not None else _discover_detectors()
@@ -121,6 +137,10 @@ def build_report(events, detectors=None):
         titre, action = RULE_TEXT.get(f["rule"], DEFAULT_TEXT)
         # M2 : alternatives hors famille, seulement là où R2 a jugé la tâche simple
         alternatives = recommend(evts)["options"] if f["rule"] == "oversized_model" and evts else None
+        tested = ((banc or {}).get(f["finding_id"]) or {}).get("options", {})
+        if alternatives and tested:
+            alternatives = {k: ({**o, "banc": tested[k]} if o and k in tested and tested[k]["model"] == o["modele"]
+                                else o) for k, o in alternatives.items()}
         constats.append({
             "app_id": f["app_id"], "model": f["model"], "titre": titre, "phrase": f["title"],
             "action": action, "prouve": f.get("proven", False), "gravite": f.get("severity"),
@@ -218,14 +238,35 @@ def _alternatives(options):
     for (name, host), (o, labels) in by_route.items():
         where = (f"via {host}, {ue.get(o['hebergement_ue'], 'hébergement UE non vérifié')}" if host
                  else "au prix du moins cher des hébergeurs, hébergement non garanti")
-        factor = f", ×{o['facteur']} moins cher" if o["facteur"] else ""
+        measured = (o.get("banc") or {}).get("facteur_mesure")
+        monthly = o["cout_mensuel_usd"]
+        if measured:  # le banc a mesuré les vrais jetons (réflexion comprise) : ce sont ces chiffres qui comptent
+            monthly = (o["cout_mensuel_usd"] + o["economie_usd"]) / measured  # coût actuel ÷ facteur mesuré
+            factor = f", ×{measured} moins cher mesuré au banc (estimation ×{o['facteur']})"
+        else:
+            factor = f", ×{o['facteur']} moins cher" if o["facteur"] else ""
         caveat = (" <i>Modèle à raisonnement : jetons de réflexion non comptés, coût sous-estimé.</i>"
-                  if o["raisonnement"] else "")
+                  if o["raisonnement"] and not o.get("banc") else "")
         items.append(f"<li>{html.escape(' et '.join(labels))} : <b>{html.escape(name)}</b> "
                      f"({html.escape(o['pays'] or '?')}, {html.escape(where)}) — "
-                     f"{_usd(o['cout_mensuel_usd'])} par mois{factor}.{caveat}</li>")
-    return ('<p class="todo"><b>Autres modèles compatibles</b> (capacités vérifiées, qualité non prouvée : '
-            f'à rejouer avant de changer) :</p><ul>{"".join(items)}</ul>')
+                     f"{_usd(monthly)} par mois{factor}.{caveat}{_bench_verdict(o.get('banc'))}</li>")
+    tested = all(o.get("banc") for o, _ in by_route.values())
+    quality = ("qualité mesurée au banc sur votre trafic" if tested
+               else "qualité non prouvée : à tester au banc avant de changer")
+    return (f'<p class="todo"><b>Autres modèles compatibles</b> (capacités vérifiées, {quality}) :</p>'
+            f'<ul>{"".join(items)}</ul>')
+
+
+def _bench_verdict(b):
+    """M2.2 : le verdict du banc sur cette option, tel que mesuré."""
+    if not b:
+        return ""
+    if b["verdict"] == "not_tested" or b["score"] is None:
+        return " <i>Banc : non testé.</i>"
+    measure = (f"accord de {b['score'] * 100:.0f} %" if b.get("task_type", "classification") == "classification"
+               else f"recouvrement de {b['score']:.2f} (indicatif)")
+    tail = "validé" if b["verdict"] == "pass" else "refusé" + (f" ({b['reasons'][0]})" if b["reasons"] else "")
+    return f" <b>Banc : {measure} sur {b['n_calls']} requêtes réelles, {html.escape(tail)}.</b>"
 
 
 def _sovereignty(findings):
@@ -350,9 +391,14 @@ def main():
     ap = argparse.ArgumentParser(description="Rapport d'audit d'une page")
     ap.add_argument("events", help="fichier .jsonl d'evenements")
     ap.add_argument("-o", "--out", default="out/audit.html")
+    ap.add_argument("--banc", help="dossier des résultats de python -m bench m2 (banc-*.json)")
     args = ap.parse_args()
     lines = Path(args.events).read_text(encoding="utf-8").splitlines()
-    report = build_report(json.loads(line) for line in lines if line.strip())
+    banc = {}
+    for path in sorted(Path(args.banc).glob("banc-*.json")) if args.banc else []:
+        result = json.loads(path.read_text(encoding="utf-8"))
+        banc[result["finding_id"]] = result
+    report = build_report((json.loads(line) for line in lines if line.strip()), banc=banc)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render_html(report), encoding="utf-8")

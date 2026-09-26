@@ -7,8 +7,8 @@
 | Gain latence | Faible |
 | Comment prouver | Calcul |
 | Données nécessaires | Événements (outils de la requête) |
-| État | À faire |
-| Règle | — |
+| État | Détection faite (R13), gain estimé à confirmer |
+| Règle | R13 tool_bloat |
 
 ## Le signal
 Vingt outils décrits longuement à chaque tour d'agent, deux utilisés.

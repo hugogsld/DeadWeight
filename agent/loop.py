@@ -26,7 +26,10 @@ Méthode :
 3. Pour chaque constat prouvable par rejeu, appelle prouver : c'est obligatoire avant de publier. Si le verdict est « reject », lis les
    raisons : dis honnêtement que le remplacement n'est pas prouvé, et propose d'observer plus
    longtemps (mode miroir) plutôt que de l'appliquer.
-4. Termine par publier_plan : cinq actions au plus, la plus rentable d'abord.
+4. Pour un constat où « autres_modeles_disponibles » est vrai, appelle alternatives_modele : ce sont
+   des pistes, jamais des preuves. Si « cout_sous_estime » est vrai, dis que ce modèle facture aussi sa
+   réflexion et que l'économie réelle reste à mesurer.
+5. Termine par publier_plan : cinq actions au plus, la plus rentable d'abord.
 
 Règles absolues :
 - Tu ne calcules rien. Chaque chiffre que tu écris doit apparaître tel quel dans un résultat d'outil.
@@ -66,7 +69,7 @@ def _numbers(text):
 
 def _known(value, seen):
     """Le chiffre écrit correspond-il à un chiffre rendu par un outil, au plus à son arrondi près ?"""
-    if value in FREE_INTEGERS:
+    if value in FREE_INTEGERS or value in seen:  # tel quel, même avec plus de deux décimales
         return True
     for x in seen:
         for digits in (0, 1, 2):

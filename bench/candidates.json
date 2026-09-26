@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "source": "docs/research/modeles.md (recherche du 26/09/2026) ; ids alignes sur fixtures/pricing.json",
+  "candidates": [
+    {
+      "id": "openai-gpt-5-nano",
+      "kind": "openai",
+      "model": "gpt-5-nano",
+      "base_url_env": "OPENAI_BASE_URL",
+      "default_base_url": "https://api.openai.com/v1",
+      "api_key_env": "OPENAI_API_KEY",
+      "size_class": "small",
+      "origin": "US",
+      "note": "modeles.md#1 : $0.05/$0.40 par M jetons ; residence UE possible via eu.api.openai.com"
+    },
+    {
+      "id": "openai-gpt-5-mini",
+      "kind": "openai",
+      "model": "gpt-5-mini",
+      "base_url_env": "OPENAI_BASE_URL",
+      "default_base_url": "https://api.openai.com/v1",
+      "api_key_env": "OPENAI_API_KEY",
+      "size_class": "medium",
+      "origin": "US",
+      "note": "modeles.md#1 : $0.25/$2.00 par M jetons ; residence UE possible"
+    },
+    {
+      "id": "openai-gpt-5",
+      "kind": "openai",
+      "model": "gpt-5",
+      "base_url_env": "OPENAI_BASE_URL",
+      "default_base_url": "https://api.openai.com/v1",
+      "api_key_env": "OPENAI_API_KEY",
+      "size_class": "medium",
+      "origin": "US",
+      "note": "modeles.md#1 : $1.25/$10.00 par M jetons ; option 'meilleur compromis' qualite/prix"
+    },
+    {
+      "id": "openrouter-llama-3.3-70b",
+      "kind": "openrouter",
+      "model": "meta-llama/llama-3.3-70b-instruct",
+      "base_url_env": "OPENROUTER_BASE_URL",
+      "default_base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "size_class": "medium",
+      "origin": "US",
+      "note": "modeles.md#1 : poids Meta (ouverts), heberge par Groq/OpenRouter ; ~$0.59/$0.79 par M, tres rapide (LPU)"
+    },
+    {
+      "id": "mistral-ministral-8b",
+      "kind": "mistral",
+      "model": "ministral-8b-2512",
+      "base_url_env": "MISTRAL_BASE_URL",
+      "default_base_url": "https://api.mistral.ai/v1",
+      "api_key_env": "MISTRAL_API_KEY",
+      "size_class": "small",
+      "origin": "FR",
+      "note": "modeles.md#1 : Mistral AI, France/UE native, $0.15/$0.15 par M jetons, API directe"
+    },
+    {
+      "id": "openrouter-mistral-small",
+      "kind": "openrouter",
+      "model": "mistralai/mistral-small-2603",
+      "base_url_env": "OPENROUTER_BASE_URL",
+      "default_base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "size_class": "small",
+      "origin": "FR",
+      "note": "modeles.md#1 : meme famille que Mistral Small, via OpenRouter (une seule cle pour des centaines de modeles)"
+    },
+    {
+      "id": "openrouter-qwen-2.5-72b",
+      "kind": "openrouter",
+      "model": "qwen/qwen-2.5-72b-instruct",
+      "base_url_env": "OPENROUTER_BASE_URL",
+      "default_base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "size_class": "medium",
+      "origin": "CN",
+      "note": "modeles.md#1 : poids Alibaba (Chine), heberge hors UE sauf via OVHcloud/Scaleway"
+    },
+    {
+      "id": "openrouter-deepseek-v3",
+      "kind": "openrouter",
+      "model": "deepseek/deepseek-v3.2",
+      "base_url_env": "OPENROUTER_BASE_URL",
+      "default_base_url": "https://openrouter.ai/api/v1",
+      "api_key_env": "OPENROUTER_API_KEY",
+      "size_class": "medium",
+      "origin": "CN",
+      "note": "modeles.md#1 : poids DeepSeek (Chine) ; existe aussi souverain FR via Scaleway (DeepSeek V4 Flash)"
+    },
+    {
+      "id": "ollama-llama3.3-70b",
+      "kind": "ollama",
+      "model": "llama3.3:70b",
+      "base_url_env": "OLLAMA_BASE_URL",
+      "default_base_url": "http://localhost:11434/v1",
+      "api_key_env": null,
+      "size_class": "local",
+      "origin": "US",
+      "note": "execution locale chez le client : cout nul, aucune cle, latence liee a son materiel"
+    },
+    {
+      "id": "ollama-mistral-small",
+      "kind": "ollama",
+      "model": "mistral-small",
+      "base_url_env": "OLLAMA_BASE_URL",
+      "default_base_url": "http://localhost:11434/v1",
+      "api_key_env": null,
+      "size_class": "local",
+      "origin": "FR",
+      "note": "execution locale, poids Mistral (FR) ; option souveraine a cout nul si le materiel suit"
+    }
+  ]
+}

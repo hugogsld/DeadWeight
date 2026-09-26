@@ -11,3 +11,6 @@ node_modules/
 out/
 *.db
 .DS_Store
+
+# historiques clients (B1) : données personnelles, jamais dans le repo
+private/

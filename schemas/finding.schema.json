@@ -30,9 +30,21 @@
         "no_cache",
         "unbounded_loop",
         "agent_where_chain",
+        "excess_reasoning",
+        "duplicate_calls",
+        "paid_errors",
+        "verbose_output",
+        "tool_bloat",
+        "batch_eligible",
+        "image_heavy",
+        "llm_judge",
+        "parallelizable_steps",
+        "per_item_calls",
+        "mergeable_steps",
+        "harness_overhead",
         "data_outside_eu"
       ],
-      "description": "Les quatre premieres sont implementees (rules/low_entropy.py, oversized_model.py, raw_context.py, no_cache.py). unbounded_loop et agent_where_chain sont prevues par D2.4 (ROADMAP.md) et deja reservees ici par report/audit.py (RULE_TEXT) et tests/test_audit.py (RULE_CODES) ; aucune regle ne les emet encore."
+      "description": "Dix regles implementees (rules/*.py). Contrat partage : toute extension de cette enumeration doit rester minimale et etre signalee dans la PR qui l'ajoute (voir rules/excess_reasoning.py, duplicate_calls.py, paid_errors.py, verbose_output.py pour les quatre derniers ajouts)."
     },
     "app_id": {
       "type": "string",

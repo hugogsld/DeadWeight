@@ -7,8 +7,8 @@
 | Gain latence | Aucun (elle augmente, c'est voulu) |
 | Comment prouver | Calcul exact |
 | Données nécessaires | Événements (horaires) |
-| État | À faire |
-| Règle | — |
+| État | Détection faite (R14), éligibilité à confirmer |
+| Règle | R14 batch_eligible |
 
 ## Le signal
 Rafales nocturnes ou planifiées, sans utilisateur qui attend.

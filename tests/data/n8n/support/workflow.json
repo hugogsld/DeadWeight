@@ -1,0 +1,138 @@
+{
+  "id": "wfSupport",
+  "name": "Support tickets",
+  "active": true,
+  "settings": {},
+  "nodes": [
+    {
+      "id": "n1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "parameters": {}
+    },
+    {
+      "id": "n2",
+      "name": "Classifier",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "parameters": {}
+    },
+    {
+      "id": "n3",
+      "name": "GPT-4o",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "n4",
+      "name": "Support Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "parameters": {}
+    },
+    {
+      "id": "n5",
+      "name": "Claude",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-5"
+        }
+      }
+    },
+    {
+      "id": "n6",
+      "name": "Search Orders",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "parameters": {}
+    },
+    {
+      "id": "n7",
+      "name": "Local Llama",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "parameters": {
+        "model": "llama3.1"
+      }
+    },
+    {
+      "id": "n8",
+      "name": "Summarizer",
+      "type": "@n8n/n8n-nodes-langchain.chainSummarization",
+      "parameters": {}
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-4o": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Classifier": {
+      "main": [
+        [
+          {
+            "node": "Support Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Support Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Orders": {
+      "ai_tool": [
+        [
+          {
+            "node": "Support Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Local Llama": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
