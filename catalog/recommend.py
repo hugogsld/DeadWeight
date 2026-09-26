@@ -21,7 +21,7 @@ import copy
 
 from catalog import editor_index, editor_of, info, load_pricing, load_providers
 from catalog.capabilities import load as load_capabilities
-from report.cost import chiffrer, lookup
+from report.cost import MIN_WINDOW_SECONDS, chiffrer, lookup, window_seconds
 from rules import oversized_model
 
 JSON_FORMATS = {"json_object", "json_schema"}
@@ -75,6 +75,10 @@ def recommend(events, pricing=None, providers=None, capabilities=None):
               "raison": None}
     if before is None:
         result["raison"] = "coût actuel non mesurable : pas de comparaison possible"
+        return result
+    if window_seconds(events) < MIN_WINDOW_SECONDS:  # même garde que la carte du rapport
+        result["cout_mensuel_usd"] = None
+        result["raison"] = "moins d'une heure de trafic observée : projection sur un mois non fiable"
         return result
     if need["contexte_min"] is None:
         result["raison"] = "jetons non capturés : taille de contexte nécessaire inconnue"
