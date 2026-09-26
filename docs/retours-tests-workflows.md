@@ -117,6 +117,30 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
   La passerelle a relayé, et **0 événement capturé** (77 avant, 77 après).
 - **Problèmes** : 1 et 3 (confirmés), 10, 11, 12, 13, 14.
 
+### Fiche : Récap Gmail, retest sur `main` (26/09, 17 h 20)
+
+- **Version testée** : `main` @ `7fd9045` (14 vérifications, agent auditeur, banc de
+  modèles), passerelle neuve sur le port 8096, même base que le premier passage.
+- **Trafic** : 2e exécution réelle du récap sur la vraie boîte (35 mails) :
+  37 appels. Avec le passage de 16 h 04, **88 appels** sur **1 h 16**.
+  Coût réel : 0,0084 $.
+- **Rapport** : 1 constat, R1 sur le tri (82 appels, 5 réponses). Coût mensuel
+  affiché : **2,53 $**. Coût réel du tri : 0,0022 $ par récap, soit **0,07 $/mois**
+  à un récap par jour (problème 4).
+- **Rejeu hors ligne** (`proof.replay`, sans clé) : `REJECT`, 33 entrées rejouées,
+  **55 % d'accord** sur 20 remplacées. Règles surtout fondées sur l'expéditeur :
+  `medium|changelog|campaign|read` → newsletter, `google|account|security|alert`
+  → urgent.
+- **Agent auditeur** (`scripts.audit`, `gpt-5-mini`, 6 appels, 0,0157 $) : plan
+  d'action en 5 points. Son propre rejeu donne **87 % d'accord** sur 23 entrées
+  remplacées, `REJECT`. Plan : observer en miroir, rejouer davantage, puis
+  remplacer si le seuil est atteint (problème 16 pour ses erreurs).
+- **Banc de modèles** (`bench run --candidates small`, 30 cas) :
+  `openai-gpt-5-nano` score **0,0** sur 29 appels réussis, p95 16,9 s ;
+  `mistral-ministral-8b` et `openrouter-mistral-small` : 30/30 en erreur (pas de
+  clé), affichés `reject`. Problèmes 15 et 17.
+- **Problèmes** : 4 (confirmé après plus d'une heure), 15, 16, 17.
+
 ## Problèmes ouverts
 
 | # | Problème | Gravité | Où | Vu sur | Statut |
@@ -124,7 +148,7 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
 | 1 | Le rejeu affiche encore une projection mensuelle absurde | haute | `proof/replay.py` | Récap Gmail, OpenAI story flow | ouvert |
 | 2 | R1 conseille des « règles fixes » que le rejeu refuse ensuite | haute | `report/audit.py`, `proof/` | Récap Gmail | ouvert |
 | 3 | Le rejeu ne peut presque jamais conclure sous ~90 appels | moyenne | `proof/replay.py`, `rules/low_entropy.py` | Récap Gmail, OpenAI story flow | ouvert |
-| 4 | Le conseil « laissez tourner une heure » est faux pour un workflow par lots | moyenne | `report/audit.py` | Récap Gmail | ouvert |
+| 4 | La projection mensuelle surestime les workflows par lots, même après une heure | haute | `report/audit.py`, `report/cost.py` | Récap Gmail (2 passages) | ouvert |
 | 5 | Choix de R5 à valider en équipe | basse | `rules/unbounded_loop.py` | tests D2.4 | ouvert |
 | 6 | Heuristique de traces jamais confrontée à un historique réécrit | basse | `gateway/traces.py` | aucun (à tester) | ouvert |
 | 7 | Deadweight ne voit pas les agents lancés par Claude Code, `claude -p` ou `codex exec` | haute | installation (D4.2), `gateway/` | Miguel shorts-factory (lecture du code) | ouvert |
@@ -135,6 +159,9 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
 | 12 | L'extraction de règles hors ligne apprend des noms propres | moyenne | `proof/extract.py` | OpenAI story flow | ouvert |
 | 13 | La bonne règle se trouve en amont : l'extraction ne regarde que l'entrée de l'appel signalé | moyenne | `proof/extract.py`, `gateway/traces.py` | OpenAI story flow | ouvert |
 | 14 | Sortie structurée : un champ qui ne change jamais n'est pas signalé | moyenne | `rules/low_entropy.py` | OpenAI story flow | ouvert |
+| 15 | Le banc de modèles envoie les cas sans le prompt système : les candidats ne reçoivent pas la consigne | haute | `bench/testset.py` | Récap Gmail (retest) | ouvert |
+| 16 | Le plan de l'agent auditeur contient des chiffres mal attribués et une recommandation incohérente | moyenne | `agent/`, `report/audit.py` | Récap Gmail (retest) | ouvert |
+| 17 | Banc : un candidat sans clé est affiché « reject, score 0 » au lieu de « non testé » | basse | `bench/runner.py`, `bench/report.py` | Récap Gmail (retest) | ouvert |
 
 ### 1. Le rejeu affiche une projection mensuelle absurde
 
@@ -200,6 +227,14 @@ est juste (données indépendantes), mais le coût en volume n'est dit nulle par
   juger lui-même.
 
 ### 4. « Laissez tourner la passerelle au moins une heure » est faux pour un workflow par lots
+
+**Complément (retest).** Deux passages du récap espacés de 1 h 16 : le garde-fou
+d'une heure est franchi, le rapport projette **2,53 $/mois** pour le tri. Coût
+réel : 0,0022 $ par récap, soit **0,07 $/mois** à un récap par jour, **38 fois
+moins**. La projection suppose que le rythme des deux passages, 82 appels en
+76 minutes, dure 30 jours d'affilée. Le garde-fou d'une heure ne suffit donc pas :
+seule la durée réelle d'observation (heures de démarrage et d'arrêt de la
+passerelle), ou le rythme des exécutions, donne une projection juste.
 
 **Constat.** Le récap Gmail tourne une fois par jour et fait ses 51 appels en
 1 minute. Le rapport dit « laissez tourner la passerelle au moins une heure ».
@@ -397,6 +432,64 @@ calculer aussi la distribution **par champ**. Un champ constant sur au moins
 MIN_CALLS appels devient une ligne du constat : « le champ `good_quality` vaut
 `true` dans 30 appels sur 30 : il ne décide jamais rien ». Critère de fin : cette
 phrase apparaît dans le rapport sur `workflow 3`.
+
+### 15. Le banc de modèles envoie les cas sans le prompt système
+
+**Constat.** Retest du récap Gmail : `openai-gpt-5-nano` obtient **0 % d'accord
+sur 29 appels réussis** pour trier des mails dans 5 catégories.
+
+**Cause.** Dans `bench/testset.py`, `_usable_messages` ne garde que les messages
+`user`, `assistant` et `tool` de `request.messages`. Or le schéma d'événement range
+le prompt système à part, dans `request.system`. Il n'est jamais envoyé au
+candidat. Pour le tri de mails, toute la consigne est dans le prompt système
+(« Classe le mail dans UNE catégorie parmi : urgent, a_traiter, info, newsletter,
+spam »). Le candidat reçoit un mail brut, répond en texte libre, et n'égale jamais
+la référence. Le verdict ne dit rien du modèle.
+
+**Correction.** Préfixer les messages du cas par `{"role": "system", "content":
+request.system}` quand il existe. Test : un cas dont la consigne n'est que dans
+`request.system` doit l'envoyer. Relancer ensuite le banc sur `recap-gmail` pour
+avoir un vrai score de gpt-5-nano.
+
+### 16. Le plan de l'agent auditeur contient des chiffres mal attribués
+
+**Constat.** Plan produit sur le retest du récap Gmail :
+- « La couverture actuelle des règles est de 69,7 % » : 69,7 % est l'**économie**
+  annoncée deux lignes plus haut (« économie 69,7 %, facteur 3,3 »), pas la
+  couverture ;
+- « Garder en mémoire les réponses pour les cas récurrents (les 5 réponses
+  distinctes) » : un cache se fait sur des **entrées** identiques. Ici les 82
+  entrées sont 82 mails différents, un cache ne servirait à rien ;
+- « L'agent a lancé les six vérifications » : il y en a 14 ;
+- le constat affiche « pas encore vérifié par rejeu » alors que le plan, sur la
+  même page, cite le rejeu de l'agent (87 %, `REJECT`).
+
+Le rapport affirme « Tous les chiffres viennent des vérifications et du rejeu,
+pas du modèle ». Les chiffres existent bien, mais le modèle les rattache à la
+mauvaise grandeur.
+
+**Correction.**
+- Vérifier chaque chiffre du plan **avec son libellé** : couverture, économie et
+  accord sont des champs distincts du rejeu, et un chiffre cité doit l'être avec
+  le nom de son champ.
+- Refuser une recommandation « cache » si la règle `no_cache` n'a rien trouvé.
+- Textes générés à partir du nombre réel de vérifications, et constat marqué
+  « rejeu : REJECT, 87 % » quand l'agent l'a rejoué.
+- Dire dans le rapport quelle extraction a servi : hors ligne (55 %) ou par IA
+  (87 %), sur les mêmes données.
+
+### 17. Banc : un candidat sans clé est affiché « reject, score 0 »
+
+**Constat.** `mistral-ministral-8b` et `openrouter-mistral-small` : 30 appels sur
+30 en erreur faute de clé, affichés `reject score=0.0`. On lit « ce modèle ne
+convient pas » alors qu'il n'a pas été testé. Par ailleurs `--candidates` ne
+filtre que par taille (`small`, `medium`, `local`) : impossible de ne lancer que
+les candidats pour lesquels on a une clé.
+
+**Correction.** Verdict `non testé (clé absente)` quand tous les appels
+échouent en authentification ou sans clé configurée, et ignorer ces candidats par
+défaut. Accepter aussi des identifiants dans `--candidates`
+(`--candidates openai-gpt-5-nano,openai-gpt-5-mini`).
 
 ## Problèmes corrigés
 
