@@ -194,6 +194,11 @@ l'éditeur lui-même, pas à celui d'un hébergeur tiers moins cher. Un modèle 
 signalé : ses jetons de réflexion ne sont pas dans votre trafic, son coût est donc sous-estimé.
 Leur qualité n'est pas prouvée : à vérifier par rejeu avant de changer de modèle.
 
+Le rapport indique aussi **où partent vos données** : pour chaque application, la destination réelle
+des appels (capturée par la passerelle) et si elle est traitée dans l'Union européenne. Quand elle ne
+l'est pas, il propose d'abord le même modèle en région UE si le fournisseur l'offre, puis un modèle
+d'éditeur européen, à tester avant de changer.
+
 ## Importer l'historique n8n (B1)
 
 Sans passerelle : si vos agents tournent dans n8n, l'historique des exécutions contient déjà

@@ -89,6 +89,8 @@ RULE_TEXT = {
                     "Corriger la cause de l'échec (limite de longueur, filtre) avant de relancer."),
     "verbose_output": ("Des réponses bien plus longues que nécessaire",
                        "Poser un plafond de longueur raisonnable, à vérifier par rejeu."),
+    "data_outside_eu": ("Des données qui partent hors d'Europe",
+                        "Passer par la région UE du fournisseur, ou tester un modèle européen au banc."),
 }
 DEFAULT_TEXT = ("Usage à examiner", "Examiner ces appels avec l'équipe concernée.")
 
@@ -122,6 +124,11 @@ def build_report(events, detectors=None, banc=None):
     findings = []
     for _, detect in detectors:
         findings.extend(detect(events))
+
+    # Levier 16 : la conformité a sa propre section, elle ne se mélange pas aux gaspillages
+    souverainete = [f for f in findings if f["rule"] == "data_outside_eu"]
+    findings = [f for f in findings if f["rule"] != "data_outside_eu"]
+    souverainete.sort(key=lambda f: -f["evidence"]["calls"])
 
     constats = []
     for f in findings:
@@ -157,6 +164,7 @@ def build_report(events, detectors=None, banc=None):
                    "global": global_figures},
         "constats": constats,
         "rien_a_signaler": clean,
+        "souverainete": souverainete,
     }
 
 
@@ -261,6 +269,34 @@ def _bench_verdict(b):
     return f" <b>Banc : {measure} sur {b['n_calls']} requêtes réelles, {html.escape(tail)}.</b>"
 
 
+def _sovereignty(findings):
+    """Levier 16 : où partent les données, et les pistes européennes."""
+    if not findings:
+        return ""
+    e, rows = html.escape, []
+    for f in findings:
+        ev = f["evidence"]
+        status = "hors UE" if ev["traitement_ue"] is False else "UE non garantie"
+        where = f"{ev['hote']} ({ev['pays']})" if ev["pays"] else ev["hote"]
+        if ev["certitude"] == "deduite":
+            where += " *"
+        pistes = []
+        if ev["meme_modele_en_ue"]:
+            pistes.append(f"même modèle : {ev['meme_modele_en_ue']}")
+        alt = ev["alternative_europeenne"]
+        pistes.append(f"européen : {alt['modele']} via {alt['hebergeur']} ({_usd(alt['cout_mensuel_usd'])} par mois)"
+                      if alt else "européen : à choisir au banc")
+        rows.append(f"<tr><td>{e(f['app_id'])}</td><td>{e(f['model'])}</td><td>{e(where)}</td>"
+                    f"<td>{e(status)}</td><td>{ev['calls']}</td><td>{e(' ; '.join(pistes))}</td></tr>")
+    deduced = any(f["evidence"]["certitude"] == "deduite" for f in findings)
+    return f"""<h2>Où partent vos données</h2>
+<p class="note">Appels traités hors d'Europe, ou sans garantie de l'être en Europe, et les pistes pour y rester.
+Aucune piste n'est prouvée : un modèle européen se teste au banc avant de changer.</p>
+<table><tr><th>Application</th><th>Modèle</th><th>Destination</th><th>Traitement</th><th>Appels</th><th>Pistes</th></tr>
+{"".join(rows)}</table>
+{'<p class="note">* Destination déduite du format d’appel : le trafic n’est pas passé par la passerelle.</p>' if deduced else ''}"""
+
+
 def _card(c):
     n, e = c["chiffres"], html.escape
     notes = []
@@ -336,6 +372,7 @@ def render_html(report):
 <p class="note">Vérifications effectuées : {checks}.</p>
 {_agent_section(report.get("agent"))}
 <h2>Constats, du plus coûteux au moins coûteux</h2>{cards}
+{_sovereignty(report.get("souverainete"))}
 <h2>Rien à signaler</h2>
 <p class="note">Ces applications ne déclenchent aucune des vérifications ci-dessus.</p>
 <table class="clean"><tr><th>Application</th><th>Appels</th><th>Coût mensuel</th></tr>{rows}</table>"""

@@ -1,9 +1,20 @@
 {
- "_doc": "M1.1 — origine et hébergement par éditeur (préfixe OpenRouter). pays : siège de l'éditeur (ISO 3166). hebergement_ue : traitement dans l'UE par l'API de l'éditeur lui-même, hors clouds tiers — true pour tout compte, \"sous_conditions\" selon le compte ou l'offre (voir option_ue), false si non, null si non vérifié. souverain : éditeur européen. option_ue : comment rester dans l'UE. route_openrouter : nom de la route de l'éditeur lui-même parmi les hébergeurs OpenRouter (prix et capacités de CETTE route pour M2), null s'il n'héberge pas ses modèles. null = inconnu, jamais une supposition.",
+ "_doc": "M1.1 — origine et hébergement par éditeur (préfixe OpenRouter). pays : siège de l'éditeur (ISO 3166). hebergement_ue : traitement dans l'UE par l'API de l'éditeur lui-même, hors clouds tiers — true pour tout compte, \"sous_conditions\" selon le compte ou l'offre (voir option_ue), false si non, null si non vérifié. souverain : éditeur européen. option_ue : comment rester dans l'UE. route_openrouter : nom de la route de l'éditeur lui-même parmi les hébergeurs OpenRouter (prix et capacités de CETTE route pour M2), null s'il n'héberge pas ses modèles. null = inconnu, jamais une supposition. hotes / motifs_hotes : destination réelle d'un appel (champ upstream de l'événement) -> traitement dans l'UE (true / false / null si non garanti), pour le levier 16.",
  "_sources": {
    "recherche": "docs/research/modeles.md, 26/09/2026 (pages officielles des fournisseurs)",
    "siege": "siège de l'éditeur, connaissance publique, non vérifié page par page"
  },
+ "hotes": {
+  "api.openai.com": {"editeur": "openai", "ue": false, "pays": "US", "note": "traitement aux États-Unis par défaut ; eu.api.openai.com pour les comptes éligibles", "source": "recherche"},
+  "eu.api.openai.com": {"editeur": "openai", "ue": true, "pays": null, "note": "résidence des données UE d'OpenAI", "source": "recherche"},
+  "api.anthropic.com": {"editeur": "anthropic", "ue": false, "pays": "US", "note": "API directe : tout est traité aux États-Unis", "source": "recherche"},
+  "generativelanguage.googleapis.com": {"editeur": "google", "ue": null, "pays": null, "note": "API Gemini standard : traitement dans l'UE non garanti ; Vertex AI en région UE", "source": "recherche"},
+  "api.mistral.ai": {"editeur": "mistralai", "ue": true, "pays": "FR", "note": "API Mistral, UE", "source": "recherche"}
+ },
+ "motifs_hotes": [
+  {"motif": "europe-*-aiplatform.googleapis.com", "editeur": "google", "ue": true, "note": "Vertex AI, région UE", "source": "recherche"},
+  {"motif": "bedrock-runtime.eu-*.amazonaws.com", "editeur": null, "ue": true, "note": "AWS Bedrock, région UE", "source": "recherche"}
+ ],
  "editeurs": {
   "openai": {"nom": "OpenAI", "pays": "US", "hebergement_ue": "sous_conditions", "souverain": false, "option_ue": "résidence des données UE (eu.api.openai.com), pour les comptes éligibles seulement", "source": "recherche", "date": "2026-09-26", "route_openrouter": ["OpenAI"]},
   "anthropic": {"nom": "Anthropic", "pays": "US", "hebergement_ue": false, "souverain": false, "option_ue": "pas en API directe (tout part aux États-Unis) ; AWS Bedrock ou Google Vertex AI (clouds tiers) en région UE", "source": "recherche", "date": "2026-09-26", "route_openrouter": ["Anthropic"]},

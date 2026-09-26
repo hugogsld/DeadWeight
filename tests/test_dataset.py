@@ -80,7 +80,10 @@ def test_trace_steps_are_chronological():
 def test_all_rules_match_labels_without_new_false_positives():
     from report.audit import _discover_detectors
     expected = {(s['app_id'], rule) for s in LABELS for rule in s['expected_rules']}
-    actual = {(f['app_id'], f['rule']) for _, detect in _discover_detectors() for f in detect(EVENTS)}
+    # data_outside_eu est un constat de conformité (section « Où partent vos données »), pas un gaspillage :
+    # il vaut pour toute application servie hors UE, testé à part (tests/test_data_outside_eu.py).
+    actual = {(f['app_id'], f['rule']) for _, detect in _discover_detectors() for f in detect(EVENTS)
+              if f['rule'] != 'data_outside_eu'}
     assert actual == expected
 
 

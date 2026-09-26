@@ -138,10 +138,13 @@ LEVIERS = [
          comment_prouver="Jetons économisés × prix.", suite="—"),
     dict(fichier="16-souverainete", titre="Des données qui partent hors d'Europe", famille="Conformité",
          argent="—", latence="—", preuve="Catalogue (origine, hébergement)", donnees="Événements + catalogue M1",
-         etat="Bloc M (Hugo)", regle="—",
+         etat="Fait (data_outside_eu, catalogue M1/M2)", regle="data_outside_eu",
          signal="Appels vers un fournisseur sans hébergement UE (API directe d'Anthropic, par exemple).",
-         detection="Fournisseur et région de chaque appel.",
-         optimisation="Alternative UE (OpenAI UE, Gemini UE, Mistral, Scaleway, OVHcloud), testée au banc.",
+         detection="Destination réelle de chaque appel (upstream capturé par la passerelle, sinon déduite du "
+                   "format), qualifiée par le catalogue : UE, hors UE, ou non garantie.",
+         optimisation="D'abord le même modèle en région UE quand l'éditeur la propose (aucun changement de "
+                      "qualité) ; sinon un modèle d'éditeur européen, nommé seulement pour une tâche simple (R2), "
+                      "à tester au banc.",
          comment_prouver="Banc de modèles sur l'alternative.", suite="Argument fort pour les clients français."),
     dict(fichier="17-forme-du-workflow", titre="Autres gains sur la forme du workflow", famille="Forme du workflow",
          argent="Variable", latence="Variable", preuve="Graphe + historique", donnees="Historique n8n (B1)",
