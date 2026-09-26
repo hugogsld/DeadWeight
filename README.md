@@ -1,4 +1,142 @@
-# Deadweight
+# DeadWeight — votre premier audit en dix minutes
+
+DeadWeight relaie vos appels OpenAI, les enregistre **localement** et produit un
+rapport HTML sur les usages à examiner. Vous gardez votre clé, vos modèles et votre
+application ; seul le `base_url` change. Aucun remplacement automatique des appels.
+
+## Prérequis
+
+- **Python 3.11 ou plus récent**, avec `venv` et `pip` (`python3 --version`).
+- **Git** et **Make** (`git --version`, `make --version`).
+- macOS ou Linux ; sous Windows, utilisez WSL2 et suivez les commandes Linux.
+- Une connexion Internet pour cloner et installer les dépendances. La démo n’appelle
+  aucun fournisseur ; votre trafic réel nécessite votre accès habituel à OpenAI.
+
+Sur Debian/Ubuntu, si nécessaire : `sudo apt install python3 python3-venv make git`.
+Sur macOS, installez les outils de ligne de commande (`xcode-select --install`) et
+Python 3.11+ avant de commencer. Les commandes ci-dessous sont à lancer depuis le repo.
+
+## 1. Installer et lancer la passerelle
+
+```sh
+git clone https://github.com/hugogsld/DeadWeight.git
+cd DeadWeight
+make dev
+```
+
+`make dev` crée `.venv`, installe les dépendances, prépare `.env.local` puis lance
+la passerelle sur **http://127.0.0.1:8080/v1**. Gardez ce terminal ouvert.
+Vous n’avez aucune clé à renseigner dans DeadWeight : l’application continue
+à transmettre sa propre clé. Si Python est nommé autrement : `make dev PY=python3.11`.
+
+**Vérifier sans clé avant de brancher votre application :** dans un second terminal,
+placez-vous dans le même dossier puis lancez :
+
+```sh
+make demo
+```
+
+La démo démarre un faux serveur OpenAI et une passerelle sur des ports locaux libres,
+envoie 36 appels, puis affiche le chemin `out/demo-…/audit.html`. Ouvrez-le dans votre
+navigateur. Chaque lancement utilise une base séparée et arrête ses serveurs à la fin :
+votre passerelle et vos captures réelles restent intactes. Les chiffres de ce rapport
+sont **fictifs**, destinés à vérifier le parcours. Après installation des dépendances,
+la démo doit prendre moins d’une minute ; elle fonctionne sans Internet ni clé API.
+
+## 2. Changer uniquement l’adresse dans votre application
+
+Python, avec votre SDK OpenAI et votre clé habituelle :
+
+```python
+from openai import OpenAI
+
+client = OpenAI(base_url="http://127.0.0.1:8080/v1")
+# OPENAI_API_KEY reste configurée dans votre application, comme avant.
+```
+
+JavaScript / Node.js, avec votre SDK OpenAI existant :
+
+```javascript
+import OpenAI from "openai";
+
+const client = new OpenAI({ baseURL: "http://127.0.0.1:8080/v1" });
+// OPENAI_API_KEY reste configurée dans votre application, comme avant.
+```
+
+Si vous passiez déjà `api_key` / `apiKey` au constructeur, conservez-le. Ne changez
+ni le modèle ni les messages. Ce parcours capture les appels **Chat Completions**
+(`/v1/chat/completions`) ; les autres routes sont relayées sans capture.
+L’application et la passerelle doivent tourner sur la même machine : `127.0.0.1`
+dans un conteneur désigne ce conteneur, pas la machine hôte.
+
+## 3. Laisser passer votre trafic
+
+Utilisez votre application normalement. Les événements sont écrits dans
+`out/events.db` au fil des appels. Pour vérifier le compteur depuis un second terminal :
+
+```sh
+.venv/bin/python -m gateway.store count
+```
+
+Quelques appels suffisent pour produire un rapport ; certaines règles exigent au moins
+30 appels comparables. « Aucun gaspillage détecté » est un résultat possible.
+En streaming, OpenAI ne fournit les tokens que si votre application demande
+`stream_options={"include_usage": True}` (Python) ou
+`stream_options: { include_usage: true }` (JS). Sans usage, le rapport affiche les
+coûts indisponibles : il n’invente pas de mesure.
+
+## 4. Générer le rapport en une commande
+
+Dans le second terminal, depuis le même dossier :
+
+```sh
+make audit
+```
+
+Cette commande enchaîne l’export SQLite et `report.audit`, puis écrit **`out/audit.html`**.
+Ouvrez ce fichier dans votre navigateur. La passerelle peut rester active pendant
+l’audit. L’export intermédiaire est temporaire et supprimé après usage. Pour choisir
+le fichier final : `make audit AUDIT_OUT=out/mon-rapport.html`.
+
+La base par défaut est `out/events.db`. Pour la changer, définissez
+`GATEWAY_DB=/chemin/vers/events.db` dans `.env.local`, puis relancez `make dev`.
+`make audit` charge le même fichier de configuration. Pour le compteur manuel,
+ajoutez `--db /chemin/vers/events.db`.
+
+## Confidentialité
+
+- **La clé n’est jamais stockée** par la passerelle : l’en-tête d’autorisation est
+  relayé au fournisseur sans être enregistré dans SQLite ou les journaux.
+- **La base reste chez vous.** Elle contient les prompts et réponses : traitez-la
+  comme les données de votre application. Le rapport peut aussi contenir des informations
+  sur vos applications ; partagez-le uniquement avec les personnes concernées.
+- Le fournisseur reçoit toujours vos appels habituels. La génération du rapport ne
+  transmet aucune donnée à DeadWeight ou à un modèle externe.
+- La démo utilise exclusivement des serveurs locaux et ne lit aucune clé client.
+
+## Si ça ne marche pas
+
+| Symptôme | Action |
+| --- | --- |
+| `python3`, `make` ou `git` introuvable | Installez les prérequis ci-dessus ; vérifiez Python 3.11+. |
+| Création de `.venv` impossible | Sur Debian/Ubuntu, installez `python3-venv` ; vérifiez les droits du dossier. |
+| Installation des paquets impossible | Vérifiez Internet et l’accès à PyPI, puis relancez `make dev`. |
+| Port 8080 déjà utilisé | Arrêtez l’autre service, ou réglez `GATEWAY_PORT=8081` dans `.env.local` et utilisez ce port dans votre `base_url`. |
+| Connexion refusée par votre application | Gardez `make dev` ouvert et vérifiez l’adresse, le port et que l’application tourne sur le même hôte. |
+| Réponse 401 / 429 / 502 | Vérifiez respectivement votre clé dans l’application, votre quota fournisseur, ou l’accès réseau au fournisseur. |
+| Base absente ou vide | Lancez `make dev`, envoyez des appels Chat Completions via le nouveau `base_url`, puis relancez `make audit`. Vérifiez `GATEWAY_DB`. |
+| Rapport sans constat | Collectez davantage de trafic comparable ; les règles peuvent aussi n’avoir rien à signaler. |
+| Coût « non disponible » | Vérifiez l’usage des tokens et la présence du modèle dans `fixtures/pricing.json` ; aucune valeur de remplacement n’est utilisée. |
+| Démo impossible | Vérifiez les droits dans `out/` et l’autorisation des connexions locales, puis relancez `make demo`. |
+
+Pour diagnostiquer l’installation : `make test` puis `make lint`. `make demo` permet
+de distinguer un problème local d’un problème de clé ou de fournisseur.
+
+---
+
+<details>
+<summary>Prototype n8n du hackathon — historique et ancien parcours</summary>
+
 
 **Companies hired thousands of agents this year. Nobody ever gave them a performance review.**
 
@@ -238,3 +376,5 @@ Tes clés vont dans `.env.local` (jamais commité). Personne ne tape `export`.
 
 Un test qui parle à un fournisseur se marque `@pytest.mark.vcr` : il rejoue sa cassette
 dans `tests/cassettes/`. Les clés sont retirées avant l'écriture (voir `tests/conftest.py`).
+
+</details>
