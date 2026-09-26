@@ -12,7 +12,7 @@ dev: install .env.local
 
 install: $(BIN)/.installed
 
-$(BIN)/.installed: requirements.txt
+$(BIN)/.installed: requirements.txt gateway/requirements.txt
 	@$(PY) -c 'import sys; assert sys.version_info >= (3, 11), "Python 3.11+ requis"'
 	$(PY) -m venv $(VENV)
 	PIP_DISABLE_PIP_VERSION_CHECK=1 $(BIN)/pip install -q -r requirements.txt
