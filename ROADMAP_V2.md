@@ -58,7 +58,8 @@ Difficulté : ★ mécanique → ★★★★★ on ne sait pas encore faire. Du
 | Id | Tâche | Difficulté | Temps | Stack technique | Qui |
 |---|---|---|---|---|---|
 | A1 | Agent auditeur | ★★★★ | 7 h | Python, SDK OpenAI (appel d'outils), JSON Schema, modules existants | Hugo (+ Claude pour les tests) |
-| B1 | Import de l'historique n8n | ★★★★ | 6 h | Python, API publique n8n v1, JSON de workflow n8n, schéma d'événement | Thibaud |
+| B1 | Connecteurs Claude Code / Codex puis n8n | ★★★★ | 7 h | Python, journaux de session, API n8n v1, schéma d'événement | Alexandre |
+| B2 | Connecteur OpenTelemetry | ★★★★ | 4 h | Python, OTLP/HTTP JSON, conventions GenAI | Natan + Claude |
 | B3 | Analyse du premier workflow | ★★★ | 3 h | B1 + règles + rapport, revue humaine | toute l'équipe |
 | M1 | Catalogue : origine, hébergement, qualité, vitesse | ★★★ | 4 h | Python, API OpenRouter, API Artificial Analysis, tables JSON versionnées | Alexandre |
 | M2 | Recommandations de modèles | ★★★★ | 5 h | Python, M1, rejeu D3.2 | Alexandre |
@@ -95,27 +96,19 @@ l'agent ; JSON Schema pour décrire les outils ; modules existants (`rules/`, `r
 **Risques** : chiffres inventés (A1.3), non-déterminisme (tests avec un faux LLM), données client envoyées au
 modèle de l'agent (A1.3), coût et durée de l'audit.
 
-## B1 — Import de l'historique n8n · ★★★★ · 6 h
+## B1 — Connecteurs d'entrée · ★★★★
 
-**Pourquoi** : un fichier de workflow ne contient aucun trafic. L'historique des exécutions, lui, contient les
-vrais appels, en vrai volume. La détection reste indépendante de n8n (la passerelle ne change pas) : B1 est un
-**importeur**, une deuxième source d'événements.
+Recadré le 26/09 après le workflow de Miguel (Claude Code, Codex, Modal : pas de n8n). Méthode complète :
+`docs/analyser-un-workflow.md` — un seul cœur d'analyse, un connecteur par environnement, trois niveaux de
+données (usage, contenu, structure).
 
-**Stack** : Python ; API publique n8n v1 (`GET /api/v1/executions?workflowId=…&includeData=true`, pagination par
-curseur, en-tête `X-N8N-API-KEY`) ; JSON de workflow n8n (nœuds, connexions `ai_languageModel` et `ai_tool`) ;
-schéma d'événement ; reprise de `detector/scan.py` (prototype), qui savait déjà trouver le modèle d'un nœud.
+| Id | Connecteur | Qui | Temps | Niveau |
+|---|---|---|---|---|
+| B1 | Journaux Claude Code et Codex (premier cas réel : Miguel, run 28), puis historique n8n | Alexandre | 4 h + 3 h | 3 |
+| B2 | OpenTelemetry (conventions GenAI) : réception OTLP et import de fichier | Natan + Claude | 4 h | 1 à 3 |
 
-| Sous-tâche | Contenu | ★ | Temps |
-|---|---|---|---|
-| B1.1 Récupération | Une commande que **le client lance chez lui** (`python -m importers.n8n fetch --url … --workflow …`, clé en variable d'environnement) : elle écrit un fichier d'exécutions, qu'il peut auditer lui-même ou nous envoyer. Pagination, limite, reprise | ★★ | 1 h |
-| B1.2 Conversion | Workflow + exécutions → événements : trouver les nœuds LLM et leur sous-nœud modèle (fournisseur, modèle) ; dans `runData` du sous-nœud : messages envoyés, texte rendu, jetons (`tokenUsage`), heure, durée ; appels d'outils de l'agent (pour R5 et R6) ; `app_id` = workflow et nœud ; **`trace.id` = identifiant d'exécution** (regroupement exact, meilleur que la déduction de D1.4) ; erreurs | ★★★★ | 3 h |
-| B1.3 Taux de compréhension | Ce qu'on n'a pas su lire : nœuds ignorés, appels sans jetons, modèles inconnus. Un chiffre « X % des appels LLM du workflow compris » dans le rapport | ★★ | 1 h |
-| B1.4 Confidentialité | Dossier `private/` ignoré par git, option d'anonymisation (emails, téléphones) avant analyse, suppression après | ★★ | 30 min |
-| B1.5 Tests | Extrait anonymisé du vrai workflow en jeu de test, résultat attendu figé | ★★ | 30 min |
-
-**Risques** : l'instance n'enregistre pas les exécutions réussies (réglage n8n) ou les a purgées — **à vérifier
-en premier** ; selon la version du nœud, les jetons ne sont pas toujours stockés ; formats qui varient d'une
-version de nœud à l'autre ; gros volumes ; données sensibles.
+Contrat commun : `lire(source) -> événements` + rapport de compréhension (lus, ignorés, niveau atteint),
+aucune clé, données client dans `private/`, un test sur un extrait réel anonymisé.
 
 ## M — Catalogue et recommandations · gros bloc, 9 h au total
 

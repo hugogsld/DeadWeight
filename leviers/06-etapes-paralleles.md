@@ -7,7 +7,7 @@
 | Gain latence | Le plus gros gain : ×2 à ×5 sur le workflow |
 | Comment prouver | Horaires d'exécution |
 | Données nécessaires | Historique n8n (B1) |
-| État | À faire (R10, après B1) |
+| État | Détection faite (R10), indépendance métier à confirmer |
 | Règle | R10 (à venir) |
 
 ## Le signal
