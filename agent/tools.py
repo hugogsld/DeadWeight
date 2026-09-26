@@ -79,6 +79,7 @@ class AuditTools:
         self.detectors = detectors if detectors is not None else _discover_detectors()
         self._findings = None
         self.proofs = {}
+        self.attempted = set()  # constats passés par prouver, même en échec
 
     def findings(self):
         if self._findings is None:
@@ -127,6 +128,7 @@ class AuditTools:
             return {"erreur": f"constat inconnu : {finding_id}"}
         if f["rule"] not in REPLAYABLE:
             return {"erreur": "ce constat ne se prouve pas par rejeu (seuls les aiguillages le peuvent)"}
+        self.attempted.add(finding_id)
         rules = extract_rules(f, self.events, llm=self.llm)
         proof = replay(f, self.events, rules)
         self.proofs[finding_id] = proof
@@ -139,6 +141,11 @@ class AuditTools:
                 "facteur_cout": proof["cost_factor"],
                 "economie_pct": _saving(proof["cost_before_month_usd"], proof["cost_after_month_usd"]),
                 "p95_avant_ms": proof["p95_before_ms"], "p95_apres_ms": proof["p95_after_ms"]}
+
+    def unproven(self):
+        """Constats prouvables par rejeu que l'agent n'a pas encore tenté de prouver."""
+        return [f["finding_id"] for f, _ in self.findings()
+                if f["rule"] in REPLAYABLE and f["finding_id"] not in self.attempted]
 
     def proof_status(self, finding_id):
         """Décidé par le code, jamais par le modèle."""

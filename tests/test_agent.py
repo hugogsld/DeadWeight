@@ -11,6 +11,14 @@ ROOT = Path(__file__).resolve().parents[1]
 EVENTS = [json.loads(line) for line in (ROOT / "fixtures/dataset/v1/events.jsonl").read_text().splitlines()
           if line.strip()]
 TRIAGE = "f_mail-triage_cc8b13da25_low_entropy"
+REVIEWS = "f_reviews_0f58871bd8_low_entropy"
+
+
+def tried():
+    """Outils dont les constats prouvables sont déjà passés par prouver (tests qui portent sur autre chose)."""
+    tools = AuditTools(EVENTS)
+    tools.attempted |= set(tools.unproven())
+    return tools
 
 
 def call(name, args=None, i=[0]):
@@ -42,6 +50,7 @@ def happy_script(first_plan_justification="Accord de 100.0 % au rejeu, coût div
         ("Je commence par la vue d'ensemble.", [call("vue_ensemble")]),
         (None, [call("lancer_regles")]),
         ("Le tri des mails ne produit que trois réponses : je le prouve.", [call("prouver", {"finding_id": TRIAGE})]),
+        (None, [call("prouver", {"finding_id": REVIEWS})]),
         (None, [call("publier_plan", plan("Le tri des mails peut passer en règles fixes.", first_plan_justification))]),
     ]
 
@@ -50,7 +59,8 @@ def test_agent_investigates_proves_and_publishes_a_plan():
     llm = ScriptedLLM(happy_script())
     result = run_agent(AuditTools(EVENTS), llm, model_name="gpt-5-mini")
     assert result["statut"] == "terminé" and result["plan"]["actions"][0]["finding_id"] == TRIAGE
-    assert [j["outil"] for j in result["journal"]] == ["vue_ensemble", "lancer_regles", "prouver", "publier_plan"]
+    assert [j["outil"] for j in result["journal"]] == ["vue_ensemble", "lancer_regles", "prouver", "prouver",
+                                                       "publier_plan"]
     proof = result["journal"][2]["resultat"]
     assert proof["verdict"] == "pass" and proof["accord_pct"] == 100.0 and proof["facteur_cout"] == 3.5
     assert result["cout_audit_usd"] > 0  # 4 appels au modèle, prix gpt-5-mini du catalogue
@@ -109,7 +119,7 @@ def test_tool_errors_reach_the_agent_not_the_user():
     llm = ScriptedLLM([(None, [call("prouver", {"finding_id": "inconnu"})]),
                        (None, [call("outil_fantome")]),
                        (None, [call("publier_plan", plan("Rien de prouvé.", "Piste à observer."))])])
-    result = run_agent(AuditTools(EVENTS), llm)
+    result = run_agent(tried(), llm)
     assert [("erreur" in j["resultat"]) for j in result["journal"][:2]] == [True, True]
     assert result["statut"] == "terminé"
 
@@ -124,9 +134,11 @@ def test_proof_status_is_decided_by_code_not_by_the_model():
         {"priorite": 1, "finding_id": TRIAGE, "action": "Règles fixes", "justification": "Accord 100.0 %."},
         {"priorite": 2, "finding_id": "f_c1fe9dd8fa5ffbdfba75_raw_context", "action": "Envoyer moins",
          "justification": "Le modèle affirme que c'est prouvé."}]}
+    tools = AuditTools(EVENTS)
+    tools.attempted.add(REVIEWS)
     llm = ScriptedLLM([(None, [call("prouver", {"finding_id": TRIAGE, "pourquoi": "le plus clair"})]),
                        (None, [call("publier_plan", two)])])
-    result = run_agent(AuditTools(EVENTS), llm)
+    result = run_agent(tools, llm)
     assert [a["statut"] for a in result["plan"]["actions"]] == ["prouvé par rejeu", "piste à vérifier"]
     assert "[piste à vérifier]" in render_html({**audit(EVENTS), "agent": result})
 
@@ -134,7 +146,7 @@ def test_proof_status_is_decided_by_code_not_by_the_model():
 def test_why_goes_to_the_journal_not_to_the_tool():
     llm = ScriptedLLM([(None, [call("detail_constat", {"finding_id": TRIAGE, "pourquoi": "le plus fréquent"})]),
                        (None, [call("publier_plan", plan("Rien de prouvé.", "Piste."))])])
-    result = run_agent(AuditTools(EVENTS), llm)
+    result = run_agent(tried(), llm)
     first = result["journal"][0]
     assert first["pensee"] == "le plus fréquent" and "erreur" not in first["resultat"]
     assert "pourquoi" not in first["arguments"]
@@ -143,3 +155,16 @@ def test_why_goes_to_the_journal_not_to_the_tool():
 def test_saving_is_computed_even_when_nothing_is_left_to_pay():
     from agent.tools import _saving
     assert _saving(0.3, 0.0) == 100.0 and _saving(0.3, 0.08) == 73.3 and _saving(None, 0.1) is None
+
+
+
+def test_plan_is_refused_until_every_provable_finding_was_replayed():
+    tools = AuditTools(EVENTS)
+    provable = tools.unproven()
+    assert TRIAGE in provable and len(provable) == 2  # mail-triage et reviews
+    script = [(None, [call("publier_plan", plan("Trop tôt.", "Piste."))])]
+    script += [(None, [call("prouver", {"finding_id": f})]) for f in provable]
+    script.append((None, [call("publier_plan", plan("Prouvé.", "Accord 100.0 %."))]))
+    result = run_agent(tools, ScriptedLLM(script))
+    assert "ne l'ont pas été" in result["journal"][0]["resultat"]["erreur"]
+    assert result["statut"] == "terminé" and result["plan"]["actions"][0]["statut"] == "prouvé par rejeu"

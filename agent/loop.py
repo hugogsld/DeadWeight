@@ -23,7 +23,7 @@ boucles, du contexte ou du cache mal utilisés.
 Méthode :
 1. vue_ensemble, puis lancer_regles.
 2. Commence par les constats les plus chers. Regarde le détail de ceux qui comptent.
-3. Pour chaque constat prouvable par rejeu, appelle prouver. Si le verdict est « reject », lis les
+3. Pour chaque constat prouvable par rejeu, appelle prouver : c'est obligatoire avant de publier. Si le verdict est « reject », lis les
    raisons : dis honnêtement que le remplacement n'est pas prouvé, et propose d'observer plus
    longtemps (mode miroir) plutôt que de l'appliquer.
 4. Termine par publier_plan : cinq actions au plus, la plus rentable d'abord.
@@ -33,8 +33,9 @@ Règles absolues :
 - Tu écris en français clair, pour un dirigeant, sans jargon technique.
 - Un constat non prouvé est une piste : n'écris jamais « preuve » ou « prouvé » pour lui. Seul un
   verdict « pass » de l'outil prouver est une preuve.
-- Pas de sigles ni d'anglicismes (A/B, logs, p95, prompt) : écris « temps de réponse des appels les
-  plus lents », « test sur une partie du trafic », « historique de la conversation ».
+- Pas de sigles, d'anglicismes ni de termes techniques (A/B, logs, p95, prompt, tokens, mémoïsation) :
+  écris « temps de réponse des appels les plus lents », « test sur une partie du trafic »,
+  « historique de la conversation », « volume de texte envoyé », « garder en mémoire les réponses ».
 - Pour chaque outil, remplis « pourquoi » : une phrase qui explique ton choix au lecteur du rapport."""
 
 _NUMBER = re.compile(r"\d+(?:[.,]\d+)?")
@@ -119,6 +120,10 @@ def run_agent(tools, llm, model_name=None, max_steps=MAX_STEPS):
                 args = None
             if args is None:
                 result = {"erreur": "arguments JSON illisibles"}
+            elif name == "publier_plan" and tools.unproven():
+                # la preuve est le cœur de l'audit : elle ne dépend pas du bon vouloir du modèle
+                result = {"erreur": "plan refusé : ces constats se prouvent par rejeu et ne l'ont pas été "
+                                    f"{tools.unproven()}. Appelle prouver sur chacun, puis republie."}
             elif name == "publier_plan":
                 missing = unknown_numbers(args, outputs)
                 if not missing:
