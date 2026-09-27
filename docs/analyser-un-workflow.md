@@ -39,7 +39,7 @@ avec l'étape, le service, le montant. Le `costs.jsonl` de Miguel en est un bon 
 | Connecteur | Niveau atteint | Pour qui | État |
 |---|---|---|---|
 | **Passerelle** (`base_url`) | 3, en direct | toute application codée | fait |
-| **OpenTelemetry** (conventions GenAI) | 1 par défaut, 2 si le client active la capture du contenu, 3 par les spans | LangChain, SDK d'agents OpenAI, Vercel AI, LiteLLM, Langfuse… un seul connecteur pour des dizaines de frameworks | fait : import de fichier ; réception en direct (`/v1/traces`) en **JSON seulement**, ce que l'exportateur Python n'envoie pas (voir ci-dessous) |
+| **OpenTelemetry** (conventions GenAI) | 1 par défaut, 2 si le client active la capture du contenu, 3 par les spans | LangChain, SDK d'agents OpenAI, Vercel AI, LiteLLM, Langfuse… un seul connecteur pour des dizaines de frameworks | fait : import de fichier ; réception en direct (`/v1/traces`) en JSON et en protobuf, format de l'exportateur Python (corrigé par #118) |
 | **Journaux Claude Code et Codex** | 3 | équipes qui automatisent avec ces outils | fait (`connectors.agent_logs`) |
 | **Historique n8n** | 2 à 3 selon les nœuds | workflows no-code | fait (`importers.n8n`) |
 | **Exports d'usage des fournisseurs** | 1 | tout le monde : premier diagnostic sans rien installer | après le weekend |
@@ -59,7 +59,7 @@ Détails, chiffres et problèmes : `docs/retours-tests-workflows.md`, fiche « S
 | **n8n 2.40**, nœud OpenAI Chat Model, champ *Base URL* de l'identifiant | passerelle | ✅ 42/42 appels, `app_id` posé par l'en-tête personnalisé de l'identifiant n8n |
 | **n8n 2.40**, même workflow | import de l'historique | ✅ 42/42 exécutions, 100 % des appels LLM compris, jetons réels, une trace par exécution |
 | **Claude Code**, journaux de session d'un vrai projet | `connectors.agent_logs` | ✅ 300 appels lus, 0 ignoré, niveaux 1 à 3 |
-| Application Python instrumentée OpenTelemetry, exportateur OTLP/HTTP officiel | réception en direct | ❌ **415** : l'exportateur Python envoie du protobuf, même avec `OTEL_EXPORTER_OTLP_PROTOCOL=http/json` (problème 18). Corrigé par #118 : 9/9 |
+| Application Python instrumentée OpenTelemetry, exportateur OTLP/HTTP officiel | réception en direct | ✅ corrigé par #118, 9/9 (problème 18 : **415** avant, l'exportateur Python envoie du protobuf même avec `OTEL_EXPORTER_OTLP_PROTOCOL=http/json`) |
 
 Non vérifié faute d'outil ou de compte : Claude Code et Codex **en direct** par la passerelle
 (`ANTHROPIC_BASE_URL`, `OPENAI_BASE_URL`), Codex en journaux, Ollama et modèles locaux, Make, Zapier,

@@ -160,7 +160,8 @@ Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour 
   300 appels lus, 0 ignoré, niveaux 1 à 3. Rapport : 2 constats R12 (problème 19), 730 $/mois
   affichés pour une session sous abonnement (problème 9).
 - **OpenTelemetry en direct** : application Python, exportateur officiel
-  `opentelemetry-exporter-otlp-proto-http` 1.45 → `/v1/traces` : **415, 0 événement** (problème 18).
+  `opentelemetry-exporter-otlp-proto-http` 1.45 → `/v1/traces` : **415, 0 événement** (problème 18),
+  corrigé par #118 (protobuf accepté).
 - **SDK Agents d'OpenAI** : l'API Responses n'est toujours pas capturée sur `main` (problème 11).
 - Non vérifié : Claude Code et Codex en direct par la passerelle, Codex en journaux, Ollama, Make,
   Zapier, Azure OpenAI, Bedrock, Vertex (outil ou compte absent).
@@ -233,13 +234,13 @@ Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour 
 | 15 | Le banc de modèles envoie les cas sans le prompt système : les candidats ne reçoivent pas la consigne | haute | `bench/testset.py` | Récap Gmail (retest) | corrigé (#82) |
 | 16 | Le plan de l'agent auditeur contient des chiffres mal attribués et une recommandation incohérente | moyenne | `agent/`, `report/audit.py` | Récap Gmail (retest) | corrigé (#99) |
 | 17 | Banc : un candidat sans clé est affiché « reject, score 0 » au lieu de « non testé » | basse | `bench/runner.py`, `bench/report.py` | Récap Gmail (retest) | corrigé (#99) |
-| 18 | OpenTelemetry en direct : la passerelle refuse le protobuf, seul format de l'exportateur Python | haute | `gateway/proxy.py` (`receive_traces`), `connectors/otel.py` | Sources (27/09) | en cours (#118) |
+| 18 | OpenTelemetry en direct : la passerelle refuse le protobuf, seul format de l'exportateur Python | haute | `gateway/proxy.py` (`receive_traces`), `connectors/otel.py` | Sources (27/09) | corrigé (#118) |
 | 19 | R12 conseille de plafonner la longueur des réponses d'un agent de code | moyenne | `rules/verbose_output.py` | Sources (27/09), Claude Code | ouvert |
 | 20 | Le plan de l'agent auditeur présente la projection du rejeu comme un « coût mensuel observé » | haute | `agent/`, `proof/replay.py` | OpenAI story flow (retest) | ouvert |
 | 21 | Les règles de remplacement renvoient la sortie normalisée, pas la sortie d'origine | moyenne | `rules/low_entropy.py`, `proof/extract.py`, `optimize/` | OpenAI story flow (retest) | ouvert |
 | 22 | Banc : les tâches à sortie structurée (`response_format`) ont toujours un score de 0 | haute | `bench/client.py`, `schemas/event.schema.json` | OpenAI story flow (retest) | ouvert |
 | 23 | Les règles cherchent des fragments de mots : `pui` (de « puis-je ») attrape « depuis ». Réponses fausses en production | haute | `proof/extract.py`, `gateway/shortcircuit.py` | Tri tickets (PR appliquée) | ouvert |
-| 24 | `optimize --repo` plante si le dépôt du client contient un lien symbolique cassé | haute | `optimize/patch.py` | Tri tickets | en cours (#120) |
+| 24 | `optimize --repo` plante si le dépôt du client contient un lien symbolique cassé | haute | `optimize/patch.py` | Tri tickets | corrigé (#120) |
 | 25 | Titre de la PR `optimize` coupé au milieu d'un mot | basse | `optimize/patch.py` (`pr_text`) | Tri tickets | ouvert |
 | 26 | Dans un dépôt à plusieurs applications, la preuve et `.env.example` sont écrits à la racine, pas dans le dossier de l'application | moyenne | `optimize/patch.py` (`_apply_regles`) | Tri tickets | ouvert |
 
@@ -583,7 +584,7 @@ README, et sans : `Failed to export spans batch code: 415, reason: Unsupported M
 Python envoie du protobuf (`application/x-protobuf`), **constaté même avec `http/json`** : le réglage
 du README n'a donc aucun effet pour une application Python, qui est le cas le plus courant en IA.
 
-**Correction.** Accepter `application/x-protobuf` dans `receive_traces` : décoder avec
+**Correction** (#118, fusionnée). Accepter `application/x-protobuf` dans `receive_traces` : décoder avec
 `opentelemetry.proto.collector.trace.v1.trace_service_pb2.ExportTraceServiceRequest`, convertir par
 `google.protobuf.json_format.MessageToDict` (identifiants en base64, déjà gérés par
 `connectors/otel.py`), puis le même chemin que le JSON. Retirer `http/json` du README. Test : le script
