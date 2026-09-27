@@ -20,7 +20,7 @@ environ 12 minutes).
 | **Passerelle** : rapport | `make audit` | ✅ `out/audit.html` | < 1 s |
 | **OpenTelemetry**, fichier | `python -m connectors.otel traces.json` | ✅ vrais appels `gpt-4o-mini` instrumentés : 3 appels sur 4 spans, niveaux 1 à 3, le span parent ignoré à raison | 1 s |
 | **OpenTelemetry**, en direct depuis Node.js | exportateur `@opentelemetry/exporter-trace-otlp-http` → `/v1/traces` | ✅ 2 spans reçus, 2 événements | — |
-| **OpenTelemetry**, en direct depuis Python | exportateur officiel `opentelemetry-exporter-otlp-proto-http` 1.45 → `/v1/traces` | ❌ `Failed to export spans batch code: 415, reason: Unsupported Media Type`, même avec `OTEL_EXPORTER_OTLP_PROTOCOL=http/json`. 0 événement | — |
+| **OpenTelemetry**, en direct depuis Python | exportateur officiel `opentelemetry-exporter-otlp-proto-http` 1.45 → `/v1/traces` | ❌ `Failed to export spans batch code: 415, reason: Unsupported Media Type`, même avec `OTEL_EXPORTER_OTLP_PROTOCOL=http/json`. 0 événement. **Corrigé par #118** : 9/9 appels captés, vérifié avec la même application | — |
 | **Claude Code**, dossier | `python3 -m connectors.agent_logs ~/.claude/projects` | ✅ 7 fichiers, 5 sessions, 2 651 appels lus, 4 ignorés (messages fabriqués par Claude Code) | 4 s |
 | **Claude Code**, zip d'un projet | `python3 -m connectors.agent_logs run.zip` | ✅ 344 appels lus, 0 ignoré | 1 s |
 | **Codex** | `python3 -m connectors.agent_logs …` | non testé : aucun journal Codex sur la machine | — |
@@ -50,10 +50,8 @@ pour la connexion et l'import, pas pour la qualité des réponses.
 
 ## Ce qui reste à corriger
 
-1. **OpenTelemetry en direct depuis Python** (problème 18 de `retours-tests-workflows.md`) : accepter
-   `application/x-protobuf` sur `/v1/traces`. Tant que ce n'est pas fait, le README ne doit annoncer le
-   direct que pour les exportateurs JSON (Node.js, collecteur OpenTelemetry réglé en `otlphttp` JSON),
-   et renvoyer les applications Python vers l'import de fichier.
+1. ~~**OpenTelemetry en direct depuis Python**~~ (problème 18) : corrigé par #118, `/v1/traces` lit
+   aussi le protobuf.
 2. **SDK Agents d'OpenAI, API Responses** (problème 11) : non capturée. Le README dit bien que seule
    `/v1/chat/completions` est capturée, mais le tableau des voies range le SDK d'agents OpenAI sous
    OpenTelemetry sans le préciser.
