@@ -183,7 +183,10 @@ Langfuse…) ? Deux façons de les auditer, sans rien changer à votre code :
 
     # 2. en direct : ajoutez la passerelle comme destination de vos traces
     OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://127.0.0.1:8080/v1/traces
-    OTEL_EXPORTER_OTLP_PROTOCOL=http/json
+
+La passerelle lit l'OTLP/HTTP en JSON **et** en protobuf : l'exportateur Python officiel (protobuf) et celui
+de Node.js (JSON) marchent tels quels, sans régler `OTEL_EXPORTER_OTLP_PROTOCOL`. Le gRPC (port 4317) n'est
+pas lu : utilisez l'exportateur HTTP.
 
 Par défaut, OpenTelemetry transmet l'usage (modèles, jetons, durées) et l'enchaînement des appels : on
 chiffre et on repère des pistes. Pour les preuves (rejeu, banc de modèles), activez la capture du contenu
