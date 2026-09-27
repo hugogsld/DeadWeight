@@ -24,6 +24,7 @@ from agent.audit import main as audit_main
 from optimize.__main__ import main as optimize_main
 from scripts.audit_complet import detect, notify
 from optimize.send import send
+from scripts.tester_seuils import load_workflow, show_pending, show_structure, structure
 
 LIBRARY_CSV = Path(__file__).resolve().parent.parent / "docs" / "bibliotheque-n8n.csv"
 LOCAL_DIRS = ("private/n8n",)
@@ -72,9 +73,13 @@ def default_source(wf, env=os.environ, dirs=LOCAL_DIRS):
     return None
 
 
+def json_lines(path):
+    return [json.loads(line) for line in Path(path).read_text(encoding="utf-8").splitlines() if line.strip()]
+
+
 def describe(wf, events_path, source):
     """Nom, nœuds, appels IA, exécutions : lus dans la source, jamais supposés."""
-    events = [json.loads(line) for line in Path(events_path).read_text(encoding="utf-8").splitlines() if line.strip()]
+    events = json_lines(events_path)
     folder = Path(events_path).parent
     wf_json = folder / "workflow.json"
     name, nodes = None, None
@@ -140,24 +145,33 @@ def report(proposals):
     print("\n  Mesuré = rejeu des mêmes entrées sur votre historique. ~ = estimation, jamais additionnée.")
 
 
+def structure_only(wf, folder=None, get=None):
+    """Aucune exécution : structure du workflow seule, estimations « ~ », puis comment mesurer."""
+    kwargs = {"get": get} if get else {}
+    wf_data = load_workflow(wf, folder, **kwargs)
+    if wf_data is None:
+        print(f"Workflow {wf} : ni historique ni structure lisible. Importez-le dans n8n, exécutez-le, "
+              "puis définissez N8N_URL et N8N_API_KEY.")
+        return 1
+    print(f"Workflow {wf} : {NO_HISTORY}.")
+    show_structure(structure(wf_data))
+    return 0
+
+
 def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=None, read=input,
-        webhook=None, sender=send, env=os.environ):
+        webhook=None, sender=send, env=os.environ, get=None):
     out = Path(out)
     source = source or default_source(wf, env)
     if source is None:
-        entry = catalog(wf)
-        print(f"Workflow {wf}{' (' + entry['nom'] + ')' if entry else ''} : aucune source trouvée "
-              "(ni N8N_URL, ni dossier private/n8n/" + str(wf) + ").")
-        print("Importez-le dans n8n, lancez-le quelques fois, puis définissez N8N_URL et N8N_API_KEY.")
-        return 1
+        print(f"Aucune source d'exécutions pour {wf} (ni N8N_URL, ni dossier private/n8n/{wf}).")
+        return structure_only(wf, get=get)
     events, log = _quiet(lambda _: detect(source, out), None)
     if events is None:
         print(log, end="")
         return 1
     info = describe(wf, events, source)
     if not info["appels"]:
-        print(f"Workflow trouvé : {info['nom']} — {NO_HISTORY}.")
-        return 1
+        return structure_only(wf, Path(events).parent, get)
     print(f"Workflow trouvé : {info['nom']} ({_n(info['noeuds'], 'nœuds')}, {info['appels']} appels IA, "
           f"{_n(info['executions'], 'exécutions')}).")
     if not ask("Commencer l'analyse ?", yes, interactive, read):
@@ -171,6 +185,7 @@ def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=Non
         return 1
     proposals = json.loads((optim / "propositions.json").read_text(encoding="utf-8"))
     report(proposals)
+    show_pending(json_lines(events), info["executions"])
     proved = any(p["verdict"] == "pass" for p in proposals)
     print(f"\nPage développeur : {optim / 'propositions.html'}  ·  rapport : {out / 'audit.html'}")
     diffs = sorted(optim.glob("*.diff"))
