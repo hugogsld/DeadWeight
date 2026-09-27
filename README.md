@@ -6,6 +6,31 @@ application ; seul le `base_url` change. Aucun remplacement automatique des appe
 
 > Travaux antérieurs déclarés : voir [Construit pendant le hackathon](#construit-pendant-le-hackathon-déclaration-des-travaux-antérieurs).
 
+## Tester Deadweight en 5 minutes (sans clé, sans appel payant)
+
+```sh
+git clone https://github.com/hugogsld/DeadWeight.git && cd DeadWeight
+make install                                    # crée .venv et installe
+make demo                                       # 36 appels simulés → out/demo-…/audit.html
+.venv/bin/python -m optimize fixtures/dataset/v1/events.jsonl --out out/optim --demo
+```
+
+La dernière commande rejoue l'historique d'exemple, propose une modification par constat, la teste
+(précision, latence, coût) et écrit `out/optim/slack.md` (le message Slack), `out/optim/propositions.html`
+(la page développeur) et les diffs des micro-PR. Pour tout vérifier d'un coup : `make e2e`.
+
+## Brancher Deadweight sur vos workflows : quatre voies
+
+| Vous utilisez… | Voie | Commande | Section |
+|---|---|---|---|
+| une application qui appelle OpenAI, Anthropic ou Gemini | passerelle (seul le `base_url` change) | `make dev` | [1 à 4](#1-installer-et-lancer-la-passerelle) |
+| LangChain, SDK d'agents OpenAI, Vercel AI… | OpenTelemetry | `python -m connectors.otel traces.json` | [OpenTelemetry](#opentelemetry) |
+| Claude Code ou Codex | journaux de session | `python3 -m connectors.agent_logs run.zip` | [Journaux](#journaux-claude-code-et-codex-b1) |
+| n8n | historique d'exécution | `python -m importers.n8n check / fetch / convert` | [n8n](#importer-lhistorique-n8n-b1) |
+
+Ensuite, pour toutes les voies : `python -m report.audit` (rapport), `make audit` (agent auditeur, avec
+votre clé) et `python -m optimize` (propositions prouvées et micro-PR). Tout tourne sur votre machine.
+
 ## Prérequis
 
 - **Python 3.11 ou plus récent**, avec `venv` et `pip` (`python3 --version`).
