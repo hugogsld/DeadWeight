@@ -17,6 +17,7 @@ from optimize.devpage import render
 from optimize.patch import make_patch, open_pr, pr_text
 from optimize.propose import _cost, propose
 from optimize.slack import message
+from rules.structured_output import unwrap_all
 from report.billing import ABONNEMENT, API, load_billing, subscription_only
 
 
@@ -30,7 +31,7 @@ def main(argv=None):
     ap.add_argument("--comprehension", help="comprehension.json de python -m connectors.agent_logs (facturation)")
     ap.add_argument("--billing", choices=[ABONNEMENT, API], help="force le mode de facturation, remplace la détection")
     args = ap.parse_args(argv)
-    events = [json.loads(line) for line in Path(args.events).read_text(encoding="utf-8").splitlines() if line.strip()]
+    events = unwrap_all(json.loads(line) for line in Path(args.events).read_text(encoding="utf-8").splitlines() if line.strip())
     keys = bool(os.environ.get("DW_LLM_API_KEY") or os.environ.get("OPENAI_API_KEY") or os.environ.get("OPENROUTER_API_KEY"))
     proposals = propose(events, keys_available=keys)
     out = Path(args.out)
