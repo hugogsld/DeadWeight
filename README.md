@@ -43,6 +43,9 @@ le message reste dans `out/audit-complet/optim/slack.md` et la commande le dit.
 | Claude Code ou Codex | journaux de session | `python3 -m connectors.agent_logs run.zip` | [Journaux](#journaux-claude-code-et-codex-b1) |
 | n8n | historique d'exécution | `python3 -m importers.n8n check / fetch / convert` | [n8n](#importer-lhistorique-n8n-b1) |
 
+Chaque voie a été vérifiée sur un clone neuf avec de vraies applications, temps et messages d'erreur
+relevés : [docs/verification-voies-de-connexion.md](docs/verification-voies-de-connexion.md).
+
 Ensuite, pour toutes les voies : `.venv/bin/python -m report.audit` (rapport), `make audit` (agent auditeur, avec
 votre clé) et `.venv/bin/python -m optimize` (propositions prouvées et micro-PR). Tout tourne sur votre machine.
 
