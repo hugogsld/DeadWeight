@@ -25,8 +25,15 @@ def test_proven_rules_are_measured_on_the_history(proposals):
     m = triage["mesures"]
     assert m["precision"] == {"valeur": 100.0, "statut": MESURE, "unite": "%"}
     assert m["latence_mediane"]["statut"] == MESURE and m["latence_mediane"]["valeur"] < -90
-    assert m["cout"]["valeur"] < 0 and m["jetons_envoyes"]["statut"] == "estimé" and "hypothese" in m["jetons_envoyes"]
+    assert m["cout"]["valeur"] < 0
+    # jetons envoyés : mesurés au rejeu (0 jeton pour les entrées couvertes par une règle), plus
+    # d'estimation par taux de couverture (D : plus de « ~ » sur cette figure).
+    assert m["jetons_envoyes"]["statut"] == MESURE and "hypothese" not in m["jetons_envoyes"]
+    assert m["jetons_envoyes"]["valeur"] < 0
     assert triage["cout_usd"]["apres"] < triage["cout_usd"]["avant"]
+    # latence brute (ms) : pour l'affichage quand le pourcentage seul ressemble à un bug (-100 %)
+    assert triage["latence_ms"]["avant"] > triage["latence_ms"]["apres"] >= 0
+    assert triage["latence_ms"]["statut"] == MESURE
 
 
 def test_without_a_key_a_model_swap_is_not_tested_never_guessed(proposals):

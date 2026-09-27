@@ -17,7 +17,13 @@ from optimize.devpage import render
 from optimize.patch import make_patch, open_pr, pr_text
 from optimize.propose import _cost, propose
 from optimize.slack import message
+from proof.replay import THRESHOLD
 from report.billing import ABONNEMENT, API, load_billing, subscription_only
+
+# seuil de précision en dessous duquel une proposition, même « pass » pour son propre critère (banc de
+# modèles en texte libre à 50 %, plafond à 90 %…), n'ouvre pas de micro-PR. Même seuil que le rejeu des
+# règles (proof.replay.THRESHOLD) : une seule vérité, pas un deuxième chiffre à maintenir.
+PRECISION_FLOOR_PCT = THRESHOLD * 100
 
 
 def main(argv=None):
@@ -37,7 +43,9 @@ def main(argv=None):
     out.mkdir(parents=True, exist_ok=True)
     links, diffs = {}, {}
     for i, p in enumerate(proposals):
-        if args.repo and p["verdict"] == "pass" and p["type"] in ("regles", "modele", "plafond"):
+        precision = (p["mesures"].get("precision") or {}).get("valeur")
+        if (args.repo and p["verdict"] == "pass" and p["type"] in ("regles", "modele", "plafond")
+                and precision is not None and precision >= PRECISION_FLOOR_PCT):
             diff, notes = make_patch(args.repo, p)
             diffs[i] = diff
             title, body = pr_text(p, notes)

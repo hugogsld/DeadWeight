@@ -1,11 +1,13 @@
 """Scénario testeur : une commande, un parcours guidé, de la source n8n jusqu'à la PR et au message Slack.
 
-    make tester WF=4553 [SOURCE=…] [REPO=chemin/du/depot] [OUI=1]
-    python -m scripts.tester 4553 [--source …] [--repo …] [--oui]
+    make tester WF=4553 [SOURCE=…] [REPO=chemin/du/depot] [OUI=1] [--no-anim]
+    python -m scripts.tester 4553 [--source …] [--repo …] [--oui] [--no-anim]
 
 Réutilise la chaîne d'``audit_complet`` (détection de la source, audit, ``optimize``, ``optimize.send``).
 Aucun chiffre n'est calculé ici : ils viennent tous de ``propositions.json`` ; un chiffre absent est
-affiché « non mesuré », une estimation porte « ~ » et rien n'est additionné.
+affiché « — », une estimation porte « ~ » et rien n'est additionné. Sous 95 % de précision (même seuil
+que le rejeu, ``proof.replay.THRESHOLD``), une proposition n'apparaît nulle part : ni dans les étapes,
+ni dans le tableau, ni dans la PR.
 
 Source par défaut pour ``WF=<id>`` : ``n8n:<id>`` si ``N8N_URL`` est défini, sinon un dossier déjà
 téléchargé par ``importers.n8n fetch`` (``private/n8n/<id>``). Sans historique d'exécution, le parcours
@@ -22,21 +24,20 @@ from pathlib import Path
 
 from agent.audit import main as audit_main
 from optimize.__main__ import main as optimize_main
-from scripts.audit_complet import detect, notify
 from optimize.send import send
-from report.audit import _discover_detectors
-from scripts.tester_ui import Progress, header, number, paint, status
+from proof.replay import THRESHOLD
+from scripts import tester_ui as ui
+from scripts.audit_complet import detect, notify
+from scripts.tester_gains import global_gains
 from scripts.tester_seuils import load_workflow, show_pending, show_structure, structure
 
 LIBRARY_CSV = Path(__file__).resolve().parent.parent / "docs" / "bibliotheque-n8n.csv"
 LOCAL_DIRS = ("private/n8n",)
 NO_HISTORY = ("pas d'exécutions : rien à rejouer, lancez le workflow quelques fois dans n8n puis relancez "
               "cette commande")
-# ordre du message Slack (optimize.slack) : contexte envoyé, coût, latence médiane, précision
-FIGURES = (("precision", "précision (rejeu de ses propres entrées)"),
-           ("latence_mediane", "latence médiane"),
-           ("cout", "coût"),
-           ("jetons_envoyes", "données envoyées au modèle (jetons)"))
+# seuil d'affichage : même chiffre que le rejeu des règles (proof.replay.THRESHOLD), pas un deuxième.
+PRECISION_FLOOR_PCT = THRESHOLD * 100
+STEPS = 4
 
 
 def ask(question, yes=False, interactive=None, read=input):
@@ -98,24 +99,11 @@ def describe(wf, events_path, source):
 def found_line(info):
     """« Workflow trouvé : nom · 1 872 appels IA · 99 exécutions · 40 étapes » ; rien d'inconnu affiché."""
     parts = [info["nom"]] if info.get("nom") else []
-    parts += [f"{number(info['noeuds'])} nœuds"] if info.get("noeuds") else []
-    parts.append(f"{number(info['appels'])} appels IA")
-    parts += [f"{number(info['executions'])} exécutions"] if info.get("executions") else []
-    parts += [f"{number(info['etapes'])} étape{'s' if info['etapes'] > 1 else ''}"] if info.get("etapes") else []
+    parts += [f"{ui.number(info['noeuds'])} nœuds"] if info.get("noeuds") else []
+    parts.append(f"{ui.number(info['appels'])} appels IA")
+    parts += [f"{ui.number(info['executions'])} exécutions"] if info.get("executions") else []
+    parts += [f"{ui.number(info['etapes'])} étape{'s' if info['etapes'] > 1 else ''}"] if info.get("etapes") else []
     return "Workflow trouvé : " + " · ".join(parts)
-
-
-def figure(m, level=False):
-    """Une mesure de propose : mesurée telle quelle, estimée avec « ~ », absente = « non mesuré ».
-    ``level`` : un niveau (précision), pas une variation, donc jamais de signe."""
-    if not m or m.get("valeur") is None:
-        return "non mesuré"
-    unit = m.get("unite") or ""
-    sign = "+" if unit == "%" and m["valeur"] > 0 and not level else ""
-    value = f"{sign}{m['valeur']:g}{' ' + unit if unit and unit != '%' else ' %' if unit else ''}"
-    value = value if m["statut"] == "mesuré" else f"~{value}"
-    gain = level or m["valeur"] < 0  # une baisse de latence, de coût ou de jetons est un gain
-    return f"{paint(value.rjust(9), 'vert') if gain else value.rjust(9)}  {status(m['statut'])}"
 
 
 def _quiet(fn, argv):
@@ -131,26 +119,118 @@ def _optimize(events, optim, repo=None, open_prs=False):
     return _quiet(optimize_main, argv)[0]
 
 
-def report(proposals):
-    """Seules les propositions prouvées ; les autres tiennent en une ligne grise (page développeur)."""
-    ok = [p for p in proposals if p["verdict"] == "pass"]
-    s = "s" if len(ok) > 1 else ""
-    if ok:
-        print(f"\nWorkflow analysé : {paint(f'{len(ok)} modification{s} prouvée{s}', 'vert', 'gras')}")
+def _money(v):
+    return f"{v:.4g} $" if v is not None else "—"
+
+
+def _pct(v):
+    return f"{v:+.1f} %" if v is not None else "—"
+
+
+def print_gains(events, shown, executions, on):
+    """Gains sur l'ensemble du workflow (pas seulement les modifications retenues), sous le tableau."""
+    gains = global_gains(events, shown, executions)
+    print(f"\n    {ui.paint('Gains sur l’ensemble du workflow (historique rejoué) :', 'gras', on=on)}")
+    print(f"      coût total : {_money(gains['cout_avant'])} → {_money(gains['cout_apres'])} "
+          f"({_pct(gains['cout_pct'])})")
+    if gains["executions"]:
+        print(f"      coût par exécution : {_money(gains['cout_par_execution_avant'])} → "
+              f"{_money(gains['cout_par_execution_apres'])}  ·  projection pour 1 000 exécutions : "
+              f"{_money(gains['projection_1000_usd'])} (sur la base de {gains['executions']} exécutions observées)")
     else:
-        print("\nWorkflow analysé : aucune modification prouvée sur cet historique.")
-    width = max(len(label) for _, label in FIGURES)
-    for i, p in enumerate(ok, 1):
-        print(f"\n  {paint(f'{i}.', 'gras')} {paint(p['app_id'], 'gras')} — {p['changement']}")
-        for key, label in FIGURES:
-            print(f"     {label.ljust(width)}  {figure(p['mesures'].get(key), key == 'precision')}")
-    hidden = len(proposals) - len(ok)
-    if hidden:
-        print(paint(f"\n  {hidden} autre{'s' if hidden > 1 else ''} piste{'s' if hidden > 1 else ''} testée"
-                    f"{'s' if hidden > 1 else ''} sans preuve suffisante : détail dans la page développeur", "gris"))
-    if ok:
-        print(paint("  mesuré = rejeu des mêmes entrées sur votre historique ; ~estimé = calcul avec hypothèse, "
-                    "jamais additionné", "gris"))
+        print("      coût par exécution : — (nombre d'exécutions non mesuré)")
+
+
+def print_modifications(shown, on):
+    """Étape 2 : la liste des modifications retenues (précision ≥ seuil), ou rien à tester."""
+    ui.step(2, STEPS, "Modifications proposées", on)
+    if not shown:
+        print("    Aucune modification testable sur cet historique.")
+        return
+    name_w = max(len(p["app_id"]) for p in shown)
+    for i, p in enumerate(shown, 1):
+        print(f"    {i}  {p['app_id'].ljust(name_w)}  {p['changement']}")
+
+
+def print_replay_bars(shown, animate, on):
+    """Étape 3 : une barre de précision par modification, animée sur le vrai nombre d'entrées rejouées."""
+    ui.step(3, STEPS, "Tests : l'historique rejoué, nouveau workflow comparé à l'ancien", on)
+    name_w = max((len(p["app_id"]) for p in shown), default=0)
+    for i, p in enumerate(shown, 1):
+        total = (ui.measure(p, ("appels_rejoues",)) or {}).get("valeur")
+        label = f"{i}  {p['app_id'].ljust(name_w)}"
+        bar = ui.ReplayBar(label, p["mesures"]["precision"]["valeur"], total, ui.replay_detail(p),
+                           animate=animate, on=on)
+        bar.render()
+
+
+def print_results(shown, excluded, events, executions, on):
+    """Étape 4 : le tableau des gains par modification, puis les gains globaux du workflow."""
+    ui.step(4, STEPS, "Résumé des gains", on)
+    if not shown:
+        print("    Aucune modification retenue sur cet historique.")
+        return
+    print(ui.render_table(shown, on))
+    print_gains(events, shown, executions, on)
+    if excluded:
+        s = "s" if excluded > 1 else ""
+        print(ui.paint(f"    {excluded} proposition{s} écartée{s} (précision < {PRECISION_FLOOR_PCT:g} %)",
+                       "gris", on=on))
+
+
+def _review(optim, on):
+    diffs = sorted(Path(optim).glob("*.diff"))
+    if not diffs:
+        print("    Aucune micro-PR préparée.")
+        return
+    for d in diffs:
+        print(f"\n    {ui.paint(str(d), 'gras', on=on)}")
+        print(d.read_text(encoding="utf-8"))
+
+
+def _push(events, optim, repo, on):
+    if _optimize(events, optim, repo, open_prs=True):
+        print("erreur : ouverture de la PR impossible", file=sys.stderr)
+        return 1
+    for pr in json.loads((optim / "prs.json").read_text(encoding="utf-8")):
+        print(f"    {ui.paint('PR ouverte : ' + pr['url'], 'vert', on=on)}")
+    return 0
+
+
+def handle_pr(events, optim, repo, proved, yes, interactive, on, read_key=ui.read_key):
+    """Bouton Review / Push / Quitter. ``--oui`` : pousse directement. Hors TTY : aucune action."""
+    if not repo:
+        print(ui.paint("\n  PR : REPO non fourni, aucune PR ouverte (make tester … REPO=chemin/du/depot).",
+                        "gris", on=on))
+        return 0
+    if not proved:
+        return 0
+    keys = [("R", "Review la PR"), ("P", "Push la PR"), ("Q", "Quitter")]
+    if yes:
+        return _push(events, optim, repo, on)
+    if not interactive:
+        print("\n    " + ui.menu_line(keys, on=on))
+        print(f"    {ui.paint('(terminal non interactif : aucun bouton actionné)', 'gris', on=on)}")
+        return 0
+    while True:
+        action = ui.choose(keys, read_key=read_key, out=sys.stdout, on=on)
+        if action == "R":
+            _review(optim, on)
+        elif action == "P":
+            return _push(events, optim, repo, on)
+        else:
+            return 0
+
+
+def handle_slack(optim, webhook, proved, yes, interactive, read, sender):
+    if webhook and proved:
+        if ask("Envoyer le message sur Slack ?", yes, interactive, read):
+            return 1 if notify(optim, webhook=webhook, sender=sender) == "erreur" else 0
+        return 0
+    print("\nMessage Slack " + ("(SLACK_WEBHOOK_URL absent, non envoyé)" if not webhook
+                                else "(aucun gain prouvé, non envoyé)") + " :\n")
+    print((optim / "slack.md").read_text(encoding="utf-8"))
+    return 0
 
 
 def structure_only(wf, folder=None, get=None):
@@ -167,13 +247,17 @@ def structure_only(wf, folder=None, get=None):
 
 
 def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=None, read=input,
-        webhook=None, sender=send, env=os.environ, get=None):
+        webhook=None, sender=send, env=os.environ, get=None, animate=None, read_key=ui.read_key):
     out = Path(out)
-    print(header())
+    interactive = sys.stdin.isatty() if interactive is None else interactive
+    given_source = source
     source = source or default_source(wf, env)
     if source is None:
         print(f"Aucune source d'exécutions pour {wf} (ni N8N_URL, ni dossier private/n8n/{wf}).")
         return structure_only(wf, get=get)
+    on = ui.colors_on(env=env)
+    animate = on if animate is None else animate
+    print(ui.header(wf, given_source, on=on))
     events, log = _quiet(lambda _: detect(source, out), None)
     if events is None:
         print(log, end="")
@@ -181,47 +265,35 @@ def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=Non
     info = describe(wf, events, source)
     if not info["appels"]:
         return structure_only(wf, Path(events).parent, get)
-    print(found_line(info))
+    ui.step(1, STEPS, "Analyse du workflow", on)
+    print(f"  {found_line(info)}")
     if not ask("Commencer l'analyse ?", yes, interactive, read):
         return 0
-    bar = Progress(["lecture de l'historique", f"{len(_discover_detectors())} vérifications",
-                    "rejeu des propositions", "préparation de la PR"])
-    bar.step(1)
-    history = json_lines(events)
-    bar.step(2)
     if _quiet(audit_main, [str(events), "-o", str(out / "audit.html")])[0]:
         print("erreur : l'audit a échoué", file=sys.stderr)
         return 1
-    bar.step(3)
     optim = out / "optim"
     if _optimize(events, optim, repo):
         print("erreur : l'optimisation a échoué", file=sys.stderr)
         return 1
-    bar.step(4)
     proposals = json.loads((optim / "propositions.json").read_text(encoding="utf-8"))
-    bar.done()
-    report(proposals)
+    candidates = ui.precision_candidates(proposals)
+    shown = ui.above_threshold(candidates, PRECISION_FLOOR_PCT)
+    excluded = len(candidates) - len(shown)
+
+    print_modifications(shown, on)
+    print_replay_bars(shown, animate, on)
+
+    history = json_lines(events)
+    print_results(shown, excluded, history, info["executions"], on)
     show_pending(history, info["executions"])
-    proved = any(p["verdict"] == "pass" for p in proposals)
-    print(paint(f"\nPage développeur : {optim / 'propositions.html'}  ·  rapport : {out / 'audit.html'}", "gris"))
-    for d in sorted(optim.glob("*.diff")):
-        print(paint(f"Micro-PR préparée : {d}", "gris"))
-    if repo and proved and ask("Ouvrir la PR GitHub ?", yes, interactive, read):
-        if _optimize(events, optim, repo, open_prs=True):
-            print("erreur : ouverture de la PR impossible", file=sys.stderr)
-            return 1
-        for pr in json.loads((optim / "prs.json").read_text(encoding="utf-8")):
-            print(f"PR ouverte : {pr['url']}")
-    elif not repo:
-        print(paint("PR : REPO non fourni, aucune PR ouverte (make tester … REPO=chemin/du/depot).", "gris"))
-    if webhook and proved:
-        if ask("Envoyer le message sur Slack ?", yes, interactive, read):
-            return 1 if notify(optim, webhook=webhook, sender=sender) == "erreur" else 0
-        return 0
-    print("\nMessage Slack " + ("(SLACK_WEBHOOK_URL absent, non envoyé)" if not webhook
-                                else "(aucun gain prouvé, non envoyé)") + " :\n")
-    print((optim / "slack.md").read_text(encoding="utf-8"))
-    return 0
+    print(ui.paint(f"\nPage développeur : {optim / 'propositions.html'}  ·  rapport : {out / 'audit.html'}",
+                   "gris", on=on))
+    proved = any(p["verdict"] == "pass" for p in shown)
+    code = handle_pr(events, optim, repo, proved, yes, interactive, on, read_key)
+    if code:
+        return code
+    return handle_slack(optim, webhook, proved, yes, interactive, read, sender)
 
 
 def main(argv=None):
@@ -231,8 +303,11 @@ def main(argv=None):
     ap.add_argument("--repo", help="dépôt où ouvrir la micro-PR prouvée (gh)")
     ap.add_argument("--out", default="out/tester")
     ap.add_argument("-y", "--oui", action="store_true", help="répond oui à tout (tournage)")
+    ap.add_argument("--no-anim", action="store_true", help="barres de rejeu affichées directement, sans animation")
     args = ap.parse_args(argv)
-    return run(args.wf, args.source, args.out, args.repo, args.oui, webhook=os.environ.get("SLACK_WEBHOOK_URL"))
+    animate = False if args.no_anim else None
+    return run(args.wf, args.source, args.out, args.repo, args.oui, webhook=os.environ.get("SLACK_WEBHOOK_URL"),
+               animate=animate)
 
 
 if __name__ == "__main__":
