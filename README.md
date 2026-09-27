@@ -25,6 +25,23 @@ La dernière commande rejoue l'historique d'exemple, propose une modification pa
 (la page développeur). Ajoutez `--repo <chemin/du/depot>` pour obtenir aussi le diff et le texte de chaque
 micro-PR ; le dépôt n'est pas modifié. Pour tout vérifier d'un coup : `make e2e`.
 
+### Scénario testeur (workflow 4553)
+
+```sh
+make tester WF=4553                               # parcours guidé, questions [O/n]
+make tester WF=4553 REPO=~/mon-depot OUI=1        # tout accepter (tournage)
+make tester WF=4553 SOURCE=fixtures/dataset/v1/events.jsonl   # répétition sur l'historique d'exemple
+```
+
+Prérequis réels : le workflow [4553](https://n8n.io/workflows/4553) importé dans votre n8n **et exécuté
+plusieurs fois** (sans exécution, rien à rejouer : la commande le dit et s'arrête) ; `N8N_URL` et
+`N8N_API_KEY` dans `.env.local` (sinon, un dossier déjà téléchargé dans `private/n8n/4553`) ; la clé du
+fournisseur (`OPENAI_API_KEY`) seulement pour le banc « modèle plus petit ». Attention : `WF` est l'id
+du workflow **dans votre instance** n8n, pas forcément 4553. Le parcours affiche nom, nœuds, appels IA et
+exécutions, la liste des modifications, puis précision (rejeu), latence, coût et données envoyées au
+modèle, chacun marqué mesuré, `~` estimé ou « non mesuré ». La PR n'est proposée qu'avec `REPO` et un gain
+prouvé, Slack qu'avec `SLACK_WEBHOOK_URL` ; sinon le message et la page développeur s'affichent.
+
 ### Audit complet en une commande
 
 ```sh
