@@ -59,7 +59,7 @@ Méthode commune : `docs/analyser-un-workflow.md` (trois niveaux de données : u
 | **Claude Code de Natan** (6 049 appels, 24 jours) | journaux | 72 % du coût = relire le contexte ; 59 000 jetons dès le premier appel | nouvelle vérification « contexte relu » ; projection juste (les constats dépassaient le total) |
 | **claude-mem** (plugin, 2 652 appels) | journaux | +43 % d'appels cachés en plus de Carlo | vérification « étapes parallèles » regroupée (313 constats → 1) |
 | **Usine de shorts de Miguel** (run 28, 12 shorts) | fichier d'usage par agent | 7,21 $ par short ; les agents auteurs relisent 180 000 jetons par tour (62 à 74 % de leur coût) | recette « modèle par alias » en cours ; recommandations corrigées après vérification du code |
-| **Récap Gmail** (Thibaud, 88 vrais appels) | passerelle | tri des mails = aiguillage | 4 problèmes corrigés : projection sur les workflows par lots, banc sans instructions, chiffres mal attribués par l'agent, modèle sans clé affiché « refusé » |
+| **Récap Gmail** (Thibault, 88 vrais appels) | passerelle | tri des mails = aiguillage | 4 problèmes corrigés : projection sur les workflows par lots, banc sans instructions, chiffres mal attribués par l'agent, modèle sans clé affiché « refusé » |
 | **Triage officiel OpenAI** (54 appels) | passerelle | rien à optimiser, et c'est juste (aucun faux positif) | trous repérés : aiguillage par appel d'outil, conversations non regroupées |
 | **Tri d'emails n8n** (modèle n8n.io #7399) | historique n8n | un appel par email ; classifieur à 4 réponses | seuil de 30 appels non atteint avec 25 emails : relance avec 60 emails en cours |
 

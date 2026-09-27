@@ -166,7 +166,7 @@ chaque constat revu ; aucun faux positif grave ; liste écrite des manques. L'ex
 |---|---|---|---|
 | **Natan** | B3 étapes 1-3 (cartographie, hypothèses) ; testeur D4.4 ; vrai trafic OpenAI | B3 revue ; V1 | D4.4 ; V2, V3, V4 ; A3 |
 | **Hugo** | **A1.1, A1.2** | A1.3, A1.4, A1.5 | corrections après D4.4 |
-| **Thibaud** | **B1.1, B1.2** | B1.3, B1.4, B1.5 ; B3 étapes 4-7 | gel, relectures |
+| **Thibault** | **B1.1, B1.2** | B1.3, B1.4, B1.5 ; B3 étapes 4-7 | gel, relectures |
 | **Alexandre** | M1.1, M1.3, M1.4 | M2.1, M2.3 | M1.2 si le temps |
 | **Codex** | Q1 | — | — |
 | **Claude** | relectures, fusions ; aide B1.2 et A1.5 | aide B3 ; A2 | relecture finale du README |
