@@ -46,6 +46,10 @@ def main(argv=None):
     (out / "propositions.html").write_text(render(proposals, diffs), encoding="utf-8")
     text = message(proposals, links, total_spent=_cost(events), show_all=args.demo)
     (out / "slack.md").write_text(text + "\n", encoding="utf-8")
+    # les boutons « Voir la PR » du message Slack (optimize.send) : un lien, jamais une fusion
+    prs = [{"app_id": p["app_id"], "changement": p["changement"], "url": links[p["finding_id"] + p["type"]]}
+           for p in proposals if p["verdict"] == "pass" and links.get(p["finding_id"] + p["type"])]
+    (out / "prs.json").write_text(json.dumps(prs, ensure_ascii=False, indent=1), encoding="utf-8")
     print(text)
     return 0
 

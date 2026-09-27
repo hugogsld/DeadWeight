@@ -20,6 +20,20 @@ La dernière commande rejoue l'historique d'exemple, propose une modification pa
 (la page développeur). Ajoutez `--repo <chemin/du/depot>` pour obtenir aussi le diff et le texte de chaque
 micro-PR ; le dépôt n'est pas modifié. Pour tout vérifier d'un coup : `make e2e`.
 
+### Audit complet en une commande
+
+```sh
+make audit-complet SOURCE=n8n:<id>                         # ou un dossier n8n, gateway, out/events.db,
+make audit-complet SOURCE=~/.claude/projects/<projet> REPO=../mon-app   # events.jsonl, journaux Claude Code / Codex
+```
+
+Enchaîne détection de la source (n8n : `check` puis `fetch` avec `N8N_URL` / `N8N_API_KEY` ; passerelle :
+trafic déjà capturé ; journaux Claude Code / Codex), rapport (`out/audit-complet/audit.html`), propositions
+testées puis, avec `REPO=…`, ouverture des micro-PR prouvées (gh). Enfin le message Slack part par
+`SLACK_WEBHOOK_URL` (webhook entrant) avec un bouton « Voir la PR » par micro-PR : un simple lien vers GitHub,
+rien ne se fusionne depuis Slack. Il ne part que s'il y a un gain prouvé (`DEMO=1` montre tout) ; sans webhook,
+le message reste dans `out/audit-complet/optim/slack.md` et la commande le dit.
+
 ## Brancher Deadweight sur vos workflows : quatre voies
 
 | Vous utilisez… | Voie | Commande | Section |
