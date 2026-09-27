@@ -151,6 +151,10 @@ par rejeu ceux qui peuvent l'être, et publie un plan d'action priorisé en têt
 détail de sa démarche. Il ne calcule rien lui-même : un plan qui cite un chiffre absent des
 vérifications est refusé et l'agent doit se corriger. Sans clé, le rapport est le même, sans plan.
 
+Sans aucune clé ni donnée qui sort de la machine : `make audit-local` fait tourner l'agent sur un
+modèle Ollama local (qwen2.5:3b) et relève chaque connexion réseau pendant l'audit ; voir
+[docs/audit-local.md](docs/audit-local.md).
+
 ## Test de bout en bout
 
     make e2e

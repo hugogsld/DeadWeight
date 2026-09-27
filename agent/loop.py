@@ -58,8 +58,8 @@ _CACHE_MENTION = re.compile(r"cache|m[ée]moire\D{0,20}r[ée]ponses|r[ée]ponses
 class OpenAIChatTools:
     """Client /chat/completions avec appel d'outils ; base_url inclut /v1."""
 
-    def __init__(self, base_url, api_key, model):
-        self.base_url, self.api_key, self.model = base_url.rstrip("/"), api_key, model
+    def __init__(self, base_url, api_key, model, timeout=120):
+        self.base_url, self.api_key, self.model, self.timeout = base_url.rstrip("/"), api_key, model, timeout
 
     def chat(self, messages, tools):
         body = {"model": self.model, "messages": messages,
@@ -68,7 +68,7 @@ class OpenAIChatTools:
             self.base_url + "/chat/completions", method="POST",
             data=json.dumps(body, ensure_ascii=False).encode(),
             headers={"Authorization": "Bearer " + self.api_key, "Content-Type": "application/json"})
-        with urllib.request.urlopen(request, timeout=120) as response:
+        with urllib.request.urlopen(request, timeout=self.timeout) as response:
             payload = json.load(response)
         return payload["choices"][0]["message"], payload.get("usage") or {}
 
