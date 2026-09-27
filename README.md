@@ -31,23 +31,20 @@ micro-PR ; le dépôt n'est pas modifié. Pour tout vérifier d'un coup : `make 
 make tester WF=4553                               # parcours guidé, questions [O/n]
 make tester WF=4553 REPO=~/mon-depot OUI=1        # tout accepter (tournage)
 make tester WF=4553 SOURCE=fixtures/dataset/v1/events.jsonl   # répétition sur l'historique d'exemple
-make tester WF=4553 SOURCE=… --no-anim            # barres de rejeu affichées directement (tests, CI)
+make tester WF=4553 MIN_APPELS=3                  # démo sur un workflow à peu d'exécutions (défaut : 30)
 ```
 
 Prérequis réels : le workflow [4553](https://n8n.io/workflows/4553) importé dans votre n8n **et exécuté
 plusieurs fois** ; `N8N_URL` et
 `N8N_API_KEY` dans `.env.local` (sinon, un dossier déjà téléchargé dans `private/n8n/4553`) ; la clé du
 fournisseur (`OPENAI_API_KEY`) seulement pour le banc « modèle plus petit ». Attention : `WF` est l'id
-du workflow **dans votre instance** n8n, pas forcément 4553. Le parcours affiche 4 étapes : l'analyse du
-workflow (nom, nœuds, appels IA, exécutions), les modifications proposées, leur rejeu (une barre de
-précision par modification, animée sur un vrai terminal) puis un tableau des gains (précision, coût,
-latence médiane et p95, jetons), suivi des gains sur l'ensemble du workflow (coût total avant/après, coût
-par exécution, projection pour 1 000 exécutions). Chaque chiffre est marqué mesuré, `~` estimé ou « — »
-non mesuré ; sous 95 % de précision (même seuil que le rejeu des règles), une modification n'apparaît nulle
-part — ni dans les étapes, ni dans le tableau, ni dans la PR. La PR n'est proposée qu'avec `REPO` et un
-gain prouvé : sur un vrai terminal, un menu (Review / Push / Quitter, flèches ou raccourcis R/P/Q) ; hors
-terminal, sans `OUI=1`, aucun bouton n'est actionné. Slack n'est proposé qu'avec `SLACK_WEBHOOK_URL` ;
-sinon le message et la page développeur s'affichent.
+du workflow **dans votre instance** n8n, pas forcément 4553. Le parcours affiche l'analyse du workflow,
+les modifications proposées, leur rejeu, puis un tableau des gains (précision, coût, latences, jetons ;
+`~` estimé, `—` non mesuré) : sous 95 % de précision (même seuil que le rejeu des règles), une modification
+n'apparaît nulle part, ni dans le tableau ni dans la PR. Suivent les gains sur l'ensemble du workflow (coût
+total avant/après, coût par exécution) et un menu Review / Push / Quitter (raccourcis R/P/Q). La PR n'est
+proposée qu'avec `REPO` et un gain prouvé ; Slack qu'avec `SLACK_WEBHOOK_URL` ; sinon le message et la page
+développeur s'affichent.
 Les seuils des règles comptent des **appels IA par étape**, pas des exécutions : avec 1 à 3 exécutions, la
 commande liste les vérifications en attente (« modèle trop gros : 30 appels nécessaires, 18 présents »),
 ce n'est pas un échec. Sans aucune exécution, elle lit la structure seule (workflow téléchargé ou

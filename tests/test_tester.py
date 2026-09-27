@@ -1,18 +1,15 @@
 """make tester : parcours guidé (O/n), --oui, sans terminal, sans exécutions. Aucun appel réseau, ni gh."""
-import io
 import json
 import subprocess
 from pathlib import Path
 
 import pytest
 
-import optimize.__main__ as optimize_cli
-from scripts import tester
 from rules import oversized_model
-from scripts.tester import NO_HISTORY, ask, default_source, run
+from scripts import tester
+from scripts.tester import NO_HISTORY, ask, default_source, min_calls_env, run
 from scripts.tester_seuils import pending
-from scripts.tester import found_line
-from scripts.tester_ui import colors_on, paint
+from scripts.tester_ui import cell, shown
 
 ROOT = Path(__file__).resolve().parents[1]
 EVENTS = ROOT / "fixtures/dataset/v1/events.jsonl"
@@ -21,7 +18,8 @@ PR_URL = "https://github.com/client/app/pull/7"
 
 @pytest.fixture(autouse=True)
 def no_keys(monkeypatch):
-    for key in ("DW_LLM_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY", "SLACK_WEBHOOK_URL", "N8N_URL"):
+    for key in ("DW_LLM_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY", "SLACK_WEBHOOK_URL", "N8N_URL",
+                "DW_MIN_CALLS"):
         monkeypatch.delenv(key, raising=False)
 
 
@@ -31,7 +29,7 @@ def no_gh(monkeypatch):
     real, opened = tester._optimize, []
 
     def fake(events, optim, repo=None, open_prs=False):
-        code = real(events, optim)
+        code = real(events, optim, tester.empty_repo(Path(optim).parent / "gh"))
         if open_prs:
             opened.append(repo)
             (Path(optim) / "prs.json").write_text(json.dumps([{"app_id": "mail-triage", "changement": "x",
@@ -67,20 +65,26 @@ def test_ask_lit_la_reponse(answer, expected):
     assert ask("Q ?", interactive=True, read=Answers(answer)) is expected
 
 
-def test_couleurs_seulement_sur_terminal_et_sans_no_color(monkeypatch):
-    class Tty(io.StringIO):
-        def isatty(self):
-            return True
-    assert colors_on(Tty(), env={}) and not colors_on(Tty(), env={"NO_COLOR": "1"})
-    assert not colors_on(io.StringIO(), env={})
-    assert paint("x", "vert", on=False) == "x" and paint("x", "vert", on=True) == "\033[32mx\033[0m"
+def test_cellule_mesure_estime_et_absent():
+    assert cell({"valeur": -24.4, "statut": "mesuré", "unite": "%"}) == "-24.4 %"
+    assert cell({"valeur": -35.7, "statut": "estimé", "unite": "%", "hypothese": "h"}) == "~-35.7 %"
+    assert cell({"valeur": 100.0, "statut": "mesuré", "unite": "%"}, level=True) == "100 %"
+    assert cell({"valeur": None, "statut": "mesuré", "unite": "%"}) == "—"
+    assert cell(None) == "—"
 
 
-def test_premiere_ligne_sans_inconnu():
-    assert found_line({"nom": None, "noeuds": None, "appels": 1872, "executions": 99, "etapes": 40}) == \
-        "Workflow trouvé : 1 872 appels IA · 99 exécutions · 40 étapes"
-    assert found_line({"nom": "Essaim", "noeuds": 39, "appels": 18, "executions": None, "etapes": 19}) == \
-        "Workflow trouvé : Essaim · 39 nœuds · 18 appels IA · 19 étapes"
+def test_seules_les_modifications_au_moins_95_pour_cent_sont_affichees_prouvees_en_tete():
+    m = lambda v: {"precision": {"valeur": v, "statut": "mesuré", "unite": "%"}}  # noqa: E731
+    items = shown([{"app_id": "a", "verdict": "reject", "mesures": m(None)},
+                   {"app_id": "b", "verdict": "reject", "mesures": m(100.0)},
+                   {"app_id": "c", "verdict": "pass", "mesures": m(99.0)},
+                   {"app_id": "d", "verdict": "reject", "mesures": m(82.5)}])  # sous 95 % : écarté
+    assert [p["app_id"] for p in items] == ["c", "b"]
+
+
+@pytest.mark.parametrize("env,expected", [({}, 30), ({"DW_MIN_CALLS": "3"}, 3), ({"DW_MIN_CALLS": "x"}, 30)])
+def test_min_calls_env_defaut_et_invalide(env, expected):
+    assert min_calls_env(env) == expected
 
 
 def test_source_par_defaut(tmp_path):
@@ -141,79 +145,71 @@ def test_sans_executions_rien_n_est_simule(tmp_path, capsys):
 
 def test_refus_au_depart_n_analyse_rien(tmp_path, capsys):
     answers = Answers("n")
-    assert run("4553", source=str(EVENTS), out=tmp_path, interactive=True, read=answers) == 0
+    assert run("4553", source=str(EVENTS), out=tmp_path, interactive=True, read=answers, color=False) == 0
     assert "Workflow trouvé" in capsys.readouterr().out
     assert not (tmp_path / "optim").exists()
 
 
 def test_titre_affiche_la_source_donnee_pas_un_faux_workflow_n8n(tmp_path, capsys):
-    run("4553", source=str(EVENTS), out=tmp_path, interactive=False)
+    run("4553", source=str(EVENTS), out=tmp_path, interactive=False, animate=False, color=False)
     out = capsys.readouterr().out
     assert f"test sur {EVENTS}" in out and "WF 4553" in out and "test du workflow n8n 4553" not in out
 
 
-def test_titre_sans_source_donnee_reste_le_workflow_n8n(tmp_path, capsys, monkeypatch):
-    monkeypatch.setenv("N8N_URL", "http://localhost:5678")
-    run("4553", out=tmp_path, env={"N8N_URL": "http://localhost:5678"}, interactive=False,
-        get=lambda url: pytest.fail(url))
+def test_echantillon_reduit_affiche_un_avertissement(tmp_path, capsys):
+    run("4553", source=str(EVENTS), out=tmp_path, interactive=False, animate=False, color=False,
+        env={"DW_MIN_CALLS": "3"})
     out = capsys.readouterr().out
-    assert "test du workflow n8n 4553" in out
+    assert "échantillon réduit : seuil abaissé à 3 appels par étape, chiffres indicatifs" in out
 
 
-def test_seuil_95_ecarte_une_proposition_du_tableau_et_de_la_pr(tmp_path, capsys):
-    """brainstorm-bot (plafond, 82.5 % de précision) n'apparaît nulle part ; reviews (100 %, mais
-    refusée faute de volume) reste montrée, comme mail-triage."""
-    assert run("4553", source=str(EVENTS), out=tmp_path, interactive=False, animate=False) == 0
-    out = capsys.readouterr().out
-    assert "brainstorm-bot" not in out
-    assert "mail-triage" in out and "reviews" in out
-    assert "1 proposition écartée (précision < 95 %)" in out
-
-
-def test_etape_3_montre_la_barre_de_chaque_modification_retenue(tmp_path, capsys):
-    assert run("4553", source=str(EVENTS), out=tmp_path, interactive=False, animate=False) == 0
-    out = capsys.readouterr().out
-    assert "[3/4] Tests : l'historique rejoué, nouveau workflow comparé à l'ancien" in out
-    assert "364 entrées rejouées" in out and "56 entrées rejouées" in out
-    assert "\033[" not in out  # pas de couleur ni d'ANSI hors terminal
-
-
-def test_etape_4_montre_le_tableau_et_les_gains_globaux(tmp_path, capsys):
-    assert run("4553", source=str(EVENTS), out=tmp_path, interactive=False, animate=False) == 0
-    out = capsys.readouterr().out
-    assert "[4/4] Résumé des gains" in out
-    assert "Modification" in out and "Précision" in out and "Latence méd." in out
-    assert "633 ms → 0 ms" in out  # -100 % : ms bruts, pas un pourcentage qui ressemble à un bug
-    assert "Gains sur l’ensemble du workflow" in out
-    assert "coût total :" in out and "coût par exécution :" in out and "projection pour 1 000 exécutions" in out
-    # jetons envoyés mesurés, plus estimés : aucune valeur de la table ne porte de « ~ »
-    table = out.split("Résumé des gains")[1].split("mesuré = rejeu")[0]
-    assert "~" not in table
+def test_sans_dw_min_calls_pas_d_avertissement(tmp_path, capsys):
+    run("4553", source=str(EVENTS), out=tmp_path, interactive=False, animate=False, color=False, env={})
+    assert "échantillon réduit" not in capsys.readouterr().out
 
 
 def test_parcours_complet_interactif(tmp_path, capsys, no_gh):
     sender = []
-    answers = Answers("", "o")  # Commencer l'analyse ? ; Envoyer le message sur Slack ?
+    answers = Answers("")  # Lancer l'analyse ?
     code = run("4553", source=str(EVENTS), out=tmp_path, repo=str(tmp_path), interactive=True, read=answers,
                webhook="https://hooks.slack.test/x", sender=lambda url, data: sender.append(data),
-               read_key=keys("P"), animate=False)
+               read_key=keys("R", "P", "S", "Q"), animate=False, color=False)
     out = capsys.readouterr().out
     assert code == 0
-    assert [q.split(" [")[0] for q in answers.questions] == ["Commencer l'analyse ?", "Envoyer le message sur Slack ?"]
-    assert "[4/4] Résumé des gains" in out
-    assert "brainstorm-bot" not in out  # sous le seuil d'affichage
+    assert answers.questions == ["  Lancer l'analyse ? [O/n] "]
+    for title in ("[1/4] Analyse du workflow", "[2/4] Modifications proposées", "[3/4] Tests",
+                  "[4/4] Résumé des gains", "Review la PR", "Push la PR", "Envoyer sur Slack"):
+        assert title in out
+    assert "1872 appels IA" in out
+    assert "brainstorm-bot" not in out  # 82.5 % : sous le seuil d'affichage, écarté partout
+    assert "364 entrées rejouées" in out and "-73.3 %" in out  # jetons mesurés, plus de « ~ »
+    assert "633 ms → 0 ms" in out  # latence médiane à -100 % : ms brutes, pas un pourcentage
+    assert "Gains sur l’ensemble du workflow" in out and "coût par exécution" in out
     assert no_gh == [str(tmp_path)] and f"PR ouverte : {PR_URL}" in out
     assert len(sender) == 1 and sender[0]["blocks"][-1]["elements"][0]["url"] == PR_URL
 
 
-def test_menu_review_puis_push(tmp_path, capsys, no_gh):
-    """``no_gh`` ne crée pas de vrai diff (pas de dépôt git réel) : Review le dit, puis Push aboutit."""
-    code = run("4553", source=str(EVENTS), out=tmp_path, repo=str(tmp_path), interactive=True, read=Answers(""),
-               read_key=keys("R", "P"), animate=False)
+def test_oui_accepte_tout(tmp_path, capsys, no_gh):
+    sent = []
+    assert run("4553", source=str(EVENTS), out=tmp_path, repo=str(tmp_path), yes=True, interactive=True,
+               read=Answers(), webhook="https://hooks.slack.test/x", sender=lambda u, d: sent.append(d),
+               animate=False, color=False) == 0
+    assert no_gh and sent
+
+
+def test_oui_sans_repo_le_dit_plutot_que_de_rester_muet(tmp_path, capsys):
+    """Régression : ``OUI=1`` sans ``REPO`` doit quand même expliquer pourquoi rien n'est poussé."""
+    assert run("4553", source=str(EVENTS), out=tmp_path, yes=True, interactive=True, read=Answers(),
+               animate=False, color=False) == 0
+    assert "REPO non fourni" in capsys.readouterr().out
+
+
+def test_oui_sans_webhook_affiche_quand_meme_le_message_prepare(tmp_path, capsys):
+    """Régression : sans ``SLACK_WEBHOOK_URL``, le message Slack préparé reste visible (README)."""
+    assert run("4553", source=str(EVENTS), out=tmp_path, yes=True, interactive=True, read=Answers(),
+               animate=False, color=False) == 0
     out = capsys.readouterr().out
-    assert code == 0
-    assert "Aucune micro-PR préparée." in out
-    assert no_gh == [str(tmp_path)] and f"PR ouverte : {PR_URL}" in out
+    assert "SLACK_WEBHOOK_URL absent, non envoyé" in out and "*Deadweight :" in out
 
 
 def _repo(tmp_path):
@@ -229,40 +225,37 @@ def _repo(tmp_path):
 
 
 def test_menu_review_montre_le_vrai_diff_prepare(tmp_path, capsys, monkeypatch):
+    import optimize.__main__ as optimize_cli
     monkeypatch.setattr(optimize_cli, "open_pr", lambda repo, p, branch: PR_URL)
     code = run("4553", source=str(EVENTS), out=tmp_path, repo=str(_repo(tmp_path)), interactive=True,
-               read=Answers(""), read_key=keys("R", "Q"), animate=False)
+               read=Answers(""), read_key=keys("R", "Q"), animate=False, color=False)
     out = capsys.readouterr().out
     assert code == 0
-    assert ".diff" in out and "gpt-4o" in out  # le vrai contenu du diff préparé pour mail-triage
+    assert "+GATEWAY_SHORTCIRCUIT=deadweight/preuves" in out  # le vrai diff relu, pas un texte statique
 
 
-def test_menu_quitter_ne_pousse_rien(tmp_path, capsys, no_gh):
-    code = run("4553", source=str(EVENTS), out=tmp_path, repo=str(tmp_path), interactive=True, read=Answers(""),
-               read_key=keys("Q"), animate=False)
-    assert code == 0 and no_gh == []
+def test_sans_repo_la_pr_est_quand_meme_relisible(tmp_path, capsys):
+    """``empty_repo`` : sans REPO, Review fonctionne toujours (dépôt vide préparé pour le diff), et Push
+    le dit clairement plutôt que de pousser quelque part."""
+    assert run("4553", source=str(EVENTS), out=tmp_path, interactive=True, read=Answers(""),
+               read_key=keys("R", "P", "Q"), animate=False, color=False) == 0
+    out = capsys.readouterr().out
+    assert "+GATEWAY_SHORTCIRCUIT" in out
+    assert "REPO non fourni" in out
+    assert "Envoyer sur Slack" not in out  # pas de webhook : pas de bouton Slack
 
 
 def test_menu_absent_hors_tty_et_sans_oui(tmp_path, capsys, no_gh):
     assert run("4553", source=str(EVENTS), out=tmp_path, repo=str(tmp_path), interactive=False, yes=False,
-               animate=False, webhook=None) == 0
+               animate=False, color=False, webhook=None) == 0
     out = capsys.readouterr().out
     assert "Review la PR" in out and "Push la PR" in out and "Quitter" in out
     assert "(terminal non interactif : aucun bouton actionné)" in out
     assert no_gh == []
 
 
-def test_oui_accepte_tout(tmp_path, capsys, no_gh):
-    sent = []
-    assert run("4553", source=str(EVENTS), out=tmp_path, repo=str(tmp_path), yes=True, interactive=True,
-               read=Answers(), webhook="https://hooks.slack.test/x", sender=lambda u, d: sent.append(d),
-               animate=False) == 0
-    assert no_gh and sent
-
-
-def test_sans_terminal_ni_repo_ni_webhook_affiche_le_message(tmp_path, capsys):
-    assert run("4553", source=str(EVENTS), out=tmp_path, interactive=False, animate=False) == 0
+def test_sans_terminal_aucun_bouton_actionne(tmp_path, capsys):
+    assert run("4553", source=str(EVENTS), out=tmp_path, interactive=False, animate=False, color=False) == 0
     out = capsys.readouterr().out
-    assert "Commencer l'analyse ? [O/n] O" in out
-    assert "REPO non fourni" in out and "SLACK_WEBHOOK_URL absent" in out
-    assert "*Deadweight :" in out and str(tmp_path / "optim" / "propositions.html") in out
+    assert "Lancer l'analyse ? [O/n] O" in out and "aucun bouton actionné" in out
+    assert "\x1b[" not in out and str(tmp_path / "optim" / "propositions.html") in out

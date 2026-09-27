@@ -1,31 +1,50 @@
-"""Rendu terminal du scénario testeur : en-tête, étapes numérotées, barres de rejeu animées, tableau
-des gains, menu de boutons. ANSI pur.
+"""Écran terminal du scénario testeur : étapes numérotées, barres de précision animées, encadré des
+gains, menu de boutons. ANSI pur.
 
-Couleurs et animation seulement sur un vrai terminal, et jamais si ``NO_COLOR`` est défini ou hors TTY :
-les tests, les journaux et la CI restent du texte brut, stable, sans attente.
+Rien n'est calculé ici : chaque chiffre vient de ``propositions.json`` (ou du chiffrage global de
+l'historique pour les gains d'ensemble, ``scripts.tester_gains``). Une estimation porte « ~ », une
+mesure absente s'affiche « — », et rien n'est additionné. Couleurs et animation seulement dans un vrai
+terminal, jamais avec ``NO_COLOR`` ; l'animation s'arrête aussi hors TTY ou avec ``--no-anim``.
+
+Seuil d'affichage : sous ``PRECISION_FLOOR_PCT`` (même chiffre que le rejeu des règles,
+``proof.replay.THRESHOLD`` — pas un deuxième seuil à maintenir), une proposition n'apparaît nulle part :
+ni dans les étapes, ni dans le tableau, ni dans la PR (le seuil est aussi appliqué avant diff/PR, dans
+``optimize.__main__``).
 """
 import os
 import re
 import sys
 import time
 
-CODES = {"vert": "32", "gris": "90", "gras": "1", "jaune": "33", "cyan": "36", "inverse": "7"}
-ANSI = re.compile(r"\033\[[0-9;]*m")
-BAR = 24
+from proof.replay import THRESHOLD
+
+ANSI = re.compile(r"\x1b\[[0-9;]*m")
+CODES = {"bold": "1", "dim": "2", "green": "32", "red": "31", "cyan": "36", "yellow": "33", "inverse": "7"}
+BAR = 20
 MIN_BAR_SECONDS = 1.5  # durée minimale d'affichage d'une barre de rejeu (fixtures : rejeu quasi instantané)
 FRAMES = 12            # images de l'animation, réparties sur MIN_BAR_SECONDS
+PRECISION_FLOOR_PCT = THRESHOLD * 100
+# colonnes de l'encadré « Résumé des gains » : (titre, fonction de cellule)
+COLUMNS = (("Précision", lambda p: cell(measure(p, ("precision",)), level=True)),
+           ("Coût", lambda p: cell(measure(p, ("cout",)))),
+           ("Latence méd.", lambda p: latency_cell(p)),
+           ("Latence p95", lambda p: cell(measure(p, ("latence_p95",)))),
+           ("Jetons", lambda p: cell(measure(p, ("jetons_envoyes", "jetons_sortie")))))
+LEGEND = "Mesuré = vos propres entrées rejouées, comparées aux réponses de l'ancien workflow · ~ estimé · — non mesuré"
 
 
-def colors_on(stream=None, env=os.environ):
-    stream = stream or sys.stdout
-    return "NO_COLOR" not in env and hasattr(stream, "isatty") and stream.isatty()
+def colors_on(stream=sys.stdout, env=os.environ):
+    return stream.isatty() and "NO_COLOR" not in env
 
 
-def paint(text, *styles, on=None):
-    on = colors_on() if on is None else on
-    if not on or not styles:
-        return text
-    return f"\033[{';'.join(CODES[s] for s in styles)}m{text}\033[0m"
+class Style:
+    def __init__(self, enabled):
+        self.enabled = enabled
+
+    def __call__(self, text, *names):
+        if not self.enabled or not names:
+            return text
+        return f"\x1b[{';'.join(CODES[n] for n in names)}m{text}\x1b[0m"
 
 
 def width(text):
@@ -36,41 +55,24 @@ def pad(text, n):
     return text + " " * max(0, n - width(text))
 
 
-def number(n):
-    """1872 → « 1 872 »."""
-    return f"{n:,}".replace(",", " ")
-
-
-def header(wf, source=None, title="DeadWeight", on=None):
-    """Source explicite (``--source``) affichée en premier ; sans elle, c'est bien le workflow n8n."""
-    subtitle = f"test sur {source}  ·  WF {wf}" if source else f"test du workflow n8n {wf}"
-    inner = f"  {title}  ·  {subtitle}  "
-    line = "─" * width(inner)
-    return "\n".join([f"╭{line}╮", f"│{paint(inner, 'gras', on=on)}│", f"╰{line}╯"])
-
-
-def step(n, total, title, on=None):
-    print(f"\n  {paint(f'[{n}/{total}]', 'cyan', 'gras', on=on)} {paint(title, 'gras', on=on)}")
-
-
 def measure(p, keys):
-    """Première mesure présente parmi ``keys``, ou ``None``."""
+    """Première mesure présente parmi ``keys`` (une valeur non nulle), ou ``None``."""
     return next((p["mesures"][k] for k in keys if (p["mesures"].get(k) or {}).get("valeur") is not None), None)
 
 
 def cell(m, level=False):
-    """Une mesure en cellule de tableau : « -71.7 % », « ~-35.7 % », « — » si non mesurée.
+    """Une mesure en cellule courte : « -71.7 % », « ~-35.7 % », « — » si non mesurée.
     ``level`` : un niveau (précision), pas une variation, donc jamais de signe."""
     if not m or m.get("valeur") is None:
         return "—"
     unit = m.get("unite") or ""
-    sign = "+" if unit == "%" and m["valeur"] > 0 and not level else ""
+    sign = "+" if m["valeur"] > 0 and not level else ""
     text = f"{sign}{m['valeur']:g}{' ' + unit if unit else ''}"
     return text if m.get("statut") == "mesuré" else f"~{text}"
 
 
 def latency_cell(p):
-    """Latence médiane : « -24.4 % » d'ordinaire ; « 812 ms → 0 ms » quand le pourcentage seul
+    """Latence médiane : « -24.4 % » d'ordinaire ; « 633 ms → 0 ms » quand le pourcentage seul
     (-100 %, plus aucun appel au modèle) ressemblerait à un bug plutôt qu'à un vrai gain."""
     m = measure(p, ("latence_mediane",))
     if m and m.get("valeur") == -100.0:
@@ -80,91 +82,147 @@ def latency_cell(p):
     return cell(m)
 
 
-# colonnes du tableau « Résumé des gains » : (titre, fonction de cellule)
-COLUMNS = (("Précision", lambda p: cell(measure(p, ("precision",)), level=True)),
-           ("Coût", lambda p: cell(measure(p, ("cout",)))),
-           ("Latence méd.", latency_cell),
-           ("Latence p95", lambda p: cell(measure(p, ("latence_p95",)))),
-           ("Jetons", lambda p: cell(measure(p, ("jetons_envoyes", "jetons_sortie")))))
-LEGEND = "mesuré = rejeu des mêmes entrées sur votre historique · ~estimé = calcul avec hypothèse · — non mesuré"
+def replayed_cell(p):
+    n = (measure(p, ("appels_rejoues",)) or {}).get("valeur")
+    return f"{n} entrées rejouées" if n else "—"
 
 
-def precision_candidates(proposals):
-    """Les propositions qu'on peut montrer : une précision mesurée au rejeu. Prouvées d'abord, puis la
-    précision la plus haute. (Le seuil d'affichage à 95 % s'applique ensuite, cf. ``above_threshold``.)"""
-    kept = [p for p in proposals if (p["mesures"].get("precision") or {}).get("valeur") is not None]
+def shown(proposals):
+    """Les modifications affichées : une précision mesurée au rejeu, d'au moins ``PRECISION_FLOOR_PCT``.
+    Prouvées d'abord, puis la précision la plus haute. En dessous du seuil : écartée partout (testeur,
+    tableau, PR — cf. ``optimize.__main__``)."""
+    kept = [p for p in proposals if ((v := (p["mesures"].get("precision") or {}).get("valeur")) is not None
+                                      and v >= PRECISION_FLOOR_PCT)]
     return sorted(kept, key=lambda p: (p["verdict"] != "pass", -p["mesures"]["precision"]["valeur"]))
 
 
-def above_threshold(items, floor_pct):
-    """Ne garde que les propositions à au moins ``floor_pct`` de précision : sous ce seuil, une
-    proposition n'apparaît ni dans les étapes du testeur, ni dans le tableau, ni dans la PR."""
-    return [p for p in items if p["mesures"]["precision"]["valeur"] >= floor_pct]
+def excluded_count(proposals):
+    """Combien de propositions avaient une précision mesurée mais sous le seuil d'affichage."""
+    measured = sum((p["mesures"].get("precision") or {}).get("valeur") is not None for p in proposals)
+    return measured - len(shown(proposals))
 
 
-def render_table(items, on=None):
-    """Le tableau encadré « Résumé des gains ». Une ligne par modification retenue."""
-    head = ["Modification"] + [title for title, _ in COLUMNS]
-    rows = [[p["app_id"]] + [fn(p) for _, fn in COLUMNS] for p in items]
+def bar(pct, s, tone=None):
+    full = round(BAR * pct / 100)
+    tone = tone or ("green" if pct >= 95 else "yellow")
+    return s("█" * full, tone) + s("░" * (BAR - full), "dim")
+
+
+def step(n, title, s, out=None):
+    (out or sys.stdout).write(f"\n  {s(f'[{n}/4]', 'cyan', 'bold')} {s(title, 'bold')}\n")
+
+
+def header(wf, s, source=None):
+    """Source explicite (``--source``) affichée en premier ; sans elle, c'est bien le workflow n8n."""
+    subtitle = f"test sur {source}  ·  WF {wf}" if source else f"test du workflow n8n {wf}"
+    print(f"\n  {s(' DEADWEIGHT ', 'inverse', 'bold')}  {s(subtitle, 'dim')}")
+
+
+def analysis(info, s):
+    step(1, "Analyse du workflow", s)
+    parts = [f"{info['appels']} appels IA"]
+    parts += [f"{info['executions']} exécutions"] if info["executions"] else []
+    parts += [f"{info['noeuds']} nœuds"] if info["noeuds"] else []
+    print(f"    {s('✓', 'green')} {s(info['nom'], 'bold')} · {' · '.join(parts)}")
+    found = [f"{len(info['etapes'])} étapes IA"] if info["etapes"] else []
+    found += [f"{len(info['modeles'])} modèles ({', '.join(info['modeles'][:4])}"
+              f"{', …' if len(info['modeles']) > 4 else ''})"] if info["modeles"] else []
+    if found:
+        print(f"    {s('✓', 'green')} {' · '.join(found)}")
+
+
+def modifications(items, s):
+    step(2, "Modifications proposées", s)
+    if not items:
+        print(f"    {s('Aucune modification testable sur cet historique.', 'dim')}")
+        return
+    name_w = max(len(p["app_id"]) for p in items)
+    for i, p in enumerate(items, 1):
+        print(f"    {s(str(i), 'cyan')}  {s(pad(p['app_id'], name_w), 'bold')}  {p['changement']}")
+
+
+def tests(items, s, animate=True, sleep=time.sleep, min_seconds=MIN_BAR_SECONDS, frames=FRAMES, out=None):
+    """Étape 3 : une barre par modification. Animée, la progression suit le vrai nombre d'entrées
+    rejouées (pas une horloge décorative), étalée sur au moins ``min_seconds`` pour rester visible même
+    si le rejeu est instantané. Hors TTY ou sans animation demandée : la barre finale, directement."""
+    out = out or sys.stdout
+    step(3, "Tests : l'historique rejoué, nouveau workflow comparé à l'ancien", s, out)
+    name_w = max((len(p["app_id"]) for p in items), default=0)
+    for i, p in enumerate(items, 1):
+        pct = p["mesures"]["precision"]["valeur"]
+        total = (measure(p, ("appels_rejoues",)) or {}).get("valeur")
+        detail = f"réponses identiques · {total} entrées rejouées" if total else "réponses inchangées"
+        label = f"{s(str(i), 'cyan')}  {pad(p['app_id'], name_w)}"
+        if animate and total:
+            interval = min_seconds / frames
+            for f in range(1, frames + 1):
+                done = round(total * f / frames)  # vrai avancement (entrées rejouées / total)
+                out.write(f"\r\033[2K    {label}  {bar(100 * done / total, s, 'cyan')}  "
+                          f"{done}/{total} entrées rejouées")
+                out.flush()
+                sleep(interval)
+            out.write("\r\033[2K")
+        out.write(f"    {label}  {bar(pct, s)}  {s(f'{pct:g} %'.rjust(6), 'bold')}  {s(detail, 'dim')}\n")
+
+
+def summary(items, s, gains=None, excluded=0):
+    step(4, "Résumé des gains", s)
+    if not items:
+        print(f"    {s('Aucune modification retenue sur cet historique.', 'dim')}")
+        return
+    head = ["Modification", "Entrées rejouées"] + [title for title, _ in COLUMNS]
+    rows = [[p["app_id"], replayed_cell(p)] + [fn(p) for _, fn in COLUMNS] for p in items]
     widths = [max(width(r[i]) for r in [head] + rows) for i in range(len(head))]
-    line = lambda cells, *styles: "  ".join(pad(paint(v, *styles, on=on), widths[i])  # noqa: E731
+    line = lambda cells, *styles: "  ".join(pad(s(v, *styles), widths[i])  # noqa: E731
                                              for i, v in enumerate(cells))
     inner = width(line(head))
-    out = [f"    ╭{'─' * (inner + 2)}╮", f"    │ {line(head, 'gras')} │", f"    ├{'─' * (inner + 2)}┤"]
+    print(f"    ╭{'─' * (inner + 2)}╮")
+    print(f"    │ {line(head, 'bold')} │")
+    print(f"    ├{'─' * (inner + 2)}┤")
     for row in rows:
-        colored = [row[0]] + [paint(v, "vert", on=on) if v.lstrip("~").startswith("-") else v for v in row[1:]]
-        out.append(f"    │ {line(colored)} │")
-    out.append(f"    ╰{'─' * (inner + 2)}╯")
-    out.append(f"    {paint(LEGEND, 'gris', on=on)}")
-    return "\n".join(out)
+        colored = row[:2] + [s(v, "green") if v.lstrip("~").startswith("-") else v for v in row[2:]]
+        print(f"    │ {line(colored)} │")
+    print(f"    ╰{'─' * (inner + 2)}╯")
+    print(f"    {s(LEGEND, 'dim')}")
+    if gains:
+        gains_block(gains, s)
+    if excluded:
+        suffix = "s" if excluded > 1 else ""
+        print(s(f"    {excluded} proposition{suffix} écartée{suffix} (précision < {PRECISION_FLOOR_PCT:g} %)", "dim"))
 
 
-class ReplayBar:
-    """La barre de précision d'une modification, étape 3 (« Tests »). Animée : la progression suit le
-    vrai nombre d'entrées rejouées (pas une horloge décorative), étalée sur au moins
-    ``MIN_BAR_SECONDS`` pour rester visible même si le rejeu est instantané. Le résultat final montre
-    la précision réelle. Hors terminal ou sans animation demandée : une seule ligne, directe."""
-
-    def __init__(self, label, pct, total=None, detail="", animate=False, on=None, sleep=time.sleep, out=None,
-                 min_seconds=MIN_BAR_SECONDS, frames=FRAMES):
-        self.label, self.pct, self.total, self.detail = label, pct, total, detail
-        self.animate, self.on = bool(animate and total), on
-        self.sleep, self.out = sleep, out or sys.stdout
-        self.min_seconds, self.frames = min_seconds, frames
-
-    def _bar(self, fraction, tone):
-        filled = round(BAR * max(0.0, min(1.0, fraction)))
-        return paint("█" * filled, tone, on=self.on) + paint("░" * (BAR - filled), "gris", on=self.on)
-
-    def render(self):
-        if self.animate:
-            interval = self.min_seconds / self.frames
-            for i in range(1, self.frames + 1):
-                done = round(self.total * i / self.frames)  # vrai avancement (entrées rejouées / total)
-                self.out.write(f"\r\033[2K  {self.label}  {self._bar(done / self.total, 'cyan')}  "
-                                f"{number(done)}/{number(self.total)} entrées rejouées")
-                self.out.flush()
-                self.sleep(interval)
-            self.out.write("\r\033[2K")
-        tone = "vert" if self.pct >= 95 else "jaune"
-        line = (f"  {self.label}  {self._bar(self.pct / 100, tone)}  "
-                f"{paint(f'{self.pct:g} %'.rjust(6), 'gras', on=self.on)}  {paint(self.detail, 'gris', on=self.on)}")
-        self.out.write(line + "\n")
-        self.out.flush()
+def _money(v):
+    return f"{v:.4g} $" if v is not None else "—"
 
 
-def replay_detail(p):
-    replayed = (measure(p, ("appels_rejoues",)) or {}).get("valeur")
-    return f"réponses identiques · {number(replayed)} entrées rejouées" if replayed else "réponses inchangées"
+def _pct(v):
+    return f"{v:+.1f} %" if v is not None else "—"
 
 
-def menu_line(options, active=None, on=None):
-    """``options`` : [(touche, libellé)]. La touche active (sélection aux flèches) est en surbrillance."""
+def gains_block(gains, s):
+    """Gains sur l'ensemble du workflow (pas seulement les modifications retenues), sous le tableau."""
+    print(f"\n    {s('Gains sur l’ensemble du workflow (historique rejoué) :', 'bold')}")
+    print(f"      coût total : {_money(gains['cout_avant'])} → {_money(gains['cout_apres'])} "
+          f"({_pct(gains['cout_pct'])})")
+    if gains["executions"]:
+        print(f"      coût par exécution : {_money(gains['cout_par_execution_avant'])} → "
+              f"{_money(gains['cout_par_execution_apres'])}  ·  projection pour 1 000 exécutions : "
+              f"{_money(gains['projection_1000_usd'])} (sur la base de {gains['executions']} exécutions observées)")
+    else:
+        print("      coût par exécution : — (nombre d'exécutions non mesuré)")
+
+
+def menu_line(buttons, s, active=None):
+    """``buttons`` : [(touche, libellé)]. La touche active (sélection aux flèches) est en surbrillance."""
     parts = []
-    for key, label in options:
-        tag = paint(f" {key} ", "inverse", "gras", on=on) if key == active else paint(f" {key} ", "gras", on=on)
+    for k, label in buttons:
+        tag = s(f" {k} ", "inverse", "bold") if k == active else s(f" {k} ", "bold")
         parts.append(f"{tag} {label}")
     return "  ".join(parts)
+
+
+def menu(buttons, s):
+    print("\n    " + menu_line(buttons, s))
 
 
 def read_key(stream=None):
@@ -187,13 +245,13 @@ def read_key(stream=None):
         termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
 
-def choose(options, read_key=read_key, out=None, on=None):
+def choose(buttons, s, read_key=read_key, out=None):
     """Menu interactif : flèches gauche/droite (ou haut/bas) pour déplacer la sélection, Entrée pour la
     valider ; une lettre (R/P/Q...) reste un raccourci direct. Retourne la touche choisie (majuscule)."""
     out = out or sys.stdout
-    keys = [k for k, _ in options]
+    keys = [k for k, _ in buttons]
     idx = 0
-    out.write("\n    " + menu_line(options, keys[idx], on))
+    out.write("\n    " + menu_line(buttons, s, keys[idx]))
     out.flush()
     while True:
         k = read_key()
@@ -209,5 +267,23 @@ def choose(options, read_key=read_key, out=None, on=None):
             return k.upper()
         else:
             continue
-        out.write("\r\033[2K    " + menu_line(options, keys[idx], on))
+        out.write("\r\033[2K    " + menu_line(buttons, s, keys[idx]))
         out.flush()
+
+
+def diff_lines(text, s, limit=60):
+    """Diff unifié coloré, coupé à ``limit`` lignes (le fichier complet reste sur disque)."""
+    lines = text.splitlines()
+    for ln in lines[:limit]:
+        if ln.startswith(("+++", "---", "diff ", "index ", "new file")):
+            print("    " + s(ln, "bold"))
+        elif ln.startswith("@@"):
+            print("    " + s(ln, "cyan"))
+        elif ln.startswith("+"):
+            print("    " + s(ln, "green"))
+        elif ln.startswith("-"):
+            print("    " + s(ln, "red"))
+        else:
+            print("    " + ln)
+    if len(lines) > limit:
+        print("    " + s(f"… {len(lines) - limit} lignes de plus", "dim"))

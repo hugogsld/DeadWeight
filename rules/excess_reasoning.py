@@ -37,6 +37,7 @@ proven=False : seul un rejeu a effort de raisonnement reduit peut confirmer l'ec
 """
 import copy
 import json
+import os
 from collections import defaultdict
 from pathlib import Path
 from statistics import median
@@ -46,7 +47,8 @@ from rules.low_entropy import normalize, template_of
 
 PRICING_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "pricing.json"
 
-MIN_CALLS = 30
+# DW_MIN_CALLS : seuil unique, abaissable pour une demo sur peu d'executions (defaut inchange : 30).
+MIN_CALLS = int(os.environ.get("DW_MIN_CALLS", "30"))
 MIN_REASONING_SHARE = 0.6
 MAX_MEDIAN_VISIBLE_TOKENS = 40
 MAX_DISTINCT_OUTPUTS = 4
