@@ -109,35 +109,76 @@ def test_cli_writes_events_and_explains_what_is_missing(tmp_path, capsys):
     assert "8 appel(s) lus sur 12 span(s)" in out and "activer la capture du contenu" in out
 
 
-def test_gateway_receives_otlp_json_traces_into_the_store(tmp_path):
+def as_protobuf(payload):
+    """OTLP/JSON (identifiants en hexadécimal) -> OTLP protobuf, comme l'envoie l'exportateur Python."""
+    from google.protobuf.json_format import ParseDict
+    from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import ExportTraceServiceRequest
+
+    def ids_to_base64(node):
+        if isinstance(node, dict):
+            return {k: (base64.b64encode(bytes.fromhex(v)).decode() if k in ("traceId", "spanId", "parentSpanId")
+                        and isinstance(v, str) and v else ids_to_base64(v)) for k, v in node.items()}
+        if isinstance(node, list):
+            return [ids_to_base64(v) for v in node]
+        return node
+    return ParseDict(ids_to_base64(payload), ExportTraceServiceRequest(), ignore_unknown_fields=True).SerializeToString()
+
+
+def post_traces(db, requests):
+    """Passerelle neuve sur la base db ; envoie (corps, en-têtes) à /v1/traces, rend (statut, content-type)."""
     import asyncio
-    import gzip
 
     import aiohttp
     from aiohttp import web
 
     from gateway.proxy import make_app
-    from gateway.store import EventStore, read_events
-
-    db = str(tmp_path / "e.db")
+    from gateway.store import EventStore
 
     async def main():
         runner = web.AppRunner(make_app(upstream="http://127.0.0.1:9", on_event=lambda e: None, store=EventStore(db)))
         await runner.setup()
         await web.TCPSite(runner, "127.0.0.1", 0).start()
         gw = f"http://127.0.0.1:{runner.addresses[0][1]}"
+        out = []
         try:
             async with aiohttp.ClientSession() as s:
-                async with s.post(gw + "/v1/traces", data=gzip.compress(json.dumps(REAL).encode()),
-                                  headers={"content-type": "application/json", "content-encoding": "gzip"}) as r:
-                    ok = r.status
-                async with s.post(gw + "/v1/traces", data=b"\x0a\x00",
-                                  headers={"content-type": "application/x-protobuf"}) as r:
-                    proto = (r.status, (await r.json())["message"])
+                for body, headers in requests:
+                    async with s.post(gw + "/v1/traces", data=body, headers=headers) as r:
+                        out.append((r.status, r.headers.get("content-type", "").split(";")[0]))
         finally:
-            await runner.cleanup()
-        return ok, proto
+            await runner.cleanup()  # ferme le store : tout est écrit
+        return out
+    return asyncio.run(main())
 
-    ok, proto = asyncio.run(main())
-    assert ok == 200 and proto[0] == 415 and "http/json" in proto[1]
+
+def test_gateway_receives_otlp_json_traces_into_the_store(tmp_path):
+    import gzip
+
+    from gateway.store import read_events
+
+    db = str(tmp_path / "e.db")
+    out = post_traces(db, [(gzip.compress(json.dumps(REAL).encode()),
+                            {"content-type": "application/json", "content-encoding": "gzip"})])
+    assert out == [(200, "application/json")]
     assert len(list(read_events(db))) == 8
+
+
+def test_gateway_receives_otlp_protobuf_like_the_python_exporter(tmp_path):
+    """L'exportateur OTLP/HTTP de Python n'envoie que du protobuf : même trace, mêmes événements qu'en JSON."""
+    from gateway.store import read_events
+
+    json_db, proto_db = str(tmp_path / "json.db"), str(tmp_path / "proto.db")
+    post_traces(json_db, [(json.dumps(REAL).encode(), {"content-type": "application/json"})])
+    out = post_traces(proto_db, [(as_protobuf(REAL), {"content-type": "application/x-protobuf"})])
+    assert out == [(200, "application/x-protobuf")]  # la spécification OTLP : réponse au format de la requête
+    assert list(read_events(proto_db)) == list(read_events(json_db))
+    assert len(list(read_events(proto_db))) == 8
+
+
+def test_gateway_rejects_unreadable_or_unknown_trace_bodies(tmp_path):
+    out = post_traces(str(tmp_path / "e.db"), [
+        (b"\xff\xff\xff pas du protobuf", {"content-type": "application/x-protobuf"}),
+        (b"pas du json", {"content-type": "application/json"}),
+        (b"x", {"content-type": "text/plain"}),
+    ])
+    assert [status for status, _ in out] == [400, 400, 415]
