@@ -55,15 +55,17 @@ def _rules(finding, events, llm):
     rules = extract_rules(finding, events, llm=llm)
     proof = replay(finding, events, rules)
     group = [e for e in events if e["event_id"] in set(finding["event_ids"])]
-    # latence médiane mesurée : les règles chronométrées sur chaque vraie entrée, le modèle sinon
-    route, lat_after = build_router(rules), []
+    # latence médiane et jetons envoyés mesurés ensemble, entrée par entrée : une règle répond sans
+    # rien envoyer au modèle (0 jeton, latence chronométrée) ; un appel resté sur le secours garde ses
+    # jetons et sa latence enregistrés. Rien n'est extrapolé depuis un taux de couverture global.
+    route, lat_after, tokens_after = build_router(rules), [], 0
     for e in group:
         t0 = time.perf_counter()
         covered = route(_user_text(e)) is not None
         lat_after.append((time.perf_counter() - t0) * 1000 if covered else e["latency_ms"])
+        tokens_after += 0 if covered else (e["usage"].get("input_tokens") or 0)
     med_before = median(e["latency_ms"] for e in group) if group else None
-    # part des appels encore envoyés au modèle : ceux que les règles ne couvrent pas
-    kept = 1 - proof["rules_coverage"] if proof["n_replayed"] else None
+    med_after = median(lat_after) if lat_after else None
     tokens_before = _sent_tokens(group)
     spent = _cost(group)
     return {
@@ -75,12 +77,14 @@ def _rules(finding, events, llm):
             "precision": _m(round(proof["agreement_rate"] * 100, 1), MESURE, "%"),
             "appels_rejoues": _m(proof["n_replayed"], MESURE),
             "latence_p95": _m(_pct_change(proof["p95_before_ms"], proof["p95_after_ms"]), MESURE, "%"),
-            "latence_mediane": _m(_pct_change(med_before, median(lat_after)) if lat_after else None, MESURE, "%"),
+            "latence_mediane": _m(_pct_change(med_before, med_after), MESURE, "%"),
             "cout": _m(_pct_change(proof["cost_before_month_usd"], proof["cost_after_month_usd"]),
                        MESURE if proof["cost_after_month_usd"] is not None else NON_TESTE, "%"),
-            "jetons_envoyes": _m(_pct_change(tokens_before, tokens_before * kept if kept is not None else None),
-                                 ESTIME, "%", "les appels couverts par les règles n'envoient plus rien au modèle"),
+            "jetons_envoyes": _m(_pct_change(tokens_before, tokens_after), MESURE, "%"),
         },
+        # valeurs brutes (ms) pour l'affichage quand le pourcentage seul ressemble à un bug (ex. -100 %) :
+        # cf. scripts.tester_ui.latency_cell.
+        "latence_ms": {"avant": med_before, "apres": med_after, "statut": MESURE},
         # dépense réelle de l'historique, et ce qu'elle aurait été : base du total du message Slack
         "cout_usd": {"avant": spent, "apres": spent * (1 + _pct_change(proof["cost_before_month_usd"],
                                                                         proof["cost_after_month_usd"]) / 100)

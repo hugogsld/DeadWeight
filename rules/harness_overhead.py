@@ -19,6 +19,7 @@ caractères/4 selon langue, instructions indispensables, framework non identifia
 """
 import json
 import math
+import os
 from collections import defaultdict
 
 from gateway.traces import assign_traces
@@ -26,7 +27,9 @@ from report.cost import chiffrer
 from rules.parallelizable_steps import finding, text
 from rules.tool_bloat import detect as tool_bloat
 
-MIN_CALLS = 20  # Exiger une répétition durable, pas une courte session.
+# Exiger une répétition durable, pas une courte session. DW_MIN_CALLS : seuil unique, abaissable pour
+# une démo sur peu d'exécutions (défaut inchangé : 20).
+MIN_CALLS = int(os.environ.get("DW_MIN_CALLS", "20"))
 MIN_FIXED_TOKENS = 1024  # Surcharge substantielle, au-delà d'un système ordinaire.
 MIN_FIXED_SHARE = .7  # La partie fixe doit nettement dominer les données.
 MAX_OUTPUT_TOKENS = 128  # Restreindre aux tâches à résultat court.

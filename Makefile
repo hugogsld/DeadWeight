@@ -75,7 +75,7 @@ audit-complet: install
 # scénario testeur guidé (O/n) : WF=<id n8n>, SOURCE par défaut n8n:<id> si N8N_URL, OUI=1 accepte tout
 TESTER_OUT ?= out/tester
 tester: install
-	@test -n "$(WF)" || { echo "Usage : make tester WF=<id> [SOURCE=…] [REPO=…] [OUI=1]"; exit 2; }
+	@test -n "$(WF)" || { echo "Usage : make tester WF=<id> [SOURCE=…] [REPO=…] [OUI=1] [MIN_APPELS=…]"; exit 2; }
 	@set -a; if [ -f .env.local ]; then . ./.env.local; fi; set +a; \
-	$(BIN)/python -m scripts.tester "$(WF)" --out "$(TESTER_OUT)" \
+	$(if $(MIN_APPELS),DW_MIN_CALLS="$(MIN_APPELS)") $(BIN)/python -m scripts.tester "$(WF)" --out "$(TESTER_OUT)" \
 		$(if $(SOURCE),--source "$(SOURCE)") $(if $(REPO),--repo "$(REPO)") $(if $(OUI),--oui)

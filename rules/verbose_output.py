@@ -38,13 +38,15 @@ generee, traduction longue) tombera dans le meme filet si elle est bruyante et s
 """
 import copy
 import math
+import os
 from collections import defaultdict
 from statistics import median
 
 from report.cost import chiffrer
 from rules.low_entropy import template_of
 
-MIN_CALLS = 30
+# DW_MIN_CALLS : seuil unique, abaissable pour une demo sur peu d'executions (defaut inchange : 30).
+MIN_CALLS = int(os.environ.get("DW_MIN_CALLS", "30"))
 MIN_MEDIAN_OUTPUT_TOKENS = 300
 UNCAPPED_SHARE = 0.9
 MIN_P90_MEDIAN_RATIO = 2.0

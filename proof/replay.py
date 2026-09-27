@@ -33,7 +33,10 @@ from report.cost import PRICING_PATH, chiffrer, lookup
 from rules.low_entropy import canon, detect, output_of
 
 THRESHOLD = 0.95
-MIN_REPLAY = 30           # entrées remplacées ; comme MIN_CALLS de R1, en dessous le taux ne veut rien dire
+# entrées remplacées ; comme MIN_CALLS de R1, en dessous le taux ne veut rien dire. DW_MIN_CALLS : même
+# variable que les règles de fréquence (cf. rules.oversized_model), abaissée pour une démo sur peu
+# d'exécutions ; défaut inchangé (30) sans la variable.
+MIN_REPLAY = int(os.environ.get("DW_MIN_CALLS", "30"))
 HARD_MAX_CALLS = 200      # plafond absolu d'appels au modèle de secours, par rejeu
 DEFAULT_MAX_CALLS = 50
 DEFAULT_MIN_INTERVAL_S = 1.0
