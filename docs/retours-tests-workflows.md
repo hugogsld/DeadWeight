@@ -141,6 +141,29 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
   clé), affichés `reject`. Problèmes 15 et 17.
 - **Problèmes** : 4 (confirmé après plus d'une heure), 15, 16, 17.
 
+### Fiche : Sources de workflows (27/09)
+
+Objectif : vérifier que Deadweight se branche sur les principales sources de workflows d'entreprise.
+Chaque test : une vraie application lancée en local, son trafic passé par Deadweight, puis le rapport.
+Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour de vrai ».
+
+- **n8n 2.40.7** (installé en local, `npx n8n`) : workflow webhook → Basic LLM Chain → OpenAI Chat
+  Model, 42 exécutions. **Passerelle** : l'identifiant OpenAI de n8n a un champ *Base URL* et un
+  en-tête personnalisé → 42/42 appels captés, `app_id` = `n8n-mail-triage`. **Import de
+  l'historique** (`importers.n8n check/fetch/convert`) : 42/42 exécutions, 100 % des appels LLM
+  compris, jetons réels, une trace par exécution. Même rapport par les deux voies. Pour ne pas
+  saisir de vraie clé dans n8n, l'amont était le faux OpenAI du projet.
+- **LangChain** (`langchain-openai` 1.6.6) : `ChatOpenAI(base_url=…, default_headers=…)`, appels
+  simples et streaming : 4/4 captés.
+- **Claude Code** : journaux de session d'un vrai projet (5,5 Mo) → `connectors.agent_logs` :
+  300 appels lus, 0 ignoré, niveaux 1 à 3. Rapport : 2 constats R12 (problème 19), 730 $/mois
+  affichés pour une session sous abonnement (problème 9).
+- **OpenTelemetry en direct** : application Python, exportateur officiel
+  `opentelemetry-exporter-otlp-proto-http` 1.45 → `/v1/traces` : **415, 0 événement** (problème 18).
+- **SDK Agents d'OpenAI** : l'API Responses n'est toujours pas capturée sur `main` (problème 11).
+- Non vérifié : Claude Code et Codex en direct par la passerelle, Codex en journaux, Ollama, Make,
+  Zapier, Azure OpenAI, Bedrock, Vertex (outil ou compte absent).
+
 ## Problèmes ouverts
 
 | # | Problème | Gravité | Où | Vu sur | Statut |
@@ -148,7 +171,7 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
 | 1 | Le rejeu affiche encore une projection mensuelle absurde | haute | `proof/replay.py` | Récap Gmail, OpenAI story flow | ouvert |
 | 2 | R1 conseille des « règles fixes » que le rejeu refuse ensuite | haute | `report/audit.py`, `proof/` | Récap Gmail | ouvert |
 | 3 | Le rejeu ne peut presque jamais conclure sous ~90 appels | moyenne | `proof/replay.py`, `rules/low_entropy.py` | Récap Gmail, OpenAI story flow | ouvert |
-| 4 | La projection mensuelle surestime les workflows par lots, même après une heure | haute | `report/audit.py`, `report/cost.py` | Récap Gmail (2 passages) | ouvert |
+| 4 | La projection mensuelle surestime les workflows par lots, même après une heure | haute | `report/audit.py`, `report/cost.py` | Récap Gmail (2 passages) | corrigé (#98) |
 | 5 | Choix de R5 à valider en équipe | basse | `rules/unbounded_loop.py` | tests D2.4 | ouvert |
 | 6 | Heuristique de traces jamais confrontée à un historique réécrit | basse | `gateway/traces.py` | aucun (à tester) | ouvert |
 | 7 | Deadweight ne voit pas les agents lancés par Claude Code, `claude -p` ou `codex exec` | haute | installation (D4.2), `gateway/` | Miguel shorts-factory (lecture du code) | ouvert |
@@ -159,9 +182,11 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
 | 12 | L'extraction de règles hors ligne apprend des noms propres | moyenne | `proof/extract.py` | OpenAI story flow | ouvert |
 | 13 | La bonne règle se trouve en amont : l'extraction ne regarde que l'entrée de l'appel signalé | moyenne | `proof/extract.py`, `gateway/traces.py` | OpenAI story flow | ouvert |
 | 14 | Sortie structurée : un champ qui ne change jamais n'est pas signalé | moyenne | `rules/low_entropy.py` | OpenAI story flow | ouvert |
-| 15 | Le banc de modèles envoie les cas sans le prompt système : les candidats ne reçoivent pas la consigne | haute | `bench/testset.py` | Récap Gmail (retest) | ouvert |
-| 16 | Le plan de l'agent auditeur contient des chiffres mal attribués et une recommandation incohérente | moyenne | `agent/`, `report/audit.py` | Récap Gmail (retest) | ouvert |
-| 17 | Banc : un candidat sans clé est affiché « reject, score 0 » au lieu de « non testé » | basse | `bench/runner.py`, `bench/report.py` | Récap Gmail (retest) | ouvert |
+| 15 | Le banc de modèles envoie les cas sans le prompt système : les candidats ne reçoivent pas la consigne | haute | `bench/testset.py` | Récap Gmail (retest) | corrigé (#82) |
+| 16 | Le plan de l'agent auditeur contient des chiffres mal attribués et une recommandation incohérente | moyenne | `agent/`, `report/audit.py` | Récap Gmail (retest) | corrigé (#99) |
+| 17 | Banc : un candidat sans clé est affiché « reject, score 0 » au lieu de « non testé » | basse | `bench/runner.py`, `bench/report.py` | Récap Gmail (retest) | corrigé (#99) |
+| 18 | OpenTelemetry en direct : la passerelle refuse le protobuf, seul format de l'exportateur Python | haute | `gateway/proxy.py` (`receive_traces`), `connectors/otel.py` | Sources (27/09) | ouvert |
+| 19 | R12 conseille de plafonner la longueur des réponses d'un agent de code | moyenne | `rules/verbose_output.py` | Sources (27/09), Claude Code | ouvert |
 
 ### 1. Le rejeu affiche une projection mensuelle absurde
 
@@ -491,6 +516,40 @@ les candidats pour lesquels on a une clé.
 défaut. Accepter aussi des identifiants dans `--candidates`
 (`--candidates openai-gpt-5-nano,openai-gpt-5-mini`).
 
+### 18. OpenTelemetry en direct : la passerelle refuse le protobuf
+
+**Constat.** Application Python, span GenAI autour d'un vrai appel `gpt-4o-mini`, exportateur
+officiel `OTLPSpanExporter` (`opentelemetry-exporter-otlp-proto-http` 1.45), destination
+`http://127.0.0.1:8097/v1/traces`. Avec `OTEL_EXPORTER_OTLP_PROTOCOL=http/json` comme le demande le
+README, et sans : `Failed to export spans batch code: 415, reason: Unsupported Media Type`. **0
+événement capturé.**
+
+**Cause.** `receive_traces` n'accepte qu'un `content-type` JSON. L'exportateur OTLP/HTTP officiel de
+Python envoie du protobuf (`application/x-protobuf`), **constaté même avec `http/json`** : le réglage
+du README n'a donc aucun effet pour une application Python, qui est le cas le plus courant en IA.
+
+**Correction.** Accepter `application/x-protobuf` dans `receive_traces` : décoder avec
+`opentelemetry.proto.collector.trace.v1.trace_service_pb2.ExportTraceServiceRequest`, convertir par
+`google.protobuf.json_format.MessageToDict` (identifiants en base64, déjà gérés par
+`connectors/otel.py`), puis le même chemin que le JSON. Retirer `http/json` du README. Test : le script
+`manual.py` de la fiche, qui doit donner 3 événements.
+
+**À savoir aussi.** L'instrumentation automatique officielle `opentelemetry-instrumentation-openai-v2`
+n'a pas pu tourner : 2.4b0 importe un module absent de `opentelemetry-util-genai` 1.2b0, 2.3b0
+échoue avec `wrapt` 2.5, et le SDK `openai` 3.x a remplacé `httpx` par `httpx2`. Un client Python qui
+suit la documentation OpenTelemetry tombera sur ces erreurs avant même d'arriver chez nous.
+
+### 19. R12 conseille de plafonner les réponses d'un agent de code
+
+**Constat.** Journaux Claude Code d'un vrai projet : R12 « des réponses bien plus longues que
+nécessaire », 263 appels, réponse typique 766 jetons, 90e centile 1 799, « plafonner autour de 920
+jetons ». Pour un agent de code, une longue réponse est souvent un appel d'outil qui écrit un
+fichier : un plafond à 920 jetons couperait l'écriture au milieu.
+
+**Correction.** Ne pas compter dans R12 les réponses dont la longueur vient d'appels d'outils
+(arguments de `Write`, `Edit`, `Bash`…), ou exclure les appels qui finissent en `tool_calls`. Ne
+proposer un plafond que sur le texte libre rendu à l'utilisateur.
+
 ## Problèmes corrigés
 
 Gardés pour la traçabilité : chacun a été vu en testant.
@@ -506,6 +565,11 @@ Gardés pour la traçabilité : chacun a été vu en testant.
 | Robot roadmap bloqué par la protection de `main` | écrit dans une issue au lieu de pousser sur `main` (#45) |
 
 ## Pièges pour qui teste
+
+- **n8n créé par l'API** : un workflow créé puis activé par l'API publique de n8n 2.40 répond « actif »,
+  mais son webhook renvoie 404 (« not registered ») tant qu'on ne l'a pas désactivé puis réactivé.
+- **Brancher n8n sur la passerelle** : dans l'identifiant OpenAI de n8n, champ *Base URL* =
+  `http://127.0.0.1:8080/v1`, et l'en-tête personnalisé `x-deadweight-app` pour nommer l'application.
 
 - **La passerelle doit tourner.** Sinon l'application échoue avec `Connection
   refused` : c'est le prix du mode proxy. Port par défaut **8080** (les premiers
