@@ -3,7 +3,7 @@ PY := $(shell command -v python3.11 || command -v python3)
 VENV := .venv
 BIN := $(VENV)/bin
 
-.PHONY: dev install test lint record audit demo prices e2e catalog
+.PHONY: dev install test lint record audit audit-local demo prices e2e catalog
 
 dev: install .env.local
 	@set -a; . ./.env.local; set +a; \
@@ -37,6 +37,11 @@ AUDIT_OUT ?= out/audit.html
 audit: install
 	@set -a; if [ -f .env.local ]; then . ./.env.local; fi; set +a; \
 	$(BIN)/python -m scripts.audit --out "$(AUDIT_OUT)"
+
+# Audit 100 % local (Ollama, qwen2.5:3b) : aucune clé, relevé lsof prouvant qu'aucune connexion ne sort
+AUDIT_EVENTS ?= fixtures/dataset/v1/events.jsonl
+audit-local: install
+	$(BIN)/python -m scripts.audit_local "$(AUDIT_EVENTS)" --out out/audit-local.html
 
 # Aucune clé et aucune modification de la base client ; ports locaux libres.
 demo: install
