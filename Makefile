@@ -3,7 +3,7 @@ PY := $(shell command -v python3.11 || command -v python3)
 VENV := .venv
 BIN := $(VENV)/bin
 
-.PHONY: dev install test lint record audit audit-complet demo prices e2e catalog tester
+.PHONY: dev install test lint record audit audit-complet demo prices e2e catalog tester demo-video
 
 dev: install .env.local
 	@set -a; . ./.env.local; set +a; \
@@ -79,3 +79,8 @@ tester: install
 	@set -a; if [ -f .env.local ]; then . ./.env.local; fi; set +a; \
 	$(if $(MIN_APPELS),DW_MIN_CALLS="$(MIN_APPELS)") $(BIN)/python -m scripts.tester "$(WF)" --out "$(TESTER_OUT)" \
 		$(if $(SOURCE),--source "$(SOURCE)") $(if $(REPO),--repo "$(REPO)") $(if $(OUI),--oui)
+
+# démo scénarisée pour la vidéo (chiffres illustratifs de demo/scenario-4553.json, aucun appel réseau)
+SCENARIO ?= demo/scenario-4553.json
+demo-video: install
+	@$(BIN)/python -m scripts.demo_scenario "$(SCENARIO)"

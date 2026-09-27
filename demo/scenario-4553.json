@@ -1,0 +1,31 @@
+{
+  "_note": "Scénario de démonstration pour la vidéo : chiffres illustratifs, non mesurés. Lancé par `make demo-video`, il ne lit aucune donnée et n'appelle aucun service.",
+  "wf": "4553",
+  "workflow": {
+    "nom": "Guerrilla Marketing Campaign Plan Generator",
+    "noeuds": 39,
+    "appels": 279,
+    "executions": 4,
+    "etapes": ["Idea Generator", "Idea is good enough?", "Introduction Writer", "Budget Planning Specialist", "Channel Strategy Expert"],
+    "modeles": ["gpt-4.1-mini"]
+  },
+  "modifications": [
+    {
+      "app_id": "Idea is good enough?",
+      "changement": "Passer l'évaluation des idées de gpt-4.1-mini à gpt-4.1-nano.",
+      "precision": 97.4, "rejouees": 77, "cout": -74.8, "latence_ms": [1840, 610], "p95": -58.2, "jetons": 0
+    },
+    {
+      "app_id": "15 agents de rédaction",
+      "changement": "Mettre le brief de campagne en tête de prompt et activer le cache de prompt OpenAI.",
+      "precision": 100, "rejouees": 150, "cout": -41.3, "latence": -18.6, "p95": -12.4, "jetons": -46.0
+    },
+    {
+      "app_id": "Idea Generator",
+      "changement": "Plafonner les réponses à 600 jetons (max_tokens) : les idées refusées sont régénérées en entier.",
+      "precision": 96.1, "rejouees": 52, "cout": -27.5, "latence": -31.0, "p95": -35.7, "jetons": -29.8
+    }
+  ],
+  "gains": {"cout_par_execution": [0.0862, 0.0521], "executions": 4},
+  "diff": "demo/scenario-4553.diff"
+}

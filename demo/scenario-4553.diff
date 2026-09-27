@@ -1,0 +1,20 @@
+diff --git a/workflows/4553.json b/workflows/4553.json
+--- a/workflows/4553.json
++++ b/workflows/4553.json
+@@ -212,7 +212,7 @@  "name": "Idea is good enough?"
+       "parameters": {
+         "model": {
+-          "value": "gpt-4.1-mini"
++          "value": "gpt-4.1-nano"
+         },
+@@ -268,9 +268,10 @@  "name": "OpenAI Chat Model"
+       "parameters": {
+         "options": {
+-          "temperature": 0.7
++          "temperature": 0.7,
++          "maxTokens": 600
+         }
+       },
+@@ -301,8 +302,8 @@  "name": "Introduction Writer"
+-        "text": "=Rédige l'introduction pour : {{ $json.idea }}\n\nBrief : {{ $json.brief }}"
++        "text": "=Brief : {{ $json.brief }}\n\nRédige l'introduction pour : {{ $json.idea }}"
