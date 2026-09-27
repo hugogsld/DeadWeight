@@ -70,15 +70,15 @@ def test_replayed_cell_avec_et_sans_appels_rejoues():
 def test_shown_filtre_sous_95_pour_cent_et_trie_prouvees_dabord():
     a = prop("a", "reject", 82.5)     # sous le seuil : écarté
     b = prop("b", "pass", 100.0)
-    c = prop("c", "reject", 100.0)    # au-dessus, refusée pour une autre raison : reste montrée
+    c = prop("c", "reject", 100.0)    # au-dessus, mais refusée (échantillon insuffisant) : écartée aussi
     d = prop("d", "reject", None)     # precision non mesurée : jamais montrée
-    assert shown([a, b, c, d]) == [b, c]
+    assert shown([a, b, c, d]) == [b]
 
 
 def test_excluded_count_compte_les_precisions_mesurees_sous_le_seuil():
     items = [prop("mail-triage", "pass", 100.0), prop("reviews", "reject", 100.0),
              prop("brainstorm-bot", "reject", 82.5)]
-    assert excluded_count(items) == 1
+    assert excluded_count(items) == 2  # reviews (refusée) et brainstorm-bot (82,5 %)
 
 
 def test_gains_block_affiche_cout_total_et_par_execution(capsys):

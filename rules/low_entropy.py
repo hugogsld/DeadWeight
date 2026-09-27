@@ -44,6 +44,7 @@ def normalize(text):
 
 
 _FENCE = re.compile(r"^```[a-z]*\s*|\s*```$", re.I)
+_BARE_TAG = re.compile(r"^json\s+(?=\{)", re.I)  # « json {…} » : étiquette de langue sans les ```
 _SCORE_KEYS = re.compile(r"(^|[._])(confidence|score|probability|proba|certainty|likelihood)$", re.I)
 
 
@@ -65,7 +66,7 @@ def _fields(value):
 
 
 def _json_object(text):
-    stripped = _FENCE.sub("", str(text).strip())
+    stripped = _BARE_TAG.sub("", _FENCE.sub("", str(text).strip()))
     if not stripped.startswith("{"):
         return None
     try:

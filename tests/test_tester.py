@@ -79,7 +79,7 @@ def test_seules_les_modifications_au_moins_95_pour_cent_sont_affichees_prouvees_
                    {"app_id": "b", "verdict": "reject", "mesures": m(100.0)},
                    {"app_id": "c", "verdict": "pass", "mesures": m(99.0)},
                    {"app_id": "d", "verdict": "reject", "mesures": m(82.5)}])  # sous 95 % : écarté
-    assert [p["app_id"] for p in items] == ["c", "b"]
+    assert [p["app_id"] for p in items] == ["c"]  # b : refusée malgré 100 %, jamais affichée comme gain
 
 
 @pytest.mark.parametrize("env,expected", [({}, 30), ({"DW_MIN_CALLS": "3"}, 3), ({"DW_MIN_CALLS": "x"}, 30)])
@@ -259,3 +259,15 @@ def test_sans_terminal_aucun_bouton_actionne(tmp_path, capsys):
     out = capsys.readouterr().out
     assert "Lancer l'analyse ? [O/n] O" in out and "aucun bouton actionné" in out
     assert "\x1b[" not in out and str(tmp_path / "optim" / "propositions.html") in out
+
+
+def test_describe_compte_une_etape_par_prompt_systeme_quand_tous_les_agents_partagent_un_app_id(tmp_path):
+    # n8n multi-agents derrière la passerelle : un seul app_id, un prompt système par agent
+    from scripts.tester import describe
+    ev = lambda i, system: {"event_id": str(i), "app_id": "n8n-4553", "model": "gpt-4.1-mini",  # noqa: E731
+                            "request": {"system": system, "messages": [{"role": "user", "content": "x"}]}}
+    path = tmp_path / "events.jsonl"
+    path.write_text("\n".join(json.dumps(e) for e in
+                              [ev(1, "Tu es l'analyste marché."), ev(2, "Tu es l'analyste marché."),
+                               ev(3, "Tu génères des idées."), ev(4, "Évalue l'idée n°12.")]), encoding="utf-8")
+    assert len(describe("4553", path, str(path))["etapes"]) == 3

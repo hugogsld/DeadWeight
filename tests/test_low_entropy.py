@@ -86,3 +86,11 @@ def test_repeated_inputs_are_left_to_no_cache():
     for e in evts:
         e["request"]["messages"] = [{"role": "user", "content": "toujours la meme question"}]
     assert detect(evts) == []
+
+
+def test_canon_json_precede_de_json_sans_backticks():
+    # sortie d'agent n8n vue chez un testeur : l'étiquette de langue reste, les ``` ont disparu
+    from rules.low_entropy import canon
+    assert canon('json\n{"isitaccepted":false}') == "isitaccepted=false"
+    assert canon('json {"isitaccepted": true}') == "isitaccepted=true"
+    assert canon("json est un format") == "json est un format"

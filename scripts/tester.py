@@ -30,6 +30,7 @@ from pathlib import Path
 from agent.audit import main as audit_main
 from optimize.__main__ import main as optimize_main
 from optimize.send import send
+from rules.low_entropy import template_of
 from scripts import tester_ui as ui
 from scripts.audit_complet import detect, notify
 from scripts.tester_gains import global_gains
@@ -103,7 +104,9 @@ def describe(wf, events_path, source):
         name, nodes = wf_data.get("name"), len(wf_data.get("nodes") or [])
     elif (entry := catalog(wf)) and source.startswith("n8n:"):
         name, nodes = entry["nom"], entry["noeuds"]
-    apps = sorted({e.get("app_id") for e in events if e.get("app_id")})
+    # une étape = un app_id et un gabarit de prompt système, comme les détecteurs : derrière la
+    # passerelle, tous les agents d'un workflow n8n partagent souvent le même app_id
+    apps = sorted({(e["app_id"], template_of(e)) for e in events if e.get("app_id") and e.get("request")})
     name = name or Path(source).name
     traces = {(e.get("trace") or {}).get("id") for e in events} - {None}
     executions = len(traces) if traces else None

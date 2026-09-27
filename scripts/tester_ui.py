@@ -89,11 +89,11 @@ def replayed_cell(p):
 
 def shown(proposals):
     """Les modifications affichées : une précision mesurée au rejeu, d'au moins ``PRECISION_FLOOR_PCT``.
-    Prouvées d'abord, puis la précision la plus haute. En dessous du seuil : écartée partout (testeur,
+    Seules les prouvées (verdict « pass »), précision la plus haute d'abord. En dessous du seuil : écartée partout (testeur,
     tableau, PR — cf. ``optimize.__main__``)."""
-    kept = [p for p in proposals if ((v := (p["mesures"].get("precision") or {}).get("valeur")) is not None
-                                      and v >= PRECISION_FLOOR_PCT)]
-    return sorted(kept, key=lambda p: (p["verdict"] != "pass", -p["mesures"]["precision"]["valeur"]))
+    kept = [p for p in proposals if p["verdict"] == "pass"
+            and ((v := (p["mesures"].get("precision") or {}).get("valeur")) is not None and v >= PRECISION_FLOOR_PCT)]
+    return sorted(kept, key=lambda p: -p["mesures"]["precision"]["valeur"])
 
 
 def excluded_count(proposals):
@@ -188,7 +188,7 @@ def summary(items, s, gains=None, excluded=0):
         gains_block(gains, s)
     if excluded:
         suffix = "s" if excluded > 1 else ""
-        print(s(f"    {excluded} proposition{suffix} écartée{suffix} (précision < {PRECISION_FLOOR_PCT:g} %)", "dim"))
+        print(s(f"    {excluded} proposition{suffix} écartée{suffix} (précision < {PRECISION_FLOOR_PCT:g} % ou échantillon insuffisant)", "dim"))
 
 
 def _money(v):

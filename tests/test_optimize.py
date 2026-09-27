@@ -116,3 +116,13 @@ def test_model_and_cap_patches(tmp_path):
     cap = {"type": "plafond", "app_id": "mail-triage", "plafond": 300}
     diff, _ = make_patch(repo, cap)
     assert "chat.completions.create(max_tokens=300, model=" in diff
+
+
+def test_slack_latence_mediane_a_moins_100_affichee_en_millisecondes():
+    from optimize.slack import _line
+    p = {"verdict": "pass", "app_id": "mail-triage", "changement": "Règles.", "raisons": [],
+         "mesures": {"latence_mediane": {"valeur": -100.0, "statut": "mesuré", "unite": "%"}},
+         "latence_ms": {"avant": 633.2, "apres": 0.004, "statut": "mesuré"}}
+    line = _line(p, None)
+    assert "latence médiane 633 ms → 0 ms" in line
+    assert "-100" not in line
