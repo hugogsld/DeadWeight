@@ -1,0 +1,1000 @@
+id,nom,vues,lien,noeuds,noeuds_llm,fournisseurs,modeles
+1954,AI agent chat,1827224,https://n8n.io/workflows/1954,5,1,api.openai.com,gpt-4o-mini
+6270,Build your first AI agent,1238868,https://n8n.io/workflows/6270,13,1,generativelanguage.googleapis.com,(défaut n8n)
+2465,Building your first WhatsApp chatbot,536897,https://n8n.io/workflows/2465,28,2,api.openai.com,gpt-4o-2024-08-06×2
+3066,✨🤖Automate Multi-Platform Social Media Content Creation with AI,439514,https://n8n.io/workflows/3066,57,6,api.openai.com generativelanguage.googleapis.com,gpt-4o-mini×3 gpt-4o×2 gemini-2.0-flash-exp
+2462,"Angie, personal AI assistant with Telegram voice and text",420248,https://n8n.io/workflows/2462,15,1,api.openai.com,(défaut n8n)
+3442,Fully automated AI video generation & multi-platform publishing,396605,https://n8n.io/workflows/3442,51,4,api.openai.com,gpt-4o-mini×2 o3-mini gpt-4o
+1951,Scrape and summarize webpages with AI,390479,https://n8n.io/workflows/1951,16,1,api.openai.com,gpt-4o-mini
+5338,"Generate AI viral videos with Seedance and upload to TikTok, YouTube & Instagram",346327,https://n8n.io/workflows/5338,40,2,api.openai.com,gpt-4.1 gpt-5-mini
+2753,RAG chatbot for company documents using Google Drive and Gemini,343482,https://n8n.io/workflows/2753,18,2,generativelanguage.googleapis.com,gemini-2.0-flash-exp×2
+2090,Chat with a database using AI,343040,https://n8n.io/workflows/2090,7,1,api.openai.com,gpt-4o-mini
+2006,AI agent that can scrape webpages,285713,https://n8n.io/workflows/2006,20,1,api.openai.com,gpt-4o-mini
+5035,Generate & auto-post AI videos to social media with Veo3 and Blotato,285311,https://n8n.io/workflows/5035,29,2,api.openai.com,gpt-4.1×2
+4846,"Generate AI videos with Google Veo3, save to Google Drive and upload to YouTube",278808,https://n8n.io/workflows/4846,23,1,api.openai.com,gpt-4o-mini
+4827,"AI-powered WhatsApp chatbot for text, voice, images, and PDF with RAG",254316,https://n8n.io/workflows/4827,35,1,api.openai.com,gpt-4o-mini
+3100,Analyze Landing Page with OpenAI and Get Optimization Tips,253081,https://n8n.io/workflows/3100,4,1,api.openai.com,o1
+8237,"Personal life manager with Telegram, Google services & voice-enabled AI",239662,https://n8n.io/workflows/8237,25,1,openrouter.ai,(défaut n8n)
+5110,"Create & upload AI-generated ASMR YouTube Shorts with Seedance, Fal AI, and GPT-4",234579,https://n8n.io/workflows/5110,32,2,api.openai.com,gpt-4.1×2
+1934,Telegram AI chatbot,234036,https://n8n.io/workflows/1934,16,2,api.openai.com,gpt-4 (défaut n8n)
+2384,Chat with local LLMs using n8n and Ollama,227945,https://n8n.io/workflows/2384,5,1,localhost:11434,(défaut n8n)
+4968,Automated LinkedIn content creation with GPT-4 and DALL-E for scheduled posts,198811,https://n8n.io/workflows/4968,13,3,api.openai.com,gpt-4o-mini×3
+5626,Free AI image generator - n8n automation workflow with Gemini/ChatGPT,179817,https://n8n.io/workflows/5626,16,1,generativelanguage.googleapis.com,gemini-2.0-flash
+3050,Build your first AI data analyst chatbot,175231,https://n8n.io/workflows/3050,31,1,api.openai.com,gpt-4o
+2740,Basic automatic Gmail email labelling with OpenAI and Gmail API,170074,https://n8n.io/workflows/2740,13,1,api.openai.com,(défaut n8n)
+2786,Create a branded AI-powered website chatbot,162568,https://n8n.io/workflows/2786,24,1,api.openai.com,gpt-4o-2024-08-06
+7639,Talk to your Google Sheets using ChatGPT-5,158088,https://n8n.io/workflows/7639,11,1,api.openai.com,gpt-4.1-nano
+585,Extract text from a PDF file,156998,https://n8n.io/workflows/585,3,0,,
+3586,"AI-powered WhatsApp chatbot 🤖📲 for text, voice, images & PDFs with memory 🧠",156748,https://n8n.io/workflows/3586,32,1,api.openai.com,gpt-4o-mini
+1960,Ask questions about a PDF using AI,146064,https://n8n.io/workflows/1960,15,1,api.openai.com,gpt-4o-mini
+4966,Customer support WhatsApp bot with Google Docs knowledge base and Gemini AI,140575,https://n8n.io/workflows/4966,14,1,generativelanguage.googleapis.com,gemini-2.5-flash-preview-04-17-thinking
+5148,Local chatbot with retrieval augmented generation (RAG),138612,https://n8n.io/workflows/5148,13,1,localhost:11434,(défaut n8n)
+4110,Clone viral TikToks with AI avatars & auto-post to 9 platforms using Perplexity & Blotato,136473,https://n8n.io/workflows/4110,41,2,api.openai.com,gpt-4o×2
+4352,AI-powered multi-social media post automation: Google Trends & Perplexity AI,129591,https://n8n.io/workflows/4352,18,1,api.openai.com,gpt-3.5-turbo
+2466,Respond to WhatsApp messages with AI like a pro!,125767,https://n8n.io/workflows/2466,35,3,generativelanguage.googleapis.com,gemini-1.5-pro-002×3
+3121,"AI-powered short-form video generator with OpenAI, Flux, Kling, and ElevenLabs",120734,https://n8n.io/workflows/3121,41,3,api.openai.com,gpt-4o-mini×2 o3-mini
+2736,Summarize YouTube videos from transcript,119751,https://n8n.io/workflows/2736,10,1,api.openai.com,(défaut n8n)
+1978,Personalize marketing emails using customer data and AI,117166,https://n8n.io/workflows/1978,24,1,api.openai.com,gpt-4o-mini
+2165,Chat with PDF docs using AI (quoting sources),117017,https://n8n.io/workflows/2165,20,1,api.openai.com,gpt-4o-mini
+2679,⚡AI-powered YouTube video summarization & analysis,115713,https://n8n.io/workflows/2679,12,1,api.openai.com,(défaut n8n)
+2950,Ai-powered social media content generator & publisher,115312,https://n8n.io/workflows/2950,26,1,generativelanguage.googleapis.com,(défaut n8n)
+5010,"RAG Starter Template using Simple Vector Stores, Form trigger and OpenAI",114222,https://n8n.io/workflows/5010,12,1,api.openai.com,gpt-4o-mini
+4722,Gmail AI Email Manager,111497,https://n8n.io/workflows/4722,8,1,api.anthropic.com,claude-sonnet-4-20250514
+1953,Suggest meeting slots using AI,108739,https://n8n.io/workflows/1953,10,2,api.openai.com,gpt-4o-mini×2
+2749,Proxmox AI agent with n8n and generative AI integration,101863,https://n8n.io/workflows/2749,35,3,generativelanguage.googleapis.com,gemini-2.0-flash-exp×3
+3770,Build your own N8N workflows MCP server,97209,https://n8n.io/workflows/3770,46,1,api.openai.com,gpt-4.1-mini
+1862,OpenAI GPT-3: Company enrichment from website content,96823,https://n8n.io/workflows/1862,11,1,api.openai.com,(défaut n8n)
+3859,Ai customer support assistant · WhatsApp ready · works for any business,96402,https://n8n.io/workflows/3859,12,1,api.openai.com,gpt-4o-mini
+4696,Conversational Telegram bot with GPT-5/GPT-4o for text and voice messages,93772,https://n8n.io/workflows/4696,11,1,api.openai.com,gpt-4o
+1959,AI chatbot that can search the web,93384,https://n8n.io/workflows/1959,9,1,api.openai.com,gpt-4o-mini
+4723,AI Personal Assistant,92468,https://n8n.io/workflows/4723,26,4,api.anthropic.com,claude-sonnet-4-20250514×3 claude-opus-4-20250514
+2722,Email summary agent,89980,https://n8n.io/workflows/2722,9,1,api.openai.com,gpt-4o-mini
+2803,Generate Instagram content from top trends with AI image generation,89133,https://n8n.io/workflows/2803,44,1,api.openai.com,gpt-4o-mini
+2417,Flux AI image generator,86849,https://n8n.io/workflows/2417,19,0,,
+2187,Write a WordPress post with AI (starting from a few keywords),86742,https://n8n.io/workflows/2187,37,2,api.openai.com,gpt-4o-mini×2
+2982,🤖 AI powered RAG chatbot for your docs + Google Drive + Gemini + Qdrant,86508,https://n8n.io/workflows/2982,50,4,api.openai.com generativelanguage.googleapis.com,gemini-2.0-flash-exp×2 (défaut n8n) gpt-4o-mini
+2859,Chat with Postgresql database,85537,https://n8n.io/workflows/2859,11,1,api.openai.com,gpt-4o-mini
+3790,Automated stock analysis reports with technical & news sentiment using GPT-4o,84502,https://n8n.io/workflows/3790,45,3,api.openai.com,gpt-4o×3
+2621,AI agent to chat with files in Supabase Storage,80690,https://n8n.io/workflows/2621,33,2,api.openai.com,(défaut n8n)×2
+2812,Scrape any web page into structured JSON data with ScrapeNinja and AI,80316,https://n8n.io/workflows/2812,6,1,generativelanguage.googleapis.com,gemini-exp-1206
+3135,✨🩷Automated social media content publishing factory + system prompt composition,79473,https://n8n.io/workflows/3135,100,4,api.openai.com,gpt-4o-mini×3 gpt-4o
+2878,"Host your own AI deep research agent with n8n, Apify and OpenAI o3",79469,https://n8n.io/workflows/2878,85,6,api.openai.com generativelanguage.googleapis.com,o3-mini×5 gemini-2.0-flash
+2324,AI web researcher for sales,78048,https://n8n.io/workflows/2324,22,1,api.openai.com,gpt-4o
+2315,Autonomous AI crawler,76758,https://n8n.io/workflows/2315,38,1,api.openai.com,gpt-4o
+2271,Gmail AI Auto-Responder: Create Draft Replies to incoming emails,75678,https://n8n.io/workflows/2271,12,2,api.openai.com,gpt-4o gpt-4-turbo
+2035,Telegram AI bot with LangChain nodes,75167,https://n8n.io/workflows/2035,12,1,api.openai.com,gpt-4-1106-preview
+2606,AI YouTube trend finder based on niche,74184,https://n8n.io/workflows/2606,15,1,api.openai.com,(défaut n8n)
+3291,🔍🛠️Generate SEO-optimized WordPress content with AI powered perplexity research,73781,https://n8n.io/workflows/3291,25,3,api.openai.com,gpt-4o-mini×3
+3514,Build an MCP server with Google Calendar and custom functions,73594,https://n8n.io/workflows/3514,33,1,api.openai.com,gpt-4o
+2454,Auto categorise Outlook emails with AI,73287,https://n8n.io/workflows/2454,36,1,localhost:11434,qwen2.5:14b
+3986,"Personalized AI tech newsletter using RSS, OpenAI and Gmail",72290,https://n8n.io/workflows/3986,24,1,api.openai.com,gpt-4o
+3443,Scrape business leads from Google Maps using OpenAI and Google Sheets,71809,https://n8n.io/workflows/3443,17,1,api.openai.com,gpt-4o-mini
+2703,AI agent : Google calendar assistant using OpenAI,70752,https://n8n.io/workflows/2703,13,1,api.openai.com,gpt-4o
+2374,"Community insights using Qdrant, Python and Information Extractor",69720,https://n8n.io/workflows/2374,36,1,api.openai.com,gpt-4o-mini
+2846,AI voice chatbot with ElevenLabs & OpenAI for customer service and restaurants,69026,https://n8n.io/workflows/2846,23,2,api.openai.com,(défaut n8n)×2
+5819,🤖 Build an interactive AI agent with chat interface and multiple tools,68438,https://n8n.io/workflows/5819,17,2,api.openai.com generativelanguage.googleapis.com,gemini-2.5-flash gpt-4.1-mini
+2178,"Transcribe audio files, summarize with GPT-4, and store in Notion",68399,https://n8n.io/workflows/2178,8,1,api.openai.com,gpt-4-turbo-preview
+2860,AI automated HR workflow for CV analysis and candidate evaluation,67750,https://n8n.io/workflows/2860,18,1,api.openai.com,gpt-4o-mini
+3224,Analyze any website with OpenAI and get on-page SEO audit,67406,https://n8n.io/workflows/3224,12,2,api.openai.com,gpt-4o-mini×2
+2098,Chat with OpenAI Assistant (by adding a memory),65791,https://n8n.io/workflows/2098,6,1,api.openai.com,(défaut n8n)
+2729,🔐🦙🤖 Private & local Ollama self-hosted AI assistant,65391,https://n8n.io/workflows/2729,14,1,localhost:11434,llama3.2:latest
+2085,Chat with a Google Sheet using AI,64335,https://n8n.io/workflows/2085,20,1,api.openai.com,gpt-4o-mini
+1963,AI: conversational agent with custom tool written in JavaScript,62793,https://n8n.io/workflows/1963,6,1,api.openai.com,gpt-4o-mini
+3085,Automate SEO-Optimized WordPress posts with AI & Google Sheets,60996,https://n8n.io/workflows/3085,21,3,api.openai.com openrouter.ai,(défaut n8n)×2 google/gemini-2.0-flash-exp:free
+5163,"AI-powered stock analysis assistant with Telegram, Claude & GPT-4O Vision",60590,https://n8n.io/workflows/5163,19,1,openrouter.ai,anthropic/claude-3.5-sonnet
+2557,Hacker News to video content,59862,https://n8n.io/workflows/2557,48,2,api.openai.com,(défaut n8n) gpt-4o-mini
+4484,Build a voice AI chatbot with ElevenLabs and InfraNodus knowledge experts,59811,https://n8n.io/workflows/4484,21,2,api.openai.com generativelanguage.googleapis.com,gpt-4o gemini-2.5-flash-preview-04-17
+2872,🤖🧠 AI agent chatbot + LONG TERM memory + note storage + Telegram,58342,https://n8n.io/workflows/2872,21,2,api.openai.com,(défaut n8n)×2
+2388,Dynamically generate a webpage from user request using OpenAI structured output,58138,https://n8n.io/workflows/2388,7,1,api.openai.com,gpt-4o-mini
+2508,Generate SQL queries from schema only - AI-powered,56919,https://n8n.io/workflows/2508,29,1,api.openai.com,gpt-4o
+2431,Ultimate scraper workflow for n8n,56050,https://n8n.io/workflows/2431,63,3,api.openai.com,gpt-4o-mini×2 gpt-4o
+5045,Ai prompt generator workflow,55565,https://n8n.io/workflows/5045,21,2,generativelanguage.googleapis.com,gemini-2.0-flash×2
+2751,🤖 Telegram messaging agent for text/audio/images,55020,https://n8n.io/workflows/2751,39,2,api.openai.com,(défaut n8n)×2
+2783,"AI marketing report (Google Analytics & Ads, Meta Ads), sent via email/Telegram",54465,https://n8n.io/workflows/2783,51,5,api.openai.com,gpt-4o×4 gpt-4o-mini
+3840,Automated AI content creation & Instagram publishing from Google Sheets,54008,https://n8n.io/workflows/3840,26,3,generativelanguage.googleapis.com,gemini-2.0-flash-001×2 gemini-2.0-flash
+4600,🤖 AI content generation for auto service 🚘 automate your social media📲!,53258,https://n8n.io/workflows/4600,50,11,api-inference.huggingface.co api.anthropic.com api.deepseek.com api.mistral.ai api.openai.com api.x.ai azure generativelanguage.googleapis.com localhost:11434 openrouter.ai,(défaut n8n)×6 gpt-4.1×2 pixtral-large-latest claude-3-7-sonnet-20250219 https://huggingface.co/black-forest-labs/FLUX.1-dev
+3427,"Automate call scheduling with Voice AI receptionist using Vapi, Google Calendar & Airtable",53016,https://n8n.io/workflows/3427,92,0,,
+2894,"Upload to Instagram, TikTok & YouTube from Google Drive",52810,https://n8n.io/workflows/2894,15,1,api.openai.com,gpt-4o
+2552,"AI powered web scraping with Jina, Google Sheets and OpenAI : the EASY way",51421,https://n8n.io/workflows/2552,7,1,api.openai.com,(défaut n8n)
+2718,AI agent for Instagram DM/inbox. Manychat + Open AI integration,51381,https://n8n.io/workflows/2718,11,1,api.openai.com,(défaut n8n)
+2413,Notion knowledge base AI assistant,51035,https://n8n.io/workflows/2413,12,1,api.openai.com,gpt-4o
+2415,Notion AI assistant generator,50174,https://n8n.io/workflows/2415,24,3,api.anthropic.com,(défaut n8n)×3
+3900,Automated YouTube video scheduling & AI metadata generation 🎬,48674,https://n8n.io/workflows/3900,33,3,api.openai.com generativelanguage.googleapis.com,gpt-4.1-nano×2 gemini-2.5-flash-preview-04-17
+4400,"Build a PDF Document RAG System with Mistral OCR, Qdrant and Gemini AI",47940,https://n8n.io/workflows/4400,34,2,generativelanguage.googleapis.com,gemini-1.5-flash gemini-2.0-flash-exp
+7756,"Nutrition tracker & meal logger with Telegram, Gemini AI and Google Sheets",47091,https://n8n.io/workflows/7756,63,2,generativelanguage.googleapis.com,(défaut n8n)×2
+5678,"Automate email filtering & AI summarization. 100% free & effective, works 7/24",46955,https://n8n.io/workflows/5678,14,1,api.groq.com,llama-3.1-8b-instant
+2813,Automate content generator for WordPress with DeepSeek R1,46693,https://n8n.io/workflows/2813,17,2,api.openai.com,(défaut n8n)×2
+2320,Invoice data extraction with LlamaParse and OpenAI,46513,https://n8n.io/workflows/2320,26,1,api.openai.com,gpt-3.5-turbo-1106
+4557,Intelligent email organization with AI-powered content classification for Gmail,46370,https://n8n.io/workflows/4557,18,1,api.openai.com,gpt-4.1-nano
+4005,"AI-generated LinkedIn posts with OpenAI, Google Sheets & email approval workflow",46326,https://n8n.io/workflows/4005,18,1,api.openai.com,gpt-4o-mini
+2534,Telegram AI bot assistant: ready-made template for voice & text messages,45977,https://n8n.io/workflows/2534,15,1,api.openai.com,gpt-4o
+2114,Chat with OpenAIs GPT via a simple Telegram bot,45926,https://n8n.io/workflows/2114,4,1,api.openai.com,gpt-4o-mini
+2642,"Analyze tradingview.com charts with Chrome extension, n8n and OpenAI",45575,https://n8n.io/workflows/2642,5,0,,
+3086,"Publish WordPress posts to social media X, Facebook, LinkedIn, Instagram with AI",45362,https://n8n.io/workflows/3086,20,1,openrouter.ai,google/gemini-2.0-flash-exp:free
+1961,Slack chatbot powered by AI,45191,https://n8n.io/workflows/1961,14,1,api.openai.com,gpt-4o-mini
+2845,Complete business WhatsApp AI-powered RAG chatbot using OpenAI,44748,https://n8n.io/workflows/2845,28,2,api.openai.com,gpt-4o-mini×2
+7456,🤖 Automate CV screening with AI candidate analysis,44632,https://n8n.io/workflows/7456,18,1,generativelanguage.googleapis.com,gemini-2.5-flash-lite
+3102,Parse and Extract Data from Documents/Images with Mistral OCR,44456,https://n8n.io/workflows/3102,21,0,,
+2026,AI chat with any data source (using the n8n workflow tool),44301,https://n8n.io/workflows/2026,12,1,api.openai.com,gpt-4o-mini
+4036,Claude 3.7 Sonnet AI chatbot agent with Anthropic web search and think functions,43888,https://n8n.io/workflows/4036,7,1,api.anthropic.com,claude-3-7-sonnet-20250219
+1980,Use an open-source LLM (via HuggingFace),43357,https://n8n.io/workflows/1980,4,1,api-inference.huggingface.co,mistralai/Mistral-7B-Instruct-v0.1
+3018,Automated content generation & publishing - Wordpress,42033,https://n8n.io/workflows/3018,17,1,api.openai.com,gpt-4o
+2777,🐋DeepSeek V3 chat & R1 reasoning quick start,41775,https://n8n.io/workflows/2777,15,2,api.openai.com localhost:11434,(défaut n8n) deepseek-r1:14b
+2752,HR & IT helpdesk chatbot with audio transcription,41624,https://n8n.io/workflows/2752,27,2,api.openai.com,(défaut n8n)×2
+2245,Generate Text-to-Speech Using Elevenlabs via API,41210,https://n8n.io/workflows/2245,6,0,,
+1962,Load and summarize Google Drive files with AI,41083,https://n8n.io/workflows/1962,6,1,api.openai.com,gpt-4o-mini
+2397,IT ops AI SlackBot workflow - chat with your knowledge base,40978,https://n8n.io/workflows/2397,20,1,api.openai.com,gpt-4o
+2402,Telegram bot starter template setup & AI agent chatbot,40581,https://n8n.io/workflows/2402,48,1,api.openai.com,gpt-4o-mini
+2405,"AI voice chat using webhook, Memory Manager, OpenAI, Google Gemini & ElevenLabs",40360,https://n8n.io/workflows/2405,15,1,generativelanguage.googleapis.com,gemini-1.5-flash
+3379,"Automate product training & customer support via WhatsApp, GPT-4 & Google Sheets",40237,https://n8n.io/workflows/3379,20,2,api.openai.com,gpt-4o-mini×2
+2907,"A very simple ""Human in the Loop"" email response system using AI and IMAP",39634,https://n8n.io/workflows/2907,16,2,api.openai.com,gpt-4o-mini deepseek-chat
+3016,Invoices from Gmail to Drive and Google Sheets,39625,https://n8n.io/workflows/3016,17,1,api.openai.com,gpt-4o
+4506,"Generate Youtube video metadata (timestamps, tags, description, ...)",38996,https://n8n.io/workflows/4506,22,1,api.mistral.ai,mistral-large-latest
+5024,"Build custom workflows automatically with GPT-4o, RAG, and web search",38880,https://n8n.io/workflows/5024,33,2,api.openai.com openrouter.ai,(défaut n8n) o4-mini-2025-04-16
+3905,"Build a personal assistant with Google Gemini, Gmail and Calendar using MCP",38693,https://n8n.io/workflows/3905,20,1,generativelanguage.googleapis.com,gemini-2.5-pro-preview-05-06
+2883,Open deep research - AI-powered autonomous research workflow,38343,https://n8n.io/workflows/2883,17,1,openrouter.ai,google/gemini-2.0-flash-001
+3025,🧠 Empower your AI chatbot with long-term memory and dynamic tool routing,37558,https://n8n.io/workflows/3025,39,3,api.openai.com,gpt-4o-mini×3
+2682,🔍 Perplexity research to HTML: AI-powered content creation,37157,https://n8n.io/workflows/2682,47,5,api.openai.com,(défaut n8n)×4 gpt-4o-mini-2024-07-18
+2563,"✨ Vision-based AI agent scraper - with Google Sheets, ScrapingBee, and Gemini",36875,https://n8n.io/workflows/2563,29,1,generativelanguage.googleapis.com,gemini-1.5-pro-latest
+2440,Building RAG chatbot for movie recommendations with Qdrant and Open AI,36756,https://n8n.io/workflows/2440,27,1,api.openai.com,gpt-4o-mini
+3314,WebSecScan: AI-powered website security auditor,35843,https://n8n.io/workflows/3314,19,2,api.openai.com,gpt-4o-mini×2
+5230,Content farming - : AI-powered blog automation for WordPress,35841,https://n8n.io/workflows/5230,81,9,api.openai.com,gpt-4o-mini×8 gpt-4o
+4867,AI-powered stock market summary bot,35813,https://n8n.io/workflows/4867,21,1,api.openai.com,(défaut n8n)
+3657,"Build a chatbot, voice and phone agent with Voiceflow, Google Calendar and RAG",35578,https://n8n.io/workflows/3657,34,3,api.openai.com,gpt-4o-mini×3
+5993,"🤖 Create a Documentation Expert Bot with RAG, Gemini, and Supabase",35013,https://n8n.io/workflows/5993,55,1,generativelanguage.googleapis.com,(défaut n8n)
+4247,"Invoice processor & validator with OCR, AI & Google Sheets",34570,https://n8n.io/workflows/4247,22,1,openrouter.ai,deepseek/deepseek-chat-v3-0324
+2328,Actioning your meeting next steps using transcripts and AI,34430,https://n8n.io/workflows/2328,28,1,api.openai.com,(défaut n8n)
+2978,Analyze Reddit posts with AI to identify business opportunities,34260,https://n8n.io/workflows/2978,22,4,api.openai.com,gpt-4o-mini×4
+2436,Siri AI agent: Apple Shortcuts powered voice template,34255,https://n8n.io/workflows/2436,7,1,api.openai.com,gpt-4o-mini
+2864,🐋🤖 DeepSeek AI agent + Telegram + LONG TERM memory 🧠,34151,https://n8n.io/workflows/2864,23,2,api.openai.com,(défaut n8n)×2
+5449,"Automate sales cold calling pipeline with Apify, gpt-5.6-terra, and WhatsApp",34035,https://n8n.io/workflows/5449,48,2,api.openai.com,gpt-4o-mini×2
+1938,Discord AI-powered bot,33724,https://n8n.io/workflows/1938,9,1,api.openai.com,gpt-4
+2167,ChatGPT Automatic Code Review in Gitlab MR,33540,https://n8n.io/workflows/2167,14,1,api.openai.com,gpt-4o-mini
+2614,Extract text from PDF and image using Vertex AI (Gemini) into CSV,33294,https://n8n.io/workflows/2614,16,1,generativelanguage.googleapis.com,gemini-1.5-pro-latest
+2823,Social media analysis and automated email generation,33121,https://n8n.io/workflows/2823,19,1,api.openai.com,(défaut n8n)
+2862,Effortless email management with AI-powered summarization & review,32522,https://n8n.io/workflows/2862,31,2,api.deepseek.com api.openai.com,gpt-4o-mini (défaut n8n)
+2139,Twitter virtual AI influencer,32214,https://n8n.io/workflows/2139,12,1,api.openai.com,gpt-4-turbo-preview
+2183,AI crew to automate fundamental stock analysis - Q&A workflow,31964,https://n8n.io/workflows/2183,17,1,api.openai.com,gpt-4o-mini
+3904,"Search LinkedIn companies, score with AI and add them to Google Sheet CRM",31418,https://n8n.io/workflows/3904,19,1,api.openai.com,gpt-4.1
+2566,Conversational interviews with AI agents and n8n forms,31281,https://n8n.io/workflows/2566,40,1,api.groq.com,llama-3.2-90b-text-preview
+3563,"Build an AI powered phone agent 📞🤖 with Retell, Google Calendar and RAG",31256,https://n8n.io/workflows/3563,37,4,api.openai.com,gpt-4o-mini×4
+4721,Deep Research - Sales Lead Magnet Agent,30863,https://n8n.io/workflows/4721,21,3,api.anthropic.com openrouter.ai,(défaut n8n)×2 anthropic/claude-3.7-sonnet:thinking
+2180,Scrape and summarize posts of a news site without RSS feed using AI and save them to a NocoDB,30771,https://n8n.io/workflows/2180,36,2,api.openai.com,gpt-4-1106-preview×2
+4849,"Automated invoice processing with Telegram, GPT-4o, OCR and SAP integration",30668,https://n8n.io/workflows/4849,29,1,api.openai.com,gpt-4o-mini
+2197,Auto-label incoming Gmail messages with AI nodes,30635,https://n8n.io/workflows/2197,19,1,api.openai.com,gpt-4o-mini
+5002,Generate AI-Powered LinkedIn Posts with Google Gemini and Gen-Imager,30251,https://n8n.io/workflows/5002,16,1,generativelanguage.googleapis.com,gemini-2.0-flash
+2705,Chat with GitHub API documentation: RAG-powered chatbot with Pinecone & OpenAI,30108,https://n8n.io/workflows/2705,17,2,api.openai.com,(défaut n8n)×2
+2339,Breakdown documents into study notes using templating MistralAI and Qdrant,30103,https://n8n.io/workflows/2339,42,4,api.mistral.ai,open-mixtral-8x7b×3 (défaut n8n)
+2163,Qualify new leads in Google Sheets via OpenAI's GPT-4,30062,https://n8n.io/workflows/2163,9,1,api.openai.com,(défaut n8n)
+3169,"AI email analyzer: Process PDFs, images & save to Google Drive + Telegram",30009,https://n8n.io/workflows/3169,31,3,api.openai.com openrouter.ai,google/gemini-2.0-flash-exp:free×2 deepseek/deepseek-r1:free
+1466,Extract expenses from emails and add to Google Sheets,29949,https://n8n.io/workflows/1466,6,0,,
+3393,Google Calendar 📅 reminder system with GPT-4o and Telegram,29841,https://n8n.io/workflows/3393,9,1,api.openai.com,gpt-4o-mini
+2658,Api schema extractor,29643,https://n8n.io/workflows/2658,88,3,generativelanguage.googleapis.com,gemini-1.5-pro-002×2 gemini-1.5-flash-latest
+3336,"Automate blog content creation with GPT-4, Perplexity & WordPress",29638,https://n8n.io/workflows/3336,17,1,api.openai.com,gpt-4o-mini
+2395,Supabase insertion & upsertion & retrieval,29281,https://n8n.io/workflows/2395,21,1,api.openai.com,(défaut n8n)
+2342,"Handling appointment leads and follow-up with Twilio, Cal.com and AI",29274,https://n8n.io/workflows/2342,36,3,api.openai.com,(défaut n8n)×2 gpt-4o-mini
+2354,"Automate competitor research with Exa.ai, Notion and AI agents",29224,https://n8n.io/workflows/2354,39,3,api.openai.com,gpt-4o-mini×2 gpt-4o
+5835,Create low-cost AI videos with Veo3 fast and upload to YouTube & TikTok,29219,https://n8n.io/workflows/5835,23,1,api.openai.com,gpt-4o-mini
+3089,Reply to Outlook emails with OpenAI,29142,https://n8n.io/workflows/3089,9,1,api.openai.com,gpt-4o-mini
+4457,AI Telegram bot agent: smart assistant & content summarizer,29048,https://n8n.io/workflows/4457,24,1,api.openai.com,(défaut n8n)
+3188,"Turn YouTube videos into summaries, transcripts, and visual insights",28999,https://n8n.io/workflows/3188,26,0,,
+3654,"Auto-create and publish AI social videos with Telegram, GPT-4 and Blotato",28948,https://n8n.io/workflows/3654,42,3,api.openai.com,gpt-4o-mini×3
+2468,Automate customer support issue resolution using AI text classifier,28729,https://n8n.io/workflows/2468,36,4,api.openai.com,gpt-4o-mini×4
+2325,ERP AI chatbot for Odoo sales module with OpenAI,28520,https://n8n.io/workflows/2325,16,2,api.openai.com,(défaut n8n) gpt-4-turbo
+2592,Agentic Telegram AI bot with with LangChain nodes and new tools,28413,https://n8n.io/workflows/2592,8,1,api.openai.com,gpt-4o
+4709,Daily news digest: summarize RSS feeds with OpenAI and deliver to WhatsApp,27910,https://n8n.io/workflows/4709,21,1,api.openai.com,(défaut n8n)
+4108,AI image generator from text built on fal.ai,27852,https://n8n.io/workflows/4108,12,1,api.openai.com,(défaut n8n)
+2235,Automated AI image analysis and response via Telegram,27786,https://n8n.io/workflows/2235,8,0,,
+5677,Extract & transform HackerNews data to Google Docs using Gemini 2.0 flash,27387,https://n8n.io/workflows/5677,16,1,generativelanguage.googleapis.com,gemini-2.0-flash-exp
+4678,"Intelligent AI digest for security, privacy, and compliance feeds",27140,https://n8n.io/workflows/4678,43,3,generativelanguage.googleapis.com,gemini-2.0-flash×3
+2292,Talk to your SQLite database with a LangChain AI Agent 🧠💬,27128,https://n8n.io/workflows/2292,13,1,api.openai.com,gpt-4-turbo
+2986,All-in-one Telegram/Baserow AI assistant 🤖🧠 Voice/Photo/Save notes/Long term mem,26992,https://n8n.io/workflows/2986,48,1,api.openai.com,(défaut n8n)
+3425,Analyze crypto markets with the AI-powered CoinMarketCap data analyst,26895,https://n8n.io/workflows/3425,12,1,api.openai.com,gpt-4o-mini
+2420,Automate image validation tasks using AI Vision,26844,https://n8n.io/workflows/2420,11,1,generativelanguage.googleapis.com,gemini-1.5-pro-latest
+2648,Automate blog creation in brand voice with AI,26615,https://n8n.io/workflows/2648,27,3,api.openai.com,(défaut n8n)×3
+1900,"OpenAI examples: ChatGPT, DALLE-2, Whisper-1 – 5-in-1",26502,https://n8n.io/workflows/1900,27,8,api.openai.com,(défaut n8n)×6 gpt-3.5-turbo-0301×2
+3078,5 ways to process images & PDFs with Gemini AI in n8n,26434,https://n8n.io/workflows/3078,28,2,generativelanguage.googleapis.com,gemini-2.0-flash×2
+3131,Chatbot appointment scheduler with Google Calendar for dental assistant,26223,https://n8n.io/workflows/3131,12,1,api.openai.com,gpt-4o-mini
+2358,Advanced AI demo (presented at AI Developers #14 meetup),26112,https://n8n.io/workflows/2358,39,3,api.anthropic.com api.openai.com,gpt-4o×2 (défaut n8n)
+2768,🤖🔍 The ultimate free AI-powered researcher with Tavily web search & extract,26077,https://n8n.io/workflows/2768,17,1,api.openai.com,(défaut n8n)
+5910,"Auto-generate and post Instagram reels with Veo3, OpenAI, and Blotato",26064,https://n8n.io/workflows/5910,21,2,api.openai.com,gpt-4 chatgpt-4o-latest
+3791,"Generate & enrich LinkedIn leads with Apollo.io, LinkedIn API, Mail.so & GPT-3.5",25847,https://n8n.io/workflows/3791,66,5,api.openai.com,gpt-3.5-turbo×5
+5228,Generate video from prompt using Vertex AI Veo 3 and upload to Google Drive,25842,https://n8n.io/workflows/5228,15,0,,
+3054,Generate AI videos from text with HeyGen and voice cloning.,25534,https://n8n.io/workflows/3054,10,0,,
+3694,"Multi-Agent AI Clinic Management with WhatsApp, Telegram, and Google Calendar",25291,https://n8n.io/workflows/3694,38,5,api.openai.com openrouter.ai,gpt-4.1-nano-2025-04-14 gpt-4.1-mini-2025-04-14 google/gemini-2.0-flash-exp:free google/gemini-2.5-pro-exp-03-25:free gpt-4.1-mini
+4371,"Automate blog content creation with OpenAI, Google Sheets & email approval flow",25274,https://n8n.io/workflows/4371,23,1,api.openai.com,gpt-4o-mini
+2513,"Convert image files (JPG, PNG) to URLs and reduce file size for FREE",25208,https://n8n.io/workflows/2513,11,0,,
+3189,💥🛠️Build a web search chatbot with GPT-4o and MCP Brave Search,24930,https://n8n.io/workflows/3189,15,1,api.openai.com,gpt-4o
+3954,Generate logos and images with consistent visual styles using Imagen 3.0,24805,https://n8n.io/workflows/3954,21,0,,
+2473,Generate SEO seed keywords using AI,24801,https://n8n.io/workflows/2473,15,1,api.anthropic.com,(défaut n8n)
+2824,Query Perplexity AI from your n8n workflows,24744,https://n8n.io/workflows/2824,6,0,,
+4767,VEO3 video generator with AI optimization and Google Drive storage,24693,https://n8n.io/workflows/4767,14,1,api.anthropic.com,claude-sonnet-4-20250514
+3076,🦜✨Use OpenAI to transcribe audio + summarize with AI + save to Google Drive,24142,https://n8n.io/workflows/3076,33,4,api.openai.com,gpt-4o-mini×4
+3912,"Automate lead qualification with RetellAI Phone Agent, OpenAI GPT & Google Sheet",23724,https://n8n.io/workflows/3912,18,1,api.openai.com,gpt-4.1
+5139,Automated Instagram reels workflow,23708,https://n8n.io/workflows/5139,26,1,generativelanguage.googleapis.com,gemini-2.0-flash
+5657,Website content scraper & SEO keyword extractor with GPT-5-mini and Airtable,23425,https://n8n.io/workflows/5657,16,2,api.openai.com,gpt-5-mini×2
+3617,"Generate monthly financial reports with Gemini AI, SQL, and Outlook",23262,https://n8n.io/workflows/3617,30,1,generativelanguage.googleapis.com,gemini-2.5-pro-exp-03-25
+3082,"Social media content generator and publisher | X, Linkedin",23159,https://n8n.io/workflows/3082,8,1,generativelanguage.googleapis.com,gemini-2.0-flash
+2094,Allow your AI to call an API to fetch data,23156,https://n8n.io/workflows/2094,18,2,api.openai.com,gpt-4o-mini×2
+2941,🎬 YouTube shorts automation tool 🚀,22974,https://n8n.io/workflows/2941,24,2,api.openai.com,(défaut n8n)×2
+4807,Smart email responder workflow using AI,22907,https://n8n.io/workflows/4807,14,1,generativelanguage.googleapis.com,gemini-2.0-flash-exp
+3053,"Technical stock analysis with Telegram, Airtable and a GPT-powered AI agent",22755,https://n8n.io/workflows/3053,35,1,api.openai.com,gpt-4o
+5396,"AI Timesheet Generator with Gmail, Calendar & GitHub to Google Sheets",22588,https://n8n.io/workflows/5396,31,1,api.openai.com,gpt-4o-mini
+2201,"OpenAI Assistant workflow: upload file, create an Assistant, chat with it!",22540,https://n8n.io/workflows/2201,10,2,api.openai.com,(défaut n8n) gpt-4-turbo-preview
+4376,Extract invoice data from email to Google Sheets using GPT-4o AI automation,22505,https://n8n.io/workflows/4376,10,1,api.openai.com,gpt-4o-mini
+5159,AI content creation and auto WordPress publishing with Pexels API image workflow,22438,https://n8n.io/workflows/5159,30,3,generativelanguage.googleapis.com,gemini-1.5-flash-latest×3
+4975,"Automated HR Service System with WhatsApp, GPT-4 Classification & Google Workspace",22345,https://n8n.io/workflows/4975,65,9,api.openai.com,gpt-4.1-nano×3 gpt-4o-mini×3 gpt-4o×2 (défaut n8n)
+4365,🤖💬 Conversational AI Chatbot with Google Gemini for Text & Image | Telegram,22307,https://n8n.io/workflows/4365,28,2,generativelanguage.googleapis.com,gemini-2.0-flash-001 gemini-2.0-flash
+5289,🛠️ AI Prompt Maker,22150,https://n8n.io/workflows/5289,17,1,generativelanguage.googleapis.com,gemini-2.5-flash
+1897,Send specific PDF attachments from Gmail to Google Drive using OpenAI,22110,https://n8n.io/workflows/1897,18,1,api.openai.com,(défaut n8n)
+4366,"Automate email & calendar management with Gmail, Google Calendar & GPT-4o AI",22085,https://n8n.io/workflows/4366,38,3,api.openai.com,gpt-4o gpt-4o-mini gpt-4.1-mini
+5608,Convert YouTube videos to shorts with Klap & auto-post to multiple social platforms,21728,https://n8n.io/workflows/5608,35,0,,
+3396,Parse incoming invoices from Outlook using AI Document Understanding,21525,https://n8n.io/workflows/3396,24,1,generativelanguage.googleapis.com,gemini-2.0-flash
+4485,Telegram AI chatbot agent with InfraNodus GraphRAG knowledge base,21149,https://n8n.io/workflows/4485,25,1,api.openai.com,gpt-4o
+3656,Ai-powered Telegram task manager with MCP server,21012,https://n8n.io/workflows/3656,21,1,api.openai.com,gpt-4o-mini
+3560,"Extract trends, auto-generate social content with AI, Reddit, Google & post",20960,https://n8n.io/workflows/3560,62,6,api.openai.com,(défaut n8n)×6
+3501,Generate & auto-post social videos to multiple platforms with GPT-4 and Kling AI,20739,https://n8n.io/workflows/3501,38,4,api.openai.com,gpt-4o×3 gpt-4o-mini
+2288,Automate LinkedIn Outreach with Notion and OpenAI,20711,https://n8n.io/workflows/2288,11,1,api.openai.com,(défaut n8n)
+2161,AI-powered WooCommerce Support-Agent,20605,https://n8n.io/workflows/2161,40,1,api.openai.com,gpt-4
+3940,Document Q&A chatbot with Gemini AI and Supabase vector search for Telegram,20507,https://n8n.io/workflows/3940,28,1,generativelanguage.googleapis.com,gemini-2.5-flash-preview-04-17
+5924,AI research assistant via Telegram (GPT-4o mini + DeepSeek R1 + SerpAPI),20435,https://n8n.io/workflows/5924,13,2,api.deepseek.com api.openai.com,deepseek-reasoner gpt-4o-mini
+5523,Evaluate tool usage accuracy in multi-agent AI workflows using evaluation nodes,20392,https://n8n.io/workflows/5523,15,1,openrouter.ai,openai/o3
+4028,Generate and publish carousels for TikTok and Instagram with GPT-Image-1,20123,https://n8n.io/workflows/4028,28,1,api.openai.com,gpt-4.1
+7990,Receipt scanning & analysis workflow,19998,https://n8n.io/workflows/7990,8,1,api.openai.com,gpt-4.1-mini
+3906,Automate YouTube uploads with AI-generated metadata from Google Drive,19881,https://n8n.io/workflows/3906,14,3,api.openai.com generativelanguage.googleapis.com,gpt-4.1-nano×2 gemini-2.5-flash-preview-04-17
+3005,✨🔪 Advanced AI powered document parsing & text extraction with Llama Parse,19679,https://n8n.io/workflows/3005,54,4,api.openai.com,gpt-4o×2 gpt-4o-mini (défaut n8n)
+3132,Extract Google Trends keywords & summarize articles in Google Sheets,19652,https://n8n.io/workflows/3132,26,0,,
+2198,Compose reply draft in Gmail with OpenAI assistant,19528,https://n8n.io/workflows/2198,23,1,api.openai.com,(défaut n8n)
+7004,AI orchestrator: dynamically selects models based on input type,19468,https://n8n.io/workflows/7004,12,5,api.anthropic.com api.openai.com generativelanguage.googleapis.com openrouter.ai,gpt-4.1-mini×2 claude-sonnet-4-20250514 gemini-2.0-flash-thinking-exp perplexity/sonar
+2799,"AI-powered information monitoring with OpenAI, Google Sheets, Jina AI and Slack",19415,https://n8n.io/workflows/2799,31,2,api.openai.com,(défaut n8n)×2
+2612,AI agent to chat with Supabase/PostgreSQL DB,19201,https://n8n.io/workflows/2612,11,1,api.openai.com,(défaut n8n)
+2335,Build a financial documents assistant using Qdrant and Mistral.ai,19130,https://n8n.io/workflows/2335,29,1,api.mistral.ai,mistral-small-2402
+1898,Send a ChatGPT email reply and save responses to Google Sheets,19103,https://n8n.io/workflows/1898,49,1,api.openai.com,(défaut n8n)
+3638,Build your own CUSTOM API MCP server,19097,https://n8n.io/workflows/3638,25,0,,
+3490,"Automated LinkedIn lead generation, scoring & communication with AI-Agent",19031,https://n8n.io/workflows/3490,96,7,api.openai.com,gpt-4o×6 gpt-4.1
+2416,Cv resume PDF parsing with multimodal vision AI,18989,https://n8n.io/workflows/2416,13,1,generativelanguage.googleapis.com,gemini-1.5-pro-latest
+2852,AI-powered email automation for business: Summarize & respond with RAG,18963,https://n8n.io/workflows/2852,26,4,api.openai.com,deepseek/deepseek-r1:free×2 gpt-4o-mini×2
+6137,🤖 Build a Documentation Expert Chatbot with Gemini RAG Pipeline,18808,https://n8n.io/workflows/6137,48,1,generativelanguage.googleapis.com,(défaut n8n)
+2400,AI agent with charts capabilities using OpenAI structured output and Quickchart,18773,https://n8n.io/workflows/2400,11,1,api.openai.com,gpt-4o-mini-2024-07-18
+2392,Telegram chat with PDF,18737,https://n8n.io/workflows/2392,20,1,api.groq.com,llama-3.1-70b-versatile
+2956,⚡📽️ Ultimate AI-powered chatbot for YouTube summarization & analysis,18629,https://n8n.io/workflows/2956,29,2,api.openai.com,gpt-4o-mini (défaut n8n)
+4949,"Automate WhatsApp booking system with GPT-4 Assistant, Cal.com and SMS reminders",18624,https://n8n.io/workflows/4949,25,1,api.openai.com,gpt-4o
+2334,Organise your local file directories with AI,18503,https://n8n.io/workflows/2334,16,1,api.mistral.ai,mistral-small-2402
+3942,AI-powered restaurant order chatbot with GPT-4o for POS integration,18472,https://n8n.io/workflows/3942,19,2,api.openai.com,gpt-4o-mini×2
+2651,AI agent for realtime insights on meetings,18397,https://n8n.io/workflows/2651,19,1,api.openai.com,(défaut n8n)
+3303,AI-powered research assistant for platform questions with GPT-4o and MCP,18340,https://n8n.io/workflows/3303,5,1,api.openai.com,gpt-4o-mini
+5195,AI-powered product research & SEO content automation,18189,https://n8n.io/workflows/5195,17,1,generativelanguage.googleapis.com,gemini-2.0-flash
+2681,Ai-powered social media amplifier,18159,https://n8n.io/workflows/2681,26,1,api.openai.com,gpt-4o-mini
+5614,Website scam risk detector with GPT-4o and SerpAPI,18079,https://n8n.io/workflows/5614,19,5,api.openai.com,(défaut n8n)×5
+2931,Ai agent with Ollama for current weather and wiki,18072,https://n8n.io/workflows/2931,10,1,localhost:11434,llama3.2:latest
+2580,Qualifying appointment requests with AI & n8n forms,18051,https://n8n.io/workflows/2580,25,2,api.openai.com,(défaut n8n)×2
+2741,AI-powered RAG workflow for stock earnings report analysis,17973,https://n8n.io/workflows/2741,18,2,api.openai.com generativelanguage.googleapis.com,gemini-2.0-flash-exp (défaut n8n)
+4941,Build your first AI agent – powered by Google Gemini with memory,17927,https://n8n.io/workflows/4941,13,1,generativelanguage.googleapis.com,gemini-2.5-pro-preview-06-05
+3350,Telegram AI bot-to-human handoff for sales calls,17813,https://n8n.io/workflows/3350,39,3,api.openai.com,gpt-4o-mini×3
+3004,🚀 TikTok video automation tool ✨ – highly optimized with OpenAI & Replicate,17800,https://n8n.io/workflows/3004,48,2,api.openai.com,(défaut n8n)×2
+3348,"Automate blog content creation with Notion MCP, DeepSeek AI, and WordPress",17601,https://n8n.io/workflows/3348,10,1,api.deepseek.com,(défaut n8n)
+2957,💡🌐 Essential multipage website scraper with Jina.ai,17306,https://n8n.io/workflows/2957,16,0,,
+2421,Transcribing bank statements to markdown using Gemini Vision AI,17157,https://n8n.io/workflows/2421,20,2,generativelanguage.googleapis.com,gemini-1.5-pro-latest×2
+2747,🎨 Interactive image editor with FLUX.1 fill tool for inpainting,17098,https://n8n.io/workflows/2747,18,0,,
+2819,"Simple expense tracker with n8n chat, AI agent and Google Sheets",17001,https://n8n.io/workflows/2819,10,2,api.openai.com,(défaut n8n)×2
+3277,Smart email auto-responder template using AI,16959,https://n8n.io/workflows/3277,16,1,generativelanguage.googleapis.com,gemini-2.0-flash-exp
+3473,Scalable multi-agent chat using @mentions,16880,https://n8n.io/workflows/3473,18,1,openrouter.ai,(défaut n8n)
+2170,Extract data from resume and create PDF with Gotenberg,16861,https://n8n.io/workflows/2170,43,2,api.openai.com,gpt-4-turbo-preview (défaut n8n)
+3012,🌐 Confluence page AI chatbot workflow,16838,https://n8n.io/workflows/3012,16,1,api.openai.com,(défaut n8n)
+4868,Extract invoice data from Google Drive to Sheets with Mistral OCR and Gemini,16836,https://n8n.io/workflows/4868,29,1,generativelanguage.googleapis.com,gemini-2.5-flash-preview-05-20
+2764,Extract and process information directly from PDF using Claude and Gemini,16676,https://n8n.io/workflows/2764,11,0,,
+3713,Automated Instagram comment replies using Gemini AI with context-aware responses,16601,https://n8n.io/workflows/3713,14,1,openrouter.ai,google/gemini-2.0-flash-exp:free
+4969,Automated TikTok video creation pipeline with GPT-4o-mini and Sisif.ai,16567,https://n8n.io/workflows/4969,10,1,api.openai.com,gpt-4o-mini
+2800,"Zoom AI meeting assistant creates mail summary, ClickUp tasks and follow-up call",16480,https://n8n.io/workflows/2800,25,1,api.anthropic.com,claude-3-7-sonnet-20250219
+2559,Visualize your SQL Agent queries with OpenAI and Quickchart.io,16423,https://n8n.io/workflows/2559,19,2,api.openai.com,gpt-4o (défaut n8n)
+5296,AI YouTube trend explorer – n8n automation workflow with Gemini/ChatGPT,16230,https://n8n.io/workflows/5296,8,1,api.openai.com,(défaut n8n)
+4637,"Automate social media content with AI for Instagram, Facebook, LinkedIn & X",16192,https://n8n.io/workflows/4637,73,7,api.openai.com,(défaut n8n)×7
+3139,🔐🦙Private & local Ollama self-hosted + dynamic LLM router,15970,https://n8n.io/workflows/3139,16,2,localhost:11434,(défaut n8n) phi4:latest
+1955,Custom LangChain agent written in JavaScript,15891,https://n8n.io/workflows/1955,10,2,api.openai.com,gpt-4o-mini×2
+1957,Force AI to use a specific output format,15886,https://n8n.io/workflows/1957,11,2,api.openai.com,gpt-4o-mini×2
+2433,Daily podcast summary,15871,https://n8n.io/workflows/2433,21,1,api.openai.com,gpt-4o-mini
+4987,3D Product Video Generator from 2D Image for E-Commerce Stores,15849,https://n8n.io/workflows/4987,21,0,,
+2700,AI agent to chat with Airtable and analyze data,15829,https://n8n.io/workflows/2700,41,1,api.openai.com,(défaut n8n)
+2529,Automatic background removal for images in Google Drive,15792,https://n8n.io/workflows/2529,16,0,,
+3151,"Build an AI-powered tech radar advisor with SQL DB, RAG, and routing agents",15643,https://n8n.io/workflows/3151,53,5,api.anthropic.com api.groq.com generativelanguage.googleapis.com,(défaut n8n)×2 gemini-2.0-flash-exp qwen-qwq-32b deepseek-r1-distill-qwen-32b
+3123,Automatic reminders for follow-ups with AI and human in the loop Gmail,15605,https://n8n.io/workflows/3123,22,2,api.openai.com,gpt-4o-mini×2
+2661,Parse PDF with LlamaParse and save to Airtable,15567,https://n8n.io/workflows/2661,18,0,,
+2572,Cv screening with OpenAI,15434,https://n8n.io/workflows/2572,11,0,,
+3655,"Create animated stories using GPT-4o-mini, Midjourney, Kling and Creatomate API",15329,https://n8n.io/workflows/3655,51,0,,
+3178,Get real-time crypto token insights via Telegram with DexScreener and GPT-4o,15097,https://n8n.io/workflows/3178,15,1,api.openai.com,gpt-4o-mini
+3446,"Daily newsletter service using Excel, Outlook and AI",15055,https://n8n.io/workflows/3446,33,1,api.openai.com,gpt-4o-mini
+2025,OpenAI assistant with custom tools,14959,https://n8n.io/workflows/2025,15,1,api.openai.com,(défaut n8n)
+5294,🧑‍⚖️ Ai legal assistant agent — AI-powered legal Q&A with document retrieval,14915,https://n8n.io/workflows/5294,11,1,api.openai.com,gpt-4o-mini
+3751,Real-time crypto news & sentiment analysis via Telegram with GPT-4o,14827,https://n8n.io/workflows/3751,30,2,api.openai.com,gpt-4o-mini gpt-4o
+4526,"Build a knowledge base chatbot with OpenAI, RAG and MongoDB vector embeddings",14817,https://n8n.io/workflows/4526,15,1,api.openai.com,gpt-4o-mini
+3675,MCP Supabase server for AI agent with RAG & multi-tenant CRUD,14741,https://n8n.io/workflows/3675,27,0,,
+3535,"AI agent: Scrape, summarize & save articles to Notion (Gemini, Browserless)",14740,https://n8n.io/workflows/3535,9,1,generativelanguage.googleapis.com,gemini-2.5-pro-exp-03-25
+2209,AI-powered automated stock analysis,14721,https://n8n.io/workflows/2209,20,3,api.openai.com,(défaut n8n)×3
+10230,Add Project Tasks to Google Sheets with GPT-4.1-mini Chat Assistant,14721,https://n8n.io/workflows/10230,17,3,api.openai.com,gpt-4.1-mini×3
+2840,"Automate SIEM alert enrichment with MITRE ATT&CK, Qdrant & Zendesk in n8n",14706,https://n8n.io/workflows/2840,26,2,api.openai.com,gpt-4o×2
+2971,Automated faceless YouTube video generator using Leonardo AI and Creatomate,14670,https://n8n.io/workflows/2971,39,1,api.openai.com,(défaut n8n)
+2981,✍️🌄 Your first Wordpress + AI content creator - quick start,14605,https://n8n.io/workflows/2981,39,5,api.openai.com,(défaut n8n)×4 gpt-4o-mini-2024-07-18
+2782,Build an OpenAI assistant with Google Drive integration,14580,https://n8n.io/workflows/2782,12,3,api.openai.com,(défaut n8n)×2 gpt-4o-mini
+3804,"Automated PR code reviews with GitHub, GPT-4, and Google Sheets best practices",14559,https://n8n.io/workflows/3804,14,1,api.openai.com,gpt-4o-mini
+4967,Create viral Instagram reel scenarios from ideas with GPT-4o and Telegram,14537,https://n8n.io/workflows/4967,14,1,api.openai.com,gpt-4o
+4231,Context-aware Google Calendar management with MCP protocol,14457,https://n8n.io/workflows/4231,19,0,,
+2418,Easy image captioning with Gemini 1.5 Pro,14411,https://n8n.io/workflows/2418,16,1,generativelanguage.googleapis.com,gemini-1.5-flash
+2790,Ai fitness coach Strava data analysis and personalized training insights,14338,https://n8n.io/workflows/2790,15,1,generativelanguage.googleapis.com,gemini-2.0-flash-exp
+4359,AI-Powered Post-Sales Call Automated Proposal Generator,14333,https://n8n.io/workflows/4359,6,1,api.openai.com,gpt-4o
+4733,Automated job hunter: Upwork opportunity aggregator & AI-powered notifier,14331,https://n8n.io/workflows/4733,13,1,api.openai.com,gpt-4o-mini
+2457,Multi-agent PDF-to-blog content generation,14271,https://n8n.io/workflows/2457,20,4,api.openai.com,(défaut n8n)×4
+4452,Automated PDF invoice processing & approval flow using OpenAI and Google Sheets,14265,https://n8n.io/workflows/4452,18,1,api.openai.com,gpt-4o-mini
+2568,Upsert huge documents in a vector store with Supabase and Notion,14219,https://n8n.io/workflows/2568,34,1,api.openai.com,gpt-4o
+3705,Generate custom AI images with OpenAI GPT-Image-1 model,14150,https://n8n.io/workflows/3705,6,0,,
+5374,"Generate & publish SEO articles with Claude AI, Webflow & image generation",14117,https://n8n.io/workflows/5374,30,3,api.anthropic.com api.openai.com,o4-mini claude-3-5-haiku-20241022 claude-sonnet-4-20250514
+3798,Create a session-based Telegram chatbot with GPT-4o-mini and Google Sheets,14092,https://n8n.io/workflows/3798,38,3,api.openai.com,gpt-4o-mini×3
+5001,"Interview Scheduling Automation with Google Sheets, Calendar, Gmail & GPT-4o'",14022,https://n8n.io/workflows/5001,7,1,azure,gpt-4o
+2206,Translate Telegram audio messages with AI (55 supported languages),13892,https://n8n.io/workflows/2206,13,1,api.openai.com,(défaut n8n)
+4551,"AI-Powered RAG Document Processing & Chatbot with Google Drive, Supabase, OpenAI",13820,https://n8n.io/workflows/4551,36,3,api.openai.com generativelanguage.googleapis.com,gemini-1.5-flash×2 gpt-4o-mini
+2784,Personal shopper chatbot for WooCommerce with RAG using Google Drive and openAI,13791,https://n8n.io/workflows/2784,25,3,api.openai.com,(défaut n8n)×3
+3057,Create social media content from Telegram with AI,13743,https://n8n.io/workflows/3057,16,1,api.openai.com,gpt-4o-mini
+3605,Gmail MCP server – your all‑in‑one AI email toolkit,13731,https://n8n.io/workflows/3605,27,0,,
+3997,GitLab merge request review & risk analysis with Claude/GPT AI,13677,https://n8n.io/workflows/3997,23,2,api.anthropic.com,claude-3-5-haiku-20241022×2
+2579,Handling job application submissions with AI and n8n forms,13635,https://n8n.io/workflows/2579,23,2,api.openai.com,(défaut n8n)×2
+3090,✨📊Multi-AI agent chatbot for Postgres/Supabase DB and QuickCharts + tool router,13425,https://n8n.io/workflows/3090,40,3,api.openai.com,gpt-4o-mini×2 (défaut n8n)
+1956,AI: summarize podcast episode and enhance using Wikipedia,13415,https://n8n.io/workflows/1956,18,3,api.openai.com,gpt-4o-mini×3
+6035,🤖 Create Your First AI Agent with Weather & Web Scraping (Starter Kit),13373,https://n8n.io/workflows/6035,23,2,api.openai.com generativelanguage.googleapis.com,(défaut n8n) gpt-4.1-mini
+3068,AI-Powered Research with Jina AI Deep Search,13359,https://n8n.io/workflows/3068,6,0,,
+3363,Automated interview scheduling with GPT-4o and Google Calendar chat bot,13290,https://n8n.io/workflows/3363,26,2,api.openai.com,gpt-4o-mini×2
+4877,Automated video creation using Google Veo3 and n8n workflow,13278,https://n8n.io/workflows/4877,17,1,api.openai.com,gpt-4.1-mini
+3901,"Amazon product search scraper with BrightData, GPT-4, and Google Sheets",13257,https://n8n.io/workflows/3901,11,1,openrouter.ai,openai/gpt-4.1
+5607,Generate structured scientific research PDF summaries with GPT-4o,13222,https://n8n.io/workflows/5607,9,1,api.openai.com,(défaut n8n)
+3460,🎨 AI design team - generate and review AI images with Ideogram and OpenAI,13165,https://n8n.io/workflows/3460,37,1,api.openai.com,gpt-4o
+2504,WordPress - AI chatbot to enhance user experience - with Supabase and OpenAI,13086,https://n8n.io/workflows/2504,53,1,api.openai.com,gpt-4o-mini
+4399,Anthropic AI agent: Claude Sonnet 4 and Opus 4 with Think and Web Search tool,13060,https://n8n.io/workflows/4399,11,2,api.anthropic.com,(défaut n8n) claude-3-7-sonnet-20250219
+2673,Create a Google Analytics data report with AI and sent it to e-mail and Telegram,13056,https://n8n.io/workflows/2673,14,2,api.openai.com,gpt-4o-mini gpt-4o
+5196,Smart email draft generator,13048,https://n8n.io/workflows/5196,6,1,localhost:11434,llama3.2-16000:latest
+2917,Allow users to send a sequence of messages to an AI agent in Telegram,13039,https://n8n.io/workflows/2917,22,1,api.openai.com,gpt-4o-mini
+2092,Convert text to speech with OpenAI,13028,https://n8n.io/workflows/2092,8,0,,
+4459,AI YouTube analytics agent: Comment analyzer & insights reporter,12984,https://n8n.io/workflows/4459,19,1,api.openai.com,gpt-4o-mini
+4739,Binance spot market quant AI agent | GPT-4o + Telegram  (Main interface),12965,https://n8n.io/workflows/4739,21,1,api.openai.com,gpt-4o-mini
+5817,Build a weekly AI trend alerter with arXiv and Weaviate,12946,https://n8n.io/workflows/5817,46,3,openrouter.ai,anthropic/claude-3.7-sonnet×3
+3101,Monitor competitors' websites for changes with OpenAI and Firecrawl,12860,https://n8n.io/workflows/3101,14,1,api.openai.com,gpt-4o
+2792,"Scrape Trustpilot reviews with DeepSeek, analyze sentiment with OpenAI",12853,https://n8n.io/workflows/2792,20,2,api.openai.com,deepseek-reasoner (défaut n8n)
+2082,Use any LangChain module in n8n (with the LangChain code node),12814,https://n8n.io/workflows/2082,6,1,api.openai.com,gpt-4o-mini
+5286,News research and sentiment analysis AI agent with Gemini and SearXNG,12769,https://n8n.io/workflows/5286,7,1,generativelanguage.googleapis.com,gemini-2.5-flash
+4658,"Automate Instagram content discovery & repurposing w/ Apify, GPT-4o & Perplexity",12716,https://n8n.io/workflows/4658,16,2,api.openai.com,gpt-4o×2
+2669,📚 Auto-generate documentation for n8n workflows with GPT and Docsify,12651,https://n8n.io/workflows/2669,60,1,api.openai.com,gpt-4-turbo
+2446,Voice activated multi-agent demo for Vagent.io using Notion and Google Calendar,12635,https://n8n.io/workflows/2446,28,3,api.openai.com,gpt-4o×2 (défaut n8n)
+4024,Generate & publish SEO-optimized WordPress blog posts with AI,12514,https://n8n.io/workflows/4024,16,3,api.openai.com openrouter.ai,(défaut n8n)×3
+2386,Generate audio from text using OpenAI and Webhook | Text to speech workflow,12384,https://n8n.io/workflows/2386,5,0,,
+2993,Copy viral reels with Gemini AI,12375,https://n8n.io/workflows/2993,29,0,,
+3192,"IT support chatbot with Google Drive, Pinecone & Gemini | AI doc processing",12363,https://n8n.io/workflows/3192,14,1,openrouter.ai,google/gemini-2.0-flash-exp:free
+1895,Reddit AI digest,12220,https://n8n.io/workflows/1895,15,3,api.openai.com,(défaut n8n)×3
+4740,Analyze crypto news sentiment for any token with GPT-4o and Telegram alerts,12159,https://n8n.io/workflows/4740,28,2,api.openai.com,gpt-4o-mini gpt-4o
+3592,Automate web interactions with Claude 3.5 Haiku and Airtop Browser Agent,12086,https://n8n.io/workflows/3592,19,1,api.anthropic.com,claude-3-5-haiku-20241022
+2861,AI-powered email processing autoresponder and response approval (Yes/No),12080,https://n8n.io/workflows/2861,17,2,api.openai.com,deepseek/deepseek-r1:free gpt-4o-mini
+3051,Effortless job hunting: Let this automation find your next role,12077,https://n8n.io/workflows/3051,9,1,api.openai.com,(défaut n8n)
+2525,Create content from form inputs and save it to Google Drive using AI,12061,https://n8n.io/workflows/2525,39,3,api.openai.com,gpt-4o-mini×3
+2683,AI agent for project management and meetings with Airtable and Fireflies,12006,https://n8n.io/workflows/2683,18,1,api.openai.com,gpt-4o
+5305,Stock market daily digest with Bright Data scraping & Gemini AI email reports,11964,https://n8n.io/workflows/5305,22,1,generativelanguage.googleapis.com,gemini-2.0-flash-lite
+4528,Transcribe voice messages from Telegram using OpenAI Whisper-1,11942,https://n8n.io/workflows/4528,5,0,,
+5611,"AI-powered lead generation with Apollo, GPT-4, and Telegram to database",11930,https://n8n.io/workflows/5611,28,1,api.openai.com,gpt-4.1-nano
+3344,"🛻 AI agent for logistics order processing with GPT-4o, Gmail and Google Sheet",11885,https://n8n.io/workflows/3344,12,1,api.openai.com,gpt-4o-mini
+6906,Automate financial operations with O3 CFO & GPT-4.1-mini finance team,11868,https://n8n.io/workflows/6906,18,7,api.openai.com,gpt-4.1-mini×6 o3
+5589,Create a multi-modal Telegram support bot with GPT-4 and Supabase RAG,11867,https://n8n.io/workflows/5589,51,1,api.openai.com,gpt-4.1-mini
+3416,"Generate AI YouTube shorts with Flux, Runway, Eleven Labs and Creatomate",11836,https://n8n.io/workflows/3416,32,2,api.anthropic.com generativelanguage.googleapis.com,(défaut n8n)×2
+3719,"Extract & classify invoices & receipts with Gmail, OpenAI and Google Drive",11821,https://n8n.io/workflows/3719,20,1,api.openai.com,gpt-4.1-mini
+2437,Convert image to text using GROQ LLaVA V1.5 7B,11816,https://n8n.io/workflows/2437,8,0,,
+2216,Image creation with OpenAI and Telegram,11801,https://n8n.io/workflows/2216,12,0,,
+4735,AI blog generator for Shopify product listings:  Using GPT-4o and Google Sheets,11778,https://n8n.io/workflows/4735,19,1,api.openai.com,gpt-4o-mini
+4281,Real estate intelligence tracker with Bright Data & OpenAI,11618,https://n8n.io/workflows/4281,19,3,api.openai.com,gpt-4o-mini×3
+7163,"Automate hyper-personalized email outreach with AI, Gmail & Google Sheets",11596,https://n8n.io/workflows/7163,12,1,api.openai.com,{YOUR_OPENAI_MODEL}
+4641,"Summarize calls & notify teams via HubSpot, Slack, Email, WhatsApp",11562,https://n8n.io/workflows/4641,15,1,api.openai.com,gpt-4o-mini
+2321,Automate Your RFP Process with OpenAI Assistants,11447,https://n8n.io/workflows/2321,23,2,api.openai.com,(défaut n8n)×2
+2173,Auto document your n8n workflows,11258,https://n8n.io/workflows/2173,5,1,api.openai.com,(défaut n8n)
+591,Add text to a downloaded image,11256,https://n8n.io/workflows/591,3,0,,
+2582,Automate sales meeting prep with AI &  APIFY sent to WhatsApp,11229,https://n8n.io/workflows/2582,61,4,api.openai.com,gpt-4o-2024-08-06×4
+3020,AI Linux system administrator for managing Linux VPS instance,11216,https://n8n.io/workflows/3020,6,1,api.openai.com,gpt-4o
+2336,Summarize emails and save them as notes on sales opportunity in Odoo,11210,https://n8n.io/workflows/2336,5,1,api.openai.com,gpt-3.5-turbo-instruct
+3478,"Automate Instagram posts with Google Drive, AI captions & Facebook API",10973,https://n8n.io/workflows/3478,13,1,api.openai.com,gpt-4o-mini
+4336,Webhook-enabled AI PDF analyzer,10942,https://n8n.io/workflows/4336,16,1,api.openai.com,gpt-4o-mini
+2083,Translate audio using AI,10939,https://n8n.io/workflows/2083,13,1,api.openai.com,gpt-4o-mini
+2346,Enhance customer chat by buffering messages with Twilio and Redis,10868,https://n8n.io/workflows/2346,18,1,api.openai.com,(défaut n8n)
+4057,"Auto-respond to Gmail enquiries using GPT-4o, Dumpling AI & LangChain agent",10855,https://n8n.io/workflows/4057,10,2,api.openai.com,gpt-4o gpt-4o-mini
+1394,Transcribe audio files from Cloud Storage,10806,https://n8n.io/workflows/1394,8,0,,
+3686,Ai-powered Gmail email organization with auto-archiving and priority labels,10803,https://n8n.io/workflows/3686,17,2,openrouter.ai,openai/gpt-4.1-nano×2
+2125,Summarize social media activity of a company before a call,10781,https://n8n.io/workflows/2125,21,1,api.openai.com,(défaut n8n)
+5011,Save Costs In RAG Workflows using the Q&A Tool With Multiple Models,10739,https://n8n.io/workflows/5011,13,2,api.openai.com,gpt-4.1 gpt-4.1-mini
+3202,Stock market technical analysis with GPT-4o and TradingView for Telegram,10679,https://n8n.io/workflows/3202,16,2,api.openai.com,(défaut n8n)×2
+3583,High-level service page SEO blueprint report generator,10673,https://n8n.io/workflows/3583,33,6,generativelanguage.googleapis.com,(défaut n8n)×6
+3971,Summarise MS Teams channel activity for weekly reports with AI,10665,https://n8n.io/workflows/3971,17,2,api.openai.com,gpt-4.1-mini×2
+2341,"Build a tax code assistant with Qdrant, Mistral.ai and OpenAI",10642,https://n8n.io/workflows/2341,38,1,api.openai.com,(défaut n8n)
+5840,Automate LinkedIn post creation with image using Google Gemini & DALL-E,10556,https://n8n.io/workflows/5840,21,3,generativelanguage.googleapis.com,gemini-2.0-flash×3
+3079,Query Google Sheets/CSV data through an AI agent using PostgreSQL,10476,https://n8n.io/workflows/3079,23,1,generativelanguage.googleapis.com,gemini-2.0-flash
+2453,Telegram bot with Supabase memory and OpenAI assistant integration,10418,https://n8n.io/workflows/2453,17,0,,
+2249,Share YouTube videos with AI summaries on Discord,10388,https://n8n.io/workflows/2249,8,1,api.openai.com,gpt-3.5-turbo
+2242,Post New YouTube Videos to X,10386,https://n8n.io/workflows/2242,6,1,api.openai.com,gpt-3.5-turbo
+5157,Automate daily AI news with Perplexity Sonar Pro (via Telegram),10349,https://n8n.io/workflows/5157,11,2,api.openai.com api.perplexity.ai,sonar-reasoning-pro gpt-4o
+3414,"Slack AI chatbot for business team with RAG, Claude 3.7 Sonnet and Google Drive",10328,https://n8n.io/workflows/3414,21,1,api.anthropic.com,claude-3-7-sonnet-20250219
+4478,Auto-publish YouTube videos to Facebook & Instagram with AI-generated captions,10310,https://n8n.io/workflows/4478,13,1,api.openai.com,gpt-4o-mini
+1996,AI customer feedback sentiment analysis,10271,https://n8n.io/workflows/1996,9,1,api.openai.com,(défaut n8n)
+2434,Enrich FAQ sections on your website pages at scale with AI,10211,https://n8n.io/workflows/2434,36,1,api.openai.com,gpt-4o-mini
+3631,Build your own PostgreSQL MCP server,10146,https://n8n.io/workflows/3631,15,0,,
+1958,AI: Ask questions about any data source (using the n8n workflow retriever),10092,https://n8n.io/workflows/1958,7,1,api.openai.com,gpt-4o-mini
+632,Nathan: Your n8n personal assistant,10079,https://n8n.io/workflows/632,9,0,,
+2370,Creating a AI Slack bot with Google Gemini,10077,https://n8n.io/workflows/2370,10,1,generativelanguage.googleapis.com,gemini-1.5-flash-latest
+4875,Create a Telegram customer support bot with GPT4-mini and Google Docs knowledge,10073,https://n8n.io/workflows/4875,10,1,api.openai.com,gpt-4o-mini
+5926,Get a summary of each podcast in your YouTube playlist daily automatically free,10064,https://n8n.io/workflows/5926,23,1,api.groq.com,llama-3.1-8b-instant
+1045,ETL pipeline for text processing,10050,https://n8n.io/workflows/1045,9,0,,
+2389,Recognize invoices / receipts from Google Drive and put them into Google Sheets,10011,https://n8n.io/workflows/2389,10,0,,
+437,Perform speech-to-text on recorded audio clips using Wit.ai,10006,https://n8n.io/workflows/437,2,0,,
+4102,"Manage calendar with voice & text using GPT-4, Telegram & Google Calendar",9997,https://n8n.io/workflows/4102,19,1,api.openai.com,gpt-4.1
+3342,Automate sales for digital products & SaaS with AI (GPT-4o),9982,https://n8n.io/workflows/3342,34,2,api.openai.com,(défaut n8n)×2
+3433,Smart sales support chatbot with GPT-4o and Google Sheets,9926,https://n8n.io/workflows/3433,7,1,api.openai.com,gpt-4.1
+4881,Turn Google Sheets ideas into AI videos with GPT-4o and Fal.AI Veo 3,9899,https://n8n.io/workflows/4881,14,1,api.openai.com,chatgpt-4o-latest
+2871,RAG: context-aware chunking | Google Drive to Pinecone via OpenRouter & Gemini,9883,https://n8n.io/workflows/2871,17,1,openrouter.ai,(défaut n8n)
+2344,Generating image embeddings via textual summarisation,9867,https://n8n.io/workflows/2344,22,0,,
+2095,Ask a human for help when the AI doesn't know the answer,9859,https://n8n.io/workflows/2095,17,1,api.openai.com,gpt-4o-mini
+2467,Narrating over a video using multimodal AI,9789,https://n8n.io/workflows/2467,21,1,api.openai.com,gpt-4o-2024-08-06
+3868,Automate support ticket triage and resolution with JIRA and AI,9780,https://n8n.io/workflows/3868,27,3,api.openai.com,gpt-4o-mini×3
+2516,📈 Receive daily market news from FT.com to your Microsoft Outlook inbox,9773,https://n8n.io/workflows/2516,8,1,generativelanguage.googleapis.com,(défaut n8n)
+2644,Flux dev image generation (Fal.ai) to Google Drive,9755,https://n8n.io/workflows/2644,12,0,,
+5012,Natural language database queries with dual-agent AI & PostgreSQL integration,9720,https://n8n.io/workflows/5012,22,2,openrouter.ai,anthropic/claude-3.5-sonnet×2
+4687,AI email organizer for GMail - advanced email management & sorting,9606,https://n8n.io/workflows/4687,18,1,openrouter.ai,openai/gpt-4.1-mini
+2463,Enrich company data from Google Sheet with OpenAI Agent and ScrapingBee,9590,https://n8n.io/workflows/2463,13,1,api.openai.com,gpt-4o-mini
+2773,Hr job posting and evaluation with AI,9589,https://n8n.io/workflows/2773,36,5,api.openai.com,gpt-4o×3 (défaut n8n) gpt-4o-mini
+2233,AI-Powered Children's English Storytelling on Telegram with OpenAI,9566,https://n8n.io/workflows/2233,14,2,api.openai.com,gpt-3.5-turbo-16k-0613 (défaut n8n)
+3567,Automate PDF image extraction & analysis with GPT-4o and Google Drive,9556,https://n8n.io/workflows/3567,12,0,,
+2541,"AI agent to chat with you Search Console data, using OpenAI and Postgres",9552,https://n8n.io/workflows/2541,30,1,api.openai.com,gpt-4o
+4588,Firecrawl AI-powered market intelligence bot: automated news insights delivery,9534,https://n8n.io/workflows/4588,10,1,api.openai.com,gpt-4o-mini
+3772,Automatically classify and label Gmail emails with Google Gemini AI,9515,https://n8n.io/workflows/3772,15,2,api.groq.com generativelanguage.googleapis.com,gemini-2.0-flash-001 meta-llama/llama-4-scout-17b-16e-instruct
+5202,"🧠 AI blog post journalist (Perplexity for research, Anthropic Claude for blog)",9510,https://n8n.io/workflows/5202,12,2,api.anthropic.com api.perplexity.ai,sonar-pro claude-sonnet-4-20250514
+4031,Cold outreach automation: Scrape local leads with Dumpling AI & call via Vapi,9473,https://n8n.io/workflows/4031,11,0,,
+2943,🌐🪛 AI agent chatbot with Jina.ai webpage scraper,9463,https://n8n.io/workflows/2943,9,1,api.openai.com,gpt-4o-mini
+2796,Voiceflow demo support chatbot,9461,https://n8n.io/workflows/2796,33,0,,
+2164,Summarize Google Sheets form feedback via OpenAI's GPT-4,9429,https://n8n.io/workflows/2164,10,1,api.openai.com,(défaut n8n)
+4086,Ai agent to chat with files in Supabase Storage and Google Drive,9393,https://n8n.io/workflows/4086,62,1,api.openai.com,gpt-4o-mini
+2856,Automatic YouTube shorts generator,9320,https://n8n.io/workflows/2856,34,0,,
+3161,Generate content from Google Sheets to X with GPT-4,9295,https://n8n.io/workflows/3161,5,1,api.openai.com,gpt-4
+2666,Analyze & sort suspicious email contents with ChatGPT,9274,https://n8n.io/workflows/2666,25,1,api.openai.com,gpt-4o
+3908,Comprehensive SEO keyword research with OpenAI & DataForSEO analytics to NocoDB,9227,https://n8n.io/workflows/3908,34,3,api.openai.com,o1×3
+2662,Generate 9:16 images from content and brand guidelines,9190,https://n8n.io/workflows/2662,39,1,api.openai.com,gpt-4o-mini
+4083,"AI sales agent: WhatsApp, FB, IG, OpenAI, Airtable, Supabase auto-booking",9178,https://n8n.io/workflows/4083,58,5,api.openai.com,(défaut n8n)×5
+3829,AI agent web search using SearchAPI & LLM,9163,https://n8n.io/workflows/3829,7,1,api.openai.com,gpt-4o-mini
+2976,Automatically create YouTube metadata with AI,9115,https://n8n.io/workflows/2976,11,1,api.openai.com,gpt-4o-mini
+3596,Daily AI news translation & summary with GPT-4 and Telegram delivery,8988,https://n8n.io/workflows/3596,12,1,api.openai.com,gpt-4.1
+5674,"Generate trend-based marketing videos with Seedance AI, Perplexity, and GPT",8968,https://n8n.io/workflows/5674,16,2,api.openai.com api.perplexity.ai,sonar-pro chatgpt-4o-latest
+3052,Effortless task management: Create Todoist tasks directly from Telegram with AI,8947,https://n8n.io/workflows/3052,13,1,api.openai.com,gpt-4o-mini
+3647,📥 Transform Google Drive documents into vector embeddings,8944,https://n8n.io/workflows/3647,15,0,,
+2331,"Build your own image search using AI object detection, CDN and ElasticSearch",8937,https://n8n.io/workflows/2331,17,0,,
+3105,Automate audio/video transcription in any language with the new ElevenLabs model,8895,https://n8n.io/workflows/3105,3,0,,
+4402,AI Chatbot Agent with a Panel of Experts using InfraNodus GraphRAG Knowledge,8836,https://n8n.io/workflows/4402,14,1,api.openai.com,gpt-4o
+3289,"🎥 Analyze YouTube video for summaries, transcripts & content + Google Gemini AI",8729,https://n8n.io/workflows/3289,33,0,,
+3422,Get live crypto market data with AI-powered CoinMarketCap agent,8622,https://n8n.io/workflows/3422,13,1,api.openai.com,gpt-4o-mini
+3585,"🤖 AI restaurant assistant for WhatsApp, Instagram & Messenger",8576,https://n8n.io/workflows/3585,239,10,api.openai.com,(défaut n8n)×10
+3796,"Auto-generate meeting attendee research with GPT-4o, Google Calendar, and Gmail",8575,https://n8n.io/workflows/3796,18,0,,
+5140,"Build and update RAG system with Google Drive, Qdrant, and Gemini Chat",8573,https://n8n.io/workflows/5140,29,1,generativelanguage.googleapis.com,gemini-1.5-flash
+4151,AI SEO readability audit: Check website friendliness for LLMs,8572,https://n8n.io/workflows/4151,8,1,api.openai.com,gpt-4o
+2398,KB tool - Confluence knowledge base,8555,https://n8n.io/workflows/2398,7,0,,
+2377,"Turn emails into AI-enhanced tasks in Notion (multi-user support) with Gmail, Airtable and Softr",8555,https://n8n.io/workflows/2377,38,2,api.openai.com,gpt-4o×2
+3969,Summarise Slack channel activity for weekly reports with AI,8517,https://n8n.io/workflows/3969,47,3,generativelanguage.googleapis.com,gemini-2.0-flash×3
+4612,Personal budget & expense tracker with Google Sheets and alerts MCP,8456,https://n8n.io/workflows/4612,59,0,,
+2323,Customer Support Channel and Ticketing System with Slack and Linear,8445,https://n8n.io/workflows/2323,19,1,api.openai.com,(défaut n8n)
+3879,Build an MCP server with Airtable,8333,https://n8n.io/workflows/3879,13,1,api.openai.com,gpt-4o
+3305,🗼 AI powered supply chain control tower with BigQuery and GPT-4o,8279,https://n8n.io/workflows/3305,12,1,api.openai.com,gpt-4o-mini
+2458,Automated agentic news event monitoring with perplexity.ai,8196,https://n8n.io/workflows/2458,7,1,api.openai.com,(défaut n8n)
+3049,"Create a pizza ordering chatbot with GPT-3.5 - Menu, orders & status tracking",8184,https://n8n.io/workflows/3049,8,1,api.openai.com,(défaut n8n)
+4794,Upwork lead generation: Extract client emails with LinkedIn scraping and AI,8183,https://n8n.io/workflows/4794,21,1,api.openai.com,gpt-4o-mini
+8404,Automate AI video creation & multi-platform publishing with Gemini & Creatomate,8115,https://n8n.io/workflows/8404,47,2,generativelanguage.googleapis.com,gemini-2.0-flash (défaut n8n)
+3553,AI-powered YouTube shorts automation: Create & publish with OpenAI & ElevenLabs,8114,https://n8n.io/workflows/3553,76,3,api.openai.com,(défaut n8n)×3
+3335,LinkedIn profile finder via form using Bright Data & GPT-4o-mini,8110,https://n8n.io/workflows/3335,19,3,api.openai.com,gpt-4o-mini×3
+3231,Search the web with MCP-based Brave Search Engine on Telegram,8101,https://n8n.io/workflows/3231,14,0,,
+2338,Reconcile rent payments with local Excel spreadsheet and OpenAI,8084,https://n8n.io/workflows/2338,17,1,api.openai.com,gpt-4o
+2992,Split test different agent prompts with Supabase and OpenAI,8046,https://n8n.io/workflows/2992,16,1,api.openai.com,gpt-4o-mini
+2326,"Organise an Event using Slack, Google Calendar and AI",8030,https://n8n.io/workflows/2326,33,1,api.openai.com,(défaut n8n)
+9986,AI-powered product video generator (Foreplay + Gemini + Sora 2),7995,https://n8n.io/workflows/9986,18,1,generativelanguage.googleapis.com,(défaut n8n)
+2464,"Scale deal flow with a Pitch Deck AI vision, chatbot and QDrant vector store",7986,https://n8n.io/workflows/2464,50,5,api.openai.com,gpt-4o-mini×3 gpt-4o-2024-08-06×2
+2816,Auto-tag blog posts in WordPress with AI,7946,https://n8n.io/workflows/2816,32,2,api.openai.com,(défaut n8n)×2
+3934,Generate lessons learned reports from Jira epics with AI and Google Docs,7916,https://n8n.io/workflows/3934,13,1,api.openai.com,gpt-4o-mini
+3295,"🧑‍🎓 AI powered language teacher with Telegram, Google Sheet and GPT-4o",7903,https://n8n.io/workflows/3295,10,1,api.openai.com,gpt-4o-mini
+3634,Build your own Google Drive MCP server,7890,https://n8n.io/workflows/3634,17,0,,
+2547,Call analyzer with AssemblyAI transcription and OpenAI assistant integration,7876,https://n8n.io/workflows/2547,21,0,,
+3765,"Resume screening & behavioral interviews with Gemini, Elevenlabs, & Notion ATS",7803,https://n8n.io/workflows/3765,67,2,generativelanguage.googleapis.com,gemini-2.0-flash-001 gemini-2.0-flash
+1967,Prepare CSV files with GPT-4,7745,https://n8n.io/workflows/1967,11,1,api.openai.com,gpt-4
+4892,Analyze stock charts with GPT-4 Vision and send results via Telegram,7724,https://n8n.io/workflows/4892,6,1,api.openai.com,gpt-4-vision-preview
+3960,Automated financial tracker: Telegram invoices to Notion with Gemini AI reports,7696,https://n8n.io/workflows/3960,28,1,generativelanguage.googleapis.com,gemini-2.5-flash-preview-04-17
+8450,"Monitor social media trends across Reddit, Instagram & TikTok with Apify",7675,https://n8n.io/workflows/8450,27,0,,
+4092,Tesla quant trading AI agent using Telegram + GPT-4.1 (main interFace),7672,https://n8n.io/workflows/4092,23,1,api.openai.com,gpt-4o-mini
+2754,Summarize the new documents from Google Drive and save summary in Google Sheet,7660,https://n8n.io/workflows/2754,12,1,api.openai.com,gpt-4o-mini
+5820,Automatic Gmail categorization and labeling with AI,7614,https://n8n.io/workflows/5820,17,2,api.openai.com,gpt-4o gpt-3.5-turbo
+3094,Bitrix24 AI-Powered RAG Chatbot for Open Line Channels,7592,https://n8n.io/workflows/3094,34,1,generativelanguage.googleapis.com,gemini-2.0-flash
+3851,Automate Etsy data mining with Bright Data Scrape & Google Gemini,7565,https://n8n.io/workflows/3851,19,3,api.openai.com generativelanguage.googleapis.com,gemini-2.0-flash-exp×2 gpt-4o-mini
+2963,Automate WooCommerce SEO with Yoast & AI-powered meta tag generation for FREE,7441,https://n8n.io/workflows/2963,14,1,openrouter.ai,google/gemini-2.0-flash-exp:free
+3769,Perform SEO keyword research & insights with Ahrefs API and Gemini 1.5 Flash,7434,https://n8n.io/workflows/3769,14,2,generativelanguage.googleapis.com,gemini-1.5-flash×2
+3,Write HTTP query string on image,7378,https://n8n.io/workflows/3,3,0,,
+2522,📄🌐PDF2Blog - create blog post on Ghost CRM from PDF document,7375,https://n8n.io/workflows/2522,12,1,api.openai.com,gpt-4o-mini-2024-07-18
+2343,Introduction to the HTTP tool,7295,https://n8n.io/workflows/2343,12,2,api.openai.com,(défaut n8n)×2
+4217,Create OpenAI-compatible API using GitHub models for free AI access,7269,https://n8n.io/workflows/4217,17,1,api.openai.com,openai/gpt-4o-mini
+4653,LinkedIn profile extract and build JSON resume with Bright Data & Google Gemini,7268,https://n8n.io/workflows/4653,19,3,generativelanguage.googleapis.com,gemini-2.0-flash-exp×3
+3107,"Startup funding research automation with Claude, Perplexity AI, and Airtable",7255,https://n8n.io/workflows/3107,51,4,api.anthropic.com openrouter.ai,claude-3-5-sonnet-20241022×2 perplexity/llama-3.1-sonar-small-128k-online claude-3-5-haiku-20241022
+4689,Build a chatbot with Reinforced Learning Human Feedback (RLHF) and RAG,7222,https://n8n.io/workflows/4689,26,1,api.openai.com,gpt-4o-mini
+2809,Microsoft Outlook AI email assistant with contact support from Monday and Airtable,7205,https://n8n.io/workflows/2809,28,1,api.openai.com,gpt-4o
+3546,Screen and score resumes from Gmail to Sheets with AI,7189,https://n8n.io/workflows/3546,7,1,api.openai.com,gpt-4o-mini
+2873,Author and publish blog posts from Google Sheets,7139,https://n8n.io/workflows/2873,35,1,api.openai.com,(défaut n8n)
+4494,Airbnb Telegram agent - AI-powered accommodation search with voice support,7132,https://n8n.io/workflows/4494,15,1,api.openai.com,gpt-4.1
+2975,Build your own counseling chatbot on LINE to support mental health conversations,7132,https://n8n.io/workflows/2975,14,1,azure,4o
+3579,"Automated research report generation with AI, Wiki, Search & Gmail/Telegram",7129,https://n8n.io/workflows/3579,26,2,api.openai.com,gpt-4o-mini×2
+4403,Find Content Gaps in Competitors' Websites with InfraNodus GraphRAG for SEO,7120,https://n8n.io/workflows/4403,37,1,api.openai.com,gpt-4o-mini
+2333,Recipe recommendations with Qdrant and Mistral,7072,https://n8n.io/workflows/2333,33,1,api.mistral.ai,mistral-large-2402
+2940,🔥📈🤖 AI agent for n8n creators leaderboard - find popular workflows,7036,https://n8n.io/workflows/2940,43,2,api.openai.com localhost:11434,gpt-4o-mini (défaut n8n)
+2290,Store Notion's Pages as Vector Documents into Supabase with OpenAI,7036,https://n8n.io/workflows/2290,9,0,,
+2564,Automatically promote your YouTube video on X,6990,https://n8n.io/workflows/2564,28,2,api.openai.com,gpt-4o-mini×2
+3547,Convert text to speech with local KOKORO TTS,6980,https://n8n.io/workflows/3547,4,0,,
+3874,"Automate SEO blog content creation with GPT-4, Perplexity AI and WordPress",6950,https://n8n.io/workflows/3874,39,4,api.openai.com,(défaut n8n)×4
+2999,🐶 AI agent for PetShop appointments (Agente de IA para agendamentos de PetShop),6935,https://n8n.io/workflows/2999,187,9,api.openai.com,(défaut n8n)×9
+4847,Generate and send AI news newsletters automatically with GPT & Gmail,6909,https://n8n.io/workflows/4847,8,1,azure,gpt-4.1
+3115,"Create product satisfaction surveys with Telegram, Google Sheets and AI",6881,https://n8n.io/workflows/3115,40,2,api.openai.com,gpt-4o-mini×2
+2452,Automated email marketing campaign workflow,6864,https://n8n.io/workflows/2452,11,1,api.openai.com,(défaut n8n)
+2373,"Customer insights with Qdrant, Python and information extractor",6831,https://n8n.io/workflows/2373,37,1,api.openai.com,gpt-4o-mini
+5028,Basic RAG chat,6776,https://n8n.io/workflows/5028,14,1,api.groq.com,llama-3.3-70b-versatile
+3158,CoinMarketCap telegram price bot,6715,https://n8n.io/workflows/3158,7,1,api.openai.com,gpt-4o-mini
+3424,"Analyze DEX liquidity, trades & spot pairs with CoinMarketCap AI agent",6667,https://n8n.io/workflows/3424,15,1,api.openai.com,gpt-4o-mini
+2758,AI-driven lead management and inquiry automation with ERPNext & n8n,6631,https://n8n.io/workflows/2758,27,1,api.openai.com,(défaut n8n)
+2152,API that extracts engaging moments from YouTube videos,6627,https://n8n.io/workflows/2152,18,0,,
+5015,"Find and email ANYONE on LinkedIn with OpenAI, Hunter & Gmail",6625,https://n8n.io/workflows/5015,29,3,api.openai.com,(défaut n8n)×3
+2179,Translate PDF documents from Google Drive folder with DeepL,6607,https://n8n.io/workflows/2179,14,0,,
+2517,Send Google Analytics data to A.I. to analyze then save results in Baserow,6563,https://n8n.io/workflows/2517,22,0,,
+2637,Chat assistant (OpenAI assistant) with Postgres memory and API calling capabalities,6529,https://n8n.io/workflows/2637,12,2,api.openai.com,(défaut n8n)×2
+4056,"Generate images and convert to video using Flux, Kraken & Runway",6519,https://n8n.io/workflows/4056,22,0,,
+3498,Build an IT support assistant chatbot leveraging existing support portal,6518,https://n8n.io/workflows/3498,16,1,api.openai.com,gpt-4o-mini
+9152,"Automate AI video ad generation with Google Veo 3, Gemini, and Airtable",6509,https://n8n.io/workflows/9152,16,0,,
+11807,Answer multi-channel support queries with OpenAI RAG and Supabase,6496,https://n8n.io/workflows/11807,91,3,api.openai.com,(défaut n8n)×3
+3700,Automated generation of AI advertising photos for product marketing,6488,https://n8n.io/workflows/3700,18,1,api.openai.com,gpt-4.1-mini
+3959,Redesign t-shirt mockups to print-ready files with GPT-4 vision & Imagen 4,6471,https://n8n.io/workflows/3959,14,1,api.openai.com,gpt-4o-mini
+3149,Image-based data extraction API using Gemini AI,6443,https://n8n.io/workflows/3149,9,0,,
+3010,📄✨ Easy WordPress content creation from PDF docs + human in the loop Gmail,6431,https://n8n.io/workflows/3010,27,1,api.openai.com,(défaut n8n)
+3318,Automated resume review system using OpenAI + Google Sheets,6427,https://n8n.io/workflows/3318,17,1,api.openai.com,gpt-4o-mini
+4107,"Create AI videos with OpenAI scripts, Leonardo images & HeyGen avatars",6424,https://n8n.io/workflows/4107,68,2,api.openai.com,(défaut n8n)×2
+2985,AI-powered chatbot workflow with MySQL database integration,6419,https://n8n.io/workflows/2985,11,1,api.groq.com,(défaut n8n)
+2632,"Screen applicants with AI, notify HR and save them in a Google Sheet",6409,https://n8n.io/workflows/2632,7,1,generativelanguage.googleapis.com,(défaut n8n)
+2217,Configure your own image creation API using OpenAI DALLE-3,6400,https://n8n.io/workflows/2217,7,0,,
+3183,"Self-learning AI assistant with permanent memory | GPT,Telegram & Pinecone RAG",6324,https://n8n.io/workflows/3183,42,3,api.openai.com,(défaut n8n)×3
+4412,Weekly AI News Digest with Perplexity AI and Gmail Newsletter,6299,https://n8n.io/workflows/4412,7,0,,
+3194,Automated voice appointment reminders with Google Calendar GPT ElevenLabs Gmail,6260,https://n8n.io/workflows/3194,12,1,api.openai.com,gpt-4o-mini
+2653,AI data analyst agent and visualization agent for large spreadsheets,6225,https://n8n.io/workflows/2653,10,1,api.openai.com,(défaut n8n)
+5850,"AI-powered multi-platform assistant with Google Suite, LinkedIn & Twitter",6212,https://n8n.io/workflows/5850,65,1,api.openai.com,gpt-4o-mini
+3326,Build custom AI agent with LangChain & Gemini (self-hosted),6177,https://n8n.io/workflows/3326,9,1,generativelanguage.googleapis.com,gemini-2.0-flash-exp
+5743,"Scrape Google Maps leads (email, phone, website) using Apify + GPT + Airtable",6155,https://n8n.io/workflows/5743,17,1,api.openai.com,gpt-4.1-mini
+6557,Generate AI videos from text prompts with Google Veo,6138,https://n8n.io/workflows/6557,6,0,,
+4741,Get Binance spot market financial analysis via Telegram with GPT-4o,6136,https://n8n.io/workflows/4741,19,1,api.openai.com,gpt-4.1-mini
+3438,Automatically create cinematic quote videos with AI and upload to YouTube,6132,https://n8n.io/workflows/3438,28,0,,
+4373,Automate Reddit trend analysis with GPT-4 and Slack/Gmail distribution,6117,https://n8n.io/workflows/4373,11,1,api.openai.com,gpt-4o-mini
+2929,Smart email assistant: automate customer support with AI & Supabase,6096,https://n8n.io/workflows/2929,23,3,api.openai.com,(défaut n8n)×3
+684,Add data from a photo to Google Sheets,6076,https://n8n.io/workflows/684,6,0,,
+2766,Extract personal data with self-hosted LLM Mistral NeMo,6047,https://n8n.io/workflows/2766,13,1,localhost:11434,mistral-nemo:latest
+2964,Free YouTube video analyzer with AI-powered summaries & email alerts,6032,https://n8n.io/workflows/2964,21,3,api.deepseek.com api.openai.com openrouter.ai,gpt-4o-mini deepseek/deepseek-r1:free deepseek-reasoner
+2757,AI-powered candidate shortlisting automation for ERPNext,6013,https://n8n.io/workflows/2757,39,1,generativelanguage.googleapis.com,gemini-2.0-flash-exp
+7449,Talk to your Google Sheets using ChatGPT-5,6004,https://n8n.io/workflows/7449,11,1,api.openai.com,gpt-4.1-nano
+4451,"AI-powered PDF invoice parser with Google Drive, Google Sheets & OpenAI",5974,https://n8n.io/workflows/4451,11,1,api.openai.com,gpt-4o-mini
+3896,"🤖 Instagram MCP AI agent – read, reply & manage comments with GPT-4o",5957,https://n8n.io/workflows/3896,17,1,api.openai.com,(défaut n8n)
+3672,"Seo blog generator with GPT-4o, Perplexity, and Telegram integration",5934,https://n8n.io/workflows/3672,22,4,api.openai.com,gpt-4o-mini×4
+4012,Generate knowledge base articles with GPT & Perplexity AI for Contentful CMS,5927,https://n8n.io/workflows/4012,25,2,api.openai.com,(défaut n8n)×2
+4508,"Multi-platform AI sales agent with RAG, CRM logging & appointment booking",5906,https://n8n.io/workflows/4508,84,6,api.openai.com,(défaut n8n)×6
+3569,Build an MCP server with Google Calendar,5904,https://n8n.io/workflows/3569,23,1,api.openai.com,gpt-4o-mini
+4887,Auto-create podcast from YouTube transcript using Dumpling AI and GPT-4o,5886,https://n8n.io/workflows/4887,5,1,api.openai.com,chatgpt-4o-latest
+4926,"Automate salon appointment management with WhatsApp, GPT & Google Calendar",5884,https://n8n.io/workflows/4926,71,4,api.openai.com generativelanguage.googleapis.com,(défaut n8n)×4
+4589,AI-powered lead enrichment with Bright Data MCP and Google Sheets,5878,https://n8n.io/workflows/4589,51,3,api.openai.com,gpt-4o-mini gpt-4.1-mini (défaut n8n)
+5784,Personal Google Calendar & reminder bot on Telegram using Gemini & Whisper,5869,https://n8n.io/workflows/5784,27,2,api.openai.com generativelanguage.googleapis.com,(défaut n8n)×2
+4370,"Auto meeting summarizer with Google Drive, OpenAI Whisper & GPT-4 to Sheets",5823,https://n8n.io/workflows/4370,12,1,api.openai.com,gpt-4.1
+4082,"Automate SEO blog creation + social media with GPT-4, Perplexity and WordPress",5799,https://n8n.io/workflows/4082,79,9,api.openai.com,(défaut n8n)×9
+4674,"Generate AI-powered LinkedIn posts with Ollama, image creation, and Gmail delivery",5791,https://n8n.io/workflows/4674,21,2,localhost:11434,(défaut n8n)×2
+2330,Enrich property inventory survey with image recognition and AI agent,5790,https://n8n.io/workflows/2330,29,1,api.openai.com,gpt-4o
+3958,"Automate new customer onboarding with HubSpot, Google Calendar, and AI-powered Gmail",5719,https://n8n.io/workflows/3958,31,2,api.openai.com,gpt-4o-mini gpt-4o
+2778,AI news research team: 24/7 newsletter automation with citations with Perplexity,5709,https://n8n.io/workflows/2778,37,6,api.openai.com,(défaut n8n)×6
+3820,Dynamically switch between LLMs for AI agents using LangChain code,5696,https://n8n.io/workflows/3820,22,4,api.openai.com,gpt-4o-mini×2 gpt-4o o1
+2322,Speed Up Social Media Banners With BannerBear.com,5686,https://n8n.io/workflows/2322,16,0,,
+4755,Chat with PDF / MD / text files using GraphRAG (no vector store needed),5684,https://n8n.io/workflows/4755,20,1,api.openai.com,gpt-4o-mini
+4783,Automated weekly Google Calendar summary via email with AI ✨🗓️📧,5671,https://n8n.io/workflows/4783,21,1,generativelanguage.googleapis.com,gemini-2.5-flash-preview-05-20
+2419,Visual regression testing with Apify and AI Vision Model,5652,https://n8n.io/workflows/2419,34,1,generativelanguage.googleapis.com,gemini-1.5-pro-latest
+2865,Automate Pinterest analysis & AI-powered content suggestions with Pinterest API,5651,https://n8n.io/workflows/2865,13,2,api.openai.com,gpt-4o-mini×2
+3600,Line chatbot with Google Sheets memory and Gemini AI,5639,https://n8n.io/workflows/3600,17,1,generativelanguage.googleapis.com,gemini-2.0-flash-001
+11109,Generate complete SEO strategy reports with SerpAPI data and GPT-4 Agent team,5629,https://n8n.io/workflows/11109,22,7,api.openai.com,gpt-4.1-mini×7
+2904,Arxiv paper summarization with ChatGPT,5622,https://n8n.io/workflows/2904,12,3,api.openai.com,gpt-3.5-turbo×3
+2219,Transforming emails into podcasts,5609,https://n8n.io/workflows/2219,14,1,api.openai.com,(défaut n8n)
+2737,Ultimate content generator for WordPress,5589,https://n8n.io/workflows/2737,61,4,api.openai.com,(défaut n8n)×4
+3799,Interactive knowledge base chat with Supabase RAG using AI 📚💬,5540,https://n8n.io/workflows/3799,46,1,api.openai.com,(défaut n8n)
+3043,🤖 AI-powered WhatsApp assistant for restaurants & delivery automation,5534,https://n8n.io/workflows/3043,152,7,api.openai.com,(défaut n8n)×7
+3035,CallForge - 05 - Gong.io call analysis with Azure AI & CRM sync,5523,https://n8n.io/workflows/3035,27,3,azure,gpt-4o-mini×3
+8594,"Smart stock trading recommendations with GPT-4, TwelveData & NewsAPI analysis",5506,https://n8n.io/workflows/8594,23,3,api.openai.com,gpt-4.1-mini×2 gpt-4o
+2972,Turn BBC News articles into podcasts using Hugging Face and Google Gemini,5503,https://n8n.io/workflows/2972,22,1,generativelanguage.googleapis.com,gemini-2.0-pro-exp-02-05
+2688,"Hacker News throwback machine - see what was hot on this day, every year!",5503,https://n8n.io/workflows/2688,13,1,generativelanguage.googleapis.com,gemini-1.5-pro
+4368,"AI real estate agent: end-to-end ops automation (web, data, voice)",5495,https://n8n.io/workflows/4368,45,7,api.openai.com,(défaut n8n)×7
+4630,"Generate videos with AI, ElevenLabs,PIAPI Shotstack/Creatomate & post to Youtube",5475,https://n8n.io/workflows/4630,79,3,api.openai.com,(défaut n8n)×3
+3381,Transcribe YouTube videos with AI enhancement via chat interface,5465,https://n8n.io/workflows/3381,14,1,api.openai.com,gpt-4o-mini-2024-07-18
+2771,Ai data extraction with dynamic prompts and Airtable,5463,https://n8n.io/workflows/2771,51,2,api.openai.com,(défaut n8n)×2
+4474,"Automate multi-channel customer support with Gmail, Telegram, and GPT AI",5425,https://n8n.io/workflows/4474,23,2,api.openai.com,(défaut n8n)×2
+2394,Use AI to organize your Todoist inbox,5413,https://n8n.io/workflows/2394,12,1,api.openai.com,gpt-4o-mini
+2347,Query n8n credentials with AI SQL agent,5411,https://n8n.io/workflows/2347,13,1,api.openai.com,(défaut n8n)
+3185,Compare local Ollama Vision models for image analysis using Google Docs,5405,https://n8n.io/workflows/3185,19,0,,
+2706,Auto-categorize blog posts in wordpress using A.I.,5401,https://n8n.io/workflows/2706,9,1,api.openai.com,(défaut n8n)
+4414,Automate news publishing to LinkedIn with Gemini AI and RSS feeds,5400,https://n8n.io/workflows/4414,43,4,generativelanguage.googleapis.com,gemini-2.0-flash×4
+4233,Translate & repost Twitter threads in multiple languages with OpenAI,5400,https://n8n.io/workflows/4233,62,1,api.openai.com,(défaut n8n)
+3500,✍️ AI agent to create Linkedin posts for blog promotion with GPT-4o,5384,https://n8n.io/workflows/3500,14,1,api.openai.com,gpt-4o-mini
+5312,Generate viral Bigfoot vlog videos with Veo 3,5378,https://n8n.io/workflows/5312,26,1,api.anthropic.com,claude-sonnet-4-20250514
+3510,AI-driven WooCommerce product importer from Google Sheet with Yoast SEO meta,5376,https://n8n.io/workflows/3510,16,1,openrouter.ai,google/gemini-2.0-flash-exp:free
+5945,Weekly SEO keyword research & competitor analysis with GPT5.5 and Bright Data,5368,https://n8n.io/workflows/5945,15,2,api.openai.com,gpt-5.5×2
+3087,Travel AI agent - AI-powered travel planner,5339,https://n8n.io/workflows/3087,16,3,api.deepseek.com api.openai.com,(défaut n8n)×3
+3601,Scrape Indeed job listings for hiring signals using Bright Data and LLMs,5332,https://n8n.io/workflows/3601,17,1,api.openai.com,gpt-4o-mini
+4804,"AI premium proposal generator with OpenAI, Google Slides & PandaDoc",5326,https://n8n.io/workflows/4804,15,2,api.openai.com,gpt-4o×2
+3003,Monitor favorite YouTube channels through RSS feeds and receive notifications,5294,https://n8n.io/workflows/3003,41,2,api.openai.com,gpt-4o-mini×2
+7372,"Automated content strategy with Google Trends, News, Firecrawl & Claude AI",5294,https://n8n.io/workflows/7372,37,2,api.anthropic.com,(défaut n8n)×2
+3450,Auto-generate YouTube chapters with Gemini AI & YouTube Data API v3,5276,https://n8n.io/workflows/3450,13,1,generativelanguage.googleapis.com,gemini-1.5-flash-8b-exp-0924
+2456,Text automations using Apple Shortcuts,5275,https://n8n.io/workflows/2456,10,5,api.openai.com,gpt-4o-mini×5
+2491,Create LinkedIn contributions with AI and notify users on Slack,5266,https://n8n.io/workflows/2491,33,1,api.openai.com,gpt-4o-mini
+4501,"Build & query RAG system with Google Drive, OpenAI GPT-4o-mini, and Pinecone",5265,https://n8n.io/workflows/4501,12,1,api.openai.com,gpt-4o-mini
+2965,🎦🚀 YouTube video comment analysis agent,5260,https://n8n.io/workflows/2965,25,1,api.openai.com,gpt-4o-mini
+2643,Intelligent web query and semantic re-ranking flow using Brave and Google Gemini,5230,https://n8n.io/workflows/2643,20,4,api.anthropic.com api.openai.com generativelanguage.googleapis.com,gemini-1.5-flash-002×2 claude-3-5-haiku-20241022 (défaut n8n)
+3967,Build an on-premises AI Kaggle competition assistant with Qdrant RAG and Ollama,5179,https://n8n.io/workflows/3967,23,3,localhost:11434,qwen3:8b×2 ALIENTELLIGENCE/contentsummarizer:latest
+2942,🤖🧑‍💻 AI agent for top n8n creators leaderboard reporting,5142,https://n8n.io/workflows/2942,49,2,api.openai.com generativelanguage.googleapis.com,gpt-4o-mini gemini-2.0-flash-exp
+3822,Auto-post breaking news content using Perplexity AI to X (Twitter),5125,https://n8n.io/workflows/3822,5,0,,
+4237,Dynamic AI model router for query optimization with OpenRouter,5122,https://n8n.io/workflows/4237,9,3,api.openai.com openrouter.ai,(défaut n8n)×2 gpt-4o-mini
+2515,Summarize your emails with A.I. (via Openrouter) and send to Line messenger,5090,https://n8n.io/workflows/2515,10,1,openrouter.ai,google/gemini-2.5-flash-preview-05-20
+4030,"AI newsletter builder: Crawl sites with Dumpling AI, summarize with GPT-4o",5052,https://n8n.io/workflows/4030,10,1,api.openai.com,gpt-4o
+4553,Generate guerrilla marketing campaign plans with AI swarm intelligence,5045,https://n8n.io/workflows/4553,39,1,api.openai.com,gpt-4.1-mini
+3507,Parse Gmail inbox and transform into Todoist tasks with Solve Propositions,5044,https://n8n.io/workflows/3507,25,1,api.openai.com,gpt-4o-mini
+2636,Extract insights & analyse YouTube comments via AI agent chat,5040,https://n8n.io/workflows/2636,29,1,api.openai.com,(défaut n8n)
+3044,Automatically generate burn-in video captions with json2video,5037,https://n8n.io/workflows/3044,12,0,,
+3793,"Optimize Amazon ads with GPT-4o for bid, budget & keyword recommendations",5021,https://n8n.io/workflows/3793,22,1,api.openai.com,gpt-4o
+4889,LinkedIn auto message router and responder with request detection,5005,https://n8n.io/workflows/4889,52,1,api.openai.com,gpt-4o
+3627,"Generate graphic wallpaper with Midjourney, GPT-4o-mini and Canvas APIs",4992,https://n8n.io/workflows/3627,14,0,,
+3223,AI research agents to automate PDF analysis with Mistral’s best-in-class OCR,4981,https://n8n.io/workflows/3223,30,4,openrouter.ai,(défaut n8n)×4
+2817,AI social media caption creator creates social media post captions in Airtable,4951,https://n8n.io/workflows/2817,10,1,api.openai.com,gpt-4o
+3117,"Android to n8n automation | Save links to with Readeck, Openrouter, SerpAPI",4934,https://n8n.io/workflows/3117,14,1,openrouter.ai,(défaut n8n)
+3618,"Auto invoice & receipt OCR to Google Sheets – Drive, Gmail, & Telegram triggers",4928,https://n8n.io/workflows/3618,25,0,,
+4971,"Automated breaking news headlines with LLaMA3, Google Search and X posting",4924,https://n8n.io/workflows/4971,8,0,,
+2604,Time logging on Clockify using Slack,4920,https://n8n.io/workflows/2604,16,1,api.openai.com,(défaut n8n)
+3195,🉑 Generate Anki flash cards for language learning with Google Translate and GPT,4895,https://n8n.io/workflows/3195,22,1,api.openai.com,gpt-4o-mini
+2476,Convert URL HTML to markdown format and get page links,4892,https://n8n.io/workflows/2476,17,0,,
+10779,👲 Monitor & debug n8n workflows with Claude AI assistant and MCP server,4882,https://n8n.io/workflows/10779,18,0,,
+4375,"Automatic news summarization & email digest with GPT-4, NewsAPI and Gmail",4870,https://n8n.io/workflows/4375,7,1,api.openai.com,gpt-4o-mini
+2735,Stock technical analysis with Google Gemini,4870,https://n8n.io/workflows/2735,7,1,generativelanguage.googleapis.com,(défaut n8n)
+1520,OpenAI-powered tweet generator,4867,https://n8n.io/workflows/1520,5,0,,
+2665,Analyze suspicious email contents with ChatGPT Vision,4820,https://n8n.io/workflows/2665,18,0,,
+3696,Generate and Edit Images with OpenAI's GPT-Image-1 Model,4820,https://n8n.io/workflows/3696,11,0,,
+2825,Spot workplace discrimination patterns with AI,4811,https://n8n.io/workflows/2825,38,3,api.openai.com,(défaut n8n)×3
+2619,Deduplicate scraping AI grants for eligibility using AI,4810,https://n8n.io/workflows/2619,24,2,api.openai.com,(défaut n8n)×2
+2697,Learn anything from HN - get top resource recommendations from Hacker News,4753,https://n8n.io/workflows/2697,10,1,generativelanguage.googleapis.com,gemini-1.5-flash
+4275,Convert boring images to stunning photos and videos,4748,https://n8n.io/workflows/4275,20,0,,
+2919,WordPress auto-blogging pro - content automation machine for SEO topics,4737,https://n8n.io/workflows/2919,63,4,api.openai.com openrouter.ai,(défaut n8n)×4
+2442,🚀 Local multi-LLM testing & performance tracker,4733,https://n8n.io/workflows/2442,21,1,api.openai.com,(défaut n8n)
+2851,Modular & customizable AI-powered email routing: text classifier for eCommerce,4728,https://n8n.io/workflows/2851,14,1,api.openai.com,gpt-4o-mini
+11617,Automate YouTube Shorts creation from Telegram prompts using Gemini and VEO,4705,https://n8n.io/workflows/11617,45,1,api.openai.com,gpt-5.1
+1393,Extract and store text from chat images using AWS S3,4693,https://n8n.io/workflows/1393,4,0,,
+2898,AI agent: Find the right LinkedIn profiles in seconds,4684,https://n8n.io/workflows/2898,15,2,api.openai.com,(défaut n8n)×2
+6117,AI SEO Blog Automation for WordPress with featured images-End-to-End,4682,https://n8n.io/workflows/6117,55,10,api.openai.com openrouter.ai,(défaut n8n)×10
+4043,Adaptive RAG with Google Gemini & Qdrant: context-aware query answering,4677,https://n8n.io/workflows/4043,40,6,generativelanguage.googleapis.com,gemini-2.0-flash×5 gemini-2.0-flash-lite
+5310,"🤖 AI customer support agent - never sleep, never miss a customer again!",4671,https://n8n.io/workflows/5310,19,1,api.openai.com,(défaut n8n)
+2607,Research AI agent team with auto citations using OpenRouter and Perplexity,4645,https://n8n.io/workflows/2607,28,4,api.openai.com,(défaut n8n)×4
+3041,WordPress auto-blogging pro - with deep research - content automation machine,4641,https://n8n.io/workflows/3041,77,6,api.openai.com,(défaut n8n)×6
+2987,Personal portfolio CV  Rag chatbot - with conversation store and email summary,4636,https://n8n.io/workflows/2987,35,2,generativelanguage.googleapis.com,gemini-2.0-flash gemini-2.0-flash-exp
+3606,"Document analysis & chatbot creation with Llama Parser, Gemini LLM & Pinecone DB",4616,https://n8n.io/workflows/3606,36,6,generativelanguage.googleapis.com,gemini-1.5-flash×6
+3423,Get exchange & sentiment insights with CoinMarketCap AI agent,4613,https://n8n.io/workflows/3423,12,1,api.openai.com,gpt-4o-mini
+3156,Summarize YouTube videos & chat about content with GPT-4o-mini via Telegram,4610,https://n8n.io/workflows/3156,22,2,api.openai.com,(défaut n8n) gpt-4o-mini
+3288,"Youtube RAG search with frontend using Apify, Qdrant and AI",4577,https://n8n.io/workflows/3288,62,2,api.openai.com,gpt-4o-mini×2
+3763,"Chat with your email history using Telegram, Mistral and Pgvector for RAG",4575,https://n8n.io/workflows/3763,20,1,api.openai.com,mistral-small3.1:latest
+3670,Medical Q&A chatbot for urology using RAG with Pinecone and GPT-4o,4572,https://n8n.io/workflows/3670,15,2,api.openai.com,gpt-4o-mini×2
+3259,Automate LinkedIn candidates sourcing with Google X-ray Boolean search,4564,https://n8n.io/workflows/3259,18,1,api.openai.com,gpt-4o-mini
+3893,Automatically create JIRA issues from Outlook email support requests,4544,https://n8n.io/workflows/3893,12,1,api.openai.com,gpt-4o-mini
+2781,Automated end-to-end fine-tuning of OpenAI models with Google Drive integration,4542,https://n8n.io/workflows/2781,9,1,api.openai.com,ft:gpt-4o-mini-2024-07-18:n3w-italia::AsVfsl7B
+4087,"AI content creation and publishing engine with Mistral, Creatomate, and YouTube",4522,https://n8n.io/workflows/4087,34,4,api.mistral.ai api.openai.com,(défaut n8n)×4
+3887,Auto-generate & publish SEO articles to WordPress with GPT-4 + Postgres tracking,4513,https://n8n.io/workflows/3887,46,2,api.openai.com,gpt-4.1-2025-04-14 gpt-4.1-mini-2025-04-14
+4883,Convert PDF documents to AI podcasts with Google Gemini and text-to-speech,4493,https://n8n.io/workflows/4883,10,1,generativelanguage.googleapis.com,gemini-2.0-flash-001
+743,Translate text from English to German,4478,https://n8n.io/workflows/743,2,0,,
+3533,Google search engine results page extraction and summarization with Bright Data,4412,https://n8n.io/workflows/3533,12,3,generativelanguage.googleapis.com,gemini-2.0-flash-exp×3
+2833,Smart email outreach sequence – AI-powered & customizable,4410,https://n8n.io/workflows/2833,68,3,api.openai.com,(défaut n8n)×3
+2207,Automate screenshots with URLbox & analyze them with AI,4406,https://n8n.io/workflows/2207,9,0,,
+3630,Build your own FileSystem MCP server,4386,https://n8n.io/workflows/3630,14,0,,
+2937,Chat with your event schedule from Google Sheets in Telegram,4376,https://n8n.io/workflows/2937,23,1,openrouter.ai,(défaut n8n)
+3635,Build your own GitHub MCP server,4358,https://n8n.io/workflows/3635,19,0,,
+8773,🤖 Automate Lead Qualification & Multi-Channel Follow-up with AI (BANT),4327,https://n8n.io/workflows/8773,20,3,generativelanguage.googleapis.com,gemini-2.5-flash-lite×2 gemma-3-27b-it
+4023,Conversational Kubernetes management with GPT-4o and MCP integration,4324,https://n8n.io/workflows/4023,27,1,api.openai.com,gpt-4o-mini
+4888,"Voice-powered marketing assistant with ElevenLabs, OpenAI & content generation",4320,https://n8n.io/workflows/4888,56,4,api.openai.com,gpt-4o-mini×4
+2789,Daily meetings summarization with Gemini AI,4320,https://n8n.io/workflows/2789,9,1,generativelanguage.googleapis.com,gemini-1.5-flash-latest
+4930,"Document-based chatbot with memory using OpenAI, Pinecone and Google Drive",4315,https://n8n.io/workflows/4930,22,2,api.openai.com openrouter.ai,gpt-4o-mini (défaut n8n)
+2629,Generate Amazon FBA keywords using Amazon Completion API,4305,https://n8n.io/workflows/2629,12,0,,
+4893,Automated daily email analysis & summary with GPT-4o and Gmail,4304,https://n8n.io/workflows/4893,12,1,api.openai.com,gpt-4o-mini
+9253,Create AI-generated UGC marketing videos with Telegram & GPT-4,4293,https://n8n.io/workflows/9253,30,1,api.openai.com,gpt-4.1
+4273,Evaluation metric example: RAG document relevance,4290,https://n8n.io/workflows/4273,26,2,api.openai.com,gpt-4o-mini×2
+3947,"AI personal assistant with GPT-4o, RAG & voice for WhatsApp using Supabase",4285,https://n8n.io/workflows/3947,76,5,api.openai.com,(défaut n8n)×5
+5386,Generate weekly Meta Ads report with GPT-4 insights and Slack delivery,4284,https://n8n.io/workflows/5386,14,1,api.openai.com,gpt-4.1
+3545,Automate purchase order form submissions from Outlook Excel attachments with AI,4283,https://n8n.io/workflows/3545,22,2,api.openai.com,gpt-4o-mini×2
+2797,Notion to Pinecone vector store integration,4268,https://n8n.io/workflows/2797,8,0,,
+4556,Auto-publish latest news on X with AI content generation using keywords and Bright Data,4260,https://n8n.io/workflows/4556,16,1,api.openai.com,gpt-4o
+3778,"Scrape Web Data with Bright Data, Google Gemini and MCP Automated AI Agent",4227,https://n8n.io/workflows/3778,19,1,generativelanguage.googleapis.com,gemini-2.0-flash-exp
+3775,🎥 Gemini AI video analysis,4212,https://n8n.io/workflows/3775,10,0,,
+4717,Generate landing page layouts from competitor analysis with GPT-4,4207,https://n8n.io/workflows/4717,12,2,api.openai.com,gpt-4.1×2
+4432,Generate content ideas with Gemini Pro and store in Google Sheets,4192,https://n8n.io/workflows/4432,14,2,generativelanguage.googleapis.com,gemini-2.0-flash-exp×2
+4927,Complete lesson automation for modern UK teachers,4153,https://n8n.io/workflows/4927,17,3,api.openai.com,gpt-4o-mini×3
+2213,Traveler co-pilot: AI-powered Telegram for easy language and image translation,4098,https://n8n.io/workflows/2213,17,4,api.anthropic.com api.openai.com,(défaut n8n)×4
+4774,"Discover & analyze TikTok influencers with Bright Data, Claude AI & email outreach",4089,https://n8n.io/workflows/4774,22,1,api.anthropic.com,claude-sonnet-4-20250514
+5198,🛠️ Auto n8n updater (Docker),4077,https://n8n.io/workflows/5198,26,1,generativelanguage.googleapis.com,gemma-3n-e4b-it
+3388,Transcribe audio files with Google Gemini and Telegram,4056,https://n8n.io/workflows/3388,21,0,,
+3677,Google calendar MCP server for AI agent with dynamic scheduling,4041,https://n8n.io/workflows/3677,7,0,,
+6089,Automate cold outreach with email personalization using Gemini and Google Sheets,4040,https://n8n.io/workflows/6089,8,1,generativelanguage.googleapis.com,gemini-2.5-flash
+5034,Create AI generated videos 4x cheaper than veo3 with Google Sheets & Fal.AI,4038,https://n8n.io/workflows/5034,14,1,api.openai.com,gpt-4.1-nano-2025-04-14
+2995,Automated AI image tagging and writing the keywords into the image file,4034,https://n8n.io/workflows/2995,9,0,,
+3741,The ultimate Instagram automation for high-quality images & text with GPT-Image,4023,https://n8n.io/workflows/3741,46,2,api.openai.com,(défaut n8n)×2
+5146,🛠️ Process AI Output to Structured JSON with Robust JSON Parser,4023,https://n8n.io/workflows/5146,9,0,,
+3714,YouTube video to AI-powered auto blogging and affiliate automation,4018,https://n8n.io/workflows/3714,28,1,generativelanguage.googleapis.com,(défaut n8n)
+3007,YouTube shorts automation - the game-changer in scroll-stopping short clips,4000,https://n8n.io/workflows/3007,18,0,,
+4606,"Automate travel agent outreach with web scraping, OpenAI, and Google Sheets",3995,https://n8n.io/workflows/4606,11,2,api.openai.com,gpt-4o gpt-4.1-mini-2025-04-14
+2693,Make OpenAI citation for file retrieval RAG,3987,https://n8n.io/workflows/2693,19,1,api.openai.com,(défaut n8n)
+4876,Auto-classify Gmail emails with AI and apply labels for inbox organization,3984,https://n8n.io/workflows/4876,8,1,openrouter.ai,google/gemini-2.5-flash-preview-05-20
+2713,Using external workflows as tools in n8n,3976,https://n8n.io/workflows/2713,4,0,,
+5633,Transform images into AI videos with MiniMax Hailuo 02. Upload to YouTube/TikTok,3968,https://n8n.io/workflows/5633,25,1,api.openai.com,gpt-4o-mini
+4008,AI-powered auto-generate exam questions and answers from Google Docs with Gemini,3962,https://n8n.io/workflows/4008,37,5,generativelanguage.googleapis.com,gemini-2.0-flash-exp×3 gemini-2.0-pro-exp×2
+3329,"WooCommerce AI post-sales chatbot with GPT-4o, RAG, Google Drive and Telegram",3961,https://n8n.io/workflows/3329,31,2,api.openai.com,(défaut n8n) gpt-4o-mini
+4552,Index Documents from Google Drive to Pinecone with OpenAI Embeddings for RAG,3938,https://n8n.io/workflows/4552,14,0,,
+3219,Generate AI-ready llms.txt files from Screaming Frog website crawls,3936,https://n8n.io/workflows/3219,23,1,api.openai.com,gpt-4o-mini
+4223,Create an automated customer support assistant with GPT-4o and GoHighLevel SMS,3931,https://n8n.io/workflows/4223,43,1,api.openai.com,gpt-4o
+2905,Slack slash commands AI chat bot,3922,https://n8n.io/workflows/2905,11,1,api.openai.com,gpt-4o-mini
+4693,Get real-time security insights with NixGuard RAG and Wazuh integration,3912,https://n8n.io/workflows/4693,15,0,,
+4481,AI-powered candidate screening and evaluation workflow using OpenAI and Airtable,3912,https://n8n.io/workflows/4481,23,1,api.openai.com,gpt-4o-mini
+3624,Scrape competitor reviews & generate ad creatives with Bright Data & OpenAI,3910,https://n8n.io/workflows/3624,17,1,api.openai.com,gpt-4o-mini
+4921,"Generate trend-based video marketing ideas with GPT-4, Tavily and Veo 3",3897,https://n8n.io/workflows/4921,16,2,api.openai.com,gpt-4×2
+4468,"Generate AI media with ComfyUI: Images, video, 3D & audio bridge",3893,https://n8n.io/workflows/4468,51,0,,
+4766,"Automate LinkedIn posts with Claude AI, DALL-E images & Google Sheets approval",3862,https://n8n.io/workflows/4766,28,1,api.anthropic.com,(défaut n8n)
+3930,"Voice-to-email response system with Telegram, OpenAI Whisper & Gmail",3860,https://n8n.io/workflows/3930,24,2,api.openai.com,(défaut n8n)×2
+1395,Collects images from web search results and send to Google Sheets,3844,https://n8n.io/workflows/1395,6,0,,
+3684,"🗞️ AI-powered sustainability newsletter for marketing with Gmail, GPT-4o",3843,https://n8n.io/workflows/3684,21,1,api.openai.com,gpt-4o-mini
+4300,Extract and structure Thai documents to Google Sheets using Typhoon OCR and Llama 3.1,3830,https://n8n.io/workflows/4300,8,1,openrouter.ai,scb10x/llama3.1-typhoon2-70b-instruct
+2654,Vector database as a big data analysis tool for AI agents [1/3 anomaly][1/2 KNN],3821,https://n8n.io/workflows/2654,25,0,,
+4106,Resume data extraction and storage in Supabase from email attachments,3815,https://n8n.io/workflows/4106,22,1,openrouter.ai,meta-llama/llama-4-scout:free
+5459,Ai-powered Telegram trivia bot with auto question generation & user management,3814,https://n8n.io/workflows/5459,41,1,api.openai.com,gpt-4o-mini
+5042,"Manage emails via WhatsApp with Gmail, GPT and voice recognition",3804,https://n8n.io/workflows/5042,24,1,api.openai.com,gpt-4-turbo-preview
+4514,AI-powered HR interview system with BeyondPresence,3788,https://n8n.io/workflows/4514,22,1,api.openai.com,gpt-4o-mini
+3838,Automated resume screening & ranking with Llama 4 AI and Google Workspace,3775,https://n8n.io/workflows/3838,20,1,api.groq.com,meta-llama/llama-4-maverick-17b-128e-instruct
+2897,Use OpenRouter in n8n versions <1.78,3767,https://n8n.io/workflows/2897,8,1,api.openai.com,(défaut n8n)
+3710,Generate images with GPT-image-1 and store in Google Drive with cost tracking,3760,https://n8n.io/workflows/3710,16,0,,
+6555,Analyze any video and generate text summaries with Google Gemini 2.5 Pro,3752,https://n8n.io/workflows/6555,3,0,,
+3577,"Travel planning assistant with MongoDB Atlas, Gemini LLM and vector search",3750,https://n8n.io/workflows/3577,14,1,generativelanguage.googleapis.com,gemini-2.0-flash
+3637,Build your own Youtube MCP server,3732,https://n8n.io/workflows/3637,20,0,,
+3499,AI-powered student assistant for course information via Twilio SMS,3725,https://n8n.io/workflows/3499,12,1,api.openai.com,gpt-4o-mini
+3848,"Build a document QA system with RAG using Milvus, Cohere, and OpenAI for Google Drive",3717,https://n8n.io/workflows/3848,14,1,api.openai.com,gpt-4o
+2372,"Survey insights with Qdrant, Python and Information Extractor",3717,https://n8n.io/workflows/2372,42,1,api.openai.com,gpt-4o-mini
+3155,Automatic weekly digital PR stories suggestions with Reddit and Anthropic,3700,https://n8n.io/workflows/3155,29,3,api.anthropic.com,(défaut n8n)×3
+3854,Google trend data extract & summarization with Bright Data & Google Gemini,3697,https://n8n.io/workflows/3854,16,3,generativelanguage.googleapis.com,gemini-2.0-flash-exp×3
+2692,Integrating AI with Open-Meteo API for enhanced weather forecasting,3685,https://n8n.io/workflows/2692,12,1,api.openai.com,(défaut n8n)
+3200,Automate video creation with Luma AI Dream Machine and Airtable (Part 1),3682,https://n8n.io/workflows/3200,8,0,,
+3762,Gmail to vector embeddings with PGVector and Ollama,3681,https://n8n.io/workflows/3762,20,0,,
+3160,AI-powered technical analyst with Perplexity R1 research,3678,https://n8n.io/workflows/3160,21,3,openrouter.ai,(défaut n8n)×3
+3411,Generate 360° virtual try-on videos for clothing with Kling API (unofficial),3669,https://n8n.io/workflows/3411,16,0,,
+2893,Fetch dynamic prompts from GitHub and auto-populate n8n expressions in prompt,3644,https://n8n.io/workflows/2893,17,1,localhost:11434,(défaut n8n)
+8615,Build a Telegram chatbot with Gemini,3614,https://n8n.io/workflows/8615,12,2,api.openai.com generativelanguage.googleapis.com,(défaut n8n)×2
+2841,Connect AI to any chats in Kommo,3602,https://n8n.io/workflows/2841,25,2,api.openai.com,(défaut n8n)×2
+2850,BambooHR AI-powered company policies and benefits chatbot,3597,https://n8n.io/workflows/2850,50,6,api.openai.com,(défaut n8n)×6
+3531,"Convert YouTube videos into SEO blog posts with GPT-4o, Dumpling AI, and Flux",3595,https://n8n.io/workflows/3531,15,1,api.openai.com,gpt-4o
+5106,SEO On-site Audit,3590,https://n8n.io/workflows/5106,25,1,api.deepseek.com,(défaut n8n)
+5920,Medical symptom checker & health assistant with GPT-4-mini,3587,https://n8n.io/workflows/5920,19,1,api.openai.com,(défaut n8n)
+3626,Create animated illustrations from text prompts with Midjourney and Kling API,3581,https://n8n.io/workflows/3626,13,0,,
+4020,"Extract & categorize receipt data with Google OCR, OpenRouter AI & Telegram",3573,https://n8n.io/workflows/4020,27,1,openrouter.ai,(défaut n8n)
+3088,Generate 🤖🧠 AI-powered video 🎥 from image and upload it on Google Drive,3572,https://n8n.io/workflows/3088,13,0,,
+2583,Optimize & update Printify title and description workflow,3530,https://n8n.io/workflows/2583,26,1,api.openai.com,gpt-4o-mini
+4891,Personalized LinkedIn responses with OpenAI GPT & Notion-based routing,3512,https://n8n.io/workflows/4891,11,1,api.openai.com,gpt-4o
+3502,Smart Gmail cleaner with AI validator & Telegram alerts,3510,https://n8n.io/workflows/3502,17,1,generativelanguage.googleapis.com,gemini-1.5-flash
+3497,Conversing with data: transforming text into SQL queries and visual curves,3503,https://n8n.io/workflows/3497,36,2,api.openai.com,(défaut n8n)×2
+1838,lemlist <> GPT-3: Supercharge your sales workflows,3499,https://n8n.io/workflows/1838,12,1,api.openai.com,(défaut n8n)
+3093,Extract pay slip data with Line Chatbot and Gemini to Google Sheets,3495,https://n8n.io/workflows/3093,17,2,generativelanguage.googleapis.com,gemini-2.0-flash-exp×2
+4751,Translate and distribute dubbed videos with DubLab to social and cloud platforms,3495,https://n8n.io/workflows/4751,18,0,,
+4075,"Automated tweet generator & publisher with GPT-4, Discord, and Google Sheets",3481,https://n8n.io/workflows/4075,44,4,api.openai.com,gpt-4.1-mini×2 gpt-4o-mini×2
+4235,Monitor and track brand Sentiment on Facebook Groups with Bright data,3477,https://n8n.io/workflows/4235,37,2,openrouter.ai,(défaut n8n)×2
+2441,Create e-mail responses with Fastmail and OpenAI,3476,https://n8n.io/workflows/2441,11,1,api.openai.com,gpt-4o
+2906,"AI-powered crypto analysis using OpenRouter, Gemini, and SerpAPI",3475,https://n8n.io/workflows/2906,12,1,openrouter.ai,(défaut n8n)
+4645,Create AI-powered website chatbot with Langflow backend and custom branding,3456,https://n8n.io/workflows/4645,7,0,,
+3459,Adaptive RAG strategy with query classification & retrieval (Gemini & Qdrant),3454,https://n8n.io/workflows/3459,39,6,generativelanguage.googleapis.com,gemini-2.0-flash×5 gemini-2.0-flash-lite
+4448,AI client onboarding agent: auto welcome email generator,3451,https://n8n.io/workflows/4448,15,1,generativelanguage.googleapis.com,gemini-2.0-flash
+3397,Personalise outreach emails using customer data and AI,3436,https://n8n.io/workflows/3397,17,2,generativelanguage.googleapis.com,gemini-2.0-flash×2
+3951,"Extract and organize Colombian invoices with Gmail, GPT-4o & Google Workspace",3435,https://n8n.io/workflows/3951,23,1,api.openai.com,gpt-4o-mini
+3564,Create daily Israeli economic newsletter using RSS and GPT-4o,3415,https://n8n.io/workflows/3564,23,1,api.openai.com,gpt-4o
+2870,Ask AI about your Meta Ads - ask questions about your Facebook Ads insights,3412,https://n8n.io/workflows/2870,21,1,api.openai.com,(défaut n8n)
+2849,Content generator for WordPress v3,3398,https://n8n.io/workflows/2849,102,8,api.anthropic.com api.openai.com,(défaut n8n)×8
+2804,Analyse papers from Hugging Face with AI and store them in Notion,3397,https://n8n.io/workflows/2804,11,1,api.openai.com,gpt-4o-2024-11-20
+4467,Generate enhanced AI images via Telegram with DALL-E and GPT,3389,https://n8n.io/workflows/4467,12,1,api.openai.com,gpt-4o-mini
+2821,"Domain outbound : automate lead extraction, and targeted outreach",3374,https://n8n.io/workflows/2821,31,2,api.openai.com,(défaut n8n)×2
+3681,Extract Amazon best seller electronic info with Bright Data and Google Gemini,3368,https://n8n.io/workflows/3681,8,1,generativelanguage.googleapis.com,gemini-2.0-flash-exp
+3509,Transform Gmail newsletters into insightful LinkedIn posts using OpenAI,3359,https://n8n.io/workflows/3509,7,2,api.openai.com,o3-mini-2025-01-31×2
+2649,Prompt-based object detection with Gemini 2.0,3335,https://n8n.io/workflows/2649,14,0,,
+2656,Vector database as a big data analysis tool for AI agents [3/3 - anomaly],3308,https://n8n.io/workflows/2656,17,0,,
+2618,"Email subscription service with n8n forms, Airtable and AI",3303,https://n8n.io/workflows/2618,32,1,api.groq.com,llama-3.3-70b-versatile
+8779,🤖 Self Improving Email AI Support with Human-in-the-Loop,3280,https://n8n.io/workflows/8779,27,3,generativelanguage.googleapis.com,gemini-flash-latest×2 gemini-flash-lite-latest
+3599,Log meal nutrients from Telegram to Google Sheets using an AI agent,3236,https://n8n.io/workflows/3599,23,1,api.openai.com,gpt-4o-mini
+3636,Build your own Qdrant vector store MCP server,3224,https://n8n.io/workflows/3636,44,0,,
+6247,🎓 Optimize Speed-Critical Workflows Using Parallel Processing (Fan-Out/Fan-In),3202,https://n8n.io/workflows/6247,34,1,generativelanguage.googleapis.com,gemini-flash-lite-latest
+4434,Automated invoice processing system with OCR & AI - AP automation with Airtable,3198,https://n8n.io/workflows/4434,29,2,api.openai.com,gpt-4o×2
+3761,Email assistant: convert natural language to SQL queries with Phi4-mini and PostgreSQL,3190,https://n8n.io/workflows/3761,26,1,localhost:11434,phi4-mini:latest
+3894,Convert images to 3D models with Fal AI Trellis and store in Google Drive,3154,https://n8n.io/workflows/3894,17,0,,
+2699,Obsidian notes read aloud using AI: available as a podcast feed,3150,https://n8n.io/workflows/2699,23,1,api.openai.com,gpt-4o-mini
+3544,Generate SEO keywords with AI: topic to keyword list in seconds,3149,https://n8n.io/workflows/3544,10,1,api.groq.com,(défaut n8n)
+3302,Transform press releases (PDF & Word) into polished articles with Gmail & OpenAI,3147,https://n8n.io/workflows/3302,20,6,api.anthropic.com api.openai.com,claude-3-5-sonnet-20241022×3 gpt-4o-mini×3
+2945,Fetch keyword from Google Sheet and classify them using AI,3131,https://n8n.io/workflows/2945,8,1,api.openai.com,gpt-4o-mini
+5952,Extract customer pain points from support forums with Bright Data & GPT-5.4,3122,https://n8n.io/workflows/5952,15,2,api.openai.com,gpt-5.4×2
+2554,MongoDB AI agent - intelligent movie recommendations,3104,https://n8n.io/workflows/2554,8,1,api.openai.com,(défaut n8n)
+3062,Avoid Asking Redundant Questions with Dynamically Generated Forms using OpenAI,3101,https://n8n.io/workflows/3062,19,1,api.openai.com,gpt-4o-mini
+4330,Automated resume job matching engine with Bright Data MCP & OpenAI 4o mini,3095,https://n8n.io/workflows/4330,22,3,api.openai.com,gpt-4o-mini×3
+3275,Convert PDF to HTML using PDF.co and Google Drive,3087,https://n8n.io/workflows/3275,7,0,,
+3849,Extract business leads from Reddit using GPT-4.1-mini analysis and Google Sheets,3084,https://n8n.io/workflows/3849,17,2,openrouter.ai,openai/gpt-4.1-mini×2
+3027,Generate AI prompts with Google Gemini and store them in Airtable,3076,https://n8n.io/workflows/3027,11,2,generativelanguage.googleapis.com,gemini-2.0-flash-lite×2
+8487,Find perfect jobs & generate tailored cover letters with Gemini & Google Jobs,3068,https://n8n.io/workflows/8487,17,1,generativelanguage.googleapis.com,gemini-2.5-pro
+3835,Analyze Google Sheets data with OpenAI-powered data agent,3063,https://n8n.io/workflows/3835,6,1,api.openai.com,(défaut n8n)
+4136,WhatsApp expense tracker with PostgreSQL database & AI-powered reports,3063,https://n8n.io/workflows/4136,50,9,openrouter.ai,(défaut n8n)×9
+4413,"Auto-respond to Gmail inquiries using OpenAI, Google Sheet & AI agent",3059,https://n8n.io/workflows/4413,15,2,api.openai.com,gpt-4o-mini×2
+3814,"Generate AI songs + music videos using Suno API, Flux, Runway and Creatomate",3051,https://n8n.io/workflows/3814,60,4,api.openai.com generativelanguage.googleapis.com,(défaut n8n)×4
+3408,AI YouTube playlist & video analyst chatbot,3049,https://n8n.io/workflows/3408,72,7,generativelanguage.googleapis.com,gemini-2.0-flash×4 gemini-2.0-pro-exp gemini-2.0-flash-lite gemini-2.0-flash-thinking-exp
+4651,Create a branded AI chatbot for websites with Flowise multi-agent chatflows,3049,https://n8n.io/workflows/4651,7,0,,
+3367,🚀 Instagram reels automation - turn YouTube videos into viral Instagram reels ✨,3045,https://n8n.io/workflows/3367,18,0,,
+7067,🤖 AI-powered prompt enhancement assistant using Google Sheets,3036,https://n8n.io/workflows/7067,23,2,api.groq.com generativelanguage.googleapis.com,qwen/qwen3-32b (défaut n8n)
+3028,Generate & upload an audio summary of a WordPress (or Woocommerce) article,3026,https://n8n.io/workflows/3028,10,1,api.openai.com,gpt-4o-mini
+3407,Convert Reddit threads into short vertical videos with AI,2999,https://n8n.io/workflows/3407,43,2,api.openai.com,(défaut n8n)×2
+4029,"Create & approve POV videos with AI, ElevenLabs & multi-posting (TikTok/IG/YT)",2994,https://n8n.io/workflows/4029,60,5,api.openai.com openrouter.ai,(défaut n8n)×5
+4093,Tesla news and sentiment analyst tool (Powered by DeepSeek Chat),2993,https://n8n.io/workflows/4093,15,1,api.deepseek.com,(défaut n8n)
+2922,Detect hallucinations using specialised Ollama model bespoke-minicheck,2980,https://n8n.io/workflows/2922,18,2,localhost:11434,bespoke-minicheck:latest qwen2.5:1.5b
+3816,"Multi-platform social media publisher with Blotato, GPT-4 Mini & Airtable",2975,https://n8n.io/workflows/3816,30,1,api.openai.com,gpt-4.1-mini
+2780,Ai data extraction with dynamic prompts and Baserow,2975,https://n8n.io/workflows/2780,45,2,api.openai.com,(défaut n8n)×2
+3072,Send voice calls in seconds: Automate Text-To-Speech using ClickSend API,2958,https://n8n.io/workflows/3072,5,0,,
+8965,"Generate and publish social posts with Gemini, Kie.ai, and Zernio API",2954,https://n8n.io/workflows/8965,43,0,,
+4483,LinkedIn post automation with AI (GPT-4o) generation & Slack approval,2923,https://n8n.io/workflows/4483,32,1,api.openai.com,(défaut n8n)
+5397,Auto-Generate & Approve Social Media Posts from RSS Feeds with OpenAI & Telegram,2909,https://n8n.io/workflows/5397,28,5,api.openai.com,(défaut n8n)×5
+3034,CallForge - 04 - AI workflow for Gong.io sales calls,2905,https://n8n.io/workflows/3034,25,0,,
+2414,Extract spending history from gmail to google sheet,2898,https://n8n.io/workflows/2414,24,2,api.groq.com generativelanguage.googleapis.com,gemini-1.5-flash llama-3.2-11b-text-preview
+2961,Automate crypto news posting to X & Telegram with AI summarization,2897,https://n8n.io/workflows/2961,20,2,api.openai.com,(défaut n8n)×2
+2930,Generate a YouTube bedtime story using OpenAI,2887,https://n8n.io/workflows/2930,43,0,,
+3632,Build your own SQLite MCP server,2885,https://n8n.io/workflows/3632,16,0,,
+2914,"Automatically create YouTube short videos using Elevenlabs, Hailuo AI",2879,https://n8n.io/workflows/2914,38,0,,
+8189,Generate AI videos from Telegram messages with Nano Banana & Veo-3,2866,https://n8n.io/workflows/8189,26,2,api.openai.com,(défaut n8n)×2
+11411,AI-powered viral trend analysis for TikTok and Instagram with GPT-4,2866,https://n8n.io/workflows/11411,29,2,api.openai.com,gpt-4o×2
+2822,AI-generated summary block for WordPress posts,2845,https://n8n.io/workflows/2822,32,2,api.openai.com,(défaut n8n) gpt-4o-mini
+2671,LINE assistant with Google Calendar and Gmail integration,2820,https://n8n.io/workflows/2671,14,2,api.openai.com,(défaut n8n) gpt-4o-mini
+3641,MCP Supabase agent – manage your database with AI,2818,https://n8n.io/workflows/3641,16,1,api.openai.com,(défaut n8n)
+2526,Telegram to Spotify with OpenAI,2817,https://n8n.io/workflows/2526,14,1,api.openai.com,gpt-4o-mini
+4288,Convert RSS news to AI avatar videos with Heygen & GPT-4o,2809,https://n8n.io/workflows/4288,18,1,api.openai.com,(défaut n8n)
+3629,"Ultimate AI assistant: Automate email, calendar, webSearch, Notion,  RAG & X",2809,https://n8n.io/workflows/3629,51,3,api.openai.com,(défaut n8n)×3
+4328,Scrape TikTok profile & transcript with Dumpling AI and save to Google Sheets,2803,https://n8n.io/workflows/4328,6,0,,
+4059,Extract and save invoice data from Google Drive to Sheets with Dumpling AI,2802,https://n8n.io/workflows/4059,8,0,,
+2911,Extract license plate number from image uploaded via an n8n form,2785,https://n8n.io/workflows/2911,5,1,openrouter.ai,(défaut n8n)
+3935,AI marketing agent for lead generation: Reddit + OpenRouter + Gmail,2772,https://n8n.io/workflows/3935,23,2,openrouter.ai,(défaut n8n)×2
+2615,Get Airtable data via AI and Obsidian notes,2771,https://n8n.io/workflows/2615,7,1,api.openai.com,gpt-4o-mini
+4545,AI-Powered Employee Database Management via Telegram using OpenAI and Airtable,2770,https://n8n.io/workflows/4545,26,2,api.openai.com,gpt-4o-mini×2
+3008,Extract Thai bank slip data from LINE using SpaceOCR and save to Google Sheets,2770,https://n8n.io/workflows/3008,12,0,,
+3683,"🐶 AI Petshop Assistant with GPT-4o, Google Calendar & WhatsApp/Instagram/FB",2763,https://n8n.io/workflows/3683,244,11,api.openai.com,(défaut n8n)×11
+1282,Send a file from S3 to AWS Textract,2748,https://n8n.io/workflows/1282,3,0,,
+1467,Notify on new emails with invoices in Slack,2747,https://n8n.io/workflows/1467,6,0,,
+12054,Auto-clip long videos into viral short clips with Vizard AI and social publishing,2741,https://n8n.io/workflows/12054,18,0,,
+3479,Build lists of profiles from any platform using Airtop and Google Sheets,2725,https://n8n.io/workflows/3479,7,0,,
+4022,"AI-optimized content posting to X, Discord & LinkedIn with OpenRouter",2723,https://n8n.io/workflows/4022,19,1,openrouter.ai,meta-llama/llama-4-maverick:free
+4798,Create character-consistent images with FLUX Kontext & post to social via upload post,2706,https://n8n.io/workflows/4798,27,0,,
+888,Get data from Hacker News and send to Airtable or via SMS,2698,https://n8n.io/workflows/888,8,0,,
+8549,Nano banana AI product image creator via WhatsApp,2685,https://n8n.io/workflows/8549,11,1,generativelanguage.googleapis.com,(défaut n8n)
+4340,"Generate qualified leads from LinkedIn with Apify, GPT-4, and Airtable",2684,https://n8n.io/workflows/4340,20,1,api.openai.com,gpt-4o-mini
+702,Extract information from an image of a receipt,2677,https://n8n.io/workflows/702,3,0,,
+2033,Real-time lead routing in Webflow,2658,https://n8n.io/workflows/2033,10,0,,
+4361,Extract Details from Receipts via Telegram with Tesseract and Llama,2646,https://n8n.io/workflows/4361,27,1,openrouter.ai,(défaut n8n)
+2946,#️⃣Nostr #damus AI powered reporting + Gmail + Telegram,2626,https://n8n.io/workflows/2946,24,3,generativelanguage.googleapis.com,gemini-2.0-flash-lite-preview×2 (défaut n8n)
+1111,Create transcription jobs using AWS Transcribe,2620,https://n8n.io/workflows/1111,3,0,,
+5891,Automate weekly SEO report with GPT-4 insights and Slack delivery,2617,https://n8n.io/workflows/5891,42,1,api.openai.com,gpt-4.1
+3543,Automated LinkedIn job hunter: get your best daily job matches by email,2609,https://n8n.io/workflows/3543,26,2,generativelanguage.googleapis.com,(défaut n8n)×2
+3278,Automated image optimizer: convert JPG/PNG to WebP with APYHub and Google Drive,2605,https://n8n.io/workflows/3278,12,0,,
+6832,Convert natural language to video JSON prompts with GPT and Gemini for Veo 3,2592,https://n8n.io/workflows/6832,6,2,azure openrouter.ai,gpt (défaut n8n)
+4455,"Shopify multi-module automation with GPT-4o, Langchain agents & integrations",2569,https://n8n.io/workflows/4455,86,9,api.openai.com,(défaut n8n)×9
+4512,"Automate Microsoft Teams meeting analysis with GPT-4.1, Outlook & Mem.ai",2567,https://n8n.io/workflows/4512,62,2,api.openai.com,(défaut n8n)×2
+3542,"Create AI-ready vector datasets for LLMs with Bright Data, Gemini & Pinecone",2563,https://n8n.io/workflows/3542,21,3,generativelanguage.googleapis.com,gemini-2.0-flash-exp×3
+2287,Classify lemlist replies using OpenAI and automate reply handling,2548,https://n8n.io/workflows/2287,18,1,api.openai.com,gpt-4o
+2234,AI-Powered Children's Arabic Storytelling on Telegram,2541,https://n8n.io/workflows/2234,15,3,api.openai.com,gpt-4-turbo×2 (défaut n8n)
+3832,Message buffer system with Redis for efficient processing,2515,https://n8n.io/workflows/3832,30,0,,
+3616,Automated lead generation & contact enrichment with Hunter.io and Perplexity AI,2511,https://n8n.io/workflows/3616,64,2,openrouter.ai,(défaut n8n)×2
+7384,Scrape URLs from Google Sheets and save as Markdown to Google Drive,2507,https://n8n.io/workflows/7384,15,0,,
+3069,Analyze Meta Ad Library Video Ads with Gemini and store results in Google Sheets,2488,https://n8n.io/workflows/3069,24,1,generativelanguage.googleapis.com,(défaut n8n)
+2647,Sentiment analysis tracking on support issues with Linear and Slack,2475,https://n8n.io/workflows/2647,19,1,api.openai.com,(défaut n8n)
+3646,"💬 Daily WhatsApp group summarizer – GPT-4o, Google Sheets & Evolution API",2437,https://n8n.io/workflows/3646,22,1,api.openai.com,(défaut n8n)
+5087,"Get an automated, curated newsletter everyday using Perplexity and Gmail",2433,https://n8n.io/workflows/5087,10,3,api.perplexity.ai,(défaut n8n)×3
+1216,Detect toxic language in Telegram messages,2431,https://n8n.io/workflows/1216,5,0,,
+5083,Medical records automation with Mistral OCR & Google Sheets,2397,https://n8n.io/workflows/5083,7,0,,
+4692,🤖🚚 AI agent for transportation orders management with GPT-4o and Open Route API,2393,https://n8n.io/workflows/4692,26,2,api.openai.com,gpt-4o-mini×2
+9942,"RAG-powered document chat with Google Drive, OpenAI, and Pinecone Assistant",2386,https://n8n.io/workflows/9942,13,1,api.openai.com,gpt-4.1-mini
+1535,Automate testimonials in Strapi with n8n,2384,https://n8n.io/workflows/1535,14,0,,
+3472,Automate WordPress contact form (CF7) responses and classification with Gemini,2360,https://n8n.io/workflows/3472,24,4,generativelanguage.googleapis.com,gemini-2.0-flash-exp×3 gemini-2.0-flash
+3607,Find high-intent sales leads by scraping Glassdoor with Bright Data & GPT,2359,https://n8n.io/workflows/3607,16,1,api.openai.com,gpt-4o-mini
+3561,Automate hyper-personalized outreach at scale with Bright Data and LLMs,2358,https://n8n.io/workflows/3561,21,1,api.anthropic.com,claude-3-5-haiku-20241022
+4406,"Generate Daily E-Commerce Order Reports with Supabase, GPT-4.1 and Gmail",2330,https://n8n.io/workflows/4406,10,1,api.openai.com,gpt-4.1
+4813,"Save time hiring with AI: automate screening, assessments & interviews",2329,https://n8n.io/workflows/4813,60,1,api.openai.com,(défaut n8n)
+9192,Smart message batching AI-powered Facebook Messenger chatbot use Data Table,2327,https://n8n.io/workflows/9192,33,1,generativelanguage.googleapis.com,(défaut n8n)
+3173,Daily AI news briefing and summarization with Google Gemini and Telegram,2325,https://n8n.io/workflows/3173,20,1,generativelanguage.googleapis.com,(défaut n8n)
+4885,AI icebreaker builder: scrape sites with Dumpling AI and save to Airtable,2304,https://n8n.io/workflows/4885,9,1,api.openai.com,chatgpt-4o-latest
+8004,Generate & publish AI cinematic videos to YouTube Shorts using VEO3 & Gemini,2298,https://n8n.io/workflows/8004,13,1,generativelanguage.googleapis.com,(défaut n8n)
+3534,"Search & summarize web data with Perplexity, Gemini AI & Bright Data to webhooks",2289,https://n8n.io/workflows/3534,17,2,generativelanguage.googleapis.com,gemini-2.0-flash-thinking-exp-01-21 gemini-2.0-flash-exp
+6765,"Scheduled Instagram auto-liker with Phantombuster, GPT-4o & cookie rotation",2287,https://n8n.io/workflows/6765,36,2,api.openai.com,chatgpt-4o-latest×2
+3033,CallForge - 03 - Gong transcript processor and Salesforce enricher,2283,https://n8n.io/workflows/3033,23,0,,
+3903,"Conversational PostgreSQL agent with visuals, multi-KPI, and data editing (MCP)",2272,https://n8n.io/workflows/3903,22,1,api.anthropic.com,(défaut n8n)
+3703,"Indeed data scraper & summarization with Airtable, Bright Data & Google Gemini",2260,https://n8n.io/workflows/3703,19,3,generativelanguage.googleapis.com,gemini-2.0-flash-exp×3
+2869,Test webhooks in n8n without changing WEBHOOK_URL (PostBin & BambooHR example),2252,https://n8n.io/workflows/2869,58,2,api.openai.com,(défaut n8n)×2
+2988,Get daily exercise plan with Flex Message via LINE,2252,https://n8n.io/workflows/2988,31,7,azure,4o×7
+3201,Automate video creation with Luma AI Dream Machine and Airtable (Part 2),2244,https://n8n.io/workflows/3201,8,0,,
+2318,Enrich Pipedrive's Organization Data with OpenAI GPT-4o & Notify it in Slack,2239,https://n8n.io/workflows/2318,8,1,api.openai.com,gpt-4o
+4831,Automate LinkedIn profile search & cold email outreach with OpenAI and Hunter,2217,https://n8n.io/workflows/4831,22,2,api.openai.com,(défaut n8n)×2
+3589,"MCP AI agent Google Calendar - create, update & manage events",2202,https://n8n.io/workflows/3589,6,0,,
+2584,Telegram AI bot: NeurochainAI text & image - NeurochainAI basic API integration,2202,https://n8n.io/workflows/2584,29,0,,
+5452,Instagram reels creation with GPT-4o-mini and Sisif.ai,2200,https://n8n.io/workflows/5452,12,1,api.openai.com,gpt-4o-mini
+2154,Classify new bugs in Linear with OpenAI's GPT-4 and move them to the right team,2182,https://n8n.io/workflows/2154,12,1,api.openai.com,gpt-4-32k-0314
+3640,🧑‍🦯Improve your website accessibility with GPT-4o and Google Sheet,2172,https://n8n.io/workflows/3640,14,0,,
+4456,WhatsApp AI customer service bot with GPT-4o-mini and Gmail alerts,2111,https://n8n.io/workflows/4456,22,1,api.openai.com,(défaut n8n)
+2892,AI virtual TryOn automated generation 🤖🧠 for WooCommerce clothing catalog 👔,2106,https://n8n.io/workflows/2892,21,0,,
+365,Render custom text over images,2061,https://n8n.io/workflows/365,4,0,,
+1107,Enrich and manage candidates data in Notion,2058,https://n8n.io/workflows/1107,4,0,,
+4287,Automate SAP Business Partner analysis with OpenAI GPT-4o & Gmail reporting,2050,https://n8n.io/workflows/4287,18,1,api.openai.com,(défaut n8n)
+4226,"Automate RSS content to blog posts with GPT-4o, WordPress & LinkedIn publishing",2040,https://n8n.io/workflows/4226,40,2,api.openai.com,(défaut n8n)×2
+3932,Track personal finances with GPT-4 via Telegram & Google Sheets,2035,https://n8n.io/workflows/3932,14,2,api.openai.com,(défaut n8n)×2
+3707,Automatic WhatsApp response with Groq LLM and conversation memory,2031,https://n8n.io/workflows/3707,13,1,api.groq.com,(défaut n8n)
+3527,"Compare sequential, agent-based, and parallel LLM processing with Claude 3.7",2016,https://n8n.io/workflows/3527,38,6,api.anthropic.com,claude-3-7-sonnet-20250219×6
+5287,"Generate multiple language blogpost with OpenAI, support Yoast & Polylang",2016,https://n8n.io/workflows/5287,25,3,api.openai.com,(défaut n8n)×3
+2039,Qualify replies from Pipedrive persons with AI,2009,https://n8n.io/workflows/2039,11,1,api.openai.com,gpt-4
+3036,"CallForge - 06 - Automate sales insights with Gong.io, Notion & AI",2005,https://n8n.io/workflows/3036,37,0,,
+3724,"Smart job search: resume scoring & tailoring with OpenAI, Apify, and Airtable",1997,https://n8n.io/workflows/3724,25,2,api.openai.com,(défaut n8n)×2
+2738,Transform image to Lego style using line and Dall-E,1977,https://n8n.io/workflows/2738,5,0,,
+4753,♻️ AI multi-stop planner for circular logistics with GPT-4o & Open Route API,1961,https://n8n.io/workflows/4753,29,2,api.openai.com,gpt-4o-mini×2
+878,N8N español - bot multi idioma NoCode,1958,https://n8n.io/workflows/878,7,0,,
+2927,Generate multispeaker podcast 🎙️ with AI natural-sounding 🤖🧠 & Google Sheets,1954,https://n8n.io/workflows/2927,15,0,,
+2970,"AI-powered financial chart analyzer | OpenRouter, MarketStack, macOS Shortcuts",1937,https://n8n.io/workflows/2970,12,1,openrouter.ai,(défaut n8n)
+4152,Automate outbound sales calls to qualified leads with VAPI.ai and Google Sheets,1926,https://n8n.io/workflows/4152,13,0,,
+3176,Generate images from text prompts with Google Imagen 3 via Replicate API,1924,https://n8n.io/workflows/3176,19,0,,
+2655,Vector database as a big data analysis tool for AI agents [2/3 - anomaly],1914,https://n8n.io/workflows/2655,48,0,,
+4539,"Automate lead generation with Apollo, AI scoring and Brevo email outreach",1905,https://n8n.io/workflows/4539,63,2,api.openai.com,(défaut n8n)×2
+4652,"AI agent creates content to be picked by ChatGPT, Gemini, Google",1905,https://n8n.io/workflows/4652,15,2,generativelanguage.googleapis.com,(défaut n8n)×2
+3315,AI-powered product research & comparison with GPT-4o and SerpAPI,1888,https://n8n.io/workflows/3315,26,7,api.openai.com,(défaut n8n)×7
+3242,Smart email classifier & auto-responder with AI,1882,https://n8n.io/workflows/3242,32,1,azure,(défaut n8n)
+8916,Index Google Drive files into a Supabase vector store with OpenAI embeddings,1882,https://n8n.io/workflows/8916,39,0,,
+3073,⚛️🐋🤖 Extract data from YAPE receipts via Telegram OCR and store in Google Sheets,1876,https://n8n.io/workflows/3073,35,2,api.deepseek.com api.openai.com,(défaut n8n)×2
+3517,Import Google Keep notes to Google Sheets using OpenAI and Google Drive,1872,https://n8n.io/workflows/3517,19,1,api.openai.com,gpt-4o-mini
+8356,"Generate SEO-optimized WordPress blogs with Gemini, Tavily & human review",1868,https://n8n.io/workflows/8356,38,4,api.openai.com generativelanguage.googleapis.com,(défaut n8n)×4
+4116,AI-powered Telegram bot for data extraction with Bright Data MCP,1867,https://n8n.io/workflows/4116,21,1,openrouter.ai,anthropic/claude-3.7-sonnet
+3725,WordPress content automation machine with HUMAN-IN-THE-LOOP & DEEP RESEARCH,1843,https://n8n.io/workflows/3725,159,6,api.openai.com,(défaut n8n)×6
+3673,AI-powered research assistant with Perplexity Sonar API,1837,https://n8n.io/workflows/3673,5,0,,
+4142,AI-powered Telegram task assistant with Notion integration,1825,https://n8n.io/workflows/4142,23,2,api.openai.com,(défaut n8n)×2
+3609,Summarize YouTube videos into structured content ideas with AI and Airtable,1819,https://n8n.io/workflows/3609,13,0,,
+5631,Transform YouTube videos into interactive MCQ quizzes with Google Forms & Gemini,1817,https://n8n.io/workflows/5631,20,1,generativelanguage.googleapis.com,(défaut n8n)
+9008,"Multimodal telegram bot with voice, image & video analysis using Claude & Gemini",1812,https://n8n.io/workflows/9008,31,1,api.anthropic.com,claude-sonnet-4-20250514
+2779,Remove personally identifiable information (PII) from CSV files with OpenAI,1804,https://n8n.io/workflows/2779,10,1,api.openai.com,gpt-4o-mini
+2502,Monthly Spotify track archiving and playlist classification,1801,https://n8n.io/workflows/2502,37,1,api.anthropic.com,(défaut n8n)
+4327,Auto-generate blog & AI image from YouTube videos with Dumpling AI & GPT-4o,1795,https://n8n.io/workflows/4327,10,1,api.openai.com,gpt-4o
+3420,🌲 AI agent for sustainability report audit with Gmail and GPT-40,1789,https://n8n.io/workflows/3420,14,1,api.openai.com,gpt-4o-mini
+2657,Vector database as a big data analysis tool for AI agents [2/2 KNN],1782,https://n8n.io/workflows/2657,18,0,,
+3143,Real estate cold call scripts for price reduced FSBO properties (Zillow data),1745,https://n8n.io/workflows/3143,17,2,api.openai.com,(défaut n8n)×2
+2977,Line chatbot handling AI responses with Groq and Llama3,1724,https://n8n.io/workflows/2977,9,0,,
+2560,Send daily translated Calvin and Hobbes comics to Discord,1712,https://n8n.io/workflows/2560,8,1,api.openai.com,gpt-4o-mini-2024-07-18
+5060,"Create, update posts 🛠️ Wordpress tool MCP server 💪 all 12 operations",1707,https://n8n.io/workflows/5060,17,0,,
+739,Detect and store the information about a purchase using the image of a receipt,1699,https://n8n.io/workflows/739,4,0,,
+6166,Automate website performance analysis and comparison using Gemini and PageSpeed Insights,1697,https://n8n.io/workflows/6166,17,1,generativelanguage.googleapis.com,(défaut n8n)
+3009,🧠 *NEW* Claude 3.7 extended thinking AI agent 🤖 – unlock ultimate intelligence,1664,https://n8n.io/workflows/3009,7,0,,
+4191,Automated lead research – from LinkedIn to ready-to-send report,1656,https://n8n.io/workflows/4191,36,3,api.openai.com,(défaut n8n)×3
+2189,Assistant for Hubspot chat using OpenAi and Airtable,1655,https://n8n.io/workflows/2189,34,1,api.openai.com,(défaut n8n)
+3037,CallForge - 07 - AI marketing data processing with Gong & Notion,1642,https://n8n.io/workflows/3037,24,0,,
+4055,"AI talent screener – CV parser, job fit evaluator & email notifier",1641,https://n8n.io/workflows/4055,30,1,api.openai.com,(défaut n8n)
+8969,HubSpot contact AI enrichment,1625,https://n8n.io/workflows/8969,12,1,generativelanguage.googleapis.com,(défaut n8n)
+7291,"Full-cycle invoice automation: Airtable, QuickBooks & Stripe",1608,https://n8n.io/workflows/7291,46,0,,
+2933,Convert RSS to tweet with text and image using free Twitter API,1606,https://n8n.io/workflows/2933,20,1,openrouter.ai,(défaut n8n)
+3978,Auto-generate and post tweet threads based on Google Trends using Gemini AI,1606,https://n8n.io/workflows/3978,21,3,api.openai.com generativelanguage.googleapis.com,(défaut n8n)×3
+8968,Email outreach drafter based on HubSpot data,1602,https://n8n.io/workflows/8968,17,2,generativelanguage.googleapis.com,gemini-2.0-flash×2
+3538,Create AI news videos with HeyGen avatars and auto-post to social media,1586,https://n8n.io/workflows/3538,29,4,api.openai.com,(défaut n8n)×4
+7647,"Build a self-updating RAG system with OpenAI, Qdrant and Google Drive",1574,https://n8n.io/workflows/7647,33,1,generativelanguage.googleapis.com,gemini-1.5-flash
+8558,Send bulk WhatsApp messages from Google Sheets using Rapiwa API,1572,https://n8n.io/workflows/8558,20,0,,
+3706,"Analyze client transcripts & route feedback with GPT-4o Mini, HubSpot, and Gmail",1568,https://n8n.io/workflows/3706,14,1,api.openai.com,gpt-4o-mini
+9989,TikTok trend analyzer with Apify + Gemini + Airtable,1559,https://n8n.io/workflows/9989,18,1,api.openai.com,gpt-4.1-mini
+7311,"Automated LinkedIn lead generation & DM outreach with Airtable, and Unipile.",1555,https://n8n.io/workflows/7311,154,3,api.openai.com,(défaut n8n)×3
+1109,Add positive feedback messages to a table in Notion,1550,https://n8n.io/workflows/1109,6,0,,
+3644,"🌳 EU green legislation tracker with GPT-4o, Google Sheets and Tasks",1512,https://n8n.io/workflows/3644,17,1,api.openai.com,gpt-4-turbo
+6518,Automatic job listings extraction and publishing template,1508,https://n8n.io/workflows/6518,53,1,api.openai.com,gpt-4.1-mini-2025-04-14
+6129,"Automate GitHub, JIRA release notes with Google Gemini & notification over email",1474,https://n8n.io/workflows/6129,16,1,generativelanguage.googleapis.com,gemini-2.5-pro
+4659,Forex News & Sentiment Telegram Alerts,1440,https://n8n.io/workflows/4659,22,1,generativelanguage.googleapis.com,(défaut n8n)
+3877,Discover business ideas from HackerNews posts with GPT-4.1 analysis and Google Sheets,1428,https://n8n.io/workflows/3877,16,1,openrouter.ai,(défaut n8n)
+11366,"Analyze crypto markets via Telegram with KuCoin, NewsAPI and Gemini",1415,https://n8n.io/workflows/11366,28,2,generativelanguage.googleapis.com,(défaut n8n)×2
+5201,"WhatsApp expense tracker with multi-input (text, image & audio)",1361,https://n8n.io/workflows/5201,56,8,api.openai.com,(défaut n8n)×8
+3881,"Travel planning agent with Couchbase vector search, Gemini 2.0 Flash and OpenAI",1336,https://n8n.io/workflows/3881,13,1,generativelanguage.googleapis.com,gemini-2.0-flash
+2698,Scrape ProductHunt using Google Gemini,1336,https://n8n.io/workflows/2698,14,1,generativelanguage.googleapis.com,(défaut n8n)
+6241,"AI-powered news monitoring with Linkup, Airtable, and Slack notifications",1303,https://n8n.io/workflows/6241,16,0,,
+4546,Auto-Generate & Publish SEO Blog Posts to WordPress with OpenRouter & Runware,1293,https://n8n.io/workflows/4546,23,4,api.openai.com generativelanguage.googleapis.com openrouter.ai,(défaut n8n)×4
+4964,YouTube video transcription & summary to Telegram with gpt-5.6-terra,1274,https://n8n.io/workflows/4964,10,1,api.openai.com,(défaut n8n)
+4033,"AI-powered blog post promoter for Instagram, Facebook & X with GPT",1272,https://n8n.io/workflows/4033,44,1,api.openai.com,(défaut n8n)

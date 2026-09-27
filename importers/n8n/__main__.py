@@ -5,6 +5,8 @@
     python -m importers.n8n fetch --url https://n8n.exemple.com --workflow <id> [--limit 500] [--since 2026-09-01]
     python -m importers.n8n convert private/n8n/<id> [--anonymize]   # → events.jsonl, lisible par report.audit
     python -m importers.n8n purge private/n8n/<id>        # efface l'historique brut après analyse
+    python -m importers.n8n library fetch --limit 1000    # workflows publics n8n.io, pour tester notre lecture
+    python -m importers.n8n library coverage              # ce que notre code reconnaît dedans
 """
 from __future__ import annotations
 
@@ -18,6 +20,7 @@ from .api import N8nClient, N8nError
 from .check import check, render
 from .convert import convert
 from .fetch import fetch
+from . import library
 from .privacy import Masker, purge
 
 
@@ -41,12 +44,29 @@ def main(argv=None) -> int:
     d = sub.add_parser("purge", help="effacer un dossier téléchargé (historique brut et événements)")
     d.add_argument("dir")
 
+    lib = sub.add_parser("library", help="bibliothèque publique n8n.io : récupérer, mesurer notre couverture")
+    lib.add_argument("action", choices=["fetch", "coverage"])
+    lib.add_argument("--limit", type=int, default=1000, help="les N plus consultés (défaut : 1000)")
+    lib.add_argument("--category", default="AI", help="catégorie n8n.io (défaut : AI)")
+    lib.add_argument("--dir", default="private/n8n-library", help="dossier (défaut : private/n8n-library)")
+
     for s in (c, f):
         s.add_argument("--url", default=os.environ.get("N8N_URL"), help="adresse de l'instance (défaut : N8N_URL)")
 
     args = p.parse_args(argv)
     if args.cmd == "convert":
         return run_convert(Path(args.dir), args.anonymize)
+    if args.cmd == "library":
+        if args.action == "fetch":
+            library.fetch(args.dir, args.limit, args.category)
+            return 0
+        report = library.coverage(args.dir)
+        if not report["workflows"]:
+            print(f"erreur : aucun workflow dans {args.dir} (lancer d'abord : library fetch)", file=sys.stderr)
+            return 1
+        Path(args.dir, "coverage.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(library.render(report))
+        return 0
     if args.cmd == "purge":
         try:
             removed = purge(Path(args.dir))

@@ -11,7 +11,11 @@ DIRECT = {
     LANGCHAIN + "googleGemini",
     LANGCHAIN + "mistralAi",
     LANGCHAIN + "ollama",
+    "n8n-nodes-base.perplexity",
 }
+
+# nœuds d'IA qui ne produisent pas de texte par un modèle de langage (OCR de documents…)
+NOT_TEXT_NODES = {"n8n-nodes-base.mistralAi"}
 
 
 def is_model_node(node: dict) -> bool:
@@ -20,9 +24,17 @@ def is_model_node(node: dict) -> bool:
     return t.startswith(LANGCHAIN) and t[len(LANGCHAIN):].startswith("lm")
 
 
+# ressources des nœuds directs qui ne sont pas du texte (image, audio, vidéo…) : pas un appel de LLM
+NON_TEXT = {"image", "audio", "video", "file", "moderation", "edit"}
+
+
 def is_llm_node(node: dict) -> bool:
     """Un nœud dont l'exécution produit un appel LLM facturé."""
-    return is_model_node(node) or node.get("type") in DIRECT
+    if is_model_node(node):
+        return True
+    if node.get("type") not in DIRECT:
+        return False
+    return (node.get("parameters") or {}).get("resource") not in NON_TEXT
 
 
 def llm_nodes(workflow: dict) -> list[dict]:
