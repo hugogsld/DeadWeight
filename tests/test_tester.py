@@ -5,7 +5,9 @@ from pathlib import Path
 import pytest
 
 from scripts import tester
+from rules import oversized_model
 from scripts.tester import NO_HISTORY, ask, default_source, figure, run
+from scripts.tester_seuils import pending
 
 ROOT = Path(__file__).resolve().parents[1]
 EVENTS = ROOT / "fixtures/dataset/v1/events.jsonl"
@@ -73,19 +75,49 @@ def test_source_par_defaut(tmp_path):
     assert default_source("4553", {}, dirs=(str(tmp_path),)) == str(folder)
 
 
-def test_sans_source_le_dit_et_s_arrete(tmp_path, capsys):
-    assert run("4553", out=tmp_path, env={}) == 1
+SWARM = {"id": 4553, "name": "Essaim", "nodes": [
+    {"name": "Modele", "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi", "parameters": {"model": "gpt-4.1-mini"}},
+    {"name": "Agent A", "type": "@n8n/n8n-nodes-langchain.agent", "parameters": {}},
+    {"name": "Agent B", "type": "@n8n/n8n-nodes-langchain.agent", "parameters": {}},
+    {"name": "Webhook", "type": "n8n-nodes-base.webhook", "parameters": {}}],
+    "connections": {"Modele": {"ai_languageModel": [[{"node": "Agent A"}, {"node": "Agent B"}]]}}}
+
+
+def test_sans_source_analyse_de_structure_seule(tmp_path, capsys, monkeypatch):
+    monkeypatch.chdir(tmp_path)  # pas de private/n8n-library local
+    urls = []
+    get = lambda url: urls.append(url) or {"workflow": {**SWARM, "workflow": SWARM}}  # noqa: E731
+    assert run("4553", out=tmp_path / "o", env={}, get=get) == 0
     out = capsys.readouterr().out
-    assert "Generate guerrilla marketing campaign plans" in out and "N8N_URL" in out
+    assert urls == ["https://api.n8n.io/api/templates/workflows/4553"]
+    assert NO_HISTORY in out and "4 nœuds, 1 nœud(s) modèle, gpt-4.1-mini, 2 agent(s)" in out
+    assert "~2 appels IA par exécution" in out and "non mesuré" in out
+    assert f"modèle trop gros : {oversized_model.MIN_CALLS} appels nécessaires par étape, 0 présents" in out
+    assert "N8N_URL" in out and not (tmp_path / "o" / "optim").exists()
+
+
+def test_sans_structure_ni_historique(tmp_path, capsys, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    assert run("4553", out=tmp_path, env={}, get=lambda url: None) == 1
+
+
+def test_peu_d_appels_liste_les_verifications_en_attente():
+    events = [{"app_id": "n8n:wf/Agent A", "model": "gpt-4.1-mini", "trace": {"id": f"x{i % 2}"}}
+              for i in range(18)]
+    rows = {r["verification"]: r for r in pending(events, executions=2)}
+    assert rows["modèle trop gros"] == {"verification": "modèle trop gros", "seuil": oversized_model.MIN_CALLS,
+                                        "presents": 18, "executions_estimees": 4}
+    assert pending(events * 2) == []  # 36 appels : tous les seuils atteints
 
 
 def test_sans_executions_rien_n_est_simule(tmp_path, capsys):
     folder = tmp_path / "4553"  # workflow importé dans n8n mais jamais exécuté
     folder.mkdir()
-    (folder / "workflow.json").write_text(json.dumps({"id": "4553", "name": "Guerrilla", "nodes": [], "connections": {}}))
+    (folder / "workflow.json").write_text(json.dumps(SWARM))
     (folder / "executions.jsonl").write_text("")
-    assert run("4553", source=str(folder), out=tmp_path / "o", yes=True) == 1
-    assert NO_HISTORY in capsys.readouterr().out
+    assert run("4553", source=str(folder), out=tmp_path / "o", yes=True, get=lambda url: pytest.fail(url)) == 0
+    out = capsys.readouterr().out
+    assert NO_HISTORY in out and "Analyse de structure seule : Essaim" in out
     assert not (tmp_path / "o" / "optim").exists()
 
 
@@ -107,7 +139,7 @@ def test_parcours_complet_interactif(tmp_path, capsys, no_gh):
         "Commencer l'analyse ?", "Ouvrir la PR GitHub ?", "Envoyer le message sur Slack ?"]
     proposals = json.loads((tmp_path / "optim" / "propositions.json").read_text())
     assert f"Workflow analysé : {len(proposals)} modifications trouvées" in out
-    assert "1872 appels IA" in out and "(mesuré)" in out and "~" in out and "non mesuré" in out
+    assert "1872 appels IA" in out and "Vérifications en attente de données (pas un échec" not in out and "(mesuré)" in out and "~" in out and "non mesuré" in out
     assert no_gh == [str(tmp_path)] and f"PR ouverte : {PR_URL}" in out
     assert len(sender) == 1 and sender[0]["blocks"][-1]["elements"][0]["url"] == PR_URL
 
