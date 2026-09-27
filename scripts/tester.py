@@ -24,6 +24,8 @@ from agent.audit import main as audit_main
 from optimize.__main__ import main as optimize_main
 from scripts.audit_complet import detect, notify
 from optimize.send import send
+from report.audit import _discover_detectors
+from scripts.tester_ui import Progress, header, number, paint, status
 from scripts.tester_seuils import load_workflow, show_pending, show_structure, structure
 
 LIBRARY_CSV = Path(__file__).resolve().parent.parent / "docs" / "bibliotheque-n8n.csv"
@@ -31,11 +33,10 @@ LOCAL_DIRS = ("private/n8n",)
 NO_HISTORY = ("pas d'exécutions : rien à rejouer, lancez le workflow quelques fois dans n8n puis relancez "
               "cette commande")
 # ordre du message Slack (optimize.slack) : contexte envoyé, coût, latence médiane, précision
-FIGURES = (("precision", "précision du workflow modifié sur ses propres entrées (rejeu)"),
+FIGURES = (("precision", "précision (rejeu de ses propres entrées)"),
            ("latence_mediane", "latence médiane"),
            ("cout", "coût"),
            ("jetons_envoyes", "données envoyées au modèle (jetons)"))
-VERDICT = {"pass": "prouvée", "reject": "refusée", "non_teste": "non testée"}
 
 
 def ask(question, yes=False, interactive=None, read=input):
@@ -88,16 +89,20 @@ def describe(wf, events_path, source):
         name, nodes = wf_data.get("name"), len(wf_data.get("nodes") or [])
     elif (entry := catalog(wf)) and source.startswith("n8n:"):
         name, nodes = entry["nom"], entry["noeuds"]
-    if name is None:
-        apps = sorted({e.get("app_id") for e in events if e.get("app_id")})
-        name = f"{Path(source).name} ({len(apps)} application{'s' if len(apps) > 1 else ''})"
     traces = {(e.get("trace") or {}).get("id") for e in events} - {None}
     executions = len(traces) if traces else None
-    return {"nom": name, "noeuds": nodes, "appels": len(events), "executions": executions}
+    etapes = len({e.get("app_id") for e in events if e.get("app_id")})
+    return {"nom": name, "noeuds": nodes, "appels": len(events), "executions": executions, "etapes": etapes}
 
 
-def _n(v, unit):
-    return f"{unit} non connu(e)s" if v is None else f"{v} {unit}"
+def found_line(info):
+    """« Workflow trouvé : nom · 1 872 appels IA · 99 exécutions · 40 étapes » ; rien d'inconnu affiché."""
+    parts = [info["nom"]] if info.get("nom") else []
+    parts += [f"{number(info['noeuds'])} nœuds"] if info.get("noeuds") else []
+    parts.append(f"{number(info['appels'])} appels IA")
+    parts += [f"{number(info['executions'])} exécutions"] if info.get("executions") else []
+    parts += [f"{number(info['etapes'])} étape{'s' if info['etapes'] > 1 else ''}"] if info.get("etapes") else []
+    return "Workflow trouvé : " + " · ".join(parts)
 
 
 def figure(m, level=False):
@@ -108,9 +113,9 @@ def figure(m, level=False):
     unit = m.get("unite") or ""
     sign = "+" if unit == "%" and m["valeur"] > 0 and not level else ""
     value = f"{sign}{m['valeur']:g}{' ' + unit if unit and unit != '%' else ' %' if unit else ''}"
-    if m["statut"] == "mesuré":
-        return f"{value} (mesuré)"
-    return f"~{value} (estimé{' : ' + m['hypothese'] if m.get('hypothese') else ''})"
+    value = value if m["statut"] == "mesuré" else f"~{value}"
+    gain = level or m["valeur"] < 0  # une baisse de latence, de coût ou de jetons est un gain
+    return f"{paint(value.rjust(9), 'vert') if gain else value.rjust(9)}  {status(m['statut'])}"
 
 
 def _quiet(fn, argv):
@@ -127,22 +132,25 @@ def _optimize(events, optim, repo=None, open_prs=False):
 
 
 def report(proposals):
-    print(f"\nWorkflow analysé : {len(proposals)} modification{'s' if len(proposals) > 1 else ''} "
-          f"trouvée{'s' if len(proposals) > 1 else ''}")
-    for i, p in enumerate(proposals, 1):
-        print(f"  {i}. [{VERDICT.get(p['verdict'], p['verdict'])}] {p['app_id']} — {p['changement']}")
-    tested = [p for p in proposals if p["verdict"] != "non_teste"]
-    if not tested:
-        print("\nAucune proposition n'a pu être testée ici : aucun chiffre à montrer.")
-    for i, p in enumerate(proposals, 1):
-        if p["verdict"] == "non_teste":
-            continue
-        print(f"\n  {i}. {p['app_id']} — {VERDICT[p['verdict']]}")
+    """Seules les propositions prouvées ; les autres tiennent en une ligne grise (page développeur)."""
+    ok = [p for p in proposals if p["verdict"] == "pass"]
+    s = "s" if len(ok) > 1 else ""
+    if ok:
+        print(f"\nWorkflow analysé : {paint(f'{len(ok)} modification{s} prouvée{s}', 'vert', 'gras')}")
+    else:
+        print("\nWorkflow analysé : aucune modification prouvée sur cet historique.")
+    width = max(len(label) for _, label in FIGURES)
+    for i, p in enumerate(ok, 1):
+        print(f"\n  {paint(f'{i}.', 'gras')} {paint(p['app_id'], 'gras')} — {p['changement']}")
         for key, label in FIGURES:
-            print(f"     {label} : {figure(p['mesures'].get(key), key == 'precision')}")
-        if p["verdict"] == "reject" and p.get("raisons"):
-            print(f"     raisons du refus : {'; '.join(p['raisons'])}")
-    print("\n  Mesuré = rejeu des mêmes entrées sur votre historique. ~ = estimation, jamais additionnée.")
+            print(f"     {label.ljust(width)}  {figure(p['mesures'].get(key), key == 'precision')}")
+    hidden = len(proposals) - len(ok)
+    if hidden:
+        print(paint(f"\n  {hidden} autre{'s' if hidden > 1 else ''} piste{'s' if hidden > 1 else ''} testée"
+                    f"{'s' if hidden > 1 else ''} sans preuve suffisante : détail dans la page développeur", "gris"))
+    if ok:
+        print(paint("  mesuré = rejeu des mêmes entrées sur votre historique ; ~estimé = calcul avec hypothèse, "
+                    "jamais additionné", "gris"))
 
 
 def structure_only(wf, folder=None, get=None):
@@ -161,6 +169,7 @@ def structure_only(wf, folder=None, get=None):
 def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=None, read=input,
         webhook=None, sender=send, env=os.environ, get=None):
     out = Path(out)
+    print(header())
     source = source or default_source(wf, env)
     if source is None:
         print(f"Aucune source d'exécutions pour {wf} (ni N8N_URL, ni dossier private/n8n/{wf}).")
@@ -172,25 +181,31 @@ def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=Non
     info = describe(wf, events, source)
     if not info["appels"]:
         return structure_only(wf, Path(events).parent, get)
-    print(f"Workflow trouvé : {info['nom']} ({_n(info['noeuds'], 'nœuds')}, {info['appels']} appels IA, "
-          f"{_n(info['executions'], 'exécutions')}).")
+    print(found_line(info))
     if not ask("Commencer l'analyse ?", yes, interactive, read):
         return 0
+    bar = Progress(["lecture de l'historique", f"{len(_discover_detectors())} vérifications",
+                    "rejeu des propositions", "préparation de la PR"])
+    bar.step(1)
+    history = json_lines(events)
+    bar.step(2)
     if _quiet(audit_main, [str(events), "-o", str(out / "audit.html")])[0]:
         print("erreur : l'audit a échoué", file=sys.stderr)
         return 1
+    bar.step(3)
     optim = out / "optim"
     if _optimize(events, optim, repo):
         print("erreur : l'optimisation a échoué", file=sys.stderr)
         return 1
+    bar.step(4)
     proposals = json.loads((optim / "propositions.json").read_text(encoding="utf-8"))
+    bar.done()
     report(proposals)
-    show_pending(json_lines(events), info["executions"])
+    show_pending(history, info["executions"])
     proved = any(p["verdict"] == "pass" for p in proposals)
-    print(f"\nPage développeur : {optim / 'propositions.html'}  ·  rapport : {out / 'audit.html'}")
-    diffs = sorted(optim.glob("*.diff"))
-    for d in diffs:
-        print(f"Micro-PR préparée : {d}")
+    print(paint(f"\nPage développeur : {optim / 'propositions.html'}  ·  rapport : {out / 'audit.html'}", "gris"))
+    for d in sorted(optim.glob("*.diff")):
+        print(paint(f"Micro-PR préparée : {d}", "gris"))
     if repo and proved and ask("Ouvrir la PR GitHub ?", yes, interactive, read):
         if _optimize(events, optim, repo, open_prs=True):
             print("erreur : ouverture de la PR impossible", file=sys.stderr)
@@ -198,7 +213,7 @@ def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=Non
         for pr in json.loads((optim / "prs.json").read_text(encoding="utf-8")):
             print(f"PR ouverte : {pr['url']}")
     elif not repo:
-        print("PR : REPO non fourni, aucune PR ouverte (make tester … REPO=chemin/du/depot).")
+        print(paint("PR : REPO non fourni, aucune PR ouverte (make tester … REPO=chemin/du/depot).", "gris"))
     if webhook and proved:
         if ask("Envoyer le message sur Slack ?", yes, interactive, read):
             return 1 if notify(optim, webhook=webhook, sender=sender) == "erreur" else 0
