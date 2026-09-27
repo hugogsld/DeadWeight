@@ -15,6 +15,7 @@ from datetime import datetime
 from pathlib import Path
 
 import rules
+from rules.structured_output import unwrap_all
 from catalog.recommend import recommend
 from report.billing import ABONNEMENT, billing_section, load_billing, spent_usd
 from report.cost import MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer, runs, window_seconds
@@ -148,7 +149,7 @@ def build_report(events, detectors=None, banc=None, billing=None, propositions=N
     banc : {finding_id: résultat de bench.m2.prove} ; les options M2 testées portent leur verdict.
     billing : {"claude-code": {mode, source}, "codex": {...}} (D2.6, comprehension.json ou --billing).
     propositions : sortie de python -m optimize (propositions.json), pour les gains par tâche prouvés."""
-    events = list(events)
+    events = unwrap_all(events)
     section = billing_section(events, billing) if billing else None
     by_id = {e["event_id"]: e for e in events}
     detectors = detectors if detectors is not None else _discover_detectors()
