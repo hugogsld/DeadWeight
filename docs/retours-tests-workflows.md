@@ -185,7 +185,7 @@ Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour 
 | 15 | Le banc de modèles envoie les cas sans le prompt système : les candidats ne reçoivent pas la consigne | haute | `bench/testset.py` | Récap Gmail (retest) | corrigé (#82) |
 | 16 | Le plan de l'agent auditeur contient des chiffres mal attribués et une recommandation incohérente | moyenne | `agent/`, `report/audit.py` | Récap Gmail (retest) | corrigé (#99) |
 | 17 | Banc : un candidat sans clé est affiché « reject, score 0 » au lieu de « non testé » | basse | `bench/runner.py`, `bench/report.py` | Récap Gmail (retest) | corrigé (#99) |
-| 18 | OpenTelemetry en direct : la passerelle refuse le protobuf, seul format de l'exportateur Python | haute | `gateway/proxy.py` (`receive_traces`), `connectors/otel.py` | Sources (27/09) | ouvert |
+| 18 | OpenTelemetry en direct : la passerelle refuse le protobuf, seul format de l'exportateur Python | haute | `gateway/proxy.py` (`receive_traces`), `connectors/otel.py` | Sources (27/09) | en cours (#118) |
 | 19 | R12 conseille de plafonner la longueur des réponses d'un agent de code | moyenne | `rules/verbose_output.py` | Sources (27/09), Claude Code | ouvert |
 
 ### 1. Le rejeu affiche une projection mensuelle absurde

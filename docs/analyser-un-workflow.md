@@ -59,7 +59,7 @@ Détails, chiffres et problèmes : `docs/retours-tests-workflows.md`, fiche « S
 | **n8n 2.40**, nœud OpenAI Chat Model, champ *Base URL* de l'identifiant | passerelle | ✅ 42/42 appels, `app_id` posé par l'en-tête personnalisé de l'identifiant n8n |
 | **n8n 2.40**, même workflow | import de l'historique | ✅ 42/42 exécutions, 100 % des appels LLM compris, jetons réels, une trace par exécution |
 | **Claude Code**, journaux de session d'un vrai projet | `connectors.agent_logs` | ✅ 300 appels lus, 0 ignoré, niveaux 1 à 3 |
-| Application Python instrumentée OpenTelemetry, exportateur OTLP/HTTP officiel | réception en direct | ❌ **415** : l'exportateur Python envoie du protobuf, même avec `OTEL_EXPORTER_OTLP_PROTOCOL=http/json` (problème 18) |
+| Application Python instrumentée OpenTelemetry, exportateur OTLP/HTTP officiel | réception en direct | ❌ **415** : l'exportateur Python envoie du protobuf, même avec `OTEL_EXPORTER_OTLP_PROTOCOL=http/json` (problème 18). Corrigé par #118 : 9/9 |
 
 Non vérifié faute d'outil ou de compte : Claude Code et Codex **en direct** par la passerelle
 (`ANTHROPIC_BASE_URL`, `OPENAI_BASE_URL`), Codex en journaux, Ollama et modèles locaux, Make, Zapier,
