@@ -161,3 +161,29 @@ def test_tests_sans_animation_affiche_directement_la_ligne_finale():
     text = out.getvalue()
     assert text.count("\n") == 3  # ligne vide + ligne d'étape + ligne finale
     assert "364/364" not in text and "réponses identiques · 364 entrées rejouées" in text
+
+
+def test_tests_anime_ne_depasse_jamais_la_largeur_du_terminal():
+    # terminal étroit (vu chez un testeur) : une image plus large que l'écran passe à la ligne et le
+    # \r ne revient qu'au début de la dernière ligne, les images s'empilent au lieu de se remplacer
+    out = io.StringIO()
+    items = [prop("n8n-4553", "pass", 100.0, appels_rejoues=m(77, unite=""))]
+    tester_ui.tests(items, Style(False), animate=True, sleep=lambda s: None, out=out, frames=4, columns=50)
+    frames = [f for f in out.getvalue().split("\r\x1b[2K") if "/77" in f]
+    assert frames and all(width(f) < 50 for f in frames)  # « n/77 » tient, pas « entrées rejouées »
+
+
+def test_analyse_accorde_le_singulier(capsys):
+    tester_ui.analysis({"nom": "wf5.db", "noeuds": None, "appels": 279, "executions": 1,
+                        "etapes": ["a"], "modeles": ["gpt-4.1-mini"]}, Style(False))
+    text = capsys.readouterr().out
+    assert "1 exécution" in text and "1 exécutions" not in text
+    assert "1 étape IA" in text and "1 modèle (gpt-4.1-mini)" in text
+
+
+def test_gains_globaux_non_chiffrables_expliques_au_lieu_de_tirets(capsys):
+    gains_block({"cout_avant": None, "cout_apres": None, "cout_pct": None, "executions": 1,
+                 "cout_par_execution_avant": None, "cout_par_execution_apres": None,
+                 "projection_1000_usd": None, "modifications_comptees": 1}, Style(False))
+    text = capsys.readouterr().out
+    assert "— → —" not in text and "non chiffrable" in text

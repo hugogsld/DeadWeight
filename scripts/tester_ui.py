@@ -13,6 +13,7 @@ ni dans les étapes, ni dans le tableau, ni dans la PR (le seuil est aussi appli
 """
 import os
 import re
+import shutil
 import sys
 import time
 from collections import Counter
@@ -137,14 +138,18 @@ def header(wf, s, source=None):
     print(f"\n  {s(' DEADWEIGHT ', 'inverse', 'bold')}  {s(subtitle, 'dim')}")
 
 
+def plural(n):
+    return "s" if n > 1 else ""
+
+
 def analysis(info, s):
     step(1, "Analyse du workflow", s)
     parts = [f"{info['appels']} appels IA"]
-    parts += [f"{info['executions']} exécutions"] if info["executions"] else []
+    parts += [f"{info['executions']} exécution{plural(info['executions'])}"] if info["executions"] else []
     parts += [f"{info['noeuds']} nœuds"] if info["noeuds"] else []
     print(f"    {s('✓', 'green')} {s(info['nom'], 'bold')} · {' · '.join(parts)}")
-    found = [f"{len(info['etapes'])} étapes IA"] if info["etapes"] else []
-    found += [f"{len(info['modeles'])} modèles ({', '.join(info['modeles'][:4])}"
+    found = [f"{len(info['etapes'])} étape{plural(len(info['etapes']))} IA"] if info["etapes"] else []
+    found += [f"{len(info['modeles'])} modèle{plural(len(info['modeles']))} ({', '.join(info['modeles'][:4])}"
               f"{', …' if len(info['modeles']) > 4 else ''})"] if info["modeles"] else []
     if found:
         print(f"    {s('✓', 'green')} {' · '.join(found)}")
@@ -160,7 +165,8 @@ def modifications(items, s):
         print(f"    {s(str(i), 'cyan')}  {s(pad(p['app_id'], name_w), 'bold')}  {p['changement']}")
 
 
-def tests(items, s, animate=True, sleep=time.sleep, min_seconds=MIN_BAR_SECONDS, frames=FRAMES, out=None):
+def tests(items, s, animate=True, sleep=time.sleep, min_seconds=MIN_BAR_SECONDS, frames=FRAMES, out=None,
+          columns=None):
     """Étape 3 : une barre par modification. Animée, la progression suit le vrai nombre d'entrées
     rejouées (pas une horloge décorative), étalée sur au moins ``min_seconds`` pour rester visible même
     si le rejeu est instantané. Hors TTY ou sans animation demandée : la barre finale, directement."""
@@ -174,10 +180,14 @@ def tests(items, s, animate=True, sleep=time.sleep, min_seconds=MIN_BAR_SECONDS,
         label = f"{s(str(i), 'cyan')}  {pad(p['app_id'], name_w)}"
         if animate and total:
             interval = min_seconds / frames
+            cols = columns or shutil.get_terminal_size((80, 24)).columns
             for f in range(1, frames + 1):
                 done = round(total * f / frames)  # vrai avancement (entrées rejouées / total)
-                out.write(f"\r\033[2K    {label}  {bar(100 * done / total, s, 'cyan')}  "
-                          f"{done}/{total} entrées rejouées")
+                frame = f"    {label}  {bar(100 * done / total, s, 'cyan')}  "
+                # une image plus large que le terminal passe à la ligne : le \r ne l'effacerait plus
+                tail = next((t for t in (f"{done}/{total} entrées rejouées", f"{done}/{total}", "")
+                             if width(frame + t) < cols), "")
+                out.write(f"\r\033[2K{frame}{tail}")
                 out.flush()
                 sleep(interval)
             out.write("\r\033[2K")
@@ -222,6 +232,11 @@ def _pct(v):
 def gains_block(gains, s):
     """Gains sur l'ensemble du workflow (pas seulement les modifications retenues), sous le tableau."""
     print(f"\n    {s('Gains sur l’ensemble du workflow (historique rejoué) :', 'bold')}")
+    if gains["cout_avant"] is None:
+        # au moins un appel réussi sans jetons ou sans prix connu : le total serait faux, on le dit
+        print("      coût total : non chiffrable sur cet historique (appels sans jetons ou sans prix connus) ;"
+              " seuls les gains par modification ci-dessus sont mesurés")
+        return
     print(f"      coût total : {_money(gains['cout_avant'])} → {_money(gains['cout_apres'])} "
           f"({_pct(gains['cout_pct'])})")
     if gains["executions"]:
