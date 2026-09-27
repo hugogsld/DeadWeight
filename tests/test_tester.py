@@ -9,7 +9,7 @@ from rules import oversized_model
 from scripts import tester
 from scripts.tester import NO_HISTORY, ask, default_source, min_calls_env, run
 from scripts.tester_seuils import pending
-from scripts.tester_ui import cell, shown
+from scripts.tester_ui import cell
 
 ROOT = Path(__file__).resolve().parents[1]
 EVENTS = ROOT / "fixtures/dataset/v1/events.jsonl"
@@ -25,11 +25,14 @@ def no_keys(monkeypatch):
 
 @pytest.fixture
 def no_gh(monkeypatch):
-    """--open-prs simulé : prs.json écrit comme optimize le ferait, sans gh ni git."""
+    """--open-prs simulé : prs.json écrit comme optimize le ferait, sans gh ni push réel. ``make_patch``
+    a besoin d'un vrai dépôt (``git add``) : le dépôt cible est git-initialisé à la volée si besoin."""
     real, opened = tester._optimize, []
 
     def fake(events, optim, repo=None, open_prs=False):
-        code = real(events, optim, tester.empty_repo(Path(optim).parent / "gh"))
+        if repo and not (Path(repo) / ".git").is_dir():
+            subprocess.run(["git", "init", "-q"], cwd=repo, check=True, capture_output=True)
+        code = real(events, optim, repo)
         if open_prs:
             opened.append(repo)
             (Path(optim) / "prs.json").write_text(json.dumps([{"app_id": "mail-triage", "changement": "x",
@@ -71,15 +74,6 @@ def test_cellule_mesure_estime_et_absent():
     assert cell({"valeur": 100.0, "statut": "mesuré", "unite": "%"}, level=True) == "100 %"
     assert cell({"valeur": None, "statut": "mesuré", "unite": "%"}) == "—"
     assert cell(None) == "—"
-
-
-def test_seules_les_modifications_au_moins_95_pour_cent_sont_affichees_prouvees_en_tete():
-    m = lambda v: {"precision": {"valeur": v, "statut": "mesuré", "unite": "%"}}  # noqa: E731
-    items = shown([{"app_id": "a", "verdict": "reject", "mesures": m(None)},
-                   {"app_id": "b", "verdict": "reject", "mesures": m(100.0)},
-                   {"app_id": "c", "verdict": "pass", "mesures": m(99.0)},
-                   {"app_id": "d", "verdict": "reject", "mesures": m(82.5)}])  # sous 95 % : écarté
-    assert [p["app_id"] for p in items] == ["c"]  # b : refusée malgré 100 %, jamais affichée comme gain
 
 
 @pytest.mark.parametrize("env,expected", [({}, 30), ({"DW_MIN_CALLS": "3"}, 3), ({"DW_MIN_CALLS": "x"}, 30)])
@@ -234,14 +228,15 @@ def test_menu_review_montre_le_vrai_diff_prepare(tmp_path, capsys, monkeypatch):
     assert "+GATEWAY_SHORTCIRCUIT=deadweight/preuves" in out  # le vrai diff relu, pas un texte statique
 
 
-def test_sans_repo_la_pr_est_quand_meme_relisible(tmp_path, capsys):
-    """``empty_repo`` : sans REPO, Review fonctionne toujours (dépôt vide préparé pour le diff), et Push
-    le dit clairement plutôt que de pousser quelque part."""
+def test_sans_repo_les_boutons_restent_disponibles_mais_s_adaptent(tmp_path, capsys):
+    """Sans REPO : Review pointe vers la page développeur (rien à relire, aucun dépôt cible), et Push
+    donne la commande exacte à relancer plutôt que de rester muet ou de pousser quelque part."""
     assert run("4553", source=str(EVENTS), out=tmp_path, interactive=True, read=Answers(""),
                read_key=keys("R", "P", "Q"), animate=False, color=False) == 0
     out = capsys.readouterr().out
-    assert "+GATEWAY_SHORTCIRCUIT" in out
-    assert "REPO non fourni" in out
+    assert "Review la PR" in out and "Push la PR" in out  # les deux boutons apparaissent, même sans REPO
+    assert f"Page développeur (diff des propositions) : {tmp_path / 'optim' / 'propositions.html'}" in out
+    assert f"make tester WF=4553 SOURCE={EVENTS} REPO=chemin/du/depot" in out
     assert "Envoyer sur Slack" not in out  # pas de webhook : pas de bouton Slack
 
 

@@ -41,6 +41,17 @@ def test_without_a_key_a_model_swap_is_not_tested_never_guessed(proposals):
     assert swaps and all(p["verdict"] == "non_teste" and p["mesures"]["precision"]["valeur"] is None for p in swaps)
 
 
+def test_slack_shows_raw_ms_for_minus_100_percent_latency(proposals):
+    """Même bascule que le tableau du testeur (scripts.tester_ui.latency_cell) : « X ms → Y ms »
+    plutôt qu'un « -100 % » qui ressemble à un bug."""
+    triage = next(p for p in proposals if p["type"] == "regles" and p["app_id"] == "mail-triage")
+    assert triage["mesures"]["latence_mediane"]["valeur"] == -100.0
+    text = message(proposals, total_spent=1.0)
+    assert "latence médiane -100%" not in text.replace(" ", "")
+    ms = triage["latence_ms"]
+    assert f"{ms['avant']:.0f} ms → {ms['apres']:.0f} ms" in text
+
+
 def test_slack_totals_only_proven_measured_gains(proposals):
     text = message(proposals, total_spent=1.0)
     n_pass = sum(p["verdict"] == "pass" for p in proposals)

@@ -6,8 +6,9 @@ import io
 import pytest
 
 from scripts import tester_ui
-from scripts.tester_ui import (Style, cell, choose, colors_on, excluded_count, gains_block, header,
-                                latency_cell, measure, menu_line, replayed_cell, shown, width)
+from scripts.tester_ui import (Style, cell, choose, colors_on, excluded_summary, exclusion_reason,
+                                gains_block, header, latency_cell, measure, menu_line, replayed_cell,
+                                shown, width)
 
 
 def m(valeur, statut="mesuré", unite="%"):
@@ -67,18 +68,26 @@ def test_replayed_cell_avec_et_sans_appels_rejoues():
     assert replayed_cell(prop("a", "pass", 100.0)) == "—"
 
 
-def test_shown_filtre_sous_95_pour_cent_et_trie_prouvees_dabord():
+def test_shown_ne_garde_que_les_propositions_prouvees_au_moins_95_pour_cent():
     a = prop("a", "reject", 82.5)     # sous le seuil : écarté
     b = prop("b", "pass", 100.0)
-    c = prop("c", "reject", 100.0)    # au-dessus, mais refusée (échantillon insuffisant) : écartée aussi
-    d = prop("d", "reject", None)     # precision non mesurée : jamais montrée
-    assert shown([a, b, c, d]) == [b]
+    c = prop("c", "reject", 100.0)    # au-dessus, mais refusée (échantillon insuffisant) : écarté aussi
+    d = prop("d", "pass", None)       # precision non mesurée : jamais montrée
+    e = prop("e", "pass", 99.0)
+    assert shown([a, b, c, d, e]) == [b, e]  # prouvées seulement, la précision la plus haute d'abord
 
 
-def test_excluded_count_compte_les_precisions_mesurees_sous_le_seuil():
+def test_exclusion_reason_distingue_precision_et_echantillon():
+    assert exclusion_reason(prop("a", "reject", 82.5)) == "précision < 95 %"
+    assert exclusion_reason(prop("c", "reject", 100.0)) == "échantillon insuffisant"
+    assert exclusion_reason(prop("d", "pass", None)) == "échantillon insuffisant"
+
+
+def test_excluded_summary_groupe_par_raison():
     items = [prop("mail-triage", "pass", 100.0), prop("reviews", "reject", 100.0),
              prop("brainstorm-bot", "reject", 82.5)]
-    assert excluded_count(items) == 2  # reviews (refusée) et brainstorm-bot (82,5 %)
+    assert excluded_summary(items) == "2 propositions écartées (1 échantillon insuffisant, 1 précision < 95 %)"
+    assert excluded_summary([prop("mail-triage", "pass", 100.0)]) is None
 
 
 def test_gains_block_affiche_cout_total_et_par_execution(capsys):

@@ -42,9 +42,10 @@ du workflow **dans votre instance** n8n, pas forcément 4553. Le parcours affich
 les modifications proposées, leur rejeu, puis un tableau des gains (précision, coût, latences, jetons ;
 `~` estimé, `—` non mesuré) : sous 95 % de précision (même seuil que le rejeu des règles), une modification
 n'apparaît nulle part, ni dans le tableau ni dans la PR. Suivent les gains sur l'ensemble du workflow (coût
-total avant/après, coût par exécution) et un menu Review / Push / Quitter (raccourcis R/P/Q). La PR n'est
-proposée qu'avec `REPO` et un gain prouvé ; Slack qu'avec `SLACK_WEBHOOK_URL` ; sinon le message et la page
-développeur s'affichent.
+total avant/après, coût par exécution) et un menu Review / Push / Quitter (raccourcis R/P/Q), dès qu'un
+gain est prouvé. Sans `REPO` : Review montre la page développeur, Push donne la commande exacte à relancer
+avec `REPO=…`. Slack n'est proposé qu'avec `SLACK_WEBHOOK_URL` ; sinon le message et la page développeur
+s'affichent.
 Les seuils des règles comptent des **appels IA par étape**, pas des exécutions : avec 1 à 3 exécutions, la
 commande liste les vérifications en attente (« modèle trop gros : 30 appels nécessaires, 18 présents »),
 ce n'est pas un échec. Sans aucune exécution, elle lit la structure seule (workflow téléchargé ou

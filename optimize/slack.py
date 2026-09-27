@@ -19,6 +19,17 @@ def _fmt(v, unit="", level=False):
     return f"{sign}{v:g}{' ' + unit if unit and unit != '%' else unit}"
 
 
+def _mesure_text(p, key, v):
+    """Comme le tableau du testeur (scripts.tester_ui.latency_cell) : la latence médiane à -100 %
+    (plus aucun appel au modèle) s'affiche en ms réelles, pas en pourcentage qui ressemble à un bug."""
+    if key == "latence_mediane" and v["valeur"] == -100.0:
+        ms = p.get("latence_ms") or {}
+        if ms.get("avant") is not None and ms.get("apres") is not None:
+            return f"{ms['avant']:.0f} ms → {ms['apres']:.0f} ms"
+    prefix = "~" if v["statut"] != "mesuré" else ""
+    return f"{prefix}{_fmt(v['valeur'], v['unite'], key in LEVELS)}"
+
+
 def _line(p, link, total_spent=None, equivalent_api=False):
     m = p["mesures"]
     icon = {"pass": "✅", "reject": "⛔", "non_teste": "◻️"}.get(p["verdict"], "•")
@@ -29,12 +40,8 @@ def _line(p, link, total_spent=None, equivalent_api=False):
                        ("latence_mediane", "latence médiane"), ("precision", "précision"),
                        ("latence_p95", "latence p95"), ("jetons_sortie", "jetons de sortie")):
         v = m.get(key)
-        ms = p.get("latence_ms") or {}
-        if key == "latence_mediane" and v and v["valeur"] == -100.0 and None not in (ms.get("avant"), ms.get("apres")):
-            # -100 % seul ressemble à un bug : les millisecondes mesurées, comme dans le tableau du testeur
-            parts.append(f"{label} {ms['avant']:.0f} ms → {ms['apres']:.0f} ms")
-        elif v and v["valeur"] is not None:
-            parts.append(f"{label} {'~' if v['statut'] != 'mesuré' else ''}{_fmt(v['valeur'], v['unite'], key in LEVELS)}")
+        if v and v["valeur"] is not None:
+            parts.append(f"{label} {_mesure_text(p, key, v)}")
     detail = ("Pour cette tâche : " + ", ".join(parts)) if parts else "; ".join(p.get("raisons") or ["non testé"])
     # part de la dépense totale : seulement si le coût de cette tâche est mesuré (jamais estimé), et
     # seulement des dollars sur la même période — jamais un pourcentage d'un autre périmètre.
