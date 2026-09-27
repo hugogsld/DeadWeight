@@ -16,6 +16,7 @@ from pathlib import Path
 
 import rules
 from catalog.recommend import recommend
+from report.billing import ABONNEMENT, billing_section, load_billing, spent_usd
 from report.cost import MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer, runs, window_seconds
 
 # En dessous d'une heure de trafic, projeter sur un mois multiplie du bruit :
@@ -133,10 +134,22 @@ def _missing_reasons(manquants):
     return sorted({m.split(": ", 1)[-1] for m in manquants})
 
 
-def build_report(events, detectors=None, banc=None):
+def load_banc(directory):
+    """Résultats de python -m bench m2 (banc-*.json), par finding_id. Dossier absent : rien."""
+    results = {}
+    for path in sorted(Path(directory).glob("banc-*.json")) if directory and Path(directory).is_dir() else []:
+        result = json.loads(path.read_text(encoding="utf-8"))
+        results[result["finding_id"]] = result
+    return results
+
+
+def build_report(events, detectors=None, banc=None, billing=None, propositions=None):
     """detectors : liste de (nom, detect). Par defaut, toutes les regles de rules/.
-    banc : {finding_id: résultat de bench.m2.prove} ; les options M2 testées portent leur verdict."""
+    banc : {finding_id: résultat de bench.m2.prove} ; les options M2 testées portent leur verdict.
+    billing : {"claude-code": {mode, source}, "codex": {...}} (D2.6, comprehension.json ou --billing).
+    propositions : sortie de python -m optimize (propositions.json), pour les gains par tâche prouvés."""
     events = list(events)
+    section = billing_section(events, billing) if billing else None
     by_id = {e["event_id"]: e for e in events}
     detectors = detectors if detectors is not None else _discover_detectors()
     findings = []
@@ -184,7 +197,39 @@ def build_report(events, detectors=None, banc=None):
         "constats": constats,
         "rien_a_signaler": clean,
         "souverainete": souverainete,
+        "billing": section,
+        "gains_par_tache": _task_gains(propositions, events) if propositions else [],
+        "gains_equivalent_api": bool(section and section["tout_abonnement"]),
     }
+
+
+_GAIN_FIGURES = (("jetons_envoyes", "contexte envoyé"), ("cout", "coût"),
+                 ("latence_mediane", "latence médiane"), ("precision", "précision"))
+
+
+def _task_gains(propositions, events):
+    """D2.6 (Problème 2) : une ligne par proposition prouvée de python -m optimize (verdict « pass »).
+    Chiffres et statuts (mesuré/estimé) repris tels quels, jamais recalculés ; la part de la dépense
+    totale compare des dollars sur la même période, jamais des pourcentages de périmètres différents."""
+    ok = [p for p in (propositions or []) if p.get("verdict") == "pass"]
+    if not ok:
+        return []
+    total_spent = spent_usd(events)
+    rows = []
+    for p in ok:
+        mesures = p.get("mesures") or {}
+        figures = [{"label": label, "valeur": v["valeur"], "unite": v.get("unite", ""),
+                    "statut": v.get("statut"), "niveau": key == "precision"}
+                   for key, label in _GAIN_FIGURES
+                   for v in [mesures.get(key)] if v and v.get("valeur") is not None]
+        part_pct = None
+        cout = p.get("cout_usd")
+        if (cout and cout.get("statut") == "mesuré" and total_spent
+                and cout.get("avant") is not None and cout.get("apres") is not None):
+            part_pct = round((cout["avant"] - cout["apres"]) / total_spent * 100)
+        rows.append({"app_id": p.get("app_id"), "changement": p.get("changement"),
+                     "figures": figures, "part_pct": part_pct})
+    return rows
 
 
 # ---------- rendu ----------
@@ -382,6 +427,61 @@ def _agent_section(agent):
 <p class="note">{meta}. Tous les chiffres viennent des vérifications et du rejeu, pas du modèle.</p></details>"""
 
 
+MODE_LABEL = {"abonnement": "Abonnement", "api": "API", "inconnu": "Inconnu"}
+
+
+def _billing_html(billing):
+    """D2.6 (Problème 1) : quand un outil tourne sur abonnement, le dollar affiché n'est pas payé
+    à l'usage — on le dit, et on montre des pics d'appels mesurés plutôt qu'un pourcentage inventé
+    d'une limite qu'aucun fournisseur ne publie en jetons."""
+    if not billing or not billing.get("outils"):
+        return ""
+    e, cards = html.escape, []
+    for o in billing["outils"]:
+        mode = MODE_LABEL.get(o["mode"], o["mode"])
+        source = f" (détecté via {e(o['source'])})" if o.get("source") else " (non détecté : configuration absente ou non reconnue)"
+        parts = [f"<h3>{e(o['outil'])} — {e(mode)}</h3><p class=\"note\">Mode de facturation{source}.</p>"]
+        if o["mode"] == ABONNEMENT:
+            valeur = o.get("valeur_equivalente_usd")
+            parts.append(f'<p><b>Valeur consommée en équivalent API</b> (le forfait est un abonnement, ce montant '
+                         f"n'est pas payé à l'usage) : {_usd(valeur)} sur la période observée.</p>")
+            p5, p7 = o.get("pic_5h") or {}, o.get("pic_semaine") or {}
+            parts.append(f"<p>Pic mesuré : {p5.get('nb_appels', 0)} appel(s) sur la fenêtre glissante de 5 heures "
+                         f"la plus chargée ; {p7.get('nb_appels', 0)} appel(s) sur la semaine glissante la plus "
+                         "chargée (faits mesurés, aucune limite officielle en jetons à comparer).</p>")
+            parts.append(f'<p class="note">{e(o.get("limite_note", ""))}</p>')
+        cards.append(f'<div class="card">{"".join(parts)}</div>')
+    return f"<h2>Facturation</h2>{''.join(cards)}"
+
+
+def _gains_html(rows, equivalent_api=False):
+    """D2.6 (Problème 2) : les gains prouvés par python -m optimize, un par tâche, jamais deux
+    pourcentages de périmètres différents additionnés. Sur abonnement, le dollar gagné n'est pas
+    retiré de la facture : on parle de valeur consommée en équivalent API, pas d'économie."""
+    if not rows:
+        return ""
+    total = "de la valeur consommée (équiv. API)" if equivalent_api else "de la dépense totale"
+    e, body = html.escape, []
+    for r in rows:
+        parts = []
+        for f in r["figures"]:
+            mark = "~" if f["statut"] != "mesuré" else ""
+            sign = "+" if isinstance(f["valeur"], (int, float)) and f["valeur"] > 0 and f["unite"] == "%" and not f["niveau"] else ""
+            parts.append(f"{f['label']} {mark}{sign}{f['valeur']:g}{f['unite']}")
+        share = f"{r['part_pct']} % {total}" if r["part_pct"] is not None else "—"
+        body.append(f"<tr><td>{e(r['app_id'] or '')}</td><td>{e(r['changement'] or '')}</td>"
+                    f"<td>Pour cette tâche : {e(', '.join(parts))}</td><td>{e(share)}</td></tr>")
+    subscription = ("<p class=\"note\"><b>Abonnement :</b> la facture reste le prix du forfait. Ces gains "
+                    "réduisent la valeur consommée en équivalent API et la part des limites d'usage "
+                    "(fenêtres de 5 heures et hebdomadaire), pas le montant payé.</p>") if equivalent_api else ""
+    return f"""<h2>Gains par tâche, prouvés</h2>{subscription}
+<p class="note">Mesuré = rejeu des mêmes entrées sur l'historique du client (python -m optimize) ; ~ = estimé,
+jamais additionné à un autre pourcentage. La part {total} compare des dollars sur la même
+période, jamais des pourcentages de périmètres différents.</p>
+<table><tr><th>Tâche</th><th>Changement</th><th>Pour cette tâche</th><th>Part {total}</th></tr>
+{"".join(body)}</table>"""
+
+
 def render_html(report):
     r, e = report["resume"], html.escape
     if not r["nb_appels"]:
@@ -396,15 +496,24 @@ def render_html(report):
         rows = "".join(
             f"<tr><td>{e(a['app_id'])}</td><td>{a['chiffres']['nb_appels']}</td>"
             f"<td>{_usd(_cost(a['chiffres']))}</td></tr>" for a in report["rien_a_signaler"])
+        billing = report.get("billing")
+        kpi_label, kpi_value = _cost_label(g, "Coût mensuel total")
+        if report.get("gains_equivalent_api"):  # abonnement : ce dollar n'est pas facturé à l'usage
+            kpi_label = kpi_label.replace("Coût mensuel total", "Valeur consommée (équiv. API), par mois") \
+                .replace("Coût observé", "Valeur consommée (équiv. API)")
+        else:
+            kpi_label = kpi_label.replace("Coût observé", "Coût observé total")
         body = f"""<div class="kpis">
 <div class="kpi"><b>{r['nb_appels']}</b><span>appels observés</span></div>
 <div class="kpi"><b>{r['nb_applications']}</b><span>applications</span></div>
-<div class="kpi"><b>{_usd(_cost_label(g)[1])}</b><span>{_cost_label(g, "Coût mensuel total")[0].replace("Coût observé", "Coût observé total").lower()}</span></div>
+<div class="kpi"><b>{_usd(kpi_value)}</b><span>{kpi_label.lower()}</span></div>
 <div class="kpi"><b>{len(report['constats'])}</b><span>constats</span></div></div>
 {missing}
 <p class="note">Vérifications effectuées : {checks}.</p>
+{_billing_html(billing)}
 {_agent_section(report.get("agent"))}
 <h2>Constats, du plus coûteux au moins coûteux</h2>{cards}
+{_gains_html(report.get("gains_par_tache"), report.get("gains_equivalent_api", False))}
 {_sovereignty(report.get("souverainete"))}
 <h2>Rien à signaler</h2>
 <p class="note">Ces applications ne déclenchent aucune des vérifications ci-dessus.</p>
@@ -425,13 +534,18 @@ def main():
     ap.add_argument("events", help="fichier .jsonl d'evenements")
     ap.add_argument("-o", "--out", default="out/audit.html")
     ap.add_argument("--banc", help="dossier des résultats de python -m bench m2 (banc-*.json)")
+    ap.add_argument("--comprehension", help="comprehension.json de python -m connectors.agent_logs "
+                    "(mode de facturation par outil, D2.6)")
+    ap.add_argument("--billing", choices=["abonnement", "api"],
+                    help="force le mode de facturation pour tous les outils reconnus, remplace la détection")
+    ap.add_argument("--propositions", help="propositions.json de python -m optimize "
+                    "(gains par tâche prouvés, D2.6)")
     args = ap.parse_args()
     lines = Path(args.events).read_text(encoding="utf-8").splitlines()
-    banc = {}
-    for path in sorted(Path(args.banc).glob("banc-*.json")) if args.banc else []:
-        result = json.loads(path.read_text(encoding="utf-8"))
-        banc[result["finding_id"]] = result
-    report = build_report((json.loads(line) for line in lines if line.strip()), banc=banc)
+    billing = load_billing(args.comprehension, args.billing)
+    propositions = json.loads(Path(args.propositions).read_text(encoding="utf-8")) if args.propositions else None
+    report = build_report((json.loads(line) for line in lines if line.strip()), banc=load_banc(args.banc),
+                          billing=billing, propositions=propositions)
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render_html(report), encoding="utf-8")

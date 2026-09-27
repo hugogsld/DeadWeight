@@ -152,3 +152,17 @@ def test_measured_factor_replaces_the_estimate(events, finding):
     assert option["facteur_mesure"] < estimate / 5
     page = render_html(build_report(events, banc={FINDING: result}))
     assert f"×{option['facteur_mesure']} moins cher mesuré au banc (estimation ×{estimate})" in page
+
+
+def test_audit_command_reads_bench_verdicts(events, finding, tmp_path):
+    """make audit -> agent.audit --banc : les verdicts du banc arrivent dans le rapport."""
+    from agent.audit import main as agent_main
+    from report.audit import load_banc
+    Client, _ = fake_client(answers(events, finding))
+    banc = tmp_path / "banc"
+    banc.mkdir()
+    (banc / f"banc-{FINDING}.json").write_text(json.dumps(m2.prove(events, finding, max_cases=20, client_cls=Client)))
+    assert set(load_banc(banc)) == {FINDING} and load_banc(tmp_path / "absent") == {}
+    out = tmp_path / "audit.html"
+    agent_main([str(DATASET), "-o", str(out), "--banc", str(banc)])
+    assert "Banc : accord de 100 % sur 20 requêtes réelles, validé." in out.read_text()

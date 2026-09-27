@@ -4,6 +4,11 @@ DeadWeight relaie vos appels OpenAI, Anthropic ou Gemini, les enregistre **local
 rapport HTML sur les usages à examiner. Vous gardez votre clé, vos modèles et votre
 application ; seul le `base_url` change. Aucun remplacement automatique des appels.
 
+**Projet agentique** : un agent auditeur mène l'enquête, choisit quoi prouver, lance les outils et rédige le plan
+d'action ; un garde-fou refuse tout chiffre qui ne sort pas de ces outils.
+
+**Équipe** : Natan Lasar, Hugo Gesland, Thibault Gregori, Alexandre Zénou.
+
 > Travaux antérieurs déclarés : voir [Construit pendant le hackathon](#construit-pendant-le-hackathon-déclaration-des-travaux-antérieurs).
 
 ## Tester Deadweight en 5 minutes (sans clé, sans appel payant)
@@ -20,6 +25,41 @@ La dernière commande rejoue l'historique d'exemple, propose une modification pa
 (la page développeur). Ajoutez `--repo <chemin/du/depot>` pour obtenir aussi le diff et le texte de chaque
 micro-PR ; le dépôt n'est pas modifié. Pour tout vérifier d'un coup : `make e2e`.
 
+### Scénario testeur (workflow 4553)
+
+```sh
+make tester WF=4553                               # parcours guidé, questions [O/n]
+make tester WF=4553 REPO=~/mon-depot OUI=1        # tout accepter (tournage)
+make tester WF=4553 SOURCE=fixtures/dataset/v1/events.jsonl   # répétition sur l'historique d'exemple
+```
+
+Prérequis réels : le workflow [4553](https://n8n.io/workflows/4553) importé dans votre n8n **et exécuté
+plusieurs fois** ; `N8N_URL` et
+`N8N_API_KEY` dans `.env.local` (sinon, un dossier déjà téléchargé dans `private/n8n/4553`) ; la clé du
+fournisseur (`OPENAI_API_KEY`) seulement pour le banc « modèle plus petit ». Attention : `WF` est l'id
+du workflow **dans votre instance** n8n, pas forcément 4553. Le parcours affiche nom, nœuds, appels IA et
+exécutions, la liste des modifications, puis précision (rejeu), latence, coût et données envoyées au
+modèle, chacun marqué mesuré, `~` estimé ou « non mesuré ». La PR n'est proposée qu'avec `REPO` et un gain
+prouvé, Slack qu'avec `SLACK_WEBHOOK_URL` ; sinon le message et la page développeur s'affichent.
+Les seuils des règles comptent des **appels IA par étape**, pas des exécutions : avec 1 à 3 exécutions, la
+commande liste les vérifications en attente (« modèle trop gros : 30 appels nécessaires, 18 présents »),
+ce n'est pas un échec. Sans aucune exécution, elle lit la structure seule (workflow téléchargé ou
+bibliothèque publique n8n.io, sans clé) et n'affiche que des estimations `~`, puis explique comment mesurer.
+
+### Audit complet en une commande
+
+```sh
+make audit-complet SOURCE=n8n:<id>                         # ou un dossier n8n, gateway, out/events.db,
+make audit-complet SOURCE=~/.claude/projects/<projet> REPO=../mon-app   # events.jsonl, journaux Claude Code / Codex
+```
+
+Enchaîne détection de la source (n8n : `check` puis `fetch` avec `N8N_URL` / `N8N_API_KEY` ; passerelle :
+trafic déjà capturé ; journaux Claude Code / Codex), rapport (`out/audit-complet/audit.html`), propositions
+testées puis, avec `REPO=…`, ouverture des micro-PR prouvées (gh). Enfin le message Slack part par
+`SLACK_WEBHOOK_URL` (webhook entrant) avec un bouton « Voir la PR » par micro-PR : un simple lien vers GitHub,
+rien ne se fusionne depuis Slack. Il ne part que s'il y a un gain prouvé (`DEMO=1` montre tout) ; sans webhook,
+le message reste dans `out/audit-complet/optim/slack.md` et la commande le dit.
+
 ## Brancher Deadweight sur vos workflows : quatre voies
 
 | Vous utilisez… | Voie | Commande | Section |
@@ -28,6 +68,9 @@ micro-PR ; le dépôt n'est pas modifié. Pour tout vérifier d'un coup : `make 
 | LangChain, SDK d'agents OpenAI, Vercel AI… | OpenTelemetry | `.venv/bin/python -m connectors.otel traces.json` | [OpenTelemetry](#opentelemetry) |
 | Claude Code ou Codex | journaux de session | `python3 -m connectors.agent_logs run.zip` | [Journaux](#journaux-claude-code-et-codex-b1) |
 | n8n | historique d'exécution | `python3 -m importers.n8n check / fetch / convert` | [n8n](#importer-lhistorique-n8n-b1) |
+
+Chaque voie a été vérifiée sur un clone neuf avec de vraies applications, temps et messages d'erreur
+relevés : [docs/verification-voies-de-connexion.md](docs/verification-voies-de-connexion.md).
 
 Ensuite, pour toutes les voies : `.venv/bin/python -m report.audit` (rapport), `make audit` (agent auditeur, avec
 votre clé) et `.venv/bin/python -m optimize` (propositions prouvées et micro-PR). Tout tourne sur votre machine.
@@ -169,6 +212,7 @@ dans le repo **[Workflow-test-hackathon-agentique-25-09-2026](https://github.com
 | [workflow 1 - Miguel short](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short) | pipeline de production de shorts vidéo piloté par des agents Claude Code (snapshot) |
 | [workflow 2 - Recap Gmail](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%202%20-%20Recap%20Gmail) | un agent lit les mails des dernières 24 h et rédige un récap |
 | [workflow 3 - OpenAI story flow](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%203%20-%20OpenAI%20story%20flow) | exemple officiel `deterministic.py` du SDK Agents d'OpenAI : trois agents à la suite |
+| [workflow 4 - Tri tickets support](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%204%20-%20Tri%20tickets%20support) | un appel `gpt-4o-mini` par ticket de support, 4 catégories : testé jusqu'à la PR d'optimisation |
 
 Ce que chaque test a donné, et les problèmes à corriger : [docs/retours-tests-workflows.md](docs/retours-tests-workflows.md).
 
@@ -183,7 +227,10 @@ Langfuse…) ? Deux façons de les auditer, sans rien changer à votre code :
 
     # 2. en direct : ajoutez la passerelle comme destination de vos traces
     OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://127.0.0.1:8080/v1/traces
-    OTEL_EXPORTER_OTLP_PROTOCOL=http/json
+
+La passerelle lit l'OTLP/HTTP en JSON **et** en protobuf : l'exportateur Python officiel (protobuf) et celui
+de Node.js (JSON) marchent tels quels, sans régler `OTEL_EXPORTER_OTLP_PROTOCOL`. Le gRPC (port 4317) n'est
+pas lu : utilisez l'exportateur HTTP.
 
 Par défaut, OpenTelemetry transmet l'usage (modèles, jetons, durées) et l'enchaînement des appels : on
 chiffre et on repère des pistes. Pour les preuves (rejeu, banc de modèles), activez la capture du contenu
@@ -348,8 +395,8 @@ Deadweight est construit par quatre personnes : **Natan Lasar**, **Hugo Gesland*
 Deadweight part d'un **prototype réalisé le 12 septembre 2026** au hackathon *Agents, Everywhere — AI Tinkerers
 x OpenAI* (Paris), avant le hackathon X-IA. Nous le déclarons ici ; tout le reste a été construit les
 **26 et 27 septembre 2026**. L'historique git le montre : 22 commits le 12/09 (de `e5fb548` à `0a65051`),
-aucun entre le 13 et le 25/09, puis 111 commits et 70 PR fusionnées les 26 et 27/09 (compte arrêté
-le 27/09 à 16 h).
+aucun entre le 13 et le 25/09, puis 123 commits et 82 PR fusionnées les 26 et 27/09 (au 27/09, compte arrêté
+à 18 h 30).
 
 | | Prototype du 12/09 (antérieur) | Construit les 26-27/09 (hackathon X-IA) |
 |---|---|---|
@@ -358,7 +405,7 @@ le 27/09 à 16 h).
 | **Prouver** | rejeu d'un nœud n8n (`prover/`) | rejeu générique (`proof/`), banc de modèles (`bench/`), mode miroir et court-circuit, catalogue de modèles et souveraineté (`catalog/`) |
 | **Coût** | prix OpenRouter pour la démo (`collector/`) | coût mesuré sur les prix réels, cache compris, période d'observation commune (`report/`) |
 | **Livrer** | un patch n8n (`patcher/`) et un message Slack (`habitat/`) | **agent auditeur** (`agent/`) qui enquête avec des outils et ne cite que des chiffres produits par eux ; rapport HTML ; propositions testées, petites PR (n8n, alias de modèle) et message Slack des gains prouvés (`optimize/`) |
-| **Qualité** | script de démo (`run.sh`) | 874 tests (27/09), CI qui rejoue le parcours complet de la démo (`make e2e`) |
+| **Qualité** | script de démo (`run.sh`) | 949 tests (27/09, 19 h), CI qui rejoue le parcours complet de la démo (`make e2e`) |
 
 Les dossiers `detector/`, `prover/`, `patcher/`, `collector/`, `habitat/` et `workflows/` viennent du prototype.
 Depuis, seuls deux fichiers y ont été modifiés : `collector/pricing.py` (prix avec cache) et `prover/prove.py`

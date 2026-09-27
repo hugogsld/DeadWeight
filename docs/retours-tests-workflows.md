@@ -33,6 +33,7 @@ Statuts : `ouvert` → `en cours (#PR)` → `corrigé (#PR)`, ou `abandonné (ra
 | Jeu de données D0.3 | 1 332 événements générés | les six règles, cas positifs et négatifs |
 | **Miguel shorts-factory** ([`workflow 1 - Miguel short`](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%201%20-%20Miguel%20short)), lecture du code | **aucun appel capturé** : lecture du code d'orchestration et du relevé de coûts réel (316 lignes, 7 lots de production) | ce que Deadweight verrait, et ce qu'il ne peut pas voir, sur un pipeline d'agents en production |
 | **OpenAI story flow** ([`workflow 3 - OpenAI story flow`](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%203%20-%20OpenAI%20story%20flow)), test réel | **77 appels réels** `gpt-4o-mini` : 30 exécutions de l'exemple officiel `deterministic.py` du SDK Agents (plan → vérification → histoire) | capture, traces (D1.4), R1, rejeu, API Responses |
+| **Tri des tickets de support** ([`workflow 4 - Tri tickets support`](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/tree/main/workflow%204%20-%20Tri%20tickets%20support)), test réel jusqu'à la PR | **160 appels réels** `gpt-4o-mini`, 4 catégories ; puis 20 nouveaux tickets avec la PR appliquée | R1, rejeu PASS, `optimize --open-prs`, court-circuit |
 
 Résultat global sur le récap Gmail : la chaîne complète tourne sur du vrai trafic.
 R1 « une IA qui répond toujours la même chose » est détectée sur le tri (47 appels,
@@ -141,6 +142,77 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
   clé), affichés `reject`. Problèmes 15 et 17.
 - **Problèmes** : 4 (confirmé après plus d'une heure), 15, 16, 17.
 
+### Fiche : Sources de workflows (27/09)
+
+Objectif : vérifier que Deadweight se branche sur les principales sources de workflows d'entreprise.
+Chaque test : une vraie application lancée en local, son trafic passé par Deadweight, puis le rapport.
+Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour de vrai ».
+
+- **n8n 2.40.7** (installé en local, `npx n8n`) : workflow webhook → Basic LLM Chain → OpenAI Chat
+  Model, 42 exécutions. **Passerelle** : l'identifiant OpenAI de n8n a un champ *Base URL* et un
+  en-tête personnalisé → 42/42 appels captés, `app_id` = `n8n-mail-triage`. **Import de
+  l'historique** (`importers.n8n check/fetch/convert`) : 42/42 exécutions, 100 % des appels LLM
+  compris, jetons réels, une trace par exécution. Même rapport par les deux voies. Pour ne pas
+  saisir de vraie clé dans n8n, l'amont était le faux OpenAI du projet.
+- **LangChain** (`langchain-openai` 1.6.6) : `ChatOpenAI(base_url=…, default_headers=…)`, appels
+  simples et streaming : 4/4 captés.
+- **Claude Code** : journaux de session d'un vrai projet (5,5 Mo) → `connectors.agent_logs` :
+  300 appels lus, 0 ignoré, niveaux 1 à 3. Rapport : 2 constats R12 (problème 19), 730 $/mois
+  affichés pour une session sous abonnement (problème 9).
+- **OpenTelemetry en direct** : application Python, exportateur officiel
+  `opentelemetry-exporter-otlp-proto-http` 1.45 → `/v1/traces` : **415, 0 événement** (problème 18),
+  corrigé par #118 (protobuf accepté).
+- **SDK Agents d'OpenAI** : l'API Responses n'est toujours pas capturée sur `main` (problème 11).
+- Non vérifié : Claude Code et Codex en direct par la passerelle, Codex en journaux, Ollama, Make,
+  Zapier, Azure OpenAI, Bedrock, Vertex (outil ou compte absent).
+
+### Fiche : OpenAI story flow, retest sur `main` (27/09)
+
+- **Version testée** : `main` @ `22416ce` (20 vérifications, agent auditeur, `optimize`, banc corrigé).
+- **Trafic** : 30 exécutions réelles (2 lots de 15), **77 appels** `gpt-4o-mini` captés, 0,0196 $.
+- **Ce qui a progressé depuis le 26/09** : coût du rapport juste (« coût observé 0,0196 $, moins
+  d'une journée de trafic, 1 passage », plus de projection, correctif #98) ; un candidat du banc sans
+  clé est ignoré avec son motif (correctif #99) ; le banc envoie le prompt système (#82).
+- **Toujours présent** : R1 sur le vérificateur (30 appels, 2 réponses) et rien d'autre ;
+  **0 trace sur 77** (problème 10) ; exécution en API Responses : 77 événements avant et après
+  (problème 11) ; rejeu `REJECT`, 6 entrées rejouées, règles `package|mira|orion|action` et
+  `hotel|fire|whisker|love` (problèmes 3 et 12) ; rejeu affichant `24.5147 → 4.0858 USD/mois` pour
+  0,0023 $ réels (problème 1) ; champ `good_quality` toujours vrai, non signalé (problème 14).
+- **Agent auditeur** (`gpt-5-mini`, 7 appels, 0,0244 $) : plan en 5 points, « observer en miroir
+  puis rejouer ». Son rejeu avec extraction par IA : `REJECT`, **0 % d'accord, aucune règle
+  extraite**. Son plan écrit « **coût mensuel observé** lié au flux : 24,51 USD » (problème 20).
+- **`optimize`** : « 0 optimisation prouvée sur 1 testée ». La piste refusée propose 2 règles dont les
+  sorties sont `good_quality":true,"is_scifi":true` : le JSON d'origine sans ses accolades
+  (problème 21).
+- **Banc** (`--template cc862e1861 --candidates small`, 30 cas) : `openai-gpt-5-nano` score **0,0**.
+  Sa réponse réelle sur un cas : « Verdict — Quality: Solid premise… Sci-fi status: Yes » : il fait
+  le bon jugement, en prose, alors que la référence est `{"good_quality":true,"is_scifi":true}`
+  (problème 22).
+- **Problèmes** : 1, 3, 10, 11, 12, 14 (confirmés), 20, 21, 22.
+
+### Fiche : Tri des tickets de support, jusqu'à la PR (27/09)
+
+- **Workflow** : `triage.py`, un appel `gpt-4o-mini` par ticket, 4 catégories (`facturation`,
+  `compte`, `technique`, `livraison`) ; 160 tickets réalistes générés (graine fixe), sans étiquette.
+- **Trafic** : 160 appels réels en 110 s, 40 par catégorie.
+- **Rapport** : R1 sur le tri. **Rejeu : `PASS`**, 112 entrées rejouées (48 exemples exclus), **95,0 %
+  d'accord** sur 80 remplacées, 71 % des tickets sans modèle. Règles extraites :
+  `passe|compte|arrive|connecter` → compte, `notification|marchent|android|application` → technique,
+  `facture|abonnement|pui|télécharger` → facturation, `coli|suivi|livreur|déposé` → livraison.
+- **`optimize --repo --open-prs`** : a d'abord planté sur les liens cassés du dépôt (problème 24,
+  corrigé par #120), puis a ouvert la PR
+  [thibaudgregori/…#1](https://github.com/thibaudgregori/Workflow-test-hackathon-agentique-25-09-2026/pull/1) : aucune ligne de code touchée,
+  `deadweight/preuves/proof-support-triage.json` ajouté et `GATEWAY_SHORTCIRCUIT=deadweight/preuves`
+  dans `.env.example`. Texte de PR : précision 95 %, coût −71,4 %, 112 appels rejoués, statut de chaque
+  chiffre. Message Slack : « coût −71 %, 0,002058 $ → 0,0005885 $ sur la période observée ».
+- **PR appliquée, 20 nouveaux tickets** (autre graine), passerelle avec la preuve : « court-circuit
+  actif sur 1 constat prouvé ». **16/20 répondus par la passerelle en 0,20 ms médiane, 0 appel
+  OpenAI** ; 4 relayés au modèle de secours (889 ms). Mais **2 des 16 réponses de la passerelle sont
+  fausses** : « Mon colis n'est toujours pas arrivé à Nantes, le suivi indique « en transit »
+  **depuis** 5 jours » → `facturation` au lieu de `livraison`. Précision réelle sur ces tickets :
+  **14/16 = 87,5 %**, pour 95 % prouvés (problème 23).
+- **Problèmes** : 1 (rejeu `48.897 → 13.9706 USD/mois` pour 0,002 $ réels), 12, 23, 24, 25, 26.
+
 ## Problèmes ouverts
 
 | # | Problème | Gravité | Où | Vu sur | Statut |
@@ -148,7 +220,7 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
 | 1 | Le rejeu affiche encore une projection mensuelle absurde | haute | `proof/replay.py` | Récap Gmail, OpenAI story flow | ouvert |
 | 2 | R1 conseille des « règles fixes » que le rejeu refuse ensuite | haute | `report/audit.py`, `proof/` | Récap Gmail | ouvert |
 | 3 | Le rejeu ne peut presque jamais conclure sous ~90 appels | moyenne | `proof/replay.py`, `rules/low_entropy.py` | Récap Gmail, OpenAI story flow | ouvert |
-| 4 | La projection mensuelle surestime les workflows par lots, même après une heure | haute | `report/audit.py`, `report/cost.py` | Récap Gmail (2 passages) | ouvert |
+| 4 | La projection mensuelle surestime les workflows par lots, même après une heure | haute | `report/audit.py`, `report/cost.py` | Récap Gmail (2 passages) | corrigé (#98) |
 | 5 | Choix de R5 à valider en équipe | basse | `rules/unbounded_loop.py` | tests D2.4 | ouvert |
 | 6 | Heuristique de traces jamais confrontée à un historique réécrit | basse | `gateway/traces.py` | aucun (à tester) | ouvert |
 | 7 | Deadweight ne voit pas les agents lancés par Claude Code, `claude -p` ou `codex exec` | haute | installation (D4.2), `gateway/` | Miguel shorts-factory (lecture du code) | ouvert |
@@ -159,9 +231,18 @@ Restent de vrais agents : `design:`, `author:` (création), `metadata:` (rédact
 | 12 | L'extraction de règles hors ligne apprend des noms propres | moyenne | `proof/extract.py` | OpenAI story flow | ouvert |
 | 13 | La bonne règle se trouve en amont : l'extraction ne regarde que l'entrée de l'appel signalé | moyenne | `proof/extract.py`, `gateway/traces.py` | OpenAI story flow | ouvert |
 | 14 | Sortie structurée : un champ qui ne change jamais n'est pas signalé | moyenne | `rules/low_entropy.py` | OpenAI story flow | ouvert |
-| 15 | Le banc de modèles envoie les cas sans le prompt système : les candidats ne reçoivent pas la consigne | haute | `bench/testset.py` | Récap Gmail (retest) | ouvert |
-| 16 | Le plan de l'agent auditeur contient des chiffres mal attribués et une recommandation incohérente | moyenne | `agent/`, `report/audit.py` | Récap Gmail (retest) | ouvert |
-| 17 | Banc : un candidat sans clé est affiché « reject, score 0 » au lieu de « non testé » | basse | `bench/runner.py`, `bench/report.py` | Récap Gmail (retest) | ouvert |
+| 15 | Le banc de modèles envoie les cas sans le prompt système : les candidats ne reçoivent pas la consigne | haute | `bench/testset.py` | Récap Gmail (retest) | corrigé (#82) |
+| 16 | Le plan de l'agent auditeur contient des chiffres mal attribués et une recommandation incohérente | moyenne | `agent/`, `report/audit.py` | Récap Gmail (retest) | corrigé (#99) |
+| 17 | Banc : un candidat sans clé est affiché « reject, score 0 » au lieu de « non testé » | basse | `bench/runner.py`, `bench/report.py` | Récap Gmail (retest) | corrigé (#99) |
+| 18 | OpenTelemetry en direct : la passerelle refuse le protobuf, seul format de l'exportateur Python | haute | `gateway/proxy.py` (`receive_traces`), `connectors/otel.py` | Sources (27/09) | corrigé (#118) |
+| 19 | R12 conseille de plafonner la longueur des réponses d'un agent de code | moyenne | `rules/verbose_output.py` | Sources (27/09), Claude Code | ouvert |
+| 20 | Le plan de l'agent auditeur présente la projection du rejeu comme un « coût mensuel observé » | haute | `agent/`, `proof/replay.py` | OpenAI story flow (retest) | ouvert |
+| 21 | Les règles de remplacement renvoient la sortie normalisée, pas la sortie d'origine | moyenne | `rules/low_entropy.py`, `proof/extract.py`, `optimize/` | OpenAI story flow (retest) | ouvert |
+| 22 | Banc : les tâches à sortie structurée (`response_format`) ont toujours un score de 0 | haute | `bench/client.py`, `schemas/event.schema.json` | OpenAI story flow (retest) | ouvert |
+| 23 | Les règles cherchent des fragments de mots : `pui` (de « puis-je ») attrape « depuis ». Réponses fausses en production | haute | `proof/extract.py`, `gateway/shortcircuit.py` | Tri tickets (PR appliquée) | ouvert |
+| 24 | `optimize --repo` plante si le dépôt du client contient un lien symbolique cassé | haute | `optimize/patch.py` | Tri tickets | corrigé (#120) |
+| 25 | Titre de la PR `optimize` coupé au milieu d'un mot | basse | `optimize/patch.py` (`pr_text`) | Tri tickets | ouvert |
+| 26 | Dans un dépôt à plusieurs applications, la preuve et `.env.example` sont écrits à la racine, pas dans le dossier de l'application | moyenne | `optimize/patch.py` (`_apply_regles`) | Tri tickets | ouvert |
 
 ### 1. Le rejeu affiche une projection mensuelle absurde
 
@@ -491,6 +572,138 @@ les candidats pour lesquels on a une clé.
 défaut. Accepter aussi des identifiants dans `--candidates`
 (`--candidates openai-gpt-5-nano,openai-gpt-5-mini`).
 
+### 18. OpenTelemetry en direct : la passerelle refuse le protobuf
+
+**Constat.** Application Python, span GenAI autour d'un vrai appel `gpt-4o-mini`, exportateur
+officiel `OTLPSpanExporter` (`opentelemetry-exporter-otlp-proto-http` 1.45), destination
+`http://127.0.0.1:8097/v1/traces`. Avec `OTEL_EXPORTER_OTLP_PROTOCOL=http/json` comme le demande le
+README, et sans : `Failed to export spans batch code: 415, reason: Unsupported Media Type`. **0
+événement capturé.**
+
+**Cause.** `receive_traces` n'accepte qu'un `content-type` JSON. L'exportateur OTLP/HTTP officiel de
+Python envoie du protobuf (`application/x-protobuf`), **constaté même avec `http/json`** : le réglage
+du README n'a donc aucun effet pour une application Python, qui est le cas le plus courant en IA.
+
+**Correction** (#118, fusionnée). Accepter `application/x-protobuf` dans `receive_traces` : décoder avec
+`opentelemetry.proto.collector.trace.v1.trace_service_pb2.ExportTraceServiceRequest`, convertir par
+`google.protobuf.json_format.MessageToDict` (identifiants en base64, déjà gérés par
+`connectors/otel.py`), puis le même chemin que le JSON. Retirer `http/json` du README. Test : le script
+`manual.py` de la fiche, qui doit donner 3 événements.
+
+**À savoir aussi.** L'instrumentation automatique officielle `opentelemetry-instrumentation-openai-v2`
+n'a pas pu tourner : 2.4b0 importe un module absent de `opentelemetry-util-genai` 1.2b0, 2.3b0
+échoue avec `wrapt` 2.5, et le SDK `openai` 3.x a remplacé `httpx` par `httpx2`. Un client Python qui
+suit la documentation OpenTelemetry tombera sur ces erreurs avant même d'arriver chez nous.
+
+### 19. R12 conseille de plafonner les réponses d'un agent de code
+
+**Constat.** Journaux Claude Code d'un vrai projet : R12 « des réponses bien plus longues que
+nécessaire », 263 appels, réponse typique 766 jetons, 90e centile 1 799, « plafonner autour de 920
+jetons ». Pour un agent de code, une longue réponse est souvent un appel d'outil qui écrit un
+fichier : un plafond à 920 jetons couperait l'écriture au milieu.
+
+**Correction.** Ne pas compter dans R12 les réponses dont la longueur vient d'appels d'outils
+(arguments de `Write`, `Edit`, `Bash`…), ou exclure les appels qui finissent en `tool_calls`. Ne
+proposer un plafond que sur le texte libre rendu à l'utilisateur.
+
+### 20. Le plan de l'agent présente la projection du rejeu comme un coût observé
+
+**Constat.** Retest du story flow : le rapport affiche « coût observé 0,0023 $ » pour le vérificateur,
+sans projection (correctif #98). Le plan de l'agent auditeur, sur la même page, écrit « Coût mensuel
+observé lié au flux : 24.51 USD (résultat de la vérification) ». Ce chiffre est la projection du rejeu
+(problème 1), sur 4 minutes de trafic, et il n'est pas « observé ».
+
+**Cause.** Le problème 1 (le rejeu projette sans garde-fou) remonte jusqu'au plan, et l'agent reprend
+le champ en l'appelant « observé ». Le contrôle des chiffres du plan (#99) vérifie qu'un chiffre
+existe dans les résultats des outils, pas qu'il est cité sous le bon nom.
+
+**Correction.** Corriger d'abord le problème 1 : `proof/replay.py` doit utiliser le même chiffrage que
+le rapport (coût observé sous un jour de trafic). Puis, dans le contrôle du plan, refuser « observé »
+accolé à un chiffre qui vient d'une projection.
+
+### 21. Les règles de remplacement renvoient la sortie normalisée
+
+**Constat.** `optimize` propose de remplacer le vérificateur par 2 règles dont les sorties sont
+`good_quality":true,"is_scifi":true` et `good_quality":true,"is_scifi":false`. La vraie sortie du
+modèle était `{"good_quality":true,"is_scifi":true}`. Les accolades et guillemets de bord ont disparu :
+ce n'est plus du JSON.
+
+**Cause.** R1 normalise les sorties avant de les compter (casse, espaces, **ponctuation de bord**),
+pour que « Spam. » et « spam » comptent pour une seule sortie. La clé normalisée sert ensuite de
+réponse des règles. Le rejeu compare des sorties normalisées des deux côtés : il afficherait 100 %
+d'accord pour des règles qui renverraient du JSON cassé.
+
+**Impact aujourd'hui.** Aucun en production : le court-circuit ne s'applique pas aux réponses JSON
+(`gateway/shortcircuit.py`), et la proposition a été refusée. Mais une micro-PR `optimize` validée
+renverrait ces valeurs.
+
+**Correction.** Garder pour chaque sortie normalisée la **sortie d'origine la plus fréquente**, et
+faire renvoyer celle-ci par les règles. Test : sur le story flow, les règles doivent rendre
+`{"good_quality":true,"is_scifi":true}`.
+
+### 22. Banc : les tâches à sortie structurée ont toujours un score de 0
+
+**Constat.** Banc sur le vérificateur du story flow : `openai-gpt-5-nano`, score 0,0 sur 30. Appelé
+à la main sur un cas réel, il répond « Verdict — Quality: Solid premise… Sci-fi status: Yes » : le bon
+jugement, en prose. La référence est `{"good_quality":true,"is_scifi":true}`, la comparaison est une
+égalité stricte : 0.
+
+**Cause.** L'appel d'origine imposait un format de sortie (`response_format: json_schema`, c'est ce
+que fait le SDK Agents avec `output_type=`). `bench/client.py` n'envoie que `model`, `messages` et
+`temperature`. Et l'événement ne garde que le type du format (`params.response_format =
+"json_schema"`), pas le schéma : on ne pourrait pas le rejouer même en le voulant.
+
+**Correction.**
+- Schéma d'événement : garder le schéma de sortie demandé (`request.params.response_schema`, objet
+  JSON, `null` sinon). C'est un changement de contrat, à discuter.
+- Banc : transmettre `response_format` au candidat quand il est connu ; sinon marquer le cas « non
+  testable (sortie structurée, schéma inconnu) » au lieu de compter 0.
+- Comparer les sorties JSON par leur contenu (objets égaux), pas par le texte.
+
+### 23. Les règles cherchent des fragments de mots, avec des réponses fausses en production
+
+**Constat.** PR du tri des tickets appliquée, 20 nouveaux tickets : 2 des 16 réponses de la
+passerelle sont fausses. « Mon colis n'est toujours pas arrivé à Nantes, le suivi indique « en
+transit » depuis 5 jours » → `facturation`. La preuve annonçait 95 % ; mesuré sur ces tickets :
+87,5 %.
+
+**Cause.** Deux défauts qui s'additionnent :
+- les règles sont des **fragments** sans limite de mot : `pui` (tronqué de « puis-je télécharger
+  ma facture ») est trouvé dans « de**pui**s » ; `coli` sert pour « colis » ;
+- les règles sont essayées **dans l'ordre**, et la première qui trouve l'emporte : `facturation`
+  passe avant `livraison`, alors que le ticket contient aussi `coli` et `suivi`.
+
+Le rejeu ne l'a pas vu : dans l'historique rejoué, peu de tickets « colis … depuis » tombaient hors
+des exemples d'extraction. C'est l'écart classique entre une preuve sur l'historique et le trafic
+neuf.
+
+**Correction.**
+- Limites de mot dans les expressions (`\bpuis\b`, `\bcolis?\b`) et mots entiers, pas des
+  fragments tronqués (lié au problème 12).
+- Quand plusieurs règles trouvent, ne pas prendre la première : laisser le **modèle de secours**
+  répondre (l'entrée est ambiguë).
+- Avant d'activer une PR `regles`, passer par le **mode miroir** sur le trafic neuf : mesurer
+  l'accord réel sans rien appliquer, et ne recommander d'accepter qu'au-dessus du seuil.
+
+### 24. `optimize --repo` plante sur un lien symbolique cassé
+
+**Constat.** `optimize --repo <repo des workflows> --open-prs` : `shutil.Error` sur 27 liens `assets`
+du snapshot de Miguel (médias non versionnés). Ni diff ni PR. **Correction** (#120) : `copytree(...,
+symlinks=True)`, les liens sont copiés comme liens.
+
+### 25. Titre de la PR coupé au milieu d'un mot
+
+« Deadweight : Remplacer les appels à gpt-4o-mini par 4 règles fixes (compte, technique,
+facturation, liv ». Couper au dernier mot entier, ou raccourcir le texte : « Deadweight : 4 règles au
+lieu de gpt-4o-mini (support-triage), −71 % ».
+
+### 26. Dépôt à plusieurs applications : preuve et réglage écrits à la racine
+
+Dans le repo des workflows (une application par dossier), la PR crée `deadweight/preuves/` et
+`.env.example` **à la racine**, pas dans `workflow 4 - Tri tickets support/`. Pour un monorepo client,
+il faut soit un réglage (`--app-dir`), soit retrouver le dossier de l'application par l'en-tête
+`x-deadweight-app` présent dans son code, comme le font déjà les recettes `modele` et `plafond`.
+
 ## Problèmes corrigés
 
 Gardés pour la traçabilité : chacun a été vu en testant.
@@ -506,6 +719,11 @@ Gardés pour la traçabilité : chacun a été vu en testant.
 | Robot roadmap bloqué par la protection de `main` | écrit dans une issue au lieu de pousser sur `main` (#45) |
 
 ## Pièges pour qui teste
+
+- **n8n créé par l'API** : un workflow créé puis activé par l'API publique de n8n 2.40 répond « actif »,
+  mais son webhook renvoie 404 (« not registered ») tant qu'on ne l'a pas désactivé puis réactivé.
+- **Brancher n8n sur la passerelle** : dans l'identifiant OpenAI de n8n, champ *Base URL* =
+  `http://127.0.0.1:8080/v1`, et l'en-tête personnalisé `x-deadweight-app` pour nommer l'application.
 
 - **La passerelle doit tourner.** Sinon l'application échoue avec `Connection
   refused` : c'est le prix du mode proxy. Port par défaut **8080** (les premiers

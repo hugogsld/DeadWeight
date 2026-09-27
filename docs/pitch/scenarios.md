@@ -7,25 +7,25 @@ Les chiffres viennent du repo, avec leur statut ; ne pas en ajouter.
 
 ## Pitch 1 — Pour le décideur
 
-**Personnage** : Claire, directrice technique d'une scale-up de 80 personnes. Sa facture d'IA a doublé en six mois.
+**Personnage** (fictif) : Claire, directrice technique d'une scale-up de 80 personnes. Sa facture d'IA a doublé en six mois.
 Elle a des agents partout (support, tri des mails, génération de contenu), et personne ne sait lesquels servent.
 
 | Temps | Ce qu'on voit | Ce qu'on dit |
 |---|---|---|
 | 0:00–0:15 | Une facture OpenAI qui monte | « Claire paie ses agents IA au prix du raisonnement. La question que personne ne lui pose : est-ce que ça avait besoin d'être un agent ? » |
 | 0:15–0:35 | Un mail « Gagnez un iPhone » → gpt-4o → « spam » | « Son tri de mails envoie chaque message au modèle le plus cher… pour répondre spam, facture ou support. Un simple aiguillage, facturé comme de la réflexion. » |
-| 0:35–0:55 | Une ligne de configuration qui change | « Avec Deadweight, elle change une seule ligne. Rien ne casse, ses données ne sortent pas de chez elle. Deadweight regarde passer le trafic et lance vingt vérifications. » |
-| 0:55–1:20 | L'agent auditeur au travail, puis deux barres « promis ×45 / mesuré ×1,5 » | « Notre agent auditeur enquête, et surtout il **prouve** : il rejoue les vrais appels passés avec la modification. Passer à un modèle plus petit semblait 45 fois moins cher. Mesuré sur ses vraies requêtes : 1,5 fois seulement, et 5 fois plus lent. Sans preuve, on lui aurait vendu un faux gain. » |
-| 1:20–1:40 | Le message Slack, un bouton « accepter » | « Ce qu'elle reçoit : uniquement les gains prouvés. Tri des mails : −72 % de coût, 100 % de précision *(jeu de test)*. Un clic pour accepter la modification. » |
+| 0:35–0:55 | Une ligne de configuration qui change | « Avec Deadweight, elle change une seule ligne. Rien ne casse : tout est enregistré et analysé chez elle, ses clés ne sont jamais stockées. Deadweight regarde passer le trafic et lance vingt vérifications. » |
+| 0:55–1:20 | L'agent auditeur au travail, puis deux barres « promis ×45 / mesuré ×1,5 » | « Notre agent auditeur enquête, et surtout il **prouve** : il rejoue les vrais appels passés avec la modification. Passer à un modèle plus petit semblait 45 fois moins cher. Mesuré sur 40 appels réels au modèle, sur un jeu de test : 1,5 fois seulement. Sans preuve, on lui aurait vendu un faux gain. » |
+| 1:20–1:40 | Le message Slack, un lien « Voir la PR » | « Ce qu'elle reçoit : uniquement les gains prouvés. Tri des mails : −72 % de coût, 100 % de précision sur l'étape de tri *(jeu de test)*. Un lien « Voir la PR » dans Slack ; la PR s'accepte sur GitHub. » *(En mode démo, le message affiche aussi les propositions refusées.)* |
 | 1:40–2:00 | Logo, équipe | « Deadweight : on ne vous dit pas quoi couper, on vous le prouve. Construit ce week-end par quatre personnes et leurs agents. » |
 
-**Message à retenir** : moins cher, **prouvé**, sans risque, sans que les données quittent l'entreprise.
+**Message à retenir** : moins cher, **prouvé**, sans risque, tout est enregistré et analysé chez le client, ses clés ne sont jamais stockées.
 
 ---
 
 ## Pitch 2 — Pour le développeur
 
-**Personnage** : Karim, développeur qui maintient les workflows IA de son équipe (n8n, un agent en Python, Claude Code
+**Personnage** (fictif) : Karim, développeur qui maintient les workflows IA de son équipe (n8n, un agent en Python, Claude Code
 au quotidien). Sa direction lui demande de réduire les coûts. Il n'a pas le temps de tester dix modèles à la main.
 
 | Temps | Ce qu'on voit | Ce qu'on dit |
@@ -35,7 +35,7 @@ au quotidien). Sa direction lui demande de réduire les coûts. Il n'a pas le te
 | 0:35–0:55 | Terminal : `make dev`, puis les connecteurs | « Deadweight se branche sur ce qu'il utilise déjà : une ligne `base_url`, ou l'import de l'historique n8n, des traces OpenTelemetry, des journaux Claude Code et Codex. Tout tourne en local, les clés ne sont jamais stockées. » |
 | 0:55–1:20 | Le verdict du rejeu, puis celui du banc | « Pour chaque piste, Deadweight prouve sur l'historique réel. Le rejeu : on rejoue les appels passés avec la modification, 95 % d'accord minimum, sinon c'est refusé, et un refus est un résultat. Le banc : on teste un modèle plus petit, local ou européen, sur les vraies entrées. Chaque chiffre dit s'il est mesuré, estimé ou non testé. » |
 | 1:20–1:40 | Une micro-PR sur GitHub | « Ce qu'il reçoit : une petite PR par amélioration, testée, à relire. Et une page développeur qui montre tout, y compris ce qui a échoué et pourquoi. » |
-| 1:40–2:00 | Logo, équipe, repo | « Deadweight : la preuve avant la modification, livrée en PR. Construit ce week-end, 20 vérifications, plus de 450 tests. » |
+| 1:40–2:00 | Logo, équipe, repo | « Deadweight : la preuve avant la modification, livrée en PR. Construit ce week-end, 20 vérifications, plus de 850 tests. » |
 
 **Message à retenir** : ça se branche en 10 minutes, ça prouve sur **son** historique, ça livre une PR qu'il relit.
 

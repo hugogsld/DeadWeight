@@ -163,22 +163,39 @@ async def _answer(request, meta, t0, finding_id, output):
     return resp
 
 
+def _otlp_protobuf(body):
+    """OTLP/HTTP protobuf -> la forme JSON que lit connectors.otel (identifiants en base64, déjà gérés).
+    C'est le format de l'exportateur Python officiel, qui n'envoie pas de JSON même en http/json."""
+    from google.protobuf.json_format import MessageToDict
+    from opentelemetry.proto.collector.trace.v1.trace_service_pb2 import ExportTraceServiceRequest
+
+    message = ExportTraceServiceRequest()
+    message.ParseFromString(body)
+    return MessageToDict(message)
+
+
 async def receive_traces(request):
-    """B2 : réception OpenTelemetry (OTLP/HTTP, JSON). Le client ajoute cette adresse comme destination
-    de ses traces ; les appels d'IA qu'elles décrivent entrent dans la même capture que le trafic relayé."""
-    if "json" not in request.headers.get("content-type", ""):
-        return web.json_response({"message": "Deadweight lit OTLP/HTTP en JSON : réglez "
-                                  "OTEL_EXPORTER_OTLP_PROTOCOL=http/json côté client."}, status=415)
+    """B2 : réception OpenTelemetry (OTLP/HTTP, JSON ou protobuf). Le client ajoute cette adresse comme
+    destination de ses traces ; les appels d'IA qu'elles décrivent entrent dans la même capture que le
+    trafic relayé."""
+    content_type = request.headers.get("content-type", "")
+    protobuf = "protobuf" in content_type
+    if not protobuf and "json" not in content_type:
+        return web.json_response({"message": "Deadweight lit OTLP/HTTP en JSON ou en protobuf "
+                                  f"(content-type reçu : {content_type or 'aucun'})."}, status=415)
     body = await request.read()
     if body[:2] == b"\x1f\x8b":  # aiohttp décompresse déjà en général ; au cas où il reste du gzip
         body = gzip.decompress(body)
     try:
-        events, report = otel.read(json.loads(body))
-    except (ValueError, KeyError, TypeError):
-        return web.json_response({"message": "export OTLP/JSON illisible"}, status=400)
+        events, report = otel.read(_otlp_protobuf(body) if protobuf else json.loads(body))
+    except Exception:  # corps illisible, quel que soit le format : 400, jamais un 500
+        return web.json_response({"message": f"export OTLP/{'protobuf' if protobuf else 'JSON'} illisible"},
+                                 status=400)
     for event in events:
         _emit(request.app, event)
     log.info("otel : %d appel(s) sur %d span(s), niveaux %s", report["appels_lus"], report["spans"], report["niveaux"])
+    if protobuf:  # la spécification OTLP : réponse dans le format de la requête
+        return web.Response(body=b"", content_type="application/x-protobuf")
     return web.json_response({"partialSuccess": {}})
 
 
