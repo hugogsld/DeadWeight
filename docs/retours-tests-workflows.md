@@ -164,6 +164,30 @@ Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour 
 - Non vérifié : Claude Code et Codex en direct par la passerelle, Codex en journaux, Ollama, Make,
   Zapier, Azure OpenAI, Bedrock, Vertex (outil ou compte absent).
 
+### Fiche : OpenAI story flow, retest sur `main` (27/09)
+
+- **Version testée** : `main` @ `22416ce` (20 vérifications, agent auditeur, `optimize`, banc corrigé).
+- **Trafic** : 30 exécutions réelles (2 lots de 15), **77 appels** `gpt-4o-mini` captés, 0,0196 $.
+- **Ce qui a progressé depuis le 26/09** : coût du rapport juste (« coût observé 0,0196 $, moins
+  d'une journée de trafic, 1 passage », plus de projection, correctif #98) ; un candidat du banc sans
+  clé est ignoré avec son motif (correctif #99) ; le banc envoie le prompt système (#82).
+- **Toujours présent** : R1 sur le vérificateur (30 appels, 2 réponses) et rien d'autre ;
+  **0 trace sur 77** (problème 10) ; exécution en API Responses : 77 événements avant et après
+  (problème 11) ; rejeu `REJECT`, 6 entrées rejouées, règles `package|mira|orion|action` et
+  `hotel|fire|whisker|love` (problèmes 3 et 12) ; rejeu affichant `24.5147 → 4.0858 USD/mois` pour
+  0,0023 $ réels (problème 1) ; champ `good_quality` toujours vrai, non signalé (problème 14).
+- **Agent auditeur** (`gpt-5-mini`, 7 appels, 0,0244 $) : plan en 5 points, « observer en miroir
+  puis rejouer ». Son rejeu avec extraction par IA : `REJECT`, **0 % d'accord, aucune règle
+  extraite**. Son plan écrit « **coût mensuel observé** lié au flux : 24,51 USD » (problème 20).
+- **`optimize`** : « 0 optimisation prouvée sur 1 testée ». La piste refusée propose 2 règles dont les
+  sorties sont `good_quality":true,"is_scifi":true` : le JSON d'origine sans ses accolades
+  (problème 21).
+- **Banc** (`--template cc862e1861 --candidates small`, 30 cas) : `openai-gpt-5-nano` score **0,0**.
+  Sa réponse réelle sur un cas : « Verdict — Quality: Solid premise… Sci-fi status: Yes » : il fait
+  le bon jugement, en prose, alors que la référence est `{"good_quality":true,"is_scifi":true}`
+  (problème 22).
+- **Problèmes** : 1, 3, 10, 11, 12, 14 (confirmés), 20, 21, 22.
+
 ## Problèmes ouverts
 
 | # | Problème | Gravité | Où | Vu sur | Statut |
@@ -187,6 +211,9 @@ Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour 
 | 17 | Banc : un candidat sans clé est affiché « reject, score 0 » au lieu de « non testé » | basse | `bench/runner.py`, `bench/report.py` | Récap Gmail (retest) | corrigé (#99) |
 | 18 | OpenTelemetry en direct : la passerelle refuse le protobuf, seul format de l'exportateur Python | haute | `gateway/proxy.py` (`receive_traces`), `connectors/otel.py` | Sources (27/09) | en cours (#118) |
 | 19 | R12 conseille de plafonner la longueur des réponses d'un agent de code | moyenne | `rules/verbose_output.py` | Sources (27/09), Claude Code | ouvert |
+| 20 | Le plan de l'agent auditeur présente la projection du rejeu comme un « coût mensuel observé » | haute | `agent/`, `proof/replay.py` | OpenAI story flow (retest) | ouvert |
+| 21 | Les règles de remplacement renvoient la sortie normalisée, pas la sortie d'origine | moyenne | `rules/low_entropy.py`, `proof/extract.py`, `optimize/` | OpenAI story flow (retest) | ouvert |
+| 22 | Banc : les tâches à sortie structurée (`response_format`) ont toujours un score de 0 | haute | `bench/client.py`, `schemas/event.schema.json` | OpenAI story flow (retest) | ouvert |
 
 ### 1. Le rejeu affiche une projection mensuelle absurde
 
@@ -549,6 +576,60 @@ fichier : un plafond à 920 jetons couperait l'écriture au milieu.
 **Correction.** Ne pas compter dans R12 les réponses dont la longueur vient d'appels d'outils
 (arguments de `Write`, `Edit`, `Bash`…), ou exclure les appels qui finissent en `tool_calls`. Ne
 proposer un plafond que sur le texte libre rendu à l'utilisateur.
+
+### 20. Le plan de l'agent présente la projection du rejeu comme un coût observé
+
+**Constat.** Retest du story flow : le rapport affiche « coût observé 0,0023 $ » pour le vérificateur,
+sans projection (correctif #98). Le plan de l'agent auditeur, sur la même page, écrit « Coût mensuel
+observé lié au flux : 24.51 USD (résultat de la vérification) ». Ce chiffre est la projection du rejeu
+(problème 1), sur 4 minutes de trafic, et il n'est pas « observé ».
+
+**Cause.** Le problème 1 (le rejeu projette sans garde-fou) remonte jusqu'au plan, et l'agent reprend
+le champ en l'appelant « observé ». Le contrôle des chiffres du plan (#99) vérifie qu'un chiffre
+existe dans les résultats des outils, pas qu'il est cité sous le bon nom.
+
+**Correction.** Corriger d'abord le problème 1 : `proof/replay.py` doit utiliser le même chiffrage que
+le rapport (coût observé sous un jour de trafic). Puis, dans le contrôle du plan, refuser « observé »
+accolé à un chiffre qui vient d'une projection.
+
+### 21. Les règles de remplacement renvoient la sortie normalisée
+
+**Constat.** `optimize` propose de remplacer le vérificateur par 2 règles dont les sorties sont
+`good_quality":true,"is_scifi":true` et `good_quality":true,"is_scifi":false`. La vraie sortie du
+modèle était `{"good_quality":true,"is_scifi":true}`. Les accolades et guillemets de bord ont disparu :
+ce n'est plus du JSON.
+
+**Cause.** R1 normalise les sorties avant de les compter (casse, espaces, **ponctuation de bord**),
+pour que « Spam. » et « spam » comptent pour une seule sortie. La clé normalisée sert ensuite de
+réponse des règles. Le rejeu compare des sorties normalisées des deux côtés : il afficherait 100 %
+d'accord pour des règles qui renverraient du JSON cassé.
+
+**Impact aujourd'hui.** Aucun en production : le court-circuit ne s'applique pas aux réponses JSON
+(`gateway/shortcircuit.py`), et la proposition a été refusée. Mais une micro-PR `optimize` validée
+renverrait ces valeurs.
+
+**Correction.** Garder pour chaque sortie normalisée la **sortie d'origine la plus fréquente**, et
+faire renvoyer celle-ci par les règles. Test : sur le story flow, les règles doivent rendre
+`{"good_quality":true,"is_scifi":true}`.
+
+### 22. Banc : les tâches à sortie structurée ont toujours un score de 0
+
+**Constat.** Banc sur le vérificateur du story flow : `openai-gpt-5-nano`, score 0,0 sur 30. Appelé
+à la main sur un cas réel, il répond « Verdict — Quality: Solid premise… Sci-fi status: Yes » : le bon
+jugement, en prose. La référence est `{"good_quality":true,"is_scifi":true}`, la comparaison est une
+égalité stricte : 0.
+
+**Cause.** L'appel d'origine imposait un format de sortie (`response_format: json_schema`, c'est ce
+que fait le SDK Agents avec `output_type=`). `bench/client.py` n'envoie que `model`, `messages` et
+`temperature`. Et l'événement ne garde que le type du format (`params.response_format =
+"json_schema"`), pas le schéma : on ne pourrait pas le rejouer même en le voulant.
+
+**Correction.**
+- Schéma d'événement : garder le schéma de sortie demandé (`request.params.response_schema`, objet
+  JSON, `null` sinon). C'est un changement de contrat, à discuter.
+- Banc : transmettre `response_format` au candidat quand il est connu ; sinon marquer le cas « non
+  testable (sortie structurée, schéma inconnu) » au lieu de compter 0.
+- Comparer les sorties JSON par leur contenu (objets égaux), pas par le texte.
 
 ## Problèmes corrigés
 
