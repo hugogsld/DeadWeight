@@ -4,9 +4,9 @@
 
 Deadweight se branche sur n'importe quel workflow d'agents IA, trouve ce qui coûte sans servir, **prouve**
 chaque amélioration sur le vrai historique du client, puis la livre sous forme de **petite PR** à accepter,
-avec un message Slack qui ne montre que les gains prouvés. Tout tourne chez le client.
+avec un message Slack qui ne montre que les gains prouvés (en mode démo, il affiche aussi les propositions refusées). Tout tourne chez le client.
 
-**Journée du 26/09 : 63 PR fusionnées, 20 vérifications, 454 fonctions de test, CI de bout en bout verte.**
+**Au 27/09 : 123 commits et 82 PR fusionnées les 26 et 27/09, 20 vérifications, plus de 850 tests, CI de bout en bout verte.**
 
 ---
 
@@ -19,7 +19,7 @@ avec un message Slack qui ne montre que les gains prouvés. Tout tourne chez le 
 | **Passerelle** (on change une ligne, `base_url`) | toute application codée | fait, testée sur un vrai workflow |
 | **OpenTelemetry** (le standard de traces) | LangChain, SDK d'agents OpenAI, Vercel AI… | fait (import de fichier et réception en direct) |
 | **Journaux Claude Code et Codex** | équipes qui automatisent avec ces outils | fait, testé sur les vrais journaux de Natan |
-| **Historique n8n** | workflows no-code | fait, testé sur un vrai modèle n8n (98 % des appels compris) |
+| **Historique n8n** | workflows no-code | fait, testé sur un vrai modèle n8n |
 
 Méthode commune : `docs/analyser-un-workflow.md` (trois niveaux de données : usage, contenu, structure).
 
@@ -48,7 +48,7 @@ Méthode commune : `docs/analyser-un-workflow.md` (trois niveaux de données : u
   d'action. Il ne peut citer aucun chiffre qui ne vient pas de nos outils, et chaque chiffre doit porter le bon nom.
 - **Les propositions testées et les petites PR** (`python -m optimize`) : pour chaque constat, une modification, testée,
   et la PR qui l'active. Chaque chiffre est étiqueté « mesuré », « estimé » ou « non testé ».
-- **Le message Slack** : uniquement les gains prouvés. **La page développeur** : tout, y compris ce qui a échoué.
+- **Le message Slack** : uniquement les gains prouvés (en mode démo, il affiche aussi les propositions refusées). **La page développeur** : tout, y compris ce qui a échoué.
 
 ---
 

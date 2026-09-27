@@ -4,6 +4,11 @@ DeadWeight relaie vos appels OpenAI, Anthropic ou Gemini, les enregistre **local
 rapport HTML sur les usages à examiner. Vous gardez votre clé, vos modèles et votre
 application ; seul le `base_url` change. Aucun remplacement automatique des appels.
 
+**Projet agentique** : un agent auditeur mène l'enquête, choisit quoi prouver, lance les outils et rédige le plan
+d'action ; un garde-fou refuse tout chiffre qui ne sort pas de ces outils.
+
+**Équipe** : Natan Lasar, Hugo Gesland, Thibault Gregori, Alexandre Zénou.
+
 > Travaux antérieurs déclarés : voir [Construit pendant le hackathon](#construit-pendant-le-hackathon-déclaration-des-travaux-antérieurs).
 
 ## Tester Deadweight en 5 minutes (sans clé, sans appel payant)
@@ -358,8 +363,8 @@ Deadweight est construit par quatre personnes : **Natan Lasar**, **Hugo Gesland*
 Deadweight part d'un **prototype réalisé le 12 septembre 2026** au hackathon *Agents, Everywhere — AI Tinkerers
 x OpenAI* (Paris), avant le hackathon X-IA. Nous le déclarons ici ; tout le reste a été construit les
 **26 et 27 septembre 2026**. L'historique git le montre : 22 commits le 12/09 (de `e5fb548` à `0a65051`),
-aucun entre le 13 et le 25/09, puis 111 commits et 70 PR fusionnées les 26 et 27/09 (compte arrêté
-le 27/09 à 16 h).
+aucun entre le 13 et le 25/09, puis 123 commits et 82 PR fusionnées les 26 et 27/09 (au 27/09, compte arrêté
+à 18 h 30).
 
 | | Prototype du 12/09 (antérieur) | Construit les 26-27/09 (hackathon X-IA) |
 |---|---|---|
@@ -368,7 +373,7 @@ le 27/09 à 16 h).
 | **Prouver** | rejeu d'un nœud n8n (`prover/`) | rejeu générique (`proof/`), banc de modèles (`bench/`), mode miroir et court-circuit, catalogue de modèles et souveraineté (`catalog/`) |
 | **Coût** | prix OpenRouter pour la démo (`collector/`) | coût mesuré sur les prix réels, cache compris, période d'observation commune (`report/`) |
 | **Livrer** | un patch n8n (`patcher/`) et un message Slack (`habitat/`) | **agent auditeur** (`agent/`) qui enquête avec des outils et ne cite que des chiffres produits par eux ; rapport HTML ; propositions testées, petites PR (n8n, alias de modèle) et message Slack des gains prouvés (`optimize/`) |
-| **Qualité** | script de démo (`run.sh`) | 874 tests (27/09), CI qui rejoue le parcours complet de la démo (`make e2e`) |
+| **Qualité** | script de démo (`run.sh`) | 949 tests (27/09, 19 h), CI qui rejoue le parcours complet de la démo (`make e2e`) |
 
 Les dossiers `detector/`, `prover/`, `patcher/`, `collector/`, `habitat/` et `workflows/` viennent du prototype.
 Depuis, seuls deux fichiers y ont été modifiés : `collector/pricing.py` (prix avec cache) et `prover/prove.py`
