@@ -129,6 +129,9 @@ def detect(events, pricing=None):
                 "billed_failures": len(billed_failures),
                 "billed_failure_rate": round(rate, 3),
                 "retries": len(pairs),
+                # relances elles-memes (pas les echecs qu'elles suivent) : ce que
+                # optimize.propose._errors retire du calcul, sans recomputer les paires.
+                "retry_event_ids": sorted({o["event_id"] for _, o in pairs}),
                 "est_retry_cost_month_usd": cost["cout_mensuel_usd"],
                 "retry_cost_missing": cost["manquants"],
                 "latency_lost_ms": latency_lost,

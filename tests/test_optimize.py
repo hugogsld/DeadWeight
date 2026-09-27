@@ -36,7 +36,8 @@ def test_without_a_key_a_model_swap_is_not_tested_never_guessed(proposals):
 
 def test_slack_totals_only_proven_measured_gains(proposals):
     text = message(proposals, total_spent=1.0)
-    assert "1 optimisation prouvée sur" in text and "100 % minimum" in text
+    n_pass = sum(p["verdict"] == "pass" for p in proposals)
+    assert f"{n_pass} optimisation" in text and "100 % minimum" in text
     assert "précision +" not in text                      # un niveau, pas une variation
     assert "~" in text                                    # les estimations restent marquées
     assert text.count("✅") == sum(p["verdict"] == "pass" for p in proposals)
@@ -48,7 +49,9 @@ def test_slack_line_states_the_per_task_gain_in_order_and_its_share_of_total(pro
     total = triage["cout_usd"]["avant"]  # dépense totale = celle de cette seule tâche ici : part = 100 %
     text = message(proposals, total_spent=total)
     lines = text.splitlines()
-    i = next(i for i, line_ in enumerate(lines) if "mail-triage" in line_)
+    # "mail-triage" a aussi une proposition "cache" (R8) désormais : la ligne cherchée se distingue
+    # par le début de son texte, propre à _rules (optimize.propose).
+    i = next(i for i, line_ in enumerate(lines) if "mail-triage" in line_ and "Remplacer les appels" in line_)
     detail = lines[i + 1]
     assert "Pour cette tâche : contexte envoyé" in detail
     # ordre imposé : contexte envoyé, coût, latence médiane, précision
