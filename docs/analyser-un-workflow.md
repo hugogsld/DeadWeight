@@ -39,11 +39,31 @@ avec l'étape, le service, le montant. Le `costs.jsonl` de Miguel en est un bon 
 | Connecteur | Niveau atteint | Pour qui | État |
 |---|---|---|---|
 | **Passerelle** (`base_url`) | 3, en direct | toute application codée | fait |
-| **OpenTelemetry** (conventions GenAI) | 1 par défaut, 2 si le client active la capture du contenu, 3 par les spans | LangChain, SDK d'agents OpenAI, Vercel AI, LiteLLM, Langfuse… un seul connecteur pour des dizaines de frameworks | fait : import de fichier et réception en direct (`/v1/traces`, JSON) ; le signal « logs » reste à lire |
-| **Journaux Claude Code et Codex** | 3 | équipes qui automatisent avec ces outils | à faire (Alexandre), premier cas : Miguel |
-| **Historique n8n** | 2 à 3 selon les nœuds | workflows no-code | à faire (Alexandre), après Claude Code |
+| **OpenTelemetry** (conventions GenAI) | 1 par défaut, 2 si le client active la capture du contenu, 3 par les spans | LangChain, SDK d'agents OpenAI, Vercel AI, LiteLLM, Langfuse… un seul connecteur pour des dizaines de frameworks | fait : import de fichier ; réception en direct (`/v1/traces`) en JSON et en protobuf, format de l'exportateur Python (corrigé par #118) |
+| **Journaux Claude Code et Codex** | 3 | équipes qui automatisent avec ces outils | fait (`connectors.agent_logs`) |
+| **Historique n8n** | 2 à 3 selon les nœuds | workflows no-code | fait (`importers.n8n`) |
 | **Exports d'usage des fournisseurs** | 1 | tout le monde : premier diagnostic sans rien installer | après le weekend |
 | **Fichier de coûts** | coûts hors IA | GPU, voix, API d'outils | après le weekend |
+
+### Ce qui a été vérifié pour de vrai (27/09)
+
+Chaque ligne : une vraie application, lancée sur un Mac, son trafic passé par Deadweight, puis le rapport.
+Détails, chiffres et problèmes : `docs/retours-tests-workflows.md`, fiche « Sources de workflows ».
+
+| Source | Voie | Résultat |
+|---|---|---|
+| Script Python, SDK `openai` | passerelle | ✅ récap Gmail, 88 appels réels, streaming compris |
+| SDK Agents d'OpenAI, en `chat_completions` | passerelle | ✅ story flow, 77 appels réels |
+| SDK Agents d'OpenAI, réglage par défaut (API Responses) | passerelle | ❌ relayé, **0 événement capturé** (problème 11) |
+| LangChain (`langchain-openai` 1.6, `ChatOpenAI(base_url=…)`) | passerelle | ✅ appels simples et streaming, `app_id` par en-tête |
+| **n8n 2.40**, nœud OpenAI Chat Model, champ *Base URL* de l'identifiant | passerelle | ✅ 42/42 appels, `app_id` posé par l'en-tête personnalisé de l'identifiant n8n |
+| **n8n 2.40**, même workflow | import de l'historique | ✅ 42/42 exécutions, 100 % des appels LLM compris, jetons réels, une trace par exécution |
+| **Claude Code**, journaux de session d'un vrai projet | `connectors.agent_logs` | ✅ 300 appels lus, 0 ignoré, niveaux 1 à 3 |
+| Application Python instrumentée OpenTelemetry, exportateur OTLP/HTTP officiel | réception en direct | ✅ corrigé par #118, 9/9 (problème 18 : **415** avant, l'exportateur Python envoie du protobuf même avec `OTEL_EXPORTER_OTLP_PROTOCOL=http/json`) |
+
+Non vérifié faute d'outil ou de compte : Claude Code et Codex **en direct** par la passerelle
+(`ANTHROPIC_BASE_URL`, `OPENAI_BASE_URL`), Codex en journaux, Ollama et modèles locaux, Make, Zapier,
+Azure OpenAI, Bedrock, Vertex.
 
 OpenTelemetry, à savoir : les conventions GenAI sont encore au statut « Development ». Les attributs utiles
 sont `gen_ai.provider.name`, `gen_ai.request.model`, `gen_ai.response.model`, `gen_ai.usage.input_tokens`,
