@@ -23,7 +23,6 @@ import csv
 import io
 import json
 import os
-import subprocess
 import sys
 from pathlib import Path
 
@@ -125,16 +124,13 @@ def _optimize(events, optim, repo=None, open_prs=False):
     return _quiet(optimize_main, argv)[0]
 
 
-def empty_repo(out):
-    """Sans REPO : un dépôt git vide dans ``out`` pour préparer le diff à relire. Rien n'y est poussé."""
-    folder = Path(out) / "depot-vide"
-    if not (folder / ".git").is_dir():
-        folder.mkdir(parents=True, exist_ok=True)
-        subprocess.run(["git", "init", "-q"], cwd=folder, check=True, capture_output=True)
-    return folder
-
-
-def review(optim, s):
+def review(optim, repo, s):
+    """Sans REPO : la page développeur (diff des propositions), rien à relire sur disque puisque rien
+    n'a été préparé pour un dépôt cible. Avec REPO : le vrai diff de chaque micro-PR prouvée."""
+    if not repo:
+        print(f"    Page développeur (diff des propositions) : "
+              f"{s(str(Path(optim) / 'propositions.html'), 'bold')}")
+        return
     diffs = sorted(Path(optim).glob("*.diff"))
     if not diffs:
         print(f"    {s('Aucune PR préparée.', 'dim')}")
@@ -146,9 +142,10 @@ def review(optim, s):
         ui.diff_lines(d.read_text(encoding="utf-8"), s)
 
 
-def push(events, optim, repo, items, s):
+def push(events, optim, repo, items, s, wf=None, source=None):
     if not repo:
-        print(f"    PR prête mais REPO non fourni : {s('make tester … REPO=chemin/du/depot', 'bold')} pour la pousser.")
+        cmd = f"make tester WF={wf}" + (f" SOURCE={source}" if source else "") + " REPO=chemin/du/depot"
+        print(f"    PR prête mais REPO non fourni : {s(cmd, 'bold')} pour la pousser.")
         return True
     if _optimize(events, optim, repo, open_prs=True):
         print("erreur : ouverture de la PR impossible", file=sys.stderr)
@@ -161,9 +158,10 @@ def push(events, optim, repo, items, s):
     return True
 
 
-def buttons(optim, proved, webhook):
-    keys = [("R", "Review la PR")] if list(Path(optim).glob("*.diff")) else []
-    keys += [("P", "Push la PR")] if proved else []
+def buttons(proved, webhook):
+    """Review et Push apparaissent dès qu'un gain est prouvé, avec ou sans REPO (chacun s'adapte :
+    ``review``/``push`` ci-dessus)."""
+    keys = [("R", "Review la PR"), ("P", "Push la PR")] if proved else []
     keys += [("S", "Envoyer sur Slack")] if webhook and proved else []
     return keys + [("Q", "Quitter")]
 
@@ -195,11 +193,11 @@ def actions(ctx, keys, yes, interactive, read_key):
 def handle(choice, ctx):
     s, optim = ctx["s"], ctx["optim"]
     if choice == "R":
-        review(optim, s)
+        review(optim, ctx["repo"], s)
     elif choice == "P":
         if ctx["pushed"]:
             print(f"    {s('PR déjà ouverte.', 'dim')}")
-        elif not push(ctx["events"], optim, ctx["repo"], ctx["items"], s):
+        elif not push(ctx["events"], optim, ctx["repo"], ctx["items"], s, ctx["wf"], ctx["source"]):
             return 1
         ctx["pushed"] = bool(ctx["repo"])
     elif choice == "S":
@@ -260,23 +258,23 @@ def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=Non
         return 1
     ui.analysis(info, s)
     optim = out / "optim"
-    if _optimize(events, optim, repo or empty_repo(out)):
+    if _optimize(events, optim, repo):
         print("erreur : l'optimisation a échoué", file=sys.stderr)
         return 1
     proposals = json.loads((optim / "propositions.json").read_text(encoding="utf-8"))
     items = ui.shown(proposals)
-    excluded = ui.excluded_count(proposals)
+    excluded_line = ui.excluded_summary(proposals)
     ui.modifications(items, s)
     ui.tests(items, s, animate=animate)
     history = json_lines(events)
     gains = global_gains(history, items, info["executions"]) if items else None
-    ui.summary(items, s, gains, excluded)
+    ui.summary(items, s, gains, excluded_line)
     show_pending(history, info["executions"])
-    proved = any(p["verdict"] == "pass" for p in items)
+    proved = bool(items)  # ui.shown ne garde que les propositions prouvées (verdict pass, précision ≥ 95 %)
     print(f"\n    {s('Détail : ' + str(optim / 'propositions.html') + '  ·  audit : ' + str(out / 'audit.html'), 'dim')}")
-    keys = buttons(optim, proved, webhook)
+    keys = buttons(proved, webhook)
     ctx = {"s": s, "optim": optim, "events": events, "repo": repo, "items": items, "webhook": webhook,
-           "sender": sender, "pushed": False}
+           "sender": sender, "pushed": False, "wf": wf, "source": given_source}
     code = actions(ctx, keys, yes, interactive, read_key)
     if code:
         return code

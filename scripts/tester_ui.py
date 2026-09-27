@@ -15,6 +15,7 @@ import os
 import re
 import sys
 import time
+from collections import Counter
 
 from proof.replay import THRESHOLD
 
@@ -87,19 +88,37 @@ def replayed_cell(p):
     return f"{n} entrées rejouées" if n else "—"
 
 
+def _passes(p):
+    """Une seule règle pour tout le testeur : prouvée (verdict « pass ») ET au moins
+    ``PRECISION_FLOOR_PCT`` de précision mesurée. Sinon la proposition n'apparaît nulle part (étapes
+    2/3/4, tableau, PR) : elle reste une piste, comptée dans ``excluded_summary``."""
+    v = (p["mesures"].get("precision") or {}).get("valeur")
+    return p["verdict"] == "pass" and v is not None and v >= PRECISION_FLOOR_PCT
+
+
 def shown(proposals):
-    """Les modifications affichées : une précision mesurée au rejeu, d'au moins ``PRECISION_FLOOR_PCT``.
-    Prouvées d'abord, puis la précision la plus haute. En dessous du seuil : écartée partout (testeur,
-    tableau, PR — cf. ``optimize.__main__``)."""
-    kept = [p for p in proposals if ((v := (p["mesures"].get("precision") or {}).get("valeur")) is not None
-                                      and v >= PRECISION_FLOOR_PCT)]
-    return sorted(kept, key=lambda p: (p["verdict"] != "pass", -p["mesures"]["precision"]["valeur"]))
+    """Les modifications affichées : prouvées, au moins ``PRECISION_FLOOR_PCT`` de précision. Triées,
+    la précision la plus haute d'abord."""
+    kept = [p for p in proposals if _passes(p)]
+    return sorted(kept, key=lambda p: -p["mesures"]["precision"]["valeur"])
 
 
-def excluded_count(proposals):
-    """Combien de propositions avaient une précision mesurée mais sous le seuil d'affichage."""
-    measured = sum((p["mesures"].get("precision") or {}).get("valeur") is not None for p in proposals)
-    return measured - len(shown(proposals))
+def exclusion_reason(p):
+    """Raison courte d'une proposition écartée : sa précision est mesurée et sous le seuil, ou
+    l'échantillon ne suffit pas à conclure (verdict refusé pour une autre raison, ou rien à mesurer)."""
+    v = (p["mesures"].get("precision") or {}).get("valeur")
+    return "précision < 95 %" if v is not None and v < PRECISION_FLOOR_PCT else "échantillon insuffisant"
+
+
+def excluded_summary(proposals):
+    """« N proposition(s) écartée(s) (raison, raison…) », ou ``None`` si rien n'est écarté."""
+    reasons = Counter(exclusion_reason(p) for p in proposals if not _passes(p))
+    if not reasons:
+        return None
+    total = sum(reasons.values())
+    detail = ", ".join(f"{n} {reason}" for reason, n in reasons.items())
+    suffix = "s" if total > 1 else ""
+    return f"{total} proposition{suffix} écartée{suffix} ({detail})"
 
 
 def bar(pct, s, tone=None):
@@ -165,10 +184,12 @@ def tests(items, s, animate=True, sleep=time.sleep, min_seconds=MIN_BAR_SECONDS,
         out.write(f"    {label}  {bar(pct, s)}  {s(f'{pct:g} %'.rjust(6), 'bold')}  {s(detail, 'dim')}\n")
 
 
-def summary(items, s, gains=None, excluded=0):
+def summary(items, s, gains=None, excluded_line=None):
     step(4, "Résumé des gains", s)
     if not items:
         print(f"    {s('Aucune modification retenue sur cet historique.', 'dim')}")
+        if excluded_line:
+            print(s(f"    {excluded_line}", "dim"))
         return
     head = ["Modification", "Entrées rejouées"] + [title for title, _ in COLUMNS]
     rows = [[p["app_id"], replayed_cell(p)] + [fn(p) for _, fn in COLUMNS] for p in items]
@@ -186,9 +207,8 @@ def summary(items, s, gains=None, excluded=0):
     print(f"    {s(LEGEND, 'dim')}")
     if gains:
         gains_block(gains, s)
-    if excluded:
-        suffix = "s" if excluded > 1 else ""
-        print(s(f"    {excluded} proposition{suffix} écartée{suffix} (précision < {PRECISION_FLOOR_PCT:g} %)", "dim"))
+    if excluded_line:
+        print(s(f"    {excluded_line}", "dim"))
 
 
 def _money(v):
