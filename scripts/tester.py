@@ -1,0 +1,209 @@
+"""Scénario testeur : une commande, un parcours guidé, de la source n8n jusqu'à la PR et au message Slack.
+
+    make tester WF=4553 [SOURCE=…] [REPO=chemin/du/depot] [OUI=1]
+    python -m scripts.tester 4553 [--source …] [--repo …] [--oui]
+
+Réutilise la chaîne d'``audit_complet`` (détection de la source, audit, ``optimize``, ``optimize.send``).
+Aucun chiffre n'est calculé ici : ils viennent tous de ``propositions.json`` ; un chiffre absent est
+affiché « non mesuré », une estimation porte « ~ » et rien n'est additionné.
+
+Source par défaut pour ``WF=<id>`` : ``n8n:<id>`` si ``N8N_URL`` est défini, sinon un dossier déjà
+téléchargé par ``importers.n8n fetch`` (``private/n8n/<id>``). Sans historique d'exécution, le parcours
+s'arrête et le dit : rien n'est simulé.
+"""
+import argparse
+import contextlib
+import csv
+import io
+import json
+import os
+import sys
+from pathlib import Path
+
+from agent.audit import main as audit_main
+from optimize.__main__ import main as optimize_main
+from scripts.audit_complet import detect, notify
+from optimize.send import send
+
+LIBRARY_CSV = Path(__file__).resolve().parent.parent / "docs" / "bibliotheque-n8n.csv"
+LOCAL_DIRS = ("private/n8n",)
+NO_HISTORY = ("pas d'exécutions : rien à rejouer, lancez le workflow quelques fois dans n8n puis relancez "
+              "cette commande")
+# ordre du message Slack (optimize.slack) : contexte envoyé, coût, latence médiane, précision
+FIGURES = (("precision", "précision du workflow modifié sur ses propres entrées (rejeu)"),
+           ("latence_mediane", "latence médiane"),
+           ("cout", "coût"),
+           ("jetons_envoyes", "données envoyées au modèle (jetons)"))
+VERDICT = {"pass": "prouvée", "reject": "refusée", "non_teste": "non testée"}
+
+
+def ask(question, yes=False, interactive=None, read=input):
+    """[O/n] : Entrée ou « o » = oui. ``--oui`` accepte tout ; sans terminal, rien n'est demandé (oui)."""
+    interactive = sys.stdin.isatty() if interactive is None else interactive
+    if yes or not interactive:
+        print(f"{question} [O/n] O")
+        return True
+    try:
+        answer = read(f"{question} [O/n] ").strip().lower()
+    except EOFError:
+        return False
+    return answer in ("", "o", "oui", "y", "yes")
+
+
+def catalog(wf, path=LIBRARY_CSV):
+    """Ligne de docs/bibliotheque-n8n.csv pour cet id (nom, nœuds), ou None."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            for row in csv.reader(f):
+                if row and row[0] == str(wf):
+                    return {"nom": row[1], "noeuds": int(row[4]) if row[4].isdigit() else None}
+    except OSError:
+        pass
+    return None
+
+
+def default_source(wf, env=os.environ, dirs=LOCAL_DIRS):
+    if env.get("N8N_URL"):
+        return f"n8n:{wf}"
+    for d in dirs:
+        folder = Path(d) / str(wf)
+        if (folder / "workflow.json").is_file() and (folder / "executions.jsonl").is_file():
+            return str(folder)
+    return None
+
+
+def describe(wf, events_path, source):
+    """Nom, nœuds, appels IA, exécutions : lus dans la source, jamais supposés."""
+    events = [json.loads(line) for line in Path(events_path).read_text(encoding="utf-8").splitlines() if line.strip()]
+    folder = Path(events_path).parent
+    wf_json = folder / "workflow.json"
+    name, nodes = None, None
+    if wf_json.is_file():
+        wf_data = json.loads(wf_json.read_text(encoding="utf-8"))
+        name, nodes = wf_data.get("name"), len(wf_data.get("nodes") or [])
+    elif (entry := catalog(wf)) and source.startswith("n8n:"):
+        name, nodes = entry["nom"], entry["noeuds"]
+    if name is None:
+        apps = sorted({e.get("app_id") for e in events if e.get("app_id")})
+        name = f"{Path(source).name} ({len(apps)} application{'s' if len(apps) > 1 else ''})"
+    traces = {(e.get("trace") or {}).get("id") for e in events} - {None}
+    executions = len(traces) if traces else None
+    return {"nom": name, "noeuds": nodes, "appels": len(events), "executions": executions}
+
+
+def _n(v, unit):
+    return f"{unit} non connu(e)s" if v is None else f"{v} {unit}"
+
+
+def figure(m, level=False):
+    """Une mesure de propose : mesurée telle quelle, estimée avec « ~ », absente = « non mesuré ».
+    ``level`` : un niveau (précision), pas une variation, donc jamais de signe."""
+    if not m or m.get("valeur") is None:
+        return "non mesuré"
+    unit = m.get("unite") or ""
+    sign = "+" if unit == "%" and m["valeur"] > 0 and not level else ""
+    value = f"{sign}{m['valeur']:g}{' ' + unit if unit and unit != '%' else ' %' if unit else ''}"
+    if m["statut"] == "mesuré":
+        return f"{value} (mesuré)"
+    return f"~{value} (estimé{' : ' + m['hypothese'] if m.get('hypothese') else ''})"
+
+
+def _quiet(fn, argv):
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        code = fn(argv)
+    return code, buf.getvalue()
+
+
+def _optimize(events, optim, repo=None, open_prs=False):
+    argv = [str(events), "--out", str(optim)]
+    argv += ["--repo", str(repo)] + (["--open-prs"] if open_prs else []) if repo else []
+    return _quiet(optimize_main, argv)[0]
+
+
+def report(proposals):
+    print(f"\nWorkflow analysé : {len(proposals)} modification{'s' if len(proposals) > 1 else ''} "
+          f"trouvée{'s' if len(proposals) > 1 else ''}")
+    for i, p in enumerate(proposals, 1):
+        print(f"  {i}. [{VERDICT.get(p['verdict'], p['verdict'])}] {p['app_id']} — {p['changement']}")
+    tested = [p for p in proposals if p["verdict"] != "non_teste"]
+    if not tested:
+        print("\nAucune proposition n'a pu être testée ici : aucun chiffre à montrer.")
+    for i, p in enumerate(proposals, 1):
+        if p["verdict"] == "non_teste":
+            continue
+        print(f"\n  {i}. {p['app_id']} — {VERDICT[p['verdict']]}")
+        for key, label in FIGURES:
+            print(f"     {label} : {figure(p['mesures'].get(key), key == 'precision')}")
+        if p["verdict"] == "reject" and p.get("raisons"):
+            print(f"     raisons du refus : {'; '.join(p['raisons'])}")
+    print("\n  Mesuré = rejeu des mêmes entrées sur votre historique. ~ = estimation, jamais additionnée.")
+
+
+def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=None, read=input,
+        webhook=None, sender=send, env=os.environ):
+    out = Path(out)
+    source = source or default_source(wf, env)
+    if source is None:
+        entry = catalog(wf)
+        print(f"Workflow {wf}{' (' + entry['nom'] + ')' if entry else ''} : aucune source trouvée "
+              "(ni N8N_URL, ni dossier private/n8n/" + str(wf) + ").")
+        print("Importez-le dans n8n, lancez-le quelques fois, puis définissez N8N_URL et N8N_API_KEY.")
+        return 1
+    events, log = _quiet(lambda _: detect(source, out), None)
+    if events is None:
+        print(log, end="")
+        return 1
+    info = describe(wf, events, source)
+    if not info["appels"]:
+        print(f"Workflow trouvé : {info['nom']} — {NO_HISTORY}.")
+        return 1
+    print(f"Workflow trouvé : {info['nom']} ({_n(info['noeuds'], 'nœuds')}, {info['appels']} appels IA, "
+          f"{_n(info['executions'], 'exécutions')}).")
+    if not ask("Commencer l'analyse ?", yes, interactive, read):
+        return 0
+    if _quiet(audit_main, [str(events), "-o", str(out / "audit.html")])[0]:
+        print("erreur : l'audit a échoué", file=sys.stderr)
+        return 1
+    optim = out / "optim"
+    if _optimize(events, optim, repo):
+        print("erreur : l'optimisation a échoué", file=sys.stderr)
+        return 1
+    proposals = json.loads((optim / "propositions.json").read_text(encoding="utf-8"))
+    report(proposals)
+    proved = any(p["verdict"] == "pass" for p in proposals)
+    print(f"\nPage développeur : {optim / 'propositions.html'}  ·  rapport : {out / 'audit.html'}")
+    diffs = sorted(optim.glob("*.diff"))
+    for d in diffs:
+        print(f"Micro-PR préparée : {d}")
+    if repo and proved and ask("Ouvrir la PR GitHub ?", yes, interactive, read):
+        if _optimize(events, optim, repo, open_prs=True):
+            print("erreur : ouverture de la PR impossible", file=sys.stderr)
+            return 1
+        for pr in json.loads((optim / "prs.json").read_text(encoding="utf-8")):
+            print(f"PR ouverte : {pr['url']}")
+    elif not repo:
+        print("PR : REPO non fourni, aucune PR ouverte (make tester … REPO=chemin/du/depot).")
+    if webhook and proved:
+        if ask("Envoyer le message sur Slack ?", yes, interactive, read):
+            return 1 if notify(optim, webhook=webhook, sender=sender) == "erreur" else 0
+        return 0
+    print("\nMessage Slack " + ("(SLACK_WEBHOOK_URL absent, non envoyé)" if not webhook
+                                else "(aucun gain prouvé, non envoyé)") + " :\n")
+    print((optim / "slack.md").read_text(encoding="utf-8"))
+    return 0
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description="Scénario testeur guidé : analyse, gains, PR, Slack")
+    ap.add_argument("wf", help="id du workflow n8n (ex. 4553)")
+    ap.add_argument("--source", help="remplace la source par défaut (n8n:<id>, dossier n8n, events.jsonl…)")
+    ap.add_argument("--repo", help="dépôt où ouvrir la micro-PR prouvée (gh)")
+    ap.add_argument("--out", default="out/tester")
+    ap.add_argument("-y", "--oui", action="store_true", help="répond oui à tout (tournage)")
+    args = ap.parse_args(argv)
+    return run(args.wf, args.source, args.out, args.repo, args.oui, webhook=os.environ.get("SLACK_WEBHOOK_URL"))
+
+
+if __name__ == "__main__":
+    sys.exit(main())
