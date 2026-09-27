@@ -1,6 +1,6 @@
 # DeadWeight — votre premier audit en dix minutes
 
-DeadWeight relaie vos appels OpenAI, les enregistre **localement** et produit un
+DeadWeight relaie vos appels OpenAI, Anthropic ou Gemini, les enregistre **localement** et produit un
 rapport HTML sur les usages à examiner. Vous gardez votre clé, vos modèles et votre
 application ; seul le `base_url` change. Aucun remplacement automatique des appels.
 
@@ -17,19 +17,20 @@ make demo                                       # 36 appels simulés → out/dem
 
 La dernière commande rejoue l'historique d'exemple, propose une modification par constat, la teste
 (précision, latence, coût) et écrit `out/optim/slack.md` (le message Slack), `out/optim/propositions.html`
-(la page développeur) et les diffs des micro-PR. Pour tout vérifier d'un coup : `make e2e`.
+(la page développeur). Ajoutez `--repo <chemin/du/depot>` pour obtenir aussi le diff et le texte de chaque
+micro-PR ; le dépôt n'est pas modifié. Pour tout vérifier d'un coup : `make e2e`.
 
 ## Brancher Deadweight sur vos workflows : quatre voies
 
 | Vous utilisez… | Voie | Commande | Section |
 |---|---|---|---|
 | une application qui appelle OpenAI, Anthropic ou Gemini | passerelle (seul le `base_url` change) | `make dev` | [1 à 4](#1-installer-et-lancer-la-passerelle) |
-| LangChain, SDK d'agents OpenAI, Vercel AI… | OpenTelemetry | `python -m connectors.otel traces.json` | [OpenTelemetry](#opentelemetry) |
+| LangChain, SDK d'agents OpenAI, Vercel AI… | OpenTelemetry | `.venv/bin/python -m connectors.otel traces.json` | [OpenTelemetry](#opentelemetry) |
 | Claude Code ou Codex | journaux de session | `python3 -m connectors.agent_logs run.zip` | [Journaux](#journaux-claude-code-et-codex-b1) |
-| n8n | historique d'exécution | `python -m importers.n8n check / fetch / convert` | [n8n](#importer-lhistorique-n8n-b1) |
+| n8n | historique d'exécution | `python3 -m importers.n8n check / fetch / convert` | [n8n](#importer-lhistorique-n8n-b1) |
 
-Ensuite, pour toutes les voies : `python -m report.audit` (rapport), `make audit` (agent auditeur, avec
-votre clé) et `python -m optimize` (propositions prouvées et micro-PR). Tout tourne sur votre machine.
+Ensuite, pour toutes les voies : `.venv/bin/python -m report.audit` (rapport), `make audit` (agent auditeur, avec
+votre clé) et `.venv/bin/python -m optimize` (propositions prouvées et micro-PR). Tout tourne sur votre machine.
 
 ## Prérequis
 
@@ -37,7 +38,8 @@ votre clé) et `python -m optimize` (propositions prouvées et micro-PR). Tout t
 - **Git** et **Make** (`git --version`, `make --version`).
 - macOS ou Linux ; sous Windows, utilisez WSL2 et suivez les commandes Linux.
 - Une connexion Internet pour cloner et installer les dépendances. La démo n’appelle
-  aucun fournisseur ; votre trafic réel nécessite votre accès habituel à OpenAI.
+  aucun fournisseur ; votre trafic réel nécessite votre accès habituel à votre fournisseur
+  (OpenAI, Anthropic ou Gemini).
 
 Sur Debian/Ubuntu, si nécessaire : `sudo apt install python3 python3-venv make git`.
 Sur macOS, installez les outils de ligne de commande (`xcode-select --install`) et
@@ -90,9 +92,20 @@ const client = new OpenAI({ baseURL: "http://127.0.0.1:8080/v1" });
 // OPENAI_API_KEY reste configurée dans votre application, comme avant.
 ```
 
+Anthropic et Gemini, en Python, même principe (seule l'adresse change) :
+
+```python
+from anthropic import Anthropic
+from google import genai
+
+client = Anthropic(base_url="http://127.0.0.1:8080/anthropic")
+client = genai.Client(http_options={"base_url": "http://127.0.0.1:8080/gemini"})
+```
+
 Si vous passiez déjà `api_key` / `apiKey` au constructeur, conservez-le. Ne changez
-ni le modèle ni les messages. Ce parcours capture les appels **Chat Completions**
-(`/v1/chat/completions`) ; les autres routes sont relayées sans capture.
+ni le modèle ni les messages. Sont capturés : OpenAI **Chat Completions**
+(`/v1/chat/completions`), Anthropic `/v1/messages` et Gemini `generateContent` /
+`streamGenerateContent`. Les autres routes sont relayées sans capture.
 L’application et la passerelle doivent tourner sur la même machine : `127.0.0.1`
 dans un conteneur désigne ce conteneur, pas la machine hôte.
 
@@ -185,7 +198,7 @@ de modèle. Zippez ceux d'un run, puis une commande (Python 3.9+, rien à instal
     cd ~/.codex && zip -r ~/run-codex.zip sessions/2026/09/26          # Codex, le jour du run
 
     python3 -m connectors.agent_logs ~/run.zip ~/run-codex.zip -o private/agent-logs/events.jsonl
-    python -m report.audit private/agent-logs/events.jsonl -o out/audit.html
+    python3 -m report.audit private/agent-logs/events.jsonl -o out/audit.html
 
 Chaque appel devient un événement : modèle, jetons (cache compris), heure, messages du tour,
 réponse, appels d'outils ; la session sert de trace, un sous-agent a son propre `app_id`
@@ -255,7 +268,7 @@ de nous l'envoyer, il contient les messages traités par vos workflows.
 Puis la conversion en événements, et le même rapport que pour la passerelle :
 
     python3 -m importers.n8n convert private/n8n/<id>
-    python -m report.audit private/n8n/<id>/events.jsonl -o out/audit.html
+    python3 -m report.audit private/n8n/<id>/events.jsonl -o out/audit.html
 
 Chaque appel d'un nœud « Chat Model » (OpenAI, Anthropic, Gemini, Mistral, Groq, Ollama…)
 devient un événement : prompt, réponse, jetons, durée ; l'exécution n8n sert de trace (exacte),
@@ -312,6 +325,11 @@ Pour diagnostiquer l’installation : `make test` puis `make lint`. `make demo` 
 de distinguer un problème local d’un problème de clé ou de fournisseur.
 
 
+## Équipe
+
+Deadweight est construit par quatre personnes : **Natan Lasar**, **Hugo Gesland**, **Thibault Gregori** et
+**Alexandre Zénou**.
+
 ---
 
 ## Construit pendant le hackathon (déclaration des travaux antérieurs)
@@ -319,7 +337,8 @@ de distinguer un problème local d’un problème de clé ou de fournisseur.
 Deadweight part d'un **prototype réalisé le 12 septembre 2026** au hackathon *Agents, Everywhere — AI Tinkerers
 x OpenAI* (Paris), avant le hackathon X-IA. Nous le déclarons ici ; tout le reste a été construit les
 **26 et 27 septembre 2026**. L'historique git le montre : 22 commits le 12/09 (de `e5fb548` à `0a65051`),
-aucun entre le 13 et le 25/09, puis plus de 100 commits et 68 PR fusionnées pendant le week-end.
+aucun entre le 13 et le 25/09, puis 111 commits et 70 PR fusionnées les 26 et 27/09 (compte arrêté
+le 27/09 à 16 h).
 
 | | Prototype du 12/09 (antérieur) | Construit les 26-27/09 (hackathon X-IA) |
 |---|---|---|
@@ -328,15 +347,21 @@ aucun entre le 13 et le 25/09, puis plus de 100 commits et 68 PR fusionnées pen
 | **Prouver** | rejeu d'un nœud n8n (`prover/`) | rejeu générique (`proof/`), banc de modèles (`bench/`), mode miroir et court-circuit, catalogue de modèles et souveraineté (`catalog/`) |
 | **Coût** | prix OpenRouter pour la démo (`collector/`) | coût mesuré sur les prix réels, cache compris, période d'observation commune (`report/`) |
 | **Livrer** | un patch n8n (`patcher/`) et un message Slack (`habitat/`) | **agent auditeur** (`agent/`) qui enquête avec des outils et ne cite que des chiffres produits par eux ; rapport HTML ; propositions testées, petites PR (n8n, alias de modèle) et message Slack des gains prouvés (`optimize/`) |
-| **Qualité** | script de démo (`run.sh`) | ~870 tests, CI qui rejoue le parcours complet de la démo (`make e2e`) |
+| **Qualité** | script de démo (`run.sh`) | 874 tests (27/09), CI qui rejoue le parcours complet de la démo (`make e2e`) |
 
-Les dossiers `detector/`, `prover/`, `patcher/`, `collector/`, `habitat/` et `workflows/` viennent du prototype et
-n'ont pratiquement pas été modifiés depuis. La section repliée ci-dessous est le README d'origine du prototype.
+Les dossiers `detector/`, `prover/`, `patcher/`, `collector/`, `habitat/` et `workflows/` viennent du prototype.
+Depuis, seuls deux fichiers y ont été modifiés : `collector/pricing.py` (prix avec cache) et `prover/prove.py`
+(coûts en dollars). La section repliée ci-dessous garde, pour l'historique, le README du prototype (en anglais,
+état du 12/09), suivi des notes techniques ajoutées pendant le week-end.
 
 ---
 
 <details>
-<summary>Prototype n8n du hackathon — historique et ancien parcours</summary>
+<summary>Historique : README du prototype (12/09) et notes techniques du week-end</summary>
+
+*Archive, non mise à jour ; le parcours à jour est plus haut. Le début (jusqu'à « Running it ») et les
+sections « Stack », « Not done yet » et « Team » sont le texte d'origine du prototype du 12/09 : ses
+commandes et ses manques datent de ce jour-là. Les autres sections sont des notes techniques du week-end.*
 
 
 **Companies hired thousands of agents this year. Nobody ever gave them a performance review.**
@@ -609,16 +634,21 @@ execution history over an API. **OpenAI** — rule extraction via structured out
 cost factor. **CopilotKit** — the Slack habitat, with human-in-the-loop approval in the
 channel. **Google Cloud Run** — deployment.
 
-## Not done yet
+## Not done yet (prototype, 12/09)
+
+*Depuis, fait pendant le hackathon : les cinq règles citées (voir `rules/`) et la lecture des traces
+OpenTelemetry (voir [OpenTelemetry](#opentelemetry)).*
 
 Five of the six detector rules (`oversized_model`, `raw_context`, `no_cache`,
 `unbounded_loop`, `agent_where_chain`) — only output entropy is wired end to end.
 Scheduled weekly scans via Trigger.dev. Generalisation beyond n8n through
 OpenTelemetry GenAI traces. Patch strategies other than `rule_switch`.
 
-## Team
+## Team (prototype, 12/09)
 
 Built in one afternoon at Le Wagon Paris. Three people, three lanes, four JSON contracts.
+
+*Équipe du hackathon X-IA : voir [Équipe](#équipe).*
 
 ## Rapport d'audit (D4.1)
 
