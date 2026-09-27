@@ -82,7 +82,7 @@ citer aucun chiffre qui ne sort pas de nos outils** : un garde-fou le vérifie a
 - Tri des mails : **−72 % de coût à 100 % de précision** avec des règles extraites et prouvées par rejeu.
 - Court-circuit par la passerelle : réponse en **0,24 ms au lieu de 764 ms** pour les appels remplacés par des règles.
 - **Le banc qui démonte une fausse bonne idée** : passer de gpt-4o à gpt-5-nano semblait **×45 moins cher** sur le
-  papier. Mesuré sur 40 vraies requêtes : **×1,5 seulement, et 5 fois plus lent**, parce que ce modèle facture sa
+  papier. Mesuré sur 40 vraies requêtes : **×1,5 seulement**, parce que ce modèle facture sa
   réflexion invisible. Sans preuve, on aurait recommandé un faux gain. *(C'est l'image la plus forte du pitch.)*
 
 **Le travail du week-end** (mesuré, historique git) : 105 commits entre le 26/09 et le 27/09 ; 63 PR fusionnées le

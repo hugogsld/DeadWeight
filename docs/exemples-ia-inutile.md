@@ -35,7 +35,7 @@ entreprise, puis donne une note d'intérêt de 1 à 10.
 
 | | Par prospect | Pour 1 000 |
 |---|---|---|
-| Aujourd'hui (tout sur gpt-4o) | 0,023 $ | **23 $** |
+| Aujourd'hui (6 nœuds sur gpt-4o, 1 sur gpt-4.1) | 0,023 $ | **23 $** |
 | Résumés et note sur gpt-4o-mini | 0,0014 $ | **1,4 $** |
 
 *Hypothèses : posts d'un prospect ≈ 2 000 jetons, actualités ≈ 800 jetons, résumé ≈ 250 jetons
@@ -62,7 +62,7 @@ et Meta Ads, les compare à l'an dernier, puis envoie un rapport par e-mail et s
 
 | | Par semaine | Par an |
 |---|---|---|
-| Aujourd'hui | 0,12 $ | **6,4 $** |
+| Aujourd'hui | 0,12 $ | **6,24 $** |
 | Code + un seul résumé sur gpt-4o-mini | 0,0003 $ | **0,02 $** |
 
 *Hypothèses : tableau ≈ 500 jetons lus, 400 écrits ; l'agent fait 8 tours et lit ≈ 24 000

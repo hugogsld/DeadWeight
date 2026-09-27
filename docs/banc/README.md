@@ -6,7 +6,7 @@ Le jeu D0.3 est synthétique : les requêtes sont réalistes, les réponses de r
 
 | Constat | Option | Accord | Économie mesurée | Estimation M2 | Verdict |
 |---|---|---|---|---|---|
-| mail-triage (gpt-4o) | gpt-5-nano via OpenAI | 100 % | ×1,5, et 5× plus lent (3,0 s contre 0,63 s) | ×44,8 | validé |
+| mail-triage (gpt-4o) | gpt-5-nano via OpenAI | 100 % | ×1,5 | ×44,8 | validé |
 | mail-triage | mistral-nemo (hébergeur le moins cher) | 10 % | ×83 | ×141 | refusé |
 | reviews (claude-opus-4-1) | claude-haiku-4.5 via Anthropic | 95 % | ×15,3 | ×15,0 | validé |
 | reviews | mistral-nemo (hébergeur le moins cher) | 95 % | ×2 100 environ | ×962 | validé |
