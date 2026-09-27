@@ -108,7 +108,9 @@ def make_patch(repo, proposal):
     """Applique la recette sur une copie du dépôt ; rend (diff unifié, remarques pour la relecture)."""
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp) / "repo"
-        shutil.copytree(repo, work, ignore=shutil.ignore_patterns(*SKIP - {".git"}))
+        # symlinks=True : un lien est copié comme lien, jamais suivi. Un dépôt réel peut contenir des liens
+        # cassés (médias non versionnés) : les suivre fait échouer la copie entière.
+        shutil.copytree(repo, work, symlinks=True, ignore=shutil.ignore_patterns(*SKIP - {".git"}))
         notes = RECIPES[proposal["type"]](work, proposal)
         subprocess.run(["git", "add", "-A"], cwd=work, check=True, capture_output=True)
         diff = subprocess.run(["git", "diff", "--cached"], cwd=work, check=True, capture_output=True, text=True).stdout
