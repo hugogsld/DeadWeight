@@ -14,7 +14,7 @@ import json
 import sys
 from pathlib import Path
 
-from bench import m2
+from bench import m2, reasoning
 from bench.catalog import load_candidates, resolve_api_key
 from bench.pricing import load_prices
 from bench.report import dry_run_estimate, rank, to_dict
@@ -108,9 +108,19 @@ def main(argv=None):
     opt.add_argument('--options', default=None,
                      help='options a tester, separees par des virgules (moins_cher,meilleur_compromis,souverain)')
     opt.add_argument('--out', default='out/banc', help='dossier ou ecrire banc-<finding>.json (lu par le rapport)')
+    reas = sub.add_parser('reasoning', help="teste un effort de raisonnement reduit pour un constat « raisonnement excessif »")
+    reas.add_argument('events', help='evenements au schema v1 (jsonl)')
+    reas.add_argument('--finding', required=True)
+    reas.add_argument('--effort', default=reasoning.DEFAULT_EFFORT)
+    reas.add_argument('--max-cases', type=int, default=DEFAULT_MAX_CASES)
+    reas.add_argument('--max-calls', type=int, default=reasoning.DEFAULT_MAX_CALLS)
+    reas.add_argument('--min-interval', type=float, default=0.0)
+    reas.add_argument('--out', default='out/banc', help='dossier ou ecrire raisonnement-<finding>.json')
     args = ap.parse_args(argv)
     if args.command == 'm2':
         return _m2(args)
+    if args.command == 'reasoning':
+        return _reasoning(args)
 
     events = _load_events(args.events)
     cases = build_test_cases(events, args.app, args.model, args.template, args.max_cases)
@@ -157,6 +167,9 @@ def _m2(args):
                   f"{'~%.4f $' % cost if cost is not None else p['note']}")
         return 0
     result = m2.prove(events, finding, args.max_cases, args.max_calls, args.min_interval, keys=keys)
+    # coût borné et affiché : args.max_cases (constante DEFAULT_MAX_CASES par défaut) plafonne le
+    # rejeu à un échantillon d'appels, jamais tout l'historique.
+    print(f"{result['n_cases']} cas de test (plafond --max-cases {args.max_cases})")
     if result['raison']:
         print(f"aucune option a tester : {result['raison']}")
     for key, r in result['options'].items():
@@ -167,6 +180,26 @@ def _m2(args):
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, indent=2, ensure_ascii=False))
     print(f"            -> {out} (make audit / python -m report.audit --banc {args.out})")
+    return 0
+
+
+def _reasoning(args):
+    from rules.excess_reasoning import detect
+
+    events = _load_events(args.events)
+    finding = next((f for f in detect(events) if f['finding_id'] == args.finding), None)
+    if finding is None:
+        print(f"{args.finding} : aucun constat « raisonnement excessif » de ce nom", file=sys.stderr)
+        return 1
+    result = reasoning.prove(events, finding, args.effort, args.max_cases, args.max_calls, args.min_interval)
+    print(f"{result['n_cases']} cas, effort « {result['effort']} », verdict {result['verdict']}, "
+          f"score={result['score']}")
+    for reason in result['reasons']:
+        print(f'  - {reason}')
+    out = Path(args.out) / f"raisonnement-{args.finding}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(result, indent=2, ensure_ascii=False))
+    print(f"            -> {out}")
     return 0
 
 

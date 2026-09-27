@@ -127,6 +127,9 @@ def detect(events, pricing=None):
             "evidence": {
                 "calls": data["calls"],
                 "wasted_calls": len(wasted),
+                # appels en trop uniquement (jamais le premier de chaque rafale) : ce que
+                # optimize.propose._cache retire du calcul, sans recomputer les rafales.
+                "wasted_event_ids": sorted({e["event_id"] for e in wasted}),
                 "est_saving_month_usd": cost["cout_mensuel_usd"],
                 "saving_missing": cost["manquants"],
             },
