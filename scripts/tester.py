@@ -267,8 +267,11 @@ def run(wf, source=None, out="out/tester", repo=None, yes=False, interactive=Non
     proposals = json.loads((optim / "propositions.json").read_text(encoding="utf-8"))
     items = ui.shown(proposals)
     excluded_line = ui.excluded_summary(proposals)
-    ui.modifications(items, s)
-    ui.tests(items, s, animate=animate)
+    # sans aucune modification prouvée, on montre ce qui a été testé et pourquoi c'est écarté ;
+    # sinon l'écran ne garde que les modifications retenues
+    others = [] if items else ui.tested_others(proposals)
+    ui.modifications(items, s, others)
+    ui.tests(items, s, animate=animate, others=others)
     history = json_lines(events)
     gains = global_gains(history, items, info["executions"]) if items else None
     ui.summary(items, s, gains, excluded_line)

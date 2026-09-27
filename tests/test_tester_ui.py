@@ -187,3 +187,28 @@ def test_gains_globaux_non_chiffrables_expliques_au_lieu_de_tirets(capsys):
                  "projection_1000_usd": None, "modifications_comptees": 1}, Style(False))
     text = capsys.readouterr().out
     assert "— → —" not in text and "non chiffrable" in text
+
+
+def _rej(app_id, precision, raison, verdict="reject", **mes):
+    return {**prop(app_id, verdict, precision, **mes), "changement": f"Changer {app_id}.", "raisons": [raison]}
+
+
+def test_exclusion_reason_dit_la_vraie_raison():
+    assert exclusion_reason(_rej("a", 100.0, "le jeu de test ne contient qu'une seule réponse (false) : …")) \
+        == "règle qui répond toujours pareil"
+    assert exclusion_reason(_rej("b", 90.0, "la réponse « true » n'est jamais retrouvée par les règles (3 cas)")) \
+        == "règle qui répond toujours pareil"
+    assert exclusion_reason(_rej("c", None, "aucune clé pour le banc : rien de mesuré", "non_teste")) \
+        == "non testé sans clé API"
+    assert exclusion_reason(_rej("d", 100.0, "12 entrée(s) remplacée(s) sur 20 rejouée(s), il en faut au moins 30")) \
+        == "échantillon insuffisant"
+
+
+def test_sans_modification_prouvee_les_pistes_testees_restent_visibles(capsys):
+    rejetee = _rej("n8n-4553", 100.0, "le jeu de test ne contient qu'une seule réponse (false) : …",
+                   appels_rejoues=m(77, unite=""))
+    tester_ui.modifications([], Style(False), others=[rejetee])
+    tester_ui.tests([], Style(False), animate=False, others=[rejetee])
+    text = capsys.readouterr().out
+    assert "Changer n8n-4553." in text and "écartée" in text
+    assert "règle qui répond toujours pareil" in text and "77 entrées rejouées" in text

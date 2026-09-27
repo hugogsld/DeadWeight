@@ -108,7 +108,19 @@ def exclusion_reason(p):
     """Raison courte d'une proposition écartée : sa précision est mesurée et sous le seuil, ou
     l'échantillon ne suffit pas à conclure (verdict refusé pour une autre raison, ou rien à mesurer)."""
     v = (p["mesures"].get("precision") or {}).get("valeur")
+    raisons = " ".join(p.get("raisons") or [])
+    if "seule réponse" in raisons or "jamais retrouvée" in raisons:
+        return "règle qui répond toujours pareil"
+    if p.get("verdict") == "non_teste" and "clé" in raisons:
+        return "non testé sans clé API"
     return "précision < 95 %" if v is not None and v < PRECISION_FLOOR_PCT else "échantillon insuffisant"
+
+
+def tested_others(proposals):
+    """Pistes testées mais écartées, montrées pour que l'analyse reste lisible même sans gain :
+    celles qui ont une précision mesurée, puis les non testées."""
+    rest = [p for p in proposals if not _passes(p)]
+    return sorted(rest, key=lambda p: (p["mesures"].get("precision") or {}).get("valeur") is None)
 
 
 def excluded_summary(proposals):
@@ -155,18 +167,20 @@ def analysis(info, s):
         print(f"    {s('✓', 'green')} {' · '.join(found)}")
 
 
-def modifications(items, s):
+def modifications(items, s, others=()):
     step(2, "Modifications proposées", s)
-    if not items:
+    if not items and not others:
         print(f"    {s('Aucune modification testable sur cet historique.', 'dim')}")
         return
-    name_w = max(len(p["app_id"]) for p in items)
+    name_w = max(len(p["app_id"]) for p in [*items, *others])
     for i, p in enumerate(items, 1):
         print(f"    {s(str(i), 'cyan')}  {s(pad(p['app_id'], name_w), 'bold')}  {p['changement']}")
+    for p in others:
+        print(s(f"    ·  {pad(p['app_id'], name_w)}  {p['changement']}  (écartée : {exclusion_reason(p)})", "dim"))
 
 
 def tests(items, s, animate=True, sleep=time.sleep, min_seconds=MIN_BAR_SECONDS, frames=FRAMES, out=None,
-          columns=None):
+          columns=None, others=()):
     """Étape 3 : une barre par modification. Animée, la progression suit le vrai nombre d'entrées
     rejouées (pas une horloge décorative), étalée sur au moins ``min_seconds`` pour rester visible même
     si le rejeu est instantané. Hors TTY ou sans animation demandée : la barre finale, directement."""
@@ -192,6 +206,14 @@ def tests(items, s, animate=True, sleep=time.sleep, min_seconds=MIN_BAR_SECONDS,
                 sleep(interval)
             out.write("\r\033[2K")
         out.write(f"    {label}  {bar(pct, s)}  {s(f'{pct:g} %'.rjust(6), 'bold')}  {s(detail, 'dim')}\n")
+    rows = [p for p in others if (p["mesures"].get("precision") or {}).get("valeur") is not None]
+    name_w = max((len(p["app_id"]) for p in [*items, *rows]), default=0)
+    for p in rows:  # testées puis écartées : la barre montre ce qui a été mesuré, la raison dit pourquoi
+        pct = p["mesures"]["precision"]["valeur"]
+        n = (measure(p, ("appels_rejoues",)) or {}).get("valeur")
+        detail = f"écartée : {exclusion_reason(p)}" + (f" · {n} entrées rejouées" if n else "")
+        out.write(f"    ·  {pad(p['app_id'], name_w)}  {bar(pct, s, 'red')}  {f'{pct:g} %'.rjust(6)}  "
+                  f"{s(detail, 'dim')}\n")
 
 
 def summary(items, s, gains=None, excluded_line=None):
