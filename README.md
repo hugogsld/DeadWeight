@@ -1,5 +1,10 @@
 # DeadWeight — votre premier audit en dix minutes
 
+Projet agentique : un agent auditeur mène l'enquête, choisit quoi prouver, lance les outils et rédige le plan
+d'action ; un garde-fou refuse tout chiffre qui ne sort pas de ces outils.
+
+Équipe : Natan Lasar, Hugo Gesland, Thibault Gregori, Alexandre Zénou.
+
 DeadWeight relaie vos appels OpenAI, Anthropic ou Gemini, les enregistre **localement** et produit un
 rapport HTML sur les usages à examiner. Vous gardez votre clé, vos modèles et votre
 application ; seul le `base_url` change. Aucun remplacement automatique des appels.
