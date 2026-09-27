@@ -36,7 +36,7 @@ modèle ? Tout ce contexte ? »**
    anciennes réponses, seuil 95 %) et **banc de modèles** (on teste un modèle plus petit, local ou européen sur les
    vraies entrées). Un refus est un résultat : on ne propose pas ce qui n'est pas prouvé.
 4. **Livrer** : une petite PR par amélioration, relue par un humain ; un message Slack qui ne montre **que les gains
-   prouvés** ; un rapport d'une page ; une page développeur qui montre tout, y compris les échecs.
+   prouvés** (en mode démo, il affiche aussi les propositions refusées) ; un rapport d'une page ; une page développeur qui montre tout, y compris les échecs.
 
 **L'agent auditeur** (condition du hackathon : un vrai projet agentique) mène l'enquête : il regarde le trafic, choisit
 quoi prouver en premier (le plus cher), lance les preuves, lit les verdicts, et rédige un plan d'action. **Il ne peut
@@ -50,7 +50,7 @@ citer aucun chiffre qui ne sort pas de nos outils** : un garde-fou le vérifie a
 |---|---|
 | Sa situation | Des agents IA en production, une facture OpenAI / Anthropic qui grimpe, pas de visibilité sur ce qui sert. |
 | Sa question | « Combien je peux économiser, **sans risque pour la qualité** ? » |
-| Ce qu'il voit | Le **rapport d'une page** et un **message Slack** avec uniquement les gains prouvés, chacun activable en acceptant une PR. |
+| Ce qu'il voit | Le **rapport d'une page** et un **message Slack** avec uniquement les gains prouvés (en mode démo, il affiche aussi les propositions refusées), chacun avec un lien « Voir la PR » ; la PR s'accepte sur GitHub. |
 | Ses objections | « Et si la qualité baisse ? » → tout est prouvé sur son propre historique avant d'être proposé. « Mes données ? » → tout tourne chez lui. |
 | Options qui parlent | **RGPD** : Deadweight documente les flux pour le DPO. **Souveraineté** (en option) : chaque appel est rattaché à sa destination réelle, avec une alternative européenne. |
 | Ton | Business, chiffres, zéro jargon (pas de « tokens », « p95 », « prompt »). |
@@ -76,17 +76,15 @@ citer aucun chiffre qui ne sort pas de nos outils** : un garde-fou le vérifie a
 | Plugin claude-mem (2 652 appels) | **+43 % d'appels cachés** |
 | Récap Gmail (88 vrais appels, via la passerelle) | le tri des mails est un simple aiguillage |
 | Exemple officiel OpenAI de triage (54 appels) | **rien à optimiser, et c'est juste : aucun faux positif** (argument d'honnêteté) |
-| Modèle n8n de tri d'emails | **98 % des appels du workflow compris** à l'import |
 
 **Sur le jeu de test** (mesuré, données synthétiques réalistes) :
-- Tri des mails : **−72 % de coût à 100 % de précision** avec des règles extraites et prouvées par rejeu.
-- Court-circuit par la passerelle : réponse en **0,24 ms au lieu de 764 ms** pour les appels remplacés par des règles.
+- Tri des mails : **−72 % de coût à 100 % de précision sur l'étape de tri (jeu de test)** avec des règles extraites et prouvées par rejeu.
 - **Le banc qui démonte une fausse bonne idée** : passer de gpt-4o à gpt-5-nano semblait **×45 moins cher** sur le
-  papier. Mesuré sur 40 vraies requêtes : **×1,5 seulement**, parce que ce modèle facture sa
+  papier. Mesuré sur 40 appels réels au modèle, sur un jeu de test : **×1,5 seulement**, parce que ce modèle facture sa
   réflexion invisible. Sans preuve, on aurait recommandé un faux gain. *(C'est l'image la plus forte du pitch.)*
 
-**Le travail du week-end** (mesuré, historique git) : 105 commits entre le 26/09 et le 27/09 ; 63 PR fusionnées le
-26/09 ; 20 vérifications ; plus de 450 tests ; intégration continue de bout en bout.
+**Le travail du week-end** (mesuré, historique git) : 123 commits et 82 PR fusionnées les 26 et 27/09 (au 27/09) ;
+20 vérifications ; plus de 850 tests ; intégration continue de bout en bout.
 
 ## 6. La différence avec le marché
 
@@ -135,8 +133,8 @@ pitch. Vidéo de **2 minutes maximum**. Le projet doit être **agentique** : mon
 | 3 | Un exemple qui parle : le tri de mails facturé au prix du raisonnement | Un exemple qui parle : 72 % du coût d'un agent de code = relire le contexte |
 | 4 | La solution en 4 temps (se brancher, détecter, prouver, livrer) | Comment ça se branche : `base_url`, OpenTelemetry, n8n, Claude Code / Codex |
 | 5 | **La preuve** : le banc (×45 promis, ×1,5 réel) | **La preuve** : rejeu (seuil 95 %) et banc, un refus est un résultat |
-| 6 | Ce que vous recevez : message Slack des seuls gains prouvés + rapport d'une page | Ce que vous recevez : page développeur + micro-PR testée (montrer une PR) |
-| 7 | Vos données restent chez vous ; RGPD et souveraineté en option | Tout est local ; clés jamais stockées ; chaque chiffre a son statut |
+| 6 | Ce que vous recevez : message Slack des seuls gains prouvés (la démo montre aussi les refus) + rapport d'une page | Ce que vous recevez : page développeur + micro-PR testée (montrer une PR) |
+| 7 | Tout est enregistré et analysé chez vous, vos clés ne sont jamais stockées ; RGPD et souveraineté en option | Tout est local ; clés jamais stockées ; chaque chiffre a son statut |
 | 8 | L'agent auditeur mène l'enquête (et ne peut pas inventer un chiffre) | L'agent auditeur : outils, garde-fou sur les chiffres, journal |
 | 9 | Résultats sur de vrais workflows | Résultats sur de vrais workflows, y compris « rien à optimiser » |
 | 10 | Différence avec le marché + équipe | Différence avec le marché + équipe + « construit ce week-end » |

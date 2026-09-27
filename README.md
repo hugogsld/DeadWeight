@@ -358,8 +358,8 @@ Deadweight est construit par quatre personnes : **Natan Lasar**, **Hugo Gesland*
 Deadweight part d'un **prototype réalisé le 12 septembre 2026** au hackathon *Agents, Everywhere — AI Tinkerers
 x OpenAI* (Paris), avant le hackathon X-IA. Nous le déclarons ici ; tout le reste a été construit les
 **26 et 27 septembre 2026**. L'historique git le montre : 22 commits le 12/09 (de `e5fb548` à `0a65051`),
-aucun entre le 13 et le 25/09, puis 111 commits et 70 PR fusionnées les 26 et 27/09 (compte arrêté
-le 27/09 à 16 h).
+aucun entre le 13 et le 25/09, puis 123 commits et 82 PR fusionnées les 26 et 27/09 (au 27/09, compte arrêté
+à 18 h 30).
 
 | | Prototype du 12/09 (antérieur) | Construit les 26-27/09 (hackathon X-IA) |
 |---|---|---|
