@@ -167,6 +167,9 @@ def _m2(args):
                   f"{'~%.4f $' % cost if cost is not None else p['note']}")
         return 0
     result = m2.prove(events, finding, args.max_cases, args.max_calls, args.min_interval, keys=keys)
+    # coût borné et affiché : args.max_cases (constante DEFAULT_MAX_CASES par défaut) plafonne le
+    # rejeu à un échantillon d'appels, jamais tout l'historique.
+    print(f"{result['n_cases']} cas de test (plafond --max-cases {args.max_cases})")
     if result['raison']:
         print(f"aucune option a tester : {result['raison']}")
     for key, r in result['options'].items():

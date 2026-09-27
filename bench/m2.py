@@ -20,13 +20,26 @@ from catalog.recommend import recommend
 MAX_TOKENS, MAX_TOKENS_REASONING = 512, 4096
 OPENROUTER = {"kind": "openrouter", "base_url_env": "OPENROUTER_BASE_URL",
               "default_base_url": "https://openrouter.ai/api/v1", "api_key_env": "OPENROUTER_API_KEY"}
+# Route de l'éditeur OpenAI (fixtures/capabilities.json, hebergeur "OpenAI") : appelée en direct
+# (OPENAI_API_KEY), jamais via OpenRouter. Seule route directe câblée ici : une démo avec la seule
+# clé OpenAI peut donc mesurer les options "meilleur_compromis" d'un constat sur un modèle OpenAI
+# (gpt-4o-mini, gpt-4.1-mini, gpt-4.1-nano... selon ce que recommend() juge moins cher et compatible ;
+# ids et tarifs viennent de fixtures/pricing.json, jamais inventés ici). Les autres hébergeurs
+# (Mistral, DeepSeek...) restent sur OpenRouter : sans OPENROUTER_API_KEY, ils redeviennent
+# proprement "non testé" (bench.runner puis le repli de prove() ci-dessous), jamais un plantage.
+OPENAI = {"kind": "openai", "base_url_env": "OPENAI_BASE_URL",
+          "default_base_url": "https://api.openai.com/v1", "api_key_env": "OPENAI_API_KEY"}
+DIRECT_HOSTS = {"OpenAI": OPENAI}
 
 
 def candidate_for(key, option):
-    """Une option de recommend() en candidat du banc, sur la route qu'elle recommande."""
+    """Une option de recommend() en candidat du banc, sur la route qu'elle recommande (directe pour
+    l'éditeur OpenAI, OpenRouter sinon — DIRECT_HOSTS)."""
+    direct = DIRECT_HOSTS.get(option["hebergeur"])
+    base, route = (direct, None) if direct else (OPENROUTER, option["hebergeur"])
     return Candidate(id=f"m2-{key}", model=option["modele"], size_class="small", origin=option["pays"] or "?",
-                     note=f"option M2 « {key} »", route=option["hebergeur"],
-                     max_tokens=MAX_TOKENS_REASONING if option["raisonnement"] else MAX_TOKENS, **OPENROUTER)
+                     note=f"option M2 « {key} »", route=route,
+                     max_tokens=MAX_TOKENS_REASONING if option["raisonnement"] else MAX_TOKENS, **base)
 
 
 def _prices_for(option, prices, capabilities):

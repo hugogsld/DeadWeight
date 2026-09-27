@@ -16,11 +16,15 @@ Types de modifications (une par micro-PR) :
 - ``batch``        : l'API batch d'un fournisseur (R14), remise de scénario non vérifiée par modèle ;
 - ``raisonnement`` : un effort de raisonnement réduit (R7), prouvé au banc (clé OpenAI nécessaire).
 
-Le verdict « pass » exige une précision >= optimize.thresholds.PRECISION_THRESHOLD (95 %),
-mesurée, jamais estimée. Pour les types sans risque de qualité (cache, erreurs, cache_prompt :
-le modèle et sa réponse ne changent pas, seule la facturation ou le nombre d'appels change),
-cette précision de 100 % n'est pas une hypothèse mais la définition même du constat sous-jacent ;
-elle reste donc « mesurée », pas fabriquée.
+Le verdict « pass » exige une précision >= proof.replay.THRESHOLD (95 %), mesurée, jamais
+estimée (même seuil que le rejeu des règles, réutilisé plutôt que redéfini). Pour les types sans
+risque de qualité (cache, erreurs, cache_prompt : le modèle et sa réponse ne changent pas, seule
+la facturation ou le nombre d'appels change), cette précision de 100 % n'est pas une hypothèse
+mais la définition même du constat sous-jacent ; elle reste donc « mesurée », pas fabriquée.
+
+``cache``, ``erreurs``, ``cache_prompt``, ``batch`` et ``raisonnement`` vivent dans
+optimize/leviers/ (un module par levier), pour que chaque nouveau levier ne touche que son
+propre fichier ; seule leur ligne de câblage reste ici, dans propose().
 """
 import math
 from statistics import median
@@ -32,7 +36,6 @@ from proof.replay import _user_text
 from proof.replay import replay
 from report.audit import _discover_detectors
 from report.cost import chiffrer
-from optimize.thresholds import PRECISION_THRESHOLD
 
 MESURE, ESTIME, NON_TESTE = "mesuré", "estimé", "non testé"
 
@@ -173,185 +176,15 @@ def _cap_cost(group, cap):
     return {"avant": spent, "apres": spent - cut if spent is not None else None, "statut": MESURE}
 
 
-def _cache(finding, events):
-    """R8/levier 07 : les appels en trop d'une rafale de doublons stricts (même demande normalisée,
-    même réponse, dans l'heure). Aucun risque de qualité : rules.duplicate_calls a déjà vérifié que
-    la réponse servie une deuxième fois est identique à celle qu'un cache aurait renvoyée ; la
-    précision de 100 % est la définition même du constat, pas une hypothèse."""
-    ids = set(finding["event_ids"])
-    wasted_ids = set(finding["evidence"]["wasted_event_ids"])
-    group = [e for e in events if e["event_id"] in ids]
-    kept = [e for e in group if e["event_id"] not in wasted_ids]
-    before, after = _cost(group), _cost(kept)
-    return {
-        "type": "cache", "finding_id": finding["finding_id"], "app_id": finding["app_id"], "model": finding["model"],
-        "changement": f"Mettre en cache les réponses aux demandes déjà posées dans l'heure précédente "
-                      f"({len(wasted_ids)} appel(s) en trop évité(s) sur {len(group)}).",
-        "verdict": "pass", "raisons": [],
-        "mesures": {
-            "precision": _m(100.0, MESURE, "%",
-                            "réponse déjà vérifiée identique par le détecteur : servir le cache ne change rien"),
-            "appels_evites": _m(len(wasted_ids), MESURE),
-            "cout": (_m(_pct_change(before, after), MESURE, "%") if before is not None
-                    else _m(None, NON_TESTE, "%")),
-        },
-        "cout_usd": {"avant": before, "apres": after, "statut": MESURE} if before is not None else None,
-    }
-
-
-def _errors(finding, events):
-    """R9/levier 12 : coût déjà facturé des relances (même demande, même échec facturé, relancée
-    en moins de rules.paid_errors.RETRY_WINDOW_SECONDS). Corriger la cause de l'échec ne change pas
-    la réponse gardée (celle de la relance, déjà obtenue) : seule la dépense du premier essai raté
-    disparaît, la précision n'est pas affectée. Les échecs facturés jamais relancés (rate seul au-
-    dessus du seuil) ne sont pas comptés ici : supprimer leur cause changerait la réponse obtenue,
-    ce que rien ici ne mesure — cette proposition ne porte que sur le doublon prouvé."""
-    retry_ids = set(finding["evidence"]["retry_event_ids"])
-    if not retry_ids:
-        return None
-    group = [e for e in events if e["event_id"] in set(finding["event_ids"])]
-    kept = [e for e in group if e["event_id"] not in retry_ids]
-    before, after = _cost(group), _cost(kept)
-    return {
-        "type": "erreurs", "finding_id": finding["finding_id"], "app_id": finding["app_id"], "model": finding["model"],
-        "changement": f"Corriger la cause de l'échec avant de relancer ({len(retry_ids)} relance(s) "
-                      "facturée(s) évitée(s)).",
-        "verdict": "pass", "raisons": [],
-        "mesures": {
-            "precision": _m(100.0, MESURE, "%",
-                            "la réponse gardée est celle de la relance, déjà obtenue : rien ne change pour l'utilisateur"),
-            "relances_evitees": _m(len(retry_ids), MESURE),
-            "cout": (_m(_pct_change(before, after), MESURE, "%") if before is not None
-                    else _m(None, NON_TESTE, "%")),
-        },
-        "cout_usd": {"avant": before, "apres": after, "statut": MESURE} if before is not None else None,
-    }
-
-
-def _prompt_cache(finding, events):
-    """R4/levier 04 : jetons d'entrée répétés d'un gabarit déjà identique (après masquage des dates,
-    heures, UUID et longs nombres par rules.no_cache), au tarif de cache du même modèle. Calcul
-    exact (jetons enregistrés x écart de tarif du catalogue) sur les appels qui suivent le premier
-    de chaque gabarit (celui-ci établit le cache, rien à gagner dessus) — jamais une mesure du taux
-    de succès réel du cache fournisseur, que le rejeu ne peut pas observer. Activer le cache ne
-    change ni le modèle ni les jetons envoyés, seulement leur tarif : précision 100 % mesurée."""
-    from rules.no_cache import _detect_templates
-    from report.cost import PRICING_PATH, lookup
-    import json
-
-    by_id = {e["event_id"]: e for e in events}
-    templates = [f for f in _detect_templates(events)
-                if f["app_id"] == finding["app_id"] and f["model"] == finding["model"]]
-    prices = json.loads(PRICING_PATH.read_text(encoding="utf-8"))
-    before = after = 0.0
-    repeated_tokens = known = 0
-    for t in templates:
-        ordered = sorted((by_id[i] for i in t["event_ids"] if i in by_id), key=lambda e: e["ts_start"])
-        for e in ordered[1:]:
-            price = lookup(prices, e["model"])
-            tin = e["usage"].get("input_tokens")
-            if price is None or tin is None or "cached_in" not in price:
-                continue
-            known += 1
-            repeated_tokens += tin
-            before += tin * price["in"] / 1e6
-            after += tin * price["cached_in"] / 1e6
-    if not known or before <= 0:
-        return None
-    return {
-        "type": "cache_prompt", "finding_id": finding["finding_id"], "app_id": finding["app_id"],
-        "model": finding["model"],
-        "changement": "Ordonner le prompt (partie fixe d'abord, variable ensuite) et activer le cache "
-                      "de prompt du fournisseur.",
-        "verdict": "pass", "raisons": [],
-        "mesures": {
-            "precision": _m(100.0, MESURE, "%",
-                            "le cache ne change ni le modèle ni les jetons envoyés, seulement leur tarif"),
-            "jetons_repetes": _m(repeated_tokens, MESURE, "jetons"),
-            "cout": _m(_pct_change(before, after), MESURE, "%"),
-        },
-        "cout_usd": {"avant": before, "apres": after, "statut": MESURE},
-    }
-
-
-def _batch(finding, events):
-    """R14/levier 13 : rafales nocturnes régulières, candidates à l'API batch d'un fournisseur.
-    Jamais « pass » : rules.batch_eligible chiffre une remise de scénario (BATCH_DISCOUNT = 50 %),
-    pas un prix batch vérifié par modèle, et l'éligibilité réelle (absence d'utilisateur, délai
-    accepté) ne s'observe pas dans l'historique — le dire mesuré serait fabriquer une valeur."""
-    ev = finding["evidence"]
-    group = [e for e in events if e["event_id"] in set(finding["event_ids"])]
-    spent = _cost(group)
-    return {
-        "type": "batch", "finding_id": finding["finding_id"], "app_id": finding["app_id"], "model": finding["model"],
-        "changement": "Passer ces rafales nocturnes régulières par l'API batch du fournisseur "
-                      f"(remise de scénario annoncée : {round(ev['assumed_discount'] * 100)} %).",
-        "verdict": "non_teste",
-        "raisons": ["remise batch non vérifiée par modèle", ev["eligibility_unverified"]],
-        "mesures": {
-            "precision": _m(None, NON_TESTE, "%",
-                            "absence d'utilisateur et modèle batch du fournisseur non observables dans l'historique"),
-            "cout": (_m(round(-ev["assumed_discount"] * 100, 1), ESTIME, "%",
-                       "remise de scénario, jamais vérifiée par modèle") if spent is not None
-                    else _m(None, NON_TESTE, "%")),
-        },
-        "cout_usd": ({"avant": spent, "apres": spent * (1 - ev["assumed_discount"]), "statut": ESTIME}
-                    if spent is not None else None),
-    }
-
-
-def _reasoning(finding, events, keys_available, prove_reasoning=None):
-    """R7/levier 03 : baisser l'effort de raisonnement d'un modèle qui réfléchit longtemps pour une
-    réponse triviale, prouvé au banc (même modèle, effort réduit, rejoué sur les mêmes entrées et
-    comparé à la réponse d'origine — bench.reasoning.prove, clé OpenAI nécessaire). Sans clé, non
-    testé, comme _model : jamais de score inventé."""
-    if prove_reasoning is None:
-        from bench.reasoning import prove as prove_reasoning
-    if not keys_available:
-        return {
-            "type": "raisonnement", "finding_id": finding["finding_id"], "app_id": finding["app_id"],
-            "model": finding["model"],
-            "changement": f"Baisser l'effort de raisonnement de {finding['model']}.",
-            "verdict": "non_teste", "raisons": ["aucune clé pour le banc : rien de mesuré"],
-            "mesures": {"precision": _m(None, NON_TESTE, "%")},
-        }
-    result = prove_reasoning(events, finding)
-    score = result.get("score")
-    bench_passed = result["verdict"] == "pass"
-    # bench.scoring.threshold_for descend a 0.5 en texte libre (F1 de recouvrement, indicatif) :
-    # trop permissif pour un "pass" ici. optimize.thresholds.PRECISION_THRESHOLD est le plancher du
-    # projet, applique en plus du seuil interne du banc, jamais a sa place.
-    passed = bench_passed and score is not None and score >= PRECISION_THRESHOLD
-    reasons = list(result.get("reasons") or [])
-    if bench_passed and not passed:
-        reasons.append(f"score {score:.2f} sous le seuil du projet ({PRECISION_THRESHOLD:.0%})")
-    verdict = "pass" if passed else ("non_teste" if result["verdict"] == "not_tested" else "reject")
-    group = [e for e in events if e["event_id"] in set(finding["event_ids"])]
-    before_p95 = _p95([e["latency_ms"] for e in group])
-    spent, ref, measured = _cost(group), result.get("reference_cost_per_1000_calls_usd"), result.get("cost_per_1000_calls_usd")
-    return {
-        "type": "raisonnement", "finding_id": finding["finding_id"], "app_id": finding["app_id"],
-        "model": finding["model"],
-        "changement": (f"Baisser l'effort de raisonnement de {finding['model']} à « {result['effort']} »." if passed
-                       else f"Aucun effort de raisonnement réduit ne tient le seuil pour {finding['model']}."),
-        "verdict": verdict, "raisons": reasons, "preuve": result,
-        "mesures": {
-            "precision": _m(round(score * 100, 1), MESURE, "%") if score is not None else _m(None, NON_TESTE, "%"),
-            "appels_rejoues": (_m(result["n_calls"], MESURE) if result.get("n_calls")
-                              else _m(None, NON_TESTE)),
-            "latence_p95": (_m(_pct_change(before_p95, result.get("latency_p95_ms")), MESURE, "%") if passed
-                           else _m(None, NON_TESTE, "%")),
-            "cout": (_m(_pct_change(ref, measured), MESURE, "%") if passed and ref and measured
-                    else _m(None, NON_TESTE, "%")),
-        },
-        "cout_usd": ({"avant": spent, "apres": spent * measured / ref, "statut": MESURE}
-                    if passed and ref and measured and spent is not None else None),
-    }
-
-
 def propose(events, llm=None, keys_available=False, prove=None, prove_reasoning=None):
     """Toutes les propositions testables, dans l'ordre des constats.
-    ``prove`` : bench.m2.prove (injectable) ; ``prove_reasoning`` : bench.reasoning.prove (injectable)."""
+    ``prove`` : bench.m2.prove (injectable) ; ``prove_reasoning`` : bench.reasoning.prove (injectable).
+    cache/erreurs/cache_prompt/batch/raisonnement : voir optimize/leviers/ (un fichier par levier)."""
+    from optimize.leviers.batch import batch_proposal
+    from optimize.leviers.cache import cache_proposal
+    from optimize.leviers.cache_prompt import cache_prompt_proposal
+    from optimize.leviers.errors import errors_proposal
+    from optimize.leviers.reasoning import reasoning_proposal
     if prove is None:
         from bench.m2 import prove
     events = list(events)
@@ -367,17 +200,17 @@ def propose(events, llm=None, keys_available=False, prove=None, prove_reasoning=
             if p:
                 out.append(p)
         elif f["rule"] == "duplicate_calls":
-            out.append(_cache(f, events))
+            out.append(cache_proposal(f, events))
         elif f["rule"] == "paid_errors":
-            p = _errors(f, events)
+            p = errors_proposal(f, events)
             if p:
                 out.append(p)
         elif f["rule"] == "no_cache":
-            p = _prompt_cache(f, events)
+            p = cache_prompt_proposal(f, events)
             if p:
                 out.append(p)
         elif f["rule"] == "batch_eligible":
-            out.append(_batch(f, events))
+            out.append(batch_proposal(f, events))
         elif f["rule"] == "excess_reasoning":
-            out.append(_reasoning(f, events, keys_available, prove_reasoning))
+            out.append(reasoning_proposal(f, events, keys_available, prove_reasoning))
     return out

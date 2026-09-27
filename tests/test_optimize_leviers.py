@@ -7,7 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from optimize.propose import ESTIME, MESURE, NON_TESTE, PRECISION_THRESHOLD, propose
+from optimize.propose import ESTIME, MESURE, NON_TESTE, propose
+from proof.replay import THRESHOLD
 
 ROOT = Path(__file__).resolve().parents[1]
 BASE = json.loads((ROOT / "fixtures/events.jsonl").read_text().splitlines()[0])
@@ -42,7 +43,7 @@ def test_cache_proposal_cost_excludes_only_the_wasted_calls(proposals):
     """avant = toute la rafale (premier appel + doublons), apres = seulement le premier appel gardé."""
     p = by(proposals, "cache", "mail-triage")
     assert p["mesures"]["appels_evites"]["valeur"] > 0
-    assert 100.0 >= PRECISION_THRESHOLD * 100  # le verdict pass respecte bien le plancher du projet
+    assert 100.0 >= THRESHOLD * 100  # le verdict pass respecte bien le plancher du projet
 
 
 # ---------- 12 erreurs et relances (R9 paid_errors -> type "erreurs") ----------
@@ -70,8 +71,8 @@ def _paid_error_event(i, *, offset_s, prompt, content, finish, out_tok=50):
 
 def test_errors_returns_no_proposal_when_billed_failures_are_never_retried():
     """Taux d'echec facture au-dessus du seuil, mais jamais relance (rules.paid_errors le signale
-    quand meme, severite trim) : optimize.propose._errors refuse de chiffrer un gain ici, la
-    reponse obtenue changerait si la cause etait corrigee, ce que rien ne mesure sans rejeu."""
+    quand meme, severite trim) : optimize.leviers.errors.errors_proposal refuse de chiffrer un
+    gain ici, la reponse obtenue changerait si la cause etait corrigee, ce que rien ne mesure sans rejeu."""
     events = [_paid_error_event(i, offset_s=i * 300, prompt=f"q{i}", content="ok", finish="stop")
              for i in range(18)]
     events += [_paid_error_event(18, offset_s=18 * 300, prompt="q18", content="tronque", finish="length"),
@@ -157,7 +158,7 @@ def test_reasoning_passes_when_the_bench_score_clears_the_project_threshold():
 
 def test_reasoning_rejects_a_bench_pass_below_the_project_threshold():
     """bench.scoring.threshold_for descend a 0.5 en texte libre : le banc dirait « pass », le
-    plancher du projet (95 %, optimize.thresholds.PRECISION_THRESHOLD) dit non."""
+    plancher du projet (95 %, proof.replay.THRESHOLD, réutilisé) dit non."""
     proposals = propose(DATASET, keys_available=True,
                         prove_reasoning=_fake_prove("pass", 0.7, task_type="text", threshold=0.5))
     p = by(proposals, "raisonnement", "trivia-bot")
