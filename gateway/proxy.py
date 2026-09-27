@@ -57,9 +57,10 @@ def _now():
 
 def log_event(event):
     """Sink par défaut : une ligne de résumé, sans contenu ni en-tête. D1.2 persiste."""
-    u = event["usage"]
-    log.info("%s %s %s %d %.0fms tokens=%s/%s", event["app_id"], event["endpoint"], event["model"],
-             event["http_status"], event["latency_ms"], u["input_tokens"], u["output_tokens"])
+    u = event.get("usage") or {}
+    log.info("%s %s %s %s %.0fms tokens=%s/%s", event.get("app_id"), event.get("endpoint", "-"),
+             event.get("model"), event.get("http_status", "-"), event.get("latency_ms") or 0,
+             u.get("input_tokens"), u.get("output_tokens"))
 
 
 def route(path):
