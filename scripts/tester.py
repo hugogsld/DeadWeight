@@ -101,7 +101,7 @@ def found_line(info):
     parts += [f"{number(info['noeuds'])} nœuds"] if info.get("noeuds") else []
     parts.append(f"{number(info['appels'])} appels IA")
     parts += [f"{number(info['executions'])} exécutions"] if info.get("executions") else []
-    parts += [f"{number(info['etapes'])} étapes"] if info.get("etapes") else []
+    parts += [f"{number(info['etapes'])} étape{'s' if info['etapes'] > 1 else ''}"] if info.get("etapes") else []
     return "Workflow trouvé : " + " · ".join(parts)
 
 
