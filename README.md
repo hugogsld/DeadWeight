@@ -327,9 +327,8 @@ de distinguer un problème local d’un problème de clé ou de fournisseur.
 
 ## Équipe
 
-Deadweight est construit par quatre personnes : Natan, Hugo, Thibaud et Alexandre.
-
-<!-- À COMPLÉTER PAR NATAN : prénoms et noms des quatre -->
+Deadweight est construit par quatre personnes : **Natan Lasar**, **Hugo Gesland**, **Thibault Gregori** et
+**Alexandre Zénou**.
 
 ---
 
