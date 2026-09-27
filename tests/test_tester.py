@@ -1,4 +1,5 @@
 """make tester : parcours guidé (O/n), --oui, sans terminal, sans exécutions. Aucun appel réseau, ni gh."""
+import io
 import json
 from pathlib import Path
 
@@ -8,6 +9,8 @@ from scripts import tester
 from rules import oversized_model
 from scripts.tester import NO_HISTORY, ask, default_source, figure, run
 from scripts.tester_seuils import pending
+from scripts.tester import found_line
+from scripts.tester_ui import Progress, colors_on, paint
 
 ROOT = Path(__file__).resolve().parents[1]
 EVENTS = ROOT / "fixtures/dataset/v1/events.jsonl"
@@ -57,12 +60,43 @@ def test_ask_lit_la_reponse(answer, expected):
     assert ask("Q ?", interactive=True, read=Answers(answer)) is expected
 
 
-def test_figure_mesure_estime_et_absent():
-    assert figure({"valeur": -24.4, "statut": "mesuré", "unite": "%"}) == "-24.4 % (mesuré)"
-    assert figure({"valeur": -35.7, "statut": "estimé", "unite": "%", "hypothese": "h"}) == "~-35.7 % (estimé : h)"
-    assert figure({"valeur": 100.0, "statut": "mesuré", "unite": "%"}, level=True) == "100 % (mesuré)"
+def test_figure_mesure_estime_et_absent(monkeypatch):
+    monkeypatch.setenv("NO_COLOR", "1")
+    assert figure({"valeur": -24.4, "statut": "mesuré", "unite": "%"}).split() == ["-24.4", "%", "mesuré"]
+    assert figure({"valeur": -35.7, "statut": "estimé", "unite": "%", "hypothese": "h"}).split() == [
+        "~-35.7", "%", "~estimé"]
+    assert figure({"valeur": 100.0, "statut": "mesuré", "unite": "%"}, level=True).split() == ["100", "%", "mesuré"]
     assert figure({"valeur": None, "statut": "mesuré", "unite": "%"}) == "non mesuré"
     assert figure(None) == "non mesuré"
+
+
+def test_couleurs_seulement_sur_terminal_et_sans_no_color(monkeypatch):
+    class Tty(io.StringIO):
+        def isatty(self):
+            return True
+    assert colors_on(Tty(), env={}) and not colors_on(Tty(), env={"NO_COLOR": "1"})
+    assert not colors_on(io.StringIO(), env={})
+    assert paint("x", "vert", on=False) == "x" and paint("x", "vert", on=True) == "\033[32mx\033[0m"
+
+
+def test_barre_de_progression():
+    ticks = iter([0.0, 1.5, 3.0])
+    out = io.StringIO()
+    bar = Progress(["a", "b"], on=True, clock=lambda: next(ticks), out=out)
+    bar.step(2)
+    bar.done()
+    text = out.getvalue()
+    assert "2/2" in text and "█" in text and "░" in text and "1.5 s" in text and "terminé" in text
+    plain = io.StringIO()
+    Progress(["a", "b"], on=False, out=plain).step(1)
+    assert plain.getvalue() == "[1/2] a\n"
+
+
+def test_premiere_ligne_sans_inconnu():
+    assert found_line({"nom": None, "noeuds": None, "appels": 1872, "executions": 99, "etapes": 40}) == \
+        "Workflow trouvé : 1 872 appels IA · 99 exécutions · 40 étapes"
+    assert found_line({"nom": "Essaim", "noeuds": 39, "appels": 18, "executions": None, "etapes": 19}) == \
+        "Workflow trouvé : Essaim · 39 nœuds · 18 appels IA · 19 étapes"
 
 
 def test_source_par_defaut(tmp_path):
@@ -138,8 +172,12 @@ def test_parcours_complet_interactif(tmp_path, capsys, no_gh):
     assert [q.split(" [")[0] for q in answers.questions] == [
         "Commencer l'analyse ?", "Ouvrir la PR GitHub ?", "Envoyer le message sur Slack ?"]
     proposals = json.loads((tmp_path / "optim" / "propositions.json").read_text())
-    assert f"Workflow analysé : {len(proposals)} modifications trouvées" in out
-    assert "1872 appels IA" in out and "Vérifications en attente de données (pas un échec" not in out and "(mesuré)" in out and "~" in out and "non mesuré" in out
+    ok = [p for p in proposals if p["verdict"] == "pass"]
+    assert f"Workflow analysé : {len(ok)} modification prouvée" in out
+    assert f"{len(proposals) - len(ok)} autres pistes testées sans preuve suffisante" in out
+    assert all(p["changement"] not in out for p in proposals if p["verdict"] != "pass")
+    assert "[3/4] rejeu des propositions" in out and "\033[" not in out
+    assert "1 872 appels IA · 99 exécutions · 40 étapes" in out and "Vérifications en attente de données (pas un échec" not in out and "mesuré" in out and "~estimé" in out
     assert no_gh == [str(tmp_path)] and f"PR ouverte : {PR_URL}" in out
     assert len(sender) == 1 and sender[0]["blocks"][-1]["elements"][0]["url"] == PR_URL
 
