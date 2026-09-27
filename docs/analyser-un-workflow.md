@@ -1,6 +1,6 @@
 # Analyser n'importe quel workflow d'agents
 
-Chaque client a sa stack : du code avec un SDK, n8n, Make, Claude Code et Codex (Miguel), LangChain, un
+Chaque client a sa stack : du code avec un SDK, n8n, Claude Code et Codex (Miguel), LangChain, un
 framework maison. On ne refait jamais l'analyse pour chacun. **Un seul cœur d'analyse, des connecteurs
 d'entrée** : le connecteur traduit les traces du client en événements au format commun, et tout le reste
 (vérifications, chiffrage, rejeu, banc de modèles, agent auditeur, rapport) est le même pour tous.
