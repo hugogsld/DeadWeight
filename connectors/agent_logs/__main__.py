@@ -18,7 +18,7 @@ import json
 import sys
 from pathlib import Path
 
-from . import claude_code, codex
+from . import billing, claude_code, codex
 from .common import iter_files
 
 
@@ -47,6 +47,9 @@ def main(argv=None) -> int:
     p.add_argument("sources", nargs="+", help="fichier .jsonl, dossier ou archive .zip")
     p.add_argument("-o", "--out", default="private/agent-logs/events.jsonl",
                    help="fichier d'événements (défaut : private/agent-logs/events.jsonl) ; comprehension.json à côté")
+    p.add_argument("--billing", choices=[billing.ABONNEMENT, billing.API],
+                   help="force le mode de facturation (abonnement ou api) pour tous les outils reconnus, "
+                        "au lieu de le détecter dans la configuration locale")
     args = p.parse_args(argv)
 
     try:
@@ -63,6 +66,8 @@ def main(argv=None) -> int:
     with out.open("w", encoding="utf-8") as f:
         for ev in events:
             f.write(jsonl_line(ev))
+    for name, r in reports.items():
+        r["billing"] = billing.resolve(name, args.billing)
     summary = out.with_name("comprehension.json")
     summary.write_text(json.dumps(reports, ensure_ascii=False, indent=2), encoding="utf-8")
 
@@ -72,8 +77,10 @@ def main(argv=None) -> int:
               f"{ignored} ignoré(s), niveaux {r['niveaux']}")
         for reason, n in r["ignores"].items():
             print(f"    ignoré ×{n} : {reason}")
+        print(f"    facturation : {r['billing']['mode']}"
+              + (f" ({r['billing']['source']})" if r["billing"]["source"] else " (non détectée)"))
     print(f"→ {out} ({len(events)} événements), {summary}")
-    print(f"rapport : python -m report.audit {out}")
+    print(f"rapport : python -m report.audit {out} --comprehension {summary}")
     return 0
 
 

@@ -43,6 +43,20 @@ def test_slack_totals_only_proven_measured_gains(proposals):
     assert "⛔" not in text and "◻️" not in text and "page développeur" in text  # un décideur ne voit que les gains
 
 
+def test_slack_line_states_the_per_task_gain_in_order_and_its_share_of_total(proposals):
+    triage = next(p for p in proposals if p["type"] == "regles" and p["app_id"] == "mail-triage")
+    total = triage["cout_usd"]["avant"]  # dépense totale = celle de cette seule tâche ici : part = 100 %
+    text = message(proposals, total_spent=total)
+    lines = text.splitlines()
+    i = next(i for i, line_ in enumerate(lines) if "mail-triage" in line_)
+    detail = lines[i + 1]
+    assert "Pour cette tâche : contexte envoyé" in detail
+    # ordre imposé : contexte envoyé, coût, latence médiane, précision
+    assert detail.index("contexte envoyé") < detail.index("coût") < detail.index("latence médiane") \
+        < detail.index("précision")
+    assert "% de la dépense totale" in text
+
+
 def test_demo_mode_and_dev_page_show_everything(proposals):
     from optimize.devpage import render
     assert "⛔" in message(proposals, show_all=True)
