@@ -4,6 +4,8 @@ DeadWeight relaie vos appels OpenAI, les enregistre **localement** et produit un
 rapport HTML sur les usages à examiner. Vous gardez votre clé, vos modèles et votre
 application ; seul le `base_url` change. Aucun remplacement automatique des appels.
 
+> Travaux antérieurs déclarés : voir [Construit pendant le hackathon](#construit-pendant-le-hackathon-déclaration-des-travaux-antérieurs).
+
 ## Prérequis
 
 - **Python 3.11 ou plus récent**, avec `venv` et `pip` (`python3 --version`).
@@ -283,6 +285,28 @@ La liste des 1 000 workflows de test et ce qu'on y lit : [docs/bibliotheque-n8n.
 
 Pour diagnostiquer l’installation : `make test` puis `make lint`. `make demo` permet
 de distinguer un problème local d’un problème de clé ou de fournisseur.
+
+
+---
+
+## Construit pendant le hackathon (déclaration des travaux antérieurs)
+
+Deadweight part d'un **prototype réalisé le 12 septembre 2026** au hackathon *Agents, Everywhere — AI Tinkerers
+x OpenAI* (Paris), avant le hackathon X-IA. Nous le déclarons ici ; tout le reste a été construit les
+**26 et 27 septembre 2026**. L'historique git le montre : 22 commits le 12/09 (de `e5fb548` à `0a65051`),
+aucun entre le 13 et le 25/09, puis plus de 100 commits et 68 PR fusionnées pendant le week-end.
+
+| | Prototype du 12/09 (antérieur) | Construit les 26-27/09 (hackathon X-IA) |
+|---|---|---|
+| **Se brancher** | lecture d'une instance n8n uniquement | passerelle multi-fournisseurs (`gateway/`, une ligne `base_url`), OpenTelemetry (`connectors/otel.py`, `POST /v1/traces`), journaux Claude Code et Codex (`connectors/agent_logs/`), import de l'historique n8n (`importers/n8n/`), schéma d'événement commun |
+| **Analyser** | une vérification (entropie des sorties, `detector/`) + `oversized_model` | 20 vérifications (`rules/`) : contexte relu, cache, boucles, agent au lieu d'une chaîne, étapes parallélisables, appel par élément, données hors d'Europe… |
+| **Prouver** | rejeu d'un nœud n8n (`prover/`) | rejeu générique (`proof/`), banc de modèles (`bench/`), mode miroir et court-circuit, catalogue de modèles et souveraineté (`catalog/`) |
+| **Coût** | prix OpenRouter pour la démo (`collector/`) | coût mesuré sur les prix réels, cache compris, période d'observation commune (`report/`) |
+| **Livrer** | un patch n8n (`patcher/`) et un message Slack (`habitat/`) | **agent auditeur** (`agent/`) qui enquête avec des outils et ne cite que des chiffres produits par eux ; rapport HTML ; propositions testées, petites PR (n8n, alias de modèle) et message Slack des gains prouvés (`optimize/`) |
+| **Qualité** | script de démo (`run.sh`) | ~870 tests, CI qui rejoue le parcours complet de la démo (`make e2e`) |
+
+Les dossiers `detector/`, `prover/`, `patcher/`, `collector/`, `habitat/` et `workflows/` viennent du prototype et
+n'ont pratiquement pas été modifiés depuis. La section repliée ci-dessous est le README d'origine du prototype.
 
 ---
 
