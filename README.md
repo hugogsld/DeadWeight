@@ -210,6 +210,17 @@ peu sous-estimé sur cette part.
 
 ## Proposer et prouver des micro-modifications
 
+Après la capture, **une seule commande** enchaîne le bilan, les propositions testées sur l'historique et
+les micro-PR :
+
+    make optimiser REPO=chemin/du/depot            # bilan + propositions + un diff et un texte de PR par gain prouvé
+    make optimiser REPO=chemin/du/depot PR=oui     # ... et ouvre réellement les PR (gh), sur un dépôt que vous contrôlez
+
+Résultats dans `out/optimiser/` : `audit.html`, `propositions/propositions.html` (page développeur),
+`propositions/slack.md`, les `*.diff` et `*.pr.md`. Sans `REPO`, seulement le bilan et les propositions.
+`BANC=oui` teste aussi des modèles moins chers (appels payants, clé nécessaire). Même base que
+`make audit` (`GATEWAY_DB`). Le détail, commande par commande :
+
     .venv/bin/python -m optimize events.jsonl --out private/optim --repo chemin/du/depot
 
 Pour chaque constat : une seule modification (règles à la place d'un LLM qui aiguille, modèle plus petit,

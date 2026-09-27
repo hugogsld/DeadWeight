@@ -3,7 +3,7 @@ PY := $(shell command -v python3.11 || command -v python3)
 VENV := .venv
 BIN := $(VENV)/bin
 
-.PHONY: dev install test lint record audit demo prices e2e catalog
+.PHONY: dev install test lint record audit optimiser demo prices e2e catalog
 
 dev: install .env.local
 	@set -a; . ./.env.local; set +a; \
@@ -37,6 +37,14 @@ AUDIT_OUT ?= out/audit.html
 audit: install
 	@set -a; if [ -f .env.local ]; then . ./.env.local; fi; set +a; \
 	$(BIN)/python -m scripts.audit --out "$(AUDIT_OUT)"
+
+# Tout après la capture : bilan, optimisations testées sur l'historique, micro-PR.
+# make optimiser REPO=chemin/du/depot [PR=oui] [BANC=oui]
+OPTIM_OUT ?= out/optimiser
+optimiser: install
+	@set -a; if [ -f .env.local ]; then . ./.env.local; fi; set +a; \
+	$(BIN)/python -m scripts.optimiser --out "$(OPTIM_OUT)" $(if $(REPO),--repo "$(REPO)") \
+		$(if $(filter oui,$(PR)),--pr) $(if $(filter oui,$(BANC)),--banc)
 
 # Aucune clé et aucune modification de la base client ; ports locaux libres.
 demo: install
