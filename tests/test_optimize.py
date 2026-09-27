@@ -72,6 +72,18 @@ def test_rules_patch_touches_no_code_and_is_reversible(proposals, tmp_path):
     assert title.startswith("Deadweight : ") and "| precision | 100.0 % | mesuré |" in body
 
 
+def test_patch_survives_broken_symlinks_in_the_client_repo(proposals, tmp_path):
+    """Un vrai dépôt (workflow de Miguel) contient des liens vers des médias absents : la copie ne doit pas échouer."""
+    repo = _repo(tmp_path)
+    (repo / "assets").symlink_to(tmp_path / "medias-absents")
+    subprocess.run(["git", "add", "-A"], cwd=repo, check=True)
+    subprocess.run(["git", "-c", "user.email=t@t", "-c", "user.name=t", "commit", "-qm", "lien"], cwd=repo, check=True)
+    triage = next(p for p in proposals if p["type"] == "regles" and p["app_id"] == "mail-triage")
+    diff, _ = make_patch(repo, triage)
+    assert "deadweight/preuves/proof-mail-triage.json" in diff and "assets" not in diff
+    assert (repo / "assets").is_symlink()  # le dépôt du client n'est pas touché
+
+
 def test_model_and_cap_patches(tmp_path):
     repo = _repo(tmp_path)
     swap = {"type": "modele", "app_id": "mail-triage", "model": "gpt-4o", "nouveau_modele": "gpt-4o-mini"}
