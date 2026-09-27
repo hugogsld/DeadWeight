@@ -101,7 +101,7 @@ en continu). Deadweight répond à une autre question.
 
 ## 7. L'équipe
 
-Quatre personnes : **Hugo Gesland, Natan, Thibaud Gregori, Alexandre Zenou**, avec des agents de code (Claude Code,
+Quatre personnes : **Hugo Gesland, Natan, Thibault Gregori, Alexandre Zénou**, avec des agents de code (Claude Code,
 Codex) coordonnés par des règles écrites (`AGENTS.md`).
 
 **Existant déclaré** (règlement X-IA) : un prototype d'un après-midi du 12/09/2026, limité à n8n (détection par

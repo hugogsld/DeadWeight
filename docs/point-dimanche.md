@@ -26,7 +26,7 @@ Tout tourne chez le client : ses clés ne sont jamais stockées, ses données ne
 à chaque modification.
 
 **Testé sur de vrais workflows** : le Claude Code de Natan (72 % du coût = relire le contexte), l'usine de shorts de
-Miguel (7,21 $ par short), le récap Gmail de Thibaud, le triage officiel d'OpenAI (aucun faux positif), un modèle
+Miguel (7,21 $ par short), le récap Gmail de Thibault, le triage officiel d'OpenAI (aucun faux positif), un modèle
 n8n de tri d'emails. Chacun de ces tests a corrigé quelque chose dans le produit.
 
 Le détail complet : `docs/etat-du-projet.md`.
@@ -54,7 +54,7 @@ On les filme en train d'installer Deadweight et de voir ce qu'il trouve sur un w
 
 &nbsp;
 
-### Thibaud · vérifier que chaque voie de connexion marche
+### Thibault · vérifier que chaque voie de connexion marche
 | Voie | Existe ? | Commande |
 |---|---|---|
 | Passerelle (`base_url`) | ✅ | `make dev` puis changer `base_url` |
@@ -113,7 +113,7 @@ Les PR en attente, la démo mesurée sur les workflows d'Alexandre, la section o
 | Heure | Quoi |
 |---|---|
 | **15 h 40 – 16 h 15** | Alexandre choisit les workflows · Claude fusionne les PR · Natan vérifie les cotisations |
-| **16 h 15 – 17 h 15** | Démo mesurée sur les workflows choisis · Thibaud teste les voies · Hugo prépare le test filmé |
+| **16 h 15 – 17 h 15** | Démo mesurée sur les workflows choisis · Thibault teste les voies · Hugo prépare le test filmé |
 | **17 h 15 – 18 h** | Test utilisateur filmé · README et section obligatoire |
 | **18 h – 19 h 15** | Montage de la vidéo · description courte · vérification finale |
 | **19 h 15 – 20 h** | Contrôle de sécurité · **dépôt** |
