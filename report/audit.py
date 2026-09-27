@@ -133,6 +133,15 @@ def _missing_reasons(manquants):
     return sorted({m.split(": ", 1)[-1] for m in manquants})
 
 
+def load_banc(directory):
+    """Résultats de python -m bench m2 (banc-*.json), par finding_id. Dossier absent : rien."""
+    results = {}
+    for path in sorted(Path(directory).glob("banc-*.json")) if directory and Path(directory).is_dir() else []:
+        result = json.loads(path.read_text(encoding="utf-8"))
+        results[result["finding_id"]] = result
+    return results
+
+
 def build_report(events, detectors=None, banc=None):
     """detectors : liste de (nom, detect). Par defaut, toutes les regles de rules/.
     banc : {finding_id: résultat de bench.m2.prove} ; les options M2 testées portent leur verdict."""
@@ -427,11 +436,7 @@ def main():
     ap.add_argument("--banc", help="dossier des résultats de python -m bench m2 (banc-*.json)")
     args = ap.parse_args()
     lines = Path(args.events).read_text(encoding="utf-8").splitlines()
-    banc = {}
-    for path in sorted(Path(args.banc).glob("banc-*.json")) if args.banc else []:
-        result = json.loads(path.read_text(encoding="utf-8"))
-        banc[result["finding_id"]] = result
-    report = build_report((json.loads(line) for line in lines if line.strip()), banc=banc)
+    report = build_report((json.loads(line) for line in lines if line.strip()), banc=load_banc(args.banc))
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(render_html(report), encoding="utf-8")
