@@ -26,20 +26,25 @@ class CallResult(NamedTuple):
 class CandidateLLM:
     """base_url inclut le prefixe API (ex. /v1). api_key peut etre None."""
 
-    def __init__(self, base_url, api_key, model, timeout_s=DEFAULT_TIMEOUT_S, route=None, max_tokens=None):
+    def __init__(self, base_url, api_key, model, timeout_s=DEFAULT_TIMEOUT_S, route=None, max_tokens=None,
+                 extra=None):
         self.base_url = base_url.rstrip('/')
         self.api_key = api_key
         self.model = model
         self.timeout_s = timeout_s
         self.route = route  # OpenRouter : hébergeur imposé, sans repli vers un autre
         self.max_tokens = max_tokens
+        self.extra = dict(extra) if extra else {}  # ex. {'reasoning_effort': 'low'} (bench.reasoning)
 
     def complete(self, messages):
         # temperature 0 pour des réponses stables ; les modèles à raisonnement (gpt-5, o-series)
         # la refusent (400) : on relance alors une fois sans.
-        result = self._call({'model': self.model, 'temperature': 0, 'messages': list(messages)})
+        # getattr : un candidat construit sans passer par __init__ (tests/test_bench_runner.py,
+        # __new__ + attributs choisis) n'a pas forcément .extra ; défaut vide, jamais une exception.
+        extra = getattr(self, 'extra', None) or {}
+        result = self._call({'model': self.model, 'temperature': 0, 'messages': list(messages), **extra})
         if result.error == 'http_400':
-            result = self._call({'model': self.model, 'messages': list(messages)})
+            result = self._call({'model': self.model, 'messages': list(messages), **extra})
         return result
 
     def _call(self, body):

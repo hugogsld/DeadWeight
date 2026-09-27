@@ -151,7 +151,10 @@ def test_gains_par_tache_absent_sans_propositions():
 
 def test_gains_par_tache_reprend_les_chiffres_de_optimize_propose_sans_les_recalculer(proposals):
     report = build_report(EVENTS, propositions=proposals)
-    triage = next(r for r in report["gains_par_tache"] if r["app_id"] == "mail-triage")
+    # "mail-triage" a aussi une proposition "cache" (R8, optimize.propose) désormais : on cible
+    # explicitement celle de "regles" (R1), la seule dont les figures attendues sont ci-dessous.
+    triage = next(r for r in report["gains_par_tache"]
+                 if r["app_id"] == "mail-triage" and "Remplacer les appels" in r["changement"])
     labels = [f["label"] for f in triage["figures"]]
     assert labels == ["contexte envoyé", "coût", "latence médiane", "précision"]
     assert triage["part_pct"] is not None

@@ -7,9 +7,24 @@ Chaque proposition porte des mesures, et chaque mesure son statut, décidé par 
 Rien n'est arrondi vers le plus favorable, rien ne vient du modèle.
 
 Types de modifications (une par micro-PR) :
-- ``regles``   : un LLM qui aiguille (R1) remplacé par des règles extraites, prouvé par rejeu ;
-- ``modele``   : un modèle plus petit (R2), prouvé au banc sur les mêmes entrées (clé nécessaire) ;
-- ``plafond``  : un plafond de longueur (R12), mesuré sur l'historique des réponses.
+- ``regles``       : un LLM qui aiguille (R1) remplacé par des règles extraites, prouvé par rejeu ;
+- ``modele``       : un modèle plus petit (R2), prouvé au banc sur les mêmes entrées (clé nécessaire) ;
+- ``plafond``      : un plafond de longueur (R12), mesuré sur l'historique des réponses ;
+- ``cache``        : les appels identiques en trop (R8), mis en cache plutôt que rejoués ;
+- ``erreurs``      : les relances d'un échec déjà facturé (R9), évitées en corrigeant la cause ;
+- ``cache_prompt`` : le cache de prompt du fournisseur (R4), calcul exact sur les jetons répétés ;
+- ``batch``        : l'API batch d'un fournisseur (R14), remise de scénario non vérifiée par modèle ;
+- ``raisonnement`` : un effort de raisonnement réduit (R7), prouvé au banc (clé OpenAI nécessaire).
+
+Le verdict « pass » exige une précision >= proof.replay.THRESHOLD (95 %), mesurée, jamais
+estimée (même seuil que le rejeu des règles, réutilisé plutôt que redéfini). Pour les types sans
+risque de qualité (cache, erreurs, cache_prompt : le modèle et sa réponse ne changent pas, seule
+la facturation ou le nombre d'appels change), cette précision de 100 % n'est pas une hypothèse
+mais la définition même du constat sous-jacent ; elle reste donc « mesurée », pas fabriquée.
+
+``cache``, ``erreurs``, ``cache_prompt``, ``batch`` et ``raisonnement`` vivent dans
+optimize/leviers/ (un module par levier), pour que chaque nouveau levier ne touche que son
+propre fichier ; seule leur ligne de câblage reste ici, dans propose().
 """
 import math
 from statistics import median
@@ -161,8 +176,15 @@ def _cap_cost(group, cap):
     return {"avant": spent, "apres": spent - cut if spent is not None else None, "statut": MESURE}
 
 
-def propose(events, llm=None, keys_available=False, prove=None):
-    """Toutes les propositions testables, dans l'ordre des constats. ``prove`` : bench.m2.prove (injectable)."""
+def propose(events, llm=None, keys_available=False, prove=None, prove_reasoning=None):
+    """Toutes les propositions testables, dans l'ordre des constats.
+    ``prove`` : bench.m2.prove (injectable) ; ``prove_reasoning`` : bench.reasoning.prove (injectable).
+    cache/erreurs/cache_prompt/batch/raisonnement : voir optimize/leviers/ (un fichier par levier)."""
+    from optimize.leviers.batch import batch_proposal
+    from optimize.leviers.cache import cache_proposal
+    from optimize.leviers.cache_prompt import cache_prompt_proposal
+    from optimize.leviers.errors import errors_proposal
+    from optimize.leviers.reasoning import reasoning_proposal
     if prove is None:
         from bench.m2 import prove
     events = list(events)
@@ -177,4 +199,18 @@ def propose(events, llm=None, keys_available=False, prove=None):
             p = _cap(f, events)
             if p:
                 out.append(p)
+        elif f["rule"] == "duplicate_calls":
+            out.append(cache_proposal(f, events))
+        elif f["rule"] == "paid_errors":
+            p = errors_proposal(f, events)
+            if p:
+                out.append(p)
+        elif f["rule"] == "no_cache":
+            p = cache_prompt_proposal(f, events)
+            if p:
+                out.append(p)
+        elif f["rule"] == "batch_eligible":
+            out.append(batch_proposal(f, events))
+        elif f["rule"] == "excess_reasoning":
+            out.append(reasoning_proposal(f, events, keys_available, prove_reasoning))
     return out
