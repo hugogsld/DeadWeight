@@ -155,3 +155,30 @@ def test_pass_and_reject_proofs_match_the_contract(dataset):
     for app in ('mail-triage', 'reviews'):  # PASS et REJECT
         finding = findings[app]
         jsonschema.validate(replay(finding, events, extract_rules(finding, events)), PROOF_SCHEMA)
+
+
+def test_jeu_de_test_a_une_seule_reponse_rien_n_est_prouve():
+    # vu chez un testeur : tous les « true » servent à apprendre, il ne reste que des « false » à
+    # vérifier ; une règle qui répond toujours « false » ferait 100 % sans rien prouver
+    events = _events(40, label='false', text='idée de campagne')
+    rules = {'categories': [{'key': 'false', 'regex': 'idée'}, {'key': 'true', 'regex': 'excellente'}]}
+    proof = replay(_finding(events), events, rules)
+    assert proof['verdict'] == 'reject'
+    assert any('une seule réponse' in r for r in proof['reasons'])
+
+
+def test_une_regle_qui_ne_trouve_jamais_la_reponse_minoritaire_est_refusee():
+    # 38 « false » et 2 « true » : répondre toujours « false » donne 95 %, sans rien prouver
+    events = _events(38, label='false', text='idée de campagne') + [
+        {**e, 'event_id': f't{i}'} for i, e in enumerate(_events(2, label='true', text='idée géniale'))]
+    rules = {'categories': [{'key': 'false', 'regex': 'idée'}, {'key': 'true', 'regex': 'jamaisvu'}]}
+    proof = replay(_finding(events), events, rules)
+    assert proof['verdict'] == 'reject'
+    assert any('true' in r and 'jamais' in r for r in proof['reasons'])
+
+
+def test_regles_justes_sur_chaque_reponse_passent_toujours():
+    events = _events(20, label='spam', text='gagnez un iphone') + [
+        {**e, 'event_id': f'h{i}'} for i, e in enumerate(_events(20, label='ham', text='réunion demain'))]
+    rules = {'categories': [{'key': 'spam', 'regex': 'gagnez'}, {'key': 'ham', 'regex': 'réunion'}]}
+    assert replay(_finding(events), events, rules)['verdict'] == 'pass'

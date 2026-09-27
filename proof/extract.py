@@ -4,6 +4,7 @@ La couverture est l'accord sur les exemples exploitables d'extraction, pas une
 preuve sur des données indépendantes (celle-ci relève de D3.2).
 """
 import json
+import os
 import re
 import urllib.request
 from collections import Counter
@@ -66,7 +67,7 @@ class OpenAICompatibleLLM:
             headers={'Authorization': 'Bearer ' + self.api_key, 'Content-Type': 'application/json'},
             method='POST',
         )
-        with urllib.request.urlopen(request, timeout=30) as response:
+        with urllib.request.urlopen(request, timeout=LLM_TIMEOUT_S) as response:
             payload = json.load(response)
         return json.loads(payload['choices'][0]['message']['content'])
 
@@ -91,16 +92,55 @@ def _valid_categories(data, observed=None):
     return categories
 
 
+LLM_TIMEOUT_S = 120  # l'écriture des règles sur ~50 exemples dépasse parfois 30 s
+MIN_AFFIX = 20  # en dessous, un début ou une fin commune tient du hasard, pas d'une consigne fixe
+
+
+def _common_prefix(texts):
+    prefix = os.path.commonprefix(texts)
+    cut = max(prefix.rfind(' '), prefix.rfind('\n')) + 1  # jamais au milieu d'un mot
+    return prefix[:cut] if cut >= MIN_AFFIX else ''
+
+
+def gabarit_of(texts):
+    """Consigne fixe d'une étape : début et fin communs à tous ses messages. Les règles ne regardent
+    que la partie variable, sinon un mot de la consigne (« technical », « isitaccepted ») les ferait
+    correspondre à tous les appels."""
+    texts = [t for t in texts if isinstance(t, str)]
+    if len(texts) < 2:
+        return {'prefixe': '', 'suffixe': ''}
+    prefix = _common_prefix(texts)
+    suffix = _common_prefix([t[len(prefix):][::-1] for t in texts])[::-1]
+    return {'prefixe': prefix, 'suffixe': suffix}
+
+
+def variable_part(text, gabarit):
+    prefix, suffix = (gabarit or {}).get('prefixe') or '', (gabarit or {}).get('suffixe') or ''
+    if prefix and text.startswith(prefix):
+        text = text[len(prefix):]
+    if suffix and text.endswith(suffix):
+        text = text[:-len(suffix)]
+    return text
+
+
 def build_router(rules):
-    """Compile les données en un routeur : première correspondance re.I, sinon None."""
+    """Compile les données en un routeur : première correspondance re.I sur la partie variable du
+    message (consigne fixe retirée, cf. ``gabarit_of``), sinon None."""
     compiled = [(c['key'], re.compile(c['regex'], re.I)) for c in _valid_categories(rules)]
+    gabarit = rules.get('gabarit') if isinstance(rules, dict) else None
 
     def route(text):
         if not isinstance(text, str):
             return None
+        text = variable_part(text, gabarit)
         return next((key for key, pattern in compiled if pattern.search(text)), None)
 
     return route
+
+
+def _text(event):
+    return '\n'.join(m['content'] for m in event.get('request', {}).get('messages', [])
+                     if isinstance(m, dict) and m.get('role') == 'user' and isinstance(m.get('content'), str))
 
 
 def _examples(finding, events):
@@ -114,10 +154,7 @@ def _examples(finding, events):
         if not event or event.get('error') is not None:
             skipped += 1
             continue
-        texts = [m['content'] for m in event.get('request', {}).get('messages', [])
-                 if isinstance(m, dict) and m.get('role') == 'user'
-                 and isinstance(m.get('content'), str)]
-        text = '\n'.join(texts)
+        text = _text(event)
         if not text.strip():
             skipped += 1
             continue
@@ -161,6 +198,10 @@ def extract_rules(finding, events, llm=None):
         samples, skipped = _examples(finding, events)
         if not samples:
             return empty
+        by_id = {e['event_id']: e for e in events if isinstance(e, dict) and 'event_id' in e}
+        gabarit = gabarit_of([_text(by_id[i]) for i in finding.get('event_ids', []) if i in by_id]
+                             or [s['input'] for s in samples])
+        samples = [{**s, 'input': variable_part(s['input'], gabarit)} for s in samples]
         observed = {s['output'] for s in samples}
         distribution = Counter(s['output'] for s in samples)
         original = finding['evidence'].get('output_distribution', {})
@@ -184,13 +225,14 @@ def extract_rules(finding, events, llm=None):
         if data is None:
             data = _offline(samples, distribution)
         categories = _valid_categories(data, observed)
-        router = build_router({'categories': categories})
+        router = build_router({'categories': categories})  # entrées déjà réduites à la partie variable
         coverage = sum(router(s['input']) == s['output'] for s in samples) / len(samples)
         reasoning = data.get('reasoning')
         if not isinstance(reasoning, str):
             reasoning = 'Règles extraites ; couverture recalculée par le code.'
         if skipped:
             reasoning += f' {skipped} exemple(s) sans entrée exploitable ignoré(s).'
-        return {'categories': categories, 'coverage': coverage, 'method': method, 'reasoning': reasoning}
+        return {'categories': categories, 'coverage': coverage, 'method': method, 'reasoning': reasoning,
+                'gabarit': gabarit}
     except Exception:
         return empty

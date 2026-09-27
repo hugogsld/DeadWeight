@@ -47,7 +47,7 @@ def example_data():
 def test_offline_fallback_and_router():
     finding, events = example_data()
     result = extract_rules(finding, events)
-    assert set(result) == {'categories', 'coverage', 'method', 'reasoning'}
+    assert set(result) == {'categories', 'coverage', 'method', 'reasoning', 'gabarit'}
     assert result['method'] == 'offline' and result['coverage'] == 1
     assert build_router(result)('FACTURE paiement') == 'facture'
     assert build_router(result)('Support connexion') == 'support'
@@ -180,3 +180,23 @@ def test_adapter_bad_json_triggers_offline_fallback(monkeypatch):
     finding, events = example_data()
     result = extract_rules(finding, events, OpenAICompatibleLLM('https://example.invalid/v1', 'key', 'model'))
     assert result['method'] == 'offline' and result['coverage'] == 1
+
+
+def test_les_regles_ignorent_la_consigne_fixe_du_prompt():
+    # vu sur un vrai n8n : « Classe ce ticket parmi billing, technical… » est dans chaque appel ;
+    # une règle « technical » matchait donc tous les tickets
+    from proof.extract import build_router, extract_rules
+    consigne = "Classe ce ticket parmi billing, technical, account, other. Reponds uniquement par le mot.\n\nTicket: "
+    tickets = [("Ma facture est fausse", "billing"), ("Remboursez ma facture", "billing"),
+               ("L'appli plante au démarrage", "technical"), ("Erreur 500 sur l'export", "technical")] * 3
+    events = [{"event_id": f"e{i}", "error": None, "request": {"messages": [{"role": "user", "content": consigne + t}]},
+               "response": {"content": o}} for i, (t, o) in enumerate(tickets)]
+    finding = {"event_ids": [e["event_id"] for e in events],
+               "evidence": {"samples": [{"event_id": e["event_id"], "output": o} for e, (_, o) in zip(events, tickets)],
+                            "output_distribution": {"billing": 6, "technical": 6}}}
+    rules = extract_rules(finding, events)
+    assert rules["gabarit"]["prefixe"].startswith("Classe ce ticket")
+    route = build_router({**rules, "categories": [{"key": "technical", "regex": "technical|plante"},
+                                                 {"key": "billing", "regex": "facture"}]})
+    assert route(consigne + "Ma facture est fausse") == "billing"  # « technical » de la consigne ignoré
+    assert route(consigne + "L'appli plante") == "technical"

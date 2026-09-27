@@ -19,6 +19,7 @@ non contournable) et intervalle minimal entre deux appels.
     python3 -m proof.replay fixtures/dataset/v1/events.jsonl
 """
 import argparse
+from collections import Counter
 import hashlib
 import json
 import math
@@ -140,6 +141,7 @@ def replay(finding, events, rules, fallback=None, fallback_model=None, throttle=
     agree = matched = sent = capped = 0
     capped_ids = set()
     lat_after, fb_in, fb_out, fb_ok = [], 0, 0, True
+    seen, right = Counter(), Counter()  # réponses attendues vérifiées, et retrouvées, par réponse
     for e, text, expected in pairs:
         t0 = time.perf_counter()
         got, via = route(text), 'regles'
@@ -168,8 +170,10 @@ def replay(finding, events, rules, fallback=None, fallback_model=None, throttle=
         lat_after.append((time.perf_counter() - t0) * 1000 + extra_ms)
         if via == 'non couvert':
             continue  # appel d'origine inchangé : rien à comparer
+        seen[expected] += 1
         if got == expected:
             agree += 1
+            right[expected] += 1
         elif len(disagreements) < MAX_DISAGREEMENTS:
             disagreements.append({'event_id': e['event_id'], 'input': text[:120],
                                   'expected': expected, 'got': got, 'via': via})
@@ -183,6 +187,15 @@ def replay(finding, events, rules, fallback=None, fallback_model=None, throttle=
         reasons.append(f'accord {rate:.1%} sous le seuil de {threshold:.0%}')
     if not keys:
         reasons.append("aucune règle extraite : rien à rejouer")
+    if len(keys) > 1 and replaced:
+        # une règle qui répond toujours la même chose ne prouve rien : le jeu de test doit contenir
+        # plusieurs réponses, et chacune doit être retrouvée au moins une fois
+        if len(seen) < 2:
+            reasons.append(f"le jeu de test ne contient qu'une seule réponse ({next(iter(seen))}) : "
+                           "une règle constante aurait le même score, rien n'est prouvé")
+        else:
+            reasons += [f"la réponse « {k} » n'est jamais retrouvée par les règles ({seen[k]} cas)"
+                        for k in sorted(seen) if not right[k]]
 
     costs = chiffrer(group)
     before = costs['cout_mensuel_usd']

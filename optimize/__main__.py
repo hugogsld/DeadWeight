@@ -17,6 +17,7 @@ from optimize.devpage import render
 from optimize.patch import make_patch, open_pr, pr_text
 from optimize.propose import _cost, propose
 from optimize.slack import message
+from proof.extract import OpenAICompatibleLLM
 from proof.replay import THRESHOLD
 from report.billing import ABONNEMENT, API, load_billing, subscription_only
 
@@ -24,6 +25,19 @@ from report.billing import ABONNEMENT, API, load_billing, subscription_only
 # modèles en texte libre à 50 %, plafond à 90 %…), n'ouvre pas de micro-PR. Même seuil que le rejeu des
 # règles (proof.replay.THRESHOLD) : une seule vérité, pas un deuxième chiffre à maintenir.
 PRECISION_FLOOR_PCT = THRESHOLD * 100
+
+
+RULES_MODEL = "gpt-4.1-mini"  # écrit les règles une fois par étape : quelques centimes au plus
+
+
+def _rules_llm(env):
+    """Client qui écrit les règles, seulement avec DW_LLM_API_KEY (la clé que le client confie à
+    DeadWeight) : une clé d'un autre projet présente dans l'environnement ne déclenche aucun appel."""
+    key = env.get("DW_LLM_API_KEY")
+    if not key:
+        return None
+    return OpenAICompatibleLLM(env.get("DW_LLM_BASE_URL", "https://api.openai.com/v1"), key,
+                               env.get("DW_RULES_MODEL", RULES_MODEL))
 
 
 def main(argv=None):
@@ -38,7 +52,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     events = [json.loads(line) for line in Path(args.events).read_text(encoding="utf-8").splitlines() if line.strip()]
     keys = bool(os.environ.get("DW_LLM_API_KEY") or os.environ.get("OPENAI_API_KEY") or os.environ.get("OPENROUTER_API_KEY"))
-    proposals = propose(events, keys_available=keys)
+    proposals = propose(events, keys_available=keys, llm=_rules_llm(os.environ))
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     links, diffs = {}, {}
