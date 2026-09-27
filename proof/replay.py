@@ -30,7 +30,7 @@ from pathlib import Path
 
 from proof.extract import OpenAICompatibleLLM, build_router, extract_rules
 from report.cost import PRICING_PATH, chiffrer, lookup
-from rules.low_entropy import detect, normalize
+from rules.low_entropy import canon, detect, output_of
 
 THRESHOLD = 0.95
 MIN_REPLAY = 30           # entrées remplacées ; comme MIN_CALLS de R1, en dessous le taux ne veut rien dire
@@ -127,10 +127,11 @@ def replay(finding, events, rules, fallback=None, fallback_model=None, throttle=
     used = {s.get('event_id') for s in finding.get('evidence', {}).get('samples', [])}
     pairs = []
     for e in group:
-        text, content = _user_text(e), (e.get('response') or {}).get('content')
-        if e['event_id'] in used or e.get('error') is not None or not text.strip() or content is None:
+        # même étiquette que la règle : texte normalisé, JSON à plat ou signature d'appel d'outil (#105)
+        text, expected = _user_text(e), output_of(e)
+        if e['event_id'] in used or e.get('error') is not None or not text.strip() or expected is None:
             continue
-        pairs.append((e, text, normalize(content)))
+        pairs.append((e, text, expected))
 
     reasons, disagreements = [], []
     agree = matched = sent = capped = 0
@@ -147,7 +148,7 @@ def replay(finding, events, rules, fallback=None, fallback_model=None, throttle=
             via = 'secours'
             try:
                 raw, tin, tout = fallback.classify(text, keys)
-                got = normalize(raw)
+                got = canon(raw)
                 if tin is None or tout is None:
                     fb_ok = False
                 else:

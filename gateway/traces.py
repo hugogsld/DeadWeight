@@ -24,10 +24,16 @@ Deux voies, dans cet ordre :
    Un appel sans parent ni enfant reste hors trace (``id = null``) : un
    classifieur appelé 400 fois n'est pas 400 traces d'un appel.
 
+   Passage de main entre agents (handoff, #105) : l'agent suivant a un AUTRE prompt système mais
+   renvoie tout l'historique (triage officiel OpenAI : triage → agent FAQ). Sans prompt système
+   commun, on exige la preuve la plus forte : l'historique entier de A, puis sa réponse, est
+   exactement le début de B (même application, même fenêtre de temps). Le prompt système identique
+   reste préféré quand les deux candidats existent.
+
 Ce que l'heuristique ne voit pas : un client qui réécrit l'historique
 (résumé, reformulation), ou deux conversations strictement identiques au
-mot près menées en parallèle. Le prompt système identique est requis : un
-agent qui change de prompt entre deux tours coupe la trace.
+mot près menées en parallèle. Un agent qui change de prompt système ET
+tronque l'historique au même tour coupe la trace.
 """
 import json
 from datetime import datetime
@@ -67,7 +73,7 @@ def assign_traces(events):
     events = [{**e, "trace": dict(e.get("trace") or {"id": None, "source": None})} for e in events]
     order = sorted(range(len(events)), key=lambda i: (_ts(events[i]["ts_start"]), i))
 
-    # Index des parents possibles : (app, système, dernier message reçu, réponse rendue).
+    # Index des parents possibles : (app, dernier message reçu, réponse rendue) -> [(système, i)].
     index = {}
     parent = {}
     for i in order:
@@ -75,16 +81,21 @@ def assign_traces(events):
         msgs = e["request"]["messages"]
         last_assistant = max((p for p, m in enumerate(msgs) if m["role"] == "assistant"), default=None)
         if last_assistant is not None and last_assistant > 0:
-            key = (e["app_id"], e["request"]["system"],
-                   _msg_fp(msgs[last_assistant - 1]), _msg_fp(msgs[last_assistant]))
+            key = (e["app_id"], _msg_fp(msgs[last_assistant - 1]), _msg_fp(msgs[last_assistant]))
             best = None
-            for j in index.get(key, ()):
+            head = [_msg_fp(m) for m in msgs[:last_assistant]]
+            for system, j in index.get(key, ()):
                 a = events[j]
                 gap = _ts(e["ts_start"]) - _ts(a["ts_end"])
                 if not -CLOCK_SKEW_S <= gap <= WINDOW_S:
                     continue
                 a_msgs = a["request"]["messages"]
-                score = (len(a_msgs) == last_assistant and msgs[:last_assistant] == a_msgs,
+                same_system = system == e["request"]["system"]
+                exact = len(a_msgs) == last_assistant and (
+                    msgs[:last_assistant] == a_msgs or head == [_msg_fp(m) for m in a_msgs])
+                if not same_system and not exact:
+                    continue  # autre agent (handoff) : seul l'historique exact prouve la conversation
+                score = (same_system, exact,
                          _call_ids(a["response"]["tool_calls"]) == _call_ids(msgs[last_assistant].get("tool_calls")),
                          _ts(a["ts_end"]))
                 if best is None or score > best[0]:
@@ -94,9 +105,8 @@ def assign_traces(events):
 
         resp = e["response"]
         if e.get("error") is None and msgs and (resp.get("content") or resp.get("tool_calls")):
-            key = (e["app_id"], e["request"]["system"], _msg_fp(msgs[-1]),
-                   _fp("assistant", resp.get("content"), resp.get("tool_calls")))
-            index.setdefault(key, []).append(i)
+            key = (e["app_id"], _msg_fp(msgs[-1]), _fp("assistant", resp.get("content"), resp.get("tool_calls")))
+            index.setdefault(key, []).append((e["request"]["system"], i))
 
     has_child = set(parent.values())
     header_steps = {}
