@@ -8,6 +8,8 @@ Sur abonnement (Claude Code Max, ChatGPT Plus…), le forfait ne baisse pas : le
 """
 
 
+from report.conseils import conseil_logs, conseil_proposition
+
 LEVELS = {"precision"}  # un niveau, pas une variation : jamais de signe
 TOTAL = {False: "de la dépense totale", True: "de la valeur consommée (équiv. API)"}
 
@@ -52,7 +54,7 @@ def quoi_changer(p):
     return None
 
 
-def _line(p, link, total_spent=None, equivalent_api=False):
+def _line(p, link, total_spent=None, equivalent_api=False, kind=None):
     m = p["mesures"]
     icon = {"pass": "✅", "reject": "⛔", "non_teste": "◻️"}.get(p["verdict"], "•")
     parts = []
@@ -74,11 +76,25 @@ def _line(p, link, total_spent=None, equivalent_api=False):
         share = f", soit {(cout['avant'] - cout['apres']) / total_spent * 100:.0f} % {TOTAL[equivalent_api]}"
     pr = f" → <{link}|accepter la PR>" if link and p["verdict"] == "pass" else ""
     why = f" ({'; '.join(p['raisons'])})" if p["verdict"] == "reject" and p.get("raisons") else ""
-    how = quoi_changer(p) if p["verdict"] == "pass" else None
+    how = (conseil_proposition(p, kind) or quoi_changer(p)) if p["verdict"] == "pass" else None
+    if how and kind == "logs" and not conseil_proposition(p, kind) and p["type"] in ("plafond", "cache_prompt"):
+        how = None  # réglage SDK sans équivalent dans Claude Code : mieux vaut ne rien dire que mal conseiller
     return f"{icon} *{p['app_id']}* — {p['changement']}\n      {detail}{share}{why}{pr}" + (f"\n      {how}" if how else "")
 
 
-def message(proposals, links=None, total_spent=None, show_all=False, equivalent_api=False, with_diffs=False):
+def _sans_piste(rows, kind):
+    """Constats statistiques sans piste testable : lesquels, pourquoi, et ce qui les rendrait testables."""
+    out = [f"• {sum(r['nb'] for r in rows)} constat(s) statistique(s), mais aucune piste testable par rejeu :"]
+    for r in rows:
+        out.append(f"   - {r['titre']} ({r['nb']}) : {r['pourquoi']}. Pour le tester : {r['pour_tester']}.")
+        how = conseil_logs(r["regle"]) if kind == "logs" else None
+        if how:
+            out.append(f"     {how}")
+    return out
+
+
+def message(proposals, links=None, total_spent=None, show_all=False, equivalent_api=False, with_diffs=False,
+            sans_piste=None, kind=None):
     """Texte Slack (mrkdwn). ``links`` : {finding_id+type: url de PR} ; ``total_spent`` : dépense observée.
     ``equivalent_api`` : facturation par abonnement, les dollars sont une valeur équivalente API.
     Par défaut, seules les propositions prouvées apparaissent (un décideur n'a rien à faire des autres) ;
@@ -113,11 +129,13 @@ def message(proposals, links=None, total_spent=None, show_all=False, equivalent_
         else:
             head.append("• Aucun diff produit : relancez avec `--repo <dossier>` pour l'obtenir "
                         "(le dépôt n'est pas modifié).")
-    if not proposals:
-        head.append("• Aucune piste à tester sur ces données : la page audit.html explique pourquoi "
+    if sans_piste:
+        head.extend(_sans_piste(sans_piste, kind))
+    elif not proposals:
+        head.append("• Aucun constat sur ces données, donc rien à tester : la page audit.html explique pourquoi "
                     "(section « Pourquoi aucun constat »).")
     shown = ok if ok or not show_all else proposals
-    body = [_line(p, links.get(p["finding_id"] + p["type"]), total_spent, equivalent_api) for p in shown]
+    body = [_line(p, links.get(p["finding_id"] + p["type"]), total_spent, equivalent_api, kind) for p in shown]
     hidden = len(proposals) - len(shown)
     if hidden:
         untested = sum(p["verdict"] == "non_teste" for p in proposals if p not in shown)

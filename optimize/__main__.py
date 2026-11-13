@@ -15,10 +15,11 @@ from pathlib import Path
 
 from optimize.devpage import render
 from optimize.patch import make_patch, open_pr, pr_text
-from optimize.propose import _cost, propose
+from optimize.propose import _cost, propose, sans_piste
 from optimize.slack import message
 from proof.extract import OpenAICompatibleLLM
 from proof.replay import THRESHOLD
+from report.cost import source_kind
 from report.billing import ABONNEMENT, API, load_billing, subscription_only
 
 # seuil de précision en dessous duquel une proposition, même « pass » pour son propre critère (banc de
@@ -72,7 +73,7 @@ def main(argv=None):
     (out / "propositions.html").write_text(render(proposals, diffs), encoding="utf-8")
     equivalent_api = subscription_only(events, load_billing(args.comprehension, args.billing))
     text = message(proposals, links, total_spent=_cost(events), show_all=args.demo, equivalent_api=equivalent_api,
-                   with_diffs=bool(diffs))
+                   with_diffs=bool(diffs), sans_piste=sans_piste(events, proposals), kind=source_kind(events))
     (out / "slack.md").write_text(text + "\n", encoding="utf-8")
     # les boutons « Voir la PR » du message Slack (optimize.send) : un lien, jamais une fusion
     prs = [{"app_id": p["app_id"], "changement": p["changement"], "url": links[p["finding_id"] + p["type"]]}

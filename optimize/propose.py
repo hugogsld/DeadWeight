@@ -218,3 +218,22 @@ def propose(events, llm=None, keys_available=False, prove=None, prove_reasoning=
         elif f["rule"] == "excess_reasoning":
             out.append(reasoning_proposal(f, events, keys_available, prove_reasoning))
     return out
+
+
+def sans_piste(events, proposals):
+    """Constats sans proposition testable par rejeu : [{regle, titre, nb, pourquoi, pour_tester}].
+    Distingue « constats mais rien de rejouable » de « aucun constat »."""
+    from report.audit import DEFAULT_TEXT, RULE_TEXT
+    from report.conseils import NON_REJOUABLE, NON_REJOUABLE_DEFAULT
+    done = {p["finding_id"] for p in proposals}
+    counts = {}
+    for _, detect in _discover_detectors():
+        for f in detect(list(events)):
+            if f["rule"] != "data_outside_eu" and f["finding_id"] not in done:
+                counts[f["rule"]] = counts.get(f["rule"], 0) + 1
+    rows = []
+    for rule, n in sorted(counts.items()):
+        why, how = NON_REJOUABLE.get(rule, NON_REJOUABLE_DEFAULT)
+        rows.append({"regle": rule, "titre": RULE_TEXT.get(rule, DEFAULT_TEXT)[0], "nb": n,
+                     "pourquoi": why, "pour_tester": how})
+    return rows

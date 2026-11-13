@@ -18,8 +18,9 @@ import rules
 from catalog.recommend import recommend
 from report.billing import ABONNEMENT, billing_section, load_billing, spent_usd
 from report.pourquoi import diagnostic, lignes, utile
+from report.conseils import conseil_logs
 from report.cost import (MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer_partiel, more_data_hint, runs,
-                         window_seconds)
+                         source_kind, window_seconds)
 
 # En dessous d'une heure de trafic, projeter sur un mois multiplie du bruit :
 # 36 appels en 0,3 s donnaient 315 220 $/mois. On affiche alors le coût réellement dépensé.
@@ -149,12 +150,15 @@ def build_report(events, detectors=None, banc=None, billing=None, propositions=N
     findings = [f for f in findings if f["rule"] != "data_outside_eu"]
     souverainete.sort(key=lambda f: -f["evidence"]["calls"])
 
+    kind = source_kind(events)
     period = window_seconds(events)  # une seule période d'observation pour tout le rapport
     constats = []
     for f in findings:
         evts = [by_id[i] for i in f["event_ids"] if i in by_id]
         chiffres = _figures(evts, period)
         titre, action = RULE_TEXT.get(f["rule"], DEFAULT_TEXT)
+        if kind == "logs" and conseil_logs(f["rule"]):  # Claude Code : actions faisables dans Claude Code
+            action = conseil_logs(f["rule"]).removeprefix("Quoi changer : ")
         # M2 : alternatives hors famille, seulement là où R2 a jugé la tâche simple
         alternatives = recommend(evts)["options"] if f["rule"] == "oversized_model" and evts else None
         tested = ((banc or {}).get(f["finding_id"]) or {}).get("options", {})

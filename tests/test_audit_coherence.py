@@ -62,3 +62,35 @@ def test_rapport_logs_ne_parle_pas_de_passerelle():
     assert "laissez tourner la passerelle" not in page
     n8n = [ev(i, app="n8n:wf/x") for i in range(5)]
     assert "exécutions" in "\n".join(lignes(diagnostic(n8n))) and "passerelle" not in "\n".join(lignes(diagnostic(n8n)))
+
+
+# ---------- items 5 et 6 : constats sans piste rejouable, conseils selon la source ----------
+
+def test_slack_distingue_constats_sans_piste_et_aucun_constat():
+    from optimize.slack import message
+    rows = [{"regle": "context_reread", "titre": "Chaque appel relit la conversation", "nb": 2,
+             "pourquoi": "p", "pour_tester": "t"}]
+    text = message([], sans_piste=rows, kind="logs")
+    assert "2 constat(s) statistique(s), mais aucune piste testable par rejeu" in text
+    assert "Pour le tester : t" in text and "/compact" in text
+    assert "Pourquoi aucun constat" not in text
+    assert "Aucun constat sur ces données" in message([], sans_piste=[])
+
+
+def test_sans_piste_liste_les_constats_sans_proposition():
+    from optimize.propose import sans_piste
+    events = [json.loads(line) for line in (ROOT / "fixtures/dataset/v1/events.jsonl").read_text().splitlines()]
+    rows = sans_piste(events, [])
+    assert rows and all(r["pourquoi"] and r["pour_tester"] and r["nb"] > 0 for r in rows)
+
+
+def test_conseils_claude_code_pas_de_cache_control_ni_sdk():
+    from optimize.slack import message
+    from report.conseils import CLAUDE_CODE, conseil_proposition
+    assert all("cache_control" not in t and "max_tokens" not in t for t in CLAUDE_CODE.values())
+    prop = {"type": "cache_prompt", "model": "claude-sonnet-4-5", "verdict": "pass", "app_id": "a", "changement": "c",
+            "finding_id": "f", "mesures": {}, "raisons": []}
+    assert "cache_control" not in conseil_proposition(prop, "logs")
+    assert conseil_proposition(prop, "passerelle") is None
+    assert "cache_control" in message([prop], kind="passerelle")
+    assert "cache_control" not in message([prop], kind="logs")
