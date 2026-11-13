@@ -4,13 +4,15 @@ import asyncio
 import json
 from pathlib import Path
 
-import anthropic
 import jsonschema
+import pytest
 from aiohttp import web
 
-from gateway import fake_anthropic
-from gateway.proxy import make_app
-from report.audit import build_report
+anthropic = pytest.importorskip("anthropic")
+
+from gateway import fake_anthropic  # noqa: E402
+from gateway.proxy import make_app  # noqa: E402
+from report.audit import build_report  # noqa: E402
 
 SCHEMA = json.loads((Path(__file__).resolve().parents[1] / "schemas/event.schema.json").read_text())
 SECRET = "sk-ant-NE-DOIT-JAMAIS-SORTIR"
