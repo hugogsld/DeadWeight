@@ -3,12 +3,14 @@
 Formats calqués sur l'API Messages réelle, streaming SSE compris (event: + data:).
     model "bad-key" : 401 authentication_error
     model "tools"   : bloc tool_use (streamé ou non)
+    model "cache"   : usage avec cache_creation_input_tokens et cache_read_input_tokens
 """
 import json
 
 from aiohttp import web
 
 WORDS = ["Bonjour", " le", " monde."]
+CACHE_USAGE = {"input_tokens": 9, "output_tokens": 7, "cache_creation_input_tokens": 40, "cache_read_input_tokens": 100}
 USAGE = {"input_tokens": 21, "output_tokens": 7, "cache_creation_input_tokens": 0, "cache_read_input_tokens": 5}
 
 
@@ -23,6 +25,7 @@ async def messages(request):
         return web.json_response({"type": "error", "error": {"type": "authentication_error",
                                                              "message": "invalid x-api-key"}}, status=401)
     tools = model == "tools"
+    usage = CACHE_USAGE if model == "cache" else USAGE
     resolved = model + "-20260101"
     if not body.get("stream"):
         content = ([{"type": "text", "text": "Je regarde."},
@@ -30,11 +33,11 @@ async def messages(request):
                    if tools else [{"type": "text", "text": "".join(WORDS)}])
         return web.json_response({"id": "msg_fake", "type": "message", "role": "assistant", "model": resolved,
                                   "content": content, "stop_reason": "tool_use" if tools else "end_turn",
-                                  "stop_sequence": None, "usage": USAGE})
+                                  "stop_sequence": None, "usage": usage})
 
     resp = web.StreamResponse(headers={"Content-Type": "text/event-stream; charset=utf-8"})
     await resp.prepare(request)
-    start_usage = dict(USAGE, output_tokens=1)
+    start_usage = dict(usage, output_tokens=1)
     parts = [_sse("message_start", message={"id": "msg_fake", "type": "message", "role": "assistant",
                                             "model": resolved, "content": [], "stop_reason": None,
                                             "stop_sequence": None, "usage": start_usage}),
@@ -50,7 +53,7 @@ async def messages(request):
         parts += [_sse("content_block_delta", index=0, delta={"type": "text_delta", "text": w}) for w in WORDS]
         parts.append(_sse("content_block_stop", index=0))
     parts += [_sse("message_delta", delta={"stop_reason": "tool_use" if tools else "end_turn", "stop_sequence": None},
-                   usage={"output_tokens": USAGE["output_tokens"]}),
+                   usage={"output_tokens": usage["output_tokens"]}),
               _sse("message_stop")]
     for p in parts:
         await resp.write(p)
