@@ -65,7 +65,9 @@ def read(files, report: Comprehension | None = None) -> tuple[list[dict], Compre
 
 def _read_session(entries: list[dict], name: str, report: Comprehension, seen: set) -> list[dict]:
     has_records = any(e.get("type") == "token_usage_record" for e in entries)
-    if not has_records:
+    has_counts = any(e.get("type") == "event_msg" and (e.get("payload") or {}).get("type") == "token_count"
+                     for e in entries)
+    if not has_records and has_counts:
         report.note("version de Codex sans token_usage_record : jetons pris dans token_count (last_token_usage)")
 
     session, provider, model, cwd = None, "openai", None, None

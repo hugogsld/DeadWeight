@@ -248,3 +248,66 @@ def test_port_deja_pris_message_clair_sans_trace(monkeypatch, tmp_path):
         with pytest.raises(SystemExit) as exc:
             proxy.main()
     assert "déjà utilisé" in str(exc.value) and "GATEWAY_PORT" in str(exc.value)
+
+
+def _rollout_recent(path, with_usage=True):
+    """Journal synthétique à la forme observée sur un vrai Codex 0.16x (rien de réel : textes inventés) :
+    outils personnalisés (custom_tool_call), raisonnement, world_state, compacted, additional_tools, item_completed."""
+    t = "2026-11-12T10:00:%02d.000Z"
+    rows = [
+        {"timestamp": t % 0, "type": "session_meta", "payload": {"id": "s-1", "cwd": "/Users/x/projet-demo",
+                                                                   "model_provider": "openai", "cli_version": "0.164.0-alpha.1"}},
+        {"timestamp": t % 1, "type": "turn_context", "payload": {"model": "gpt-demo", "cwd": "/Users/x/projet-demo"}},
+        {"timestamp": t % 1, "type": "event_msg", "payload": {"type": "task_started"}},
+        {"timestamp": t % 1, "type": "world_state", "payload": {"anything": 1}},
+        {"timestamp": t % 1, "type": "response_item", "payload": {"type": "additional_tools", "tools": []}},
+        {"timestamp": t % 2, "type": "response_item", "payload": {"type": "message", "role": "user",
+                                                                   "content": [{"type": "input_text", "text": "liste les fichiers"}]}},
+        {"timestamp": t % 3, "type": "response_item", "payload": {"type": "reasoning", "summary": [], "encrypted_content": "x"}},
+        {"timestamp": t % 4, "type": "response_item", "payload": {"type": "custom_tool_call", "call_id": "c1",
+                                                                   "name": "exec", "input": "ls -la"}},
+        {"timestamp": t % 4, "type": "event_msg", "payload": {"type": "item_completed"}},
+        {"timestamp": t % 5, "type": "event_msg", "payload": {"type": "token_count", "info": {
+            "total_token_usage": {"input_tokens": 100}, "last_token_usage": {"input_tokens": 100}}}},
+    ]
+    if with_usage:
+        rows.append({"timestamp": t % 5, "type": "token_usage_record", "payload": {
+            "session_id": "s-1", "thread_id": "s-1", "response_id": "resp_1",
+            "usage": {"input_tokens": 100, "cached_input_tokens": 80, "output_tokens": 12, "reasoning_output_tokens": 9}}})
+    rows += [
+        {"timestamp": t % 6, "type": "response_item", "payload": {"type": "custom_tool_call_output", "call_id": "c1",
+                                                                   "output": "a.txt b.txt"}},
+        {"timestamp": t % 7, "type": "response_item", "payload": {"type": "message", "role": "assistant",
+                                                                   "content": [{"type": "output_text", "text": "deux fichiers"}]}},
+        {"timestamp": t % 8, "type": "compacted", "payload": {"message": "résumé"}},
+    ]
+    if with_usage:
+        rows.append({"timestamp": t % 8, "type": "token_usage_record", "payload": {
+            "session_id": "s-1", "thread_id": "s-1", "response_id": "resp_2",
+            "usage": {"input_tokens": 140, "cached_input_tokens": 100, "output_tokens": 5, "reasoning_output_tokens": 0}}})
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+
+
+def test_codex_recent_shape_tool_calls_and_usage(tmp_path):
+    f = tmp_path / "rollout-2026-11-12T10-00-00-s-1.jsonl"
+    _rollout_recent(f)
+    events, report = codex.read(list(iter_files(f)))
+    assert [e["event_id"] for e in events] == ["codex-resp_1", "codex-resp_2"]
+    first, second = events
+    jsonschema.validate(first, SCHEMA)
+    assert first["response"]["tool_calls"] == [{"id": "c1", "name": "exec", "arguments": "ls -la"}]
+    assert first["response"]["finish_reason"] == "tool_calls"
+    assert first["usage"] == {"input_tokens": 100, "output_tokens": 12, "cached_input_tokens": 80, "reasoning_tokens": 9}
+    assert second["request"]["messages"] == [{"role": "tool", "content": "a.txt b.txt", "tool_call_id": "c1"}]
+    assert second["response"]["content"] == "deux fichiers" and second["app_id"] == "codex:projet-demo"
+    assert not any("sans token_usage_record" in n for n in report.notes)
+
+
+def test_codex_session_without_usage_lines_is_not_a_false_alarm(tmp_path):
+    """Une session courte sans aucune ligne de jetons ne doit pas annoncer « version sans token_usage_record »."""
+    f = tmp_path / "rollout-2026-11-12T10-00-00-s-2.jsonl"
+    f.write_text("".join(json.dumps(r) + "\n" for r in [
+        {"timestamp": "2026-11-12T10:00:00.000Z", "type": "session_meta", "payload": {"id": "s-2"}},
+        {"timestamp": "2026-11-12T10:00:01.000Z", "type": "event_msg", "payload": {"type": "task_started"}}]))
+    events, report = codex.read(list(iter_files(f)))
+    assert events == [] and not any("token_usage_record" in n for n in report.notes)
