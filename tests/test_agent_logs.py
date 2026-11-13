@@ -205,3 +205,46 @@ def test_commande_detecte_la_facturation_sans_override(tmp_path, monkeypatch):
     comprehension = json.loads((tmp_path / "comprehension.json").read_text())
     assert comprehension["claude-code"]["billing"]["mode"] == "abonnement"
     assert comprehension["codex"]["billing"] == {"mode": "inconnu", "source": None}
+
+
+def _projets(tmp_path):
+    root = tmp_path / "projects"
+    src = next((DATA / "claude-code").rglob("*.jsonl"))
+    for name in ("-Users-moi-client-a", "-Users-moi-perso-b"):
+        (root / name).mkdir(parents=True)
+        (root / name / "s.jsonl").write_text(src.read_text())
+    return root
+
+
+def test_dossier_de_plusieurs_projets_demande_un_choix(tmp_path, capsys):
+    root = _projets(tmp_path)
+    assert main([str(root), "-o", str(tmp_path / "e.jsonl")]) == 2
+    err = capsys.readouterr().err
+    assert "2 projets" in err and "-Users-moi-client-a (1 session(s))" in err and "--project" in err
+    assert not (tmp_path / "e.jsonl").exists()
+
+
+def test_filtre_par_projet_et_tous_les_projets(tmp_path, capsys):
+    root = _projets(tmp_path)
+    assert main([str(root), "--project", "client-a", "-o", str(tmp_path / "a.jsonl")]) == 0
+    assert "1 fichier(s)" in capsys.readouterr().out
+    assert main([str(root), "--all-projects", "-o", str(tmp_path / "all.jsonl")]) == 0
+    assert "2 fichier(s)" in capsys.readouterr().out
+    assert main([str(root), "--project", "inconnu", "-o", str(tmp_path / "x.jsonl")]) == 1
+    assert "pour le projet « inconnu »" in capsys.readouterr().err
+
+
+def test_port_deja_pris_message_clair_sans_trace(monkeypatch, tmp_path):
+    import socket
+
+    from gateway import proxy
+
+    with socket.socket() as busy:
+        busy.bind(("127.0.0.1", 0))
+        busy.listen()
+        monkeypatch.setenv("GATEWAY_HOST", "127.0.0.1")
+        monkeypatch.setenv("GATEWAY_PORT", str(busy.getsockname()[1]))
+        monkeypatch.chdir(tmp_path)  # la base par défaut (out/events.db) est créée ici, pas dans le dépôt
+        with pytest.raises(SystemExit) as exc:
+            proxy.main()
+    assert "déjà utilisé" in str(exc.value) and "GATEWAY_PORT" in str(exc.value)

@@ -12,6 +12,7 @@ Chaque événement est écrit dans SQLite par gateway.store (D1.2), hors du
 chemin critique ; GATEWAY_DB en donne le chemin.
 """
 import asyncio
+import errno
 import gzip
 import json
 import logging
@@ -346,7 +347,15 @@ def main():
     store = EventStore()
     print(f"Deadweight gateway   OpenAI: http://{host}:{port}/v1   Anthropic: http://{host}:{port}/anthropic"
           f"   Gemini: http://{host}:{port}/gemini   events: {store.path}", flush=True)
-    web.run_app(make_app(store=store), host=host, port=port, access_log=None, print=None)
+    try:
+        web.run_app(make_app(store=store), host=host, port=port, access_log=None, print=None)
+    except OSError as exc:
+        if exc.errno not in (errno.EADDRINUSE, errno.EACCES):
+            raise
+        why = "déjà utilisé" if exc.errno == errno.EADDRINUSE else "interdit"
+        raise SystemExit(f"Port {port} {why} : réglez GATEWAY_PORT dans le fichier de configuration local "
+                         f"(par exemple 8081) et changez le base_url du client en conséquence, "
+                         f"ou arrêtez la passerelle déjà lancée (lsof -i :{port}).") from None
 
 
 if __name__ == "__main__":
