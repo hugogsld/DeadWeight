@@ -30,6 +30,28 @@ def _mesure_text(p, key, v):
     return f"{prefix}{_fmt(v['valeur'], v['unite'], key in LEVELS)}"
 
 
+LEGEND = "_Légende : ✅ gain prouvé par rejeu · ◻️ piste non testée · ⛔ piste rejetée (précision insuffisante)_"
+
+
+def quoi_changer(p):
+    """Une ligne concrète (paramètre, valeur, où) pour les gains qui ne produisent pas de diff, sinon None."""
+    kind, model = p.get("type"), str(p.get("model") or "")
+    if kind == "plafond" and p.get("plafond"):
+        return (f"Quoi changer : dans l'appel au modèle, `max_tokens={p['plafond']}` "
+                f"(`max_completion_tokens={p['plafond']}` pour un modèle de raisonnement OpenAI).")
+    if kind == "raisonnement":
+        effort = (p.get("preuve") or {}).get("effort") or "low"
+        return (f"Quoi changer : dans l'appel au modèle, `reasoning_effort=\"{effort}\"` "
+                f"(API Responses : `reasoning={{\"effort\": \"{effort}\"}}`).")
+    if kind == "cache_prompt":
+        if model.startswith("claude"):
+            return ("Quoi changer : mettre instructions et outils en tête du prompt, et ajouter "
+                    "`cache_control={\"type\": \"ephemeral\"}` sur le dernier bloc fixe du `system`.")
+        return ("Quoi changer : mettre la partie fixe (instructions, outils) en tête du prompt, la partie variable "
+                "à la fin ; le préfixe identique de 1024 jetons ou plus est mis en cache automatiquement.")
+    return None
+
+
 def _line(p, link, total_spent=None, equivalent_api=False):
     m = p["mesures"]
     icon = {"pass": "✅", "reject": "⛔", "non_teste": "◻️"}.get(p["verdict"], "•")
@@ -52,14 +74,16 @@ def _line(p, link, total_spent=None, equivalent_api=False):
         share = f", soit {(cout['avant'] - cout['apres']) / total_spent * 100:.0f} % {TOTAL[equivalent_api]}"
     pr = f" → <{link}|accepter la PR>" if link and p["verdict"] == "pass" else ""
     why = f" ({'; '.join(p['raisons'])})" if p["verdict"] == "reject" and p.get("raisons") else ""
-    return f"{icon} *{p['app_id']}* — {p['changement']}\n      {detail}{share}{why}{pr}"
+    how = quoi_changer(p) if p["verdict"] == "pass" else None
+    return f"{icon} *{p['app_id']}* — {p['changement']}\n      {detail}{share}{why}{pr}" + (f"\n      {how}" if how else "")
 
 
-def message(proposals, links=None, total_spent=None, show_all=False, equivalent_api=False):
+def message(proposals, links=None, total_spent=None, show_all=False, equivalent_api=False, with_diffs=False):
     """Texte Slack (mrkdwn). ``links`` : {finding_id+type: url de PR} ; ``total_spent`` : dépense observée.
     ``equivalent_api`` : facturation par abonnement, les dollars sont une valeur équivalente API.
     Par défaut, seules les propositions prouvées apparaissent (un décideur n'a rien à faire des autres) ;
-    ``show_all`` (démo) les montre toutes. Le détail complet est dans la page développeur."""
+    ``show_all`` (démo) les montre seulement s'il n'y a aucun gain prouvé : sinon une ligne les compte.
+    ``with_diffs`` : les diffs de micro-PR ont été produits (``--repo``). Le détail est dans la page développeur."""
     links = links or {}
     ok = [p for p in proposals if p["verdict"] == "pass"]
     saved = [p["cout_usd"] for p in ok if p.get("cout_usd") and p["cout_usd"].get("apres") is not None]
@@ -82,12 +106,23 @@ def message(proposals, links=None, total_spent=None, show_all=False, equivalent_
             if equivalent_api:
                 head.append("• Abonnement : la facture reste le prix du forfait ; le gain, tâche par tâche, "
                             "est une marge sur les limites d'usage, pas une économie en argent.")
-        head.append("• Chaque gain s'active en acceptant sa micro-PR, et s'annule en la retirant.")
-    shown = proposals if show_all else ok
+        if links:
+            head.append("• Chaque gain s'active en acceptant sa micro-PR, et s'annule en la retirant.")
+        elif with_diffs:
+            head.append("• Le diff et le texte de chaque micro-PR sont dans le dossier de sortie (fichiers .diff et .pr.md).")
+        else:
+            head.append("• Aucun diff produit : relancez avec `--repo <dossier>` pour l'obtenir "
+                        "(le dépôt n'est pas modifié).")
+    if not proposals:
+        head.append("• Aucune piste à tester sur ces données : la page audit.html explique pourquoi "
+                    "(section « Pourquoi aucun constat »).")
+    shown = ok if ok or not show_all else proposals
     body = [_line(p, links.get(p["finding_id"] + p["type"]), total_spent, equivalent_api) for p in shown]
     hidden = len(proposals) - len(shown)
     if hidden:
-        body.append(f"_{hidden} autre{'s' if hidden > 1 else ''} piste{'s' if hidden > 1 else ''} testée"
-                    f"{'s' if hidden > 1 else ''} sans preuve suffisante : détail dans la page développeur._")
+        untested = sum(p["verdict"] == "non_teste" for p in proposals if p not in shown)
+        body.append(f"_{hidden} autre{'s' if hidden > 1 else ''} piste{'s' if hidden > 1 else ''} : "
+                    f"{untested} non testée{'s' if untested > 1 else ''}, {hidden - untested} rejetée"
+                    f"{'s' if hidden - untested > 1 else ''} ; détail dans la page développeur._")
     foot = "_Mesuré = rejeu des mêmes entrées sur votre historique. ~ = estimation, jamais additionnée._"
-    return "\n".join(head + [""] + body + ["", foot])
+    return "\n".join(head[:1] + [LEGEND] + head[1:] + [""] + body + ["", foot])

@@ -7,7 +7,7 @@ import pytest
 
 from optimize.patch import make_patch, pr_text
 from optimize.propose import MESURE, propose
-from optimize.slack import message
+from optimize.slack import LEGEND, message
 
 ROOT = Path(__file__).resolve().parents[1]
 EVENTS = [json.loads(line) for line in (ROOT / "fixtures/dataset/v1/events.jsonl").read_text().splitlines()
@@ -58,8 +58,9 @@ def test_slack_totals_only_proven_measured_gains(proposals):
     assert f"{n_pass} optimisation" in text and "100 % minimum" in text
     assert "précision +" not in text                      # un niveau, pas une variation
     assert "~" in text                                    # les estimations restent marquées
-    assert text.count("✅") == sum(p["verdict"] == "pass" for p in proposals)
-    assert "⛔" not in text and "◻️" not in text and "page développeur" in text  # un décideur ne voit que les gains
+    body = text.replace(LEGEND, "")  # la légende cite les trois icônes ; le corps ne montre que les gains
+    assert body.count("✅") == sum(p["verdict"] == "pass" for p in proposals)
+    assert "⛔" not in body and "◻️" not in body and "page développeur" in text  # un décideur ne voit que les gains
 
 
 def test_slack_line_states_the_per_task_gain_in_order_and_its_share_of_total(proposals):
@@ -137,3 +138,26 @@ def test_slack_latence_mediane_a_moins_100_affichee_en_millisecondes():
     line = _line(p, None)
     assert "latence médiane 633 ms → 0 ms" in line
     assert "-100" not in line
+
+
+def test_slack_legend_first_and_no_pr_promise_without_diff(proposals):
+    lines = message(proposals, total_spent=1.0).splitlines()
+    assert lines[1] == LEGEND
+    text = "\n".join(lines)
+    assert "acceptant sa micro-PR" not in text and "--repo <dossier>" in text
+    assert "diff et le texte" in message(proposals, total_spent=1.0, with_diffs=True)
+    assert "acceptant sa micro-PR" in message(proposals, {proposals[0]["finding_id"] + proposals[0]["type"]: "u"})
+
+
+def test_slack_unproven_collapsed_in_one_line_even_in_demo(proposals):
+    text = message(proposals, total_spent=1.0, show_all=True)
+    assert text.count("⛔ *") == 0 and text.count("◻️ *") == 0 and "autres pistes" in text
+
+
+def test_slack_quoi_changer_for_changes_without_diff():
+    from optimize.slack import quoi_changer
+    assert "max_tokens=120" in quoi_changer({"type": "plafond", "plafond": 120, "model": "gpt-4o"})
+    assert 'reasoning_effort="low"' in quoi_changer({"type": "raisonnement", "model": "o4-mini", "preuve": {"effort": "low"}})
+    assert "cache_control" in quoi_changer({"type": "cache_prompt", "model": "claude-sonnet-4-5"})
+    assert "automatiquement" in quoi_changer({"type": "cache_prompt", "model": "gpt-4o"})
+    assert quoi_changer({"type": "regles", "model": "gpt-4o"}) is None

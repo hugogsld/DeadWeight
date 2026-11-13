@@ -71,7 +71,8 @@ def main(argv=None):
     (out / "propositions.json").write_text(json.dumps(slim, ensure_ascii=False, indent=1), encoding="utf-8")
     (out / "propositions.html").write_text(render(proposals, diffs), encoding="utf-8")
     equivalent_api = subscription_only(events, load_billing(args.comprehension, args.billing))
-    text = message(proposals, links, total_spent=_cost(events), show_all=args.demo, equivalent_api=equivalent_api)
+    text = message(proposals, links, total_spent=_cost(events), show_all=args.demo, equivalent_api=equivalent_api,
+                   with_diffs=bool(diffs))
     (out / "slack.md").write_text(text + "\n", encoding="utf-8")
     # les boutons « Voir la PR » du message Slack (optimize.send) : un lien, jamais une fusion
     prs = [{"app_id": p["app_id"], "changement": p["changement"], "url": links[p["finding_id"] + p["type"]]}
