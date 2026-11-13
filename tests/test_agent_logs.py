@@ -100,7 +100,7 @@ def test_codex_un_appel_par_token_usage_record(cx):
     a, b = recent
     assert a["usage"] == {"input_tokens": 1000, "output_tokens": 50, "cached_input_tokens": 0, "reasoning_tokens": 20}
     assert b["usage"]["cached_input_tokens"] == 1000
-    assert a["model"] == "gpt-5-codex" and a["upstream"] == "api.openai.com" and a["endpoint"] == "/v1/responses"
+    assert a["model"] == "gpt-5-codex" and a["upstream"] is None and a["endpoint"] == "/v1/responses"
     assert a["app_id"] == "codex:shorts-factory"
     assert report.as_dict()["ignores"] == {}
 
@@ -311,3 +311,72 @@ def test_codex_session_without_usage_lines_is_not_a_false_alarm(tmp_path):
         {"timestamp": "2026-11-12T10:00:01.000Z", "type": "event_msg", "payload": {"type": "task_started"}}]))
     events, report = codex.read(list(iter_files(f)))
     assert events == [] and not any("token_usage_record" in n for n in report.notes)
+
+
+def _claude_log(with_request=True):
+    """Journal Claude Code synthétique (textes inventés) : une entrée api-request précède chaque réponse."""
+    def line(**kw):
+        return {"sessionId": "s1", "cwd": "/Users/x/demo", "version": "9.9.9", **kw}
+    rows = [
+        line(type="api-request-shape", shapeHash="h1", timestamp="2026-11-12T10:00:00.000Z",
+             shape={"system": [{"type": "text", "text": "Tu es un assistant de test."},
+                               {"type": "text", "text": "Réponds en français."}],
+                    "tools": [{"name": "Bash", "description": "Lance une commande",
+                               "input_schema": {"type": "object"}, "eager_input_streaming": True}]}),
+        line(type="user", uuid="u1", parentUuid=None, timestamp="2026-11-12T10:00:01.000Z",
+             message={"role": "user", "content": "bonjour"}),
+    ]
+    if with_request:
+        rows.append(line(type="api-request", id="r1", shapeHash="h1", timestamp="2026-11-12T10:00:01.500Z",
+                         params={"model": "claude-demo", "max_tokens": 32000, "thinking": {"type": "adaptive"}}))
+    rows += [
+        line(type="assistant", uuid="a1", parentUuid="u1", timestamp="2026-11-12T10:00:03.000Z", requestId="req_1",
+             message={"id": "msg_1", "model": "claude-demo", "role": "assistant", "stop_reason": "end_turn",
+                      "content": [{"type": "text", "text": "salut"}],
+                      "usage": {"input_tokens": 10, "output_tokens": 4}}),
+        line(type="user", uuid="u2", parentUuid="a1", timestamp="2026-11-12T10:00:04.000Z",
+             message={"role": "user", "content": "merci"}),
+        line(type="assistant", uuid="a2", parentUuid="u2", timestamp="2026-11-12T10:00:06.000Z", requestId="req_2",
+             message={"id": "msg_2", "model": "claude-demo", "role": "assistant", "stop_reason": "end_turn",
+                      "content": [{"type": "text", "text": "de rien"}],
+                      "usage": {"input_tokens": 12, "output_tokens": 3}}),
+    ]
+    return [json.dumps(r) for r in rows]
+
+
+def test_claude_code_request_params_system_and_tools_when_logged():
+    events, report = claude_code.read([("s.jsonl", _claude_log())])
+    first, second = events
+    jsonschema.validate(first, SCHEMA)
+    assert first["request"]["params"]["max_tokens"] == 32000
+    assert first["request"]["system"] == "Tu es un assistant de test.\n\nRéponds en français."
+    assert first["request"]["tools"] == [{"name": "Bash", "description": "Lance une commande",
+                                          "parameters": {"type": "object"}}]
+    # la 2e réponse n'a pas sa propre entrée api-request : rien n'est reporté de la 1re, rien n'est inventé
+    assert second["request"]["params"]["max_tokens"] is None and second["request"]["system"] is None
+    assert second["request"]["tools"] == []
+    assert report.extra["appels_avec_requete_journalisee"] == 1
+
+
+def test_claude_code_unknown_is_null_not_a_default():
+    [first, second], _ = claude_code.read([("s.jsonl", _claude_log(with_request=False))])
+    for e in (first, second):
+        jsonschema.validate(e, SCHEMA)
+        assert e["upstream"] is None  # jamais api.anthropic.com par défaut
+        assert e["request"]["params"]["stream"] is None and e["request"]["params"]["max_tokens"] is None
+        assert e["request"]["system"] is None and e["request"]["tools"] == []
+
+
+def test_codex_unknown_upstream_and_stream_are_null(tmp_path):
+    f = tmp_path / "rollout-2026-11-12T10-00-00-s-1.jsonl"
+    _rollout_recent(f)
+    [first, _], _ = codex.read(list(iter_files(f)))
+    assert first["upstream"] is None and first["request"]["params"]["stream"] is None
+    assert first["request"]["params"]["max_tokens"] is None
+
+
+def test_batch_rule_does_not_treat_unknown_stream_as_batchable():
+    from rules.batch_eligible import detect
+
+    [first, _], _ = claude_code.read([("s.jsonl", _claude_log(with_request=False))])
+    assert detect([first]) == []
