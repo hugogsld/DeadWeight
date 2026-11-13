@@ -21,10 +21,6 @@ import json
 
 from .common import Comprehension, iso, mask_secrets, num, number_steps, parse_lines, ts
 
-# fournisseur Codex → hôte appelé ; le format reste celui d'OpenAI
-UPSTREAMS = {"openai": "api.openai.com", "azure": "azure", "ollama": "localhost:11434",
-             "lmstudio": "localhost:1234", "openrouter": "openrouter.ai", "mistral": "api.mistral.ai"}
-
 OUTPUTS = ("function_call_output", "custom_tool_call_output", "local_shell_call_output")
 CALLS = ("function_call", "custom_tool_call", "local_shell_call")
 
@@ -58,14 +54,17 @@ def read(files, report: Comprehension | None = None) -> tuple[list[dict], Compre
         events.extend(_read_session(entries, name, report, seen))
     events.sort(key=lambda e: e["ts_start"])
     number_steps(events, report)
-    report.note("outils déclarés absents du journal : request.tools = []")
+    report.note("outils déclarés, max_tokens, streaming et hôte appelé non journalisés : "
+                "request.tools = [], max_tokens = null, params.stream = null, upstream = null")
     report.note("request.messages = nouveaux messages du tour (le contexte complet envoyé n'est pas journalisé)")
     return events, report
 
 
 def _read_session(entries: list[dict], name: str, report: Comprehension, seen: set) -> list[dict]:
     has_records = any(e.get("type") == "token_usage_record" for e in entries)
-    if not has_records:
+    has_counts = any(e.get("type") == "event_msg" and (e.get("payload") or {}).get("type") == "token_count"
+                     for e in entries)
+    if not has_records and has_counts:
         report.note("version de Codex sans token_usage_record : jetons pris dans token_count (last_token_usage)")
 
     session, provider, model, cwd = None, "openai", None, None
@@ -183,12 +182,12 @@ def _event(key, session, provider, model, cwd, sub, system, seg_in, seg_out, sta
         "latency_ms": round((end - start) * 1000),
         "ttft_ms": None,
         "provider": "openai",
-        "upstream": UPSTREAMS.get(provider, provider),
+        "upstream": None,  # hôte non journalisé (Codex peut passer par ChatGPT, un proxy, un fournisseur local)
         "endpoint": "/v1/responses",
         "model": model or "unknown",
         "model_resolved": None,
         "request": {"system": mask_secrets("\n\n".join(system)) or None, "messages": messages, "tools": [],
-                    "params": {"stream": True, "temperature": None, "top_p": None, "max_tokens": None,
+                    "params": {"stream": None, "temperature": None, "top_p": None, "max_tokens": None,
                                "stop": None, "response_format": None}},
         "response": {"content": mask_secrets(text), "tool_calls": calls,
                      "finish_reason": "tool_calls" if calls else None, "finish_reason_raw": None},

@@ -86,6 +86,7 @@ def read(files, report: Comprehension | None = None) -> tuple[list[dict], Compre
     """files : itérable de (nom, lignes). Renvoie les événements triés par heure."""
     report = report or Comprehension("claude-code")
     calls: dict[str, dict] = {}
+    shapes: dict[str, dict] = {}  # shapeHash -> {"system": [...], "tools": [...]} (entrées api-request-shape)
     costs: dict[str, float] = {}
     copied: set[tuple[str, str]] = set()
 
@@ -97,7 +98,12 @@ def read(files, report: Comprehension | None = None) -> tuple[list[dict], Compre
         if bad:
             report.ignore("ligne illisible (JSON invalide ou tronqué)", bad)
         by_uuid = {e["uuid"]: e for e in entries if e.get("uuid")}
+        shapes.update({e["shapeHash"]: e["shape"] for e in entries if e.get("type") == "api-request-shape"
+                       and e.get("shapeHash") and isinstance(e.get("shape"), dict)})
+        pending = None  # dernière entrée api-request : elle précède immédiatement la réponse qu'elle a produite
         for e in entries:
+            if e.get("type") == "api-request" and isinstance(e.get("params"), dict):
+                pending = e
             if e.get("type") == "cost-state" and isinstance(e.get("totalCostUSD"), (int, float)):
                 costs[e.get("sessionId") or name] = float(e["totalCostUSD"])
             if e.get("type") != "assistant":
@@ -112,21 +118,26 @@ def read(files, report: Comprehension | None = None) -> tuple[list[dict], Compre
                 continue
             call = calls.get(key)
             if call is None:
-                calls[key] = {"lines": [e], "by_uuid": by_uuid, "file": name}
+                calls[key] = {"lines": [e], "by_uuid": by_uuid, "file": name, "api_request": pending}
+                pending = None
             elif call["file"] == name:
                 call["lines"].append(e)
             elif (key, name) not in copied:
                 copied.add((key, name))
                 report.ignore("appel recopié par une session reprise (déjà compté)")
 
-    events = [_event(key, c, report) for key, c in calls.items()]
+    events = [_event(key, c, report, shapes) for key, c in calls.items()]
     events = [e for e in events if e is not None]
     events.sort(key=lambda e: e["ts_start"])
     number_steps(events, report)
 
     if costs:
         report.extra["cout_annonce_par_claude_code_usd"] = round(sum(costs.values()), 4)
-    report.note("prompt système et outils déclarés absents du journal : request.system = null, request.tools = []")
+    seen = report.extra.get("appels_avec_requete_journalisee", 0)
+    report.note(f"paramètres de la requête (max_tokens), prompt système et outils : lus dans les entrées "
+                f"api-request / api-request-shape quand la version de Claude Code les écrit ({seen} appel(s) sur "
+                f"{report.calls}) ; sinon max_tokens = null, system = null, tools = [] (non journalisés, pas « aucun »)")
+    report.note("streaming et hôte appelé non journalisés : params.stream = null, upstream = null")
     report.note("request.messages = nouveaux messages du tour (le contexte complet envoyé n'est pas journalisé)")
     report.note("appels internes de Claude Code non journalisés comme réponses (titres de session, résumés) : absents")
     if report.extra.get("jetons_ecrits_en_cache"):
@@ -135,7 +146,18 @@ def read(files, report: Comprehension | None = None) -> tuple[list[dict], Compre
     return events, report
 
 
-def _event(key: str, call: dict, report: Comprehension) -> dict | None:
+def _request_params(request: dict | None, shapes: dict) -> tuple[dict | None, str | None, list]:
+    """Entrée api-request (+ sa forme) -> (params, prompt système, outils déclarés). Absent : (None, None, [])."""
+    if not request:
+        return None, None, []
+    shape = shapes.get(request.get("shapeHash")) or {}
+    texts = [b.get("text") for b in shape.get("system") or [] if isinstance(b, dict) and isinstance(b.get("text"), str)]
+    tools = [{"name": t["name"], "description": t.get("description"), "parameters": t.get("input_schema")}
+             for t in shape.get("tools") or [] if isinstance(t, dict) and t.get("name")]
+    return request["params"], mask_secrets("\n\n".join(texts)) or None, tools
+
+
+def _event(key: str, call: dict, report: Comprehension, shapes: dict | None = None) -> dict | None:
     lines = sorted(call["lines"], key=lambda e: ts(e.get("timestamp")) or 0)
     first, last = lines[0], lines[-1]
     msg = last.get("message") or {}
@@ -185,6 +207,10 @@ def _event(key: str, call: dict, report: Comprehension) -> dict | None:
     if num(usage.get("input_tokens")) is not None:
         report.with_usage += 1
 
+    params, system, tools = _request_params(call.get("api_request"), shapes or {})
+    if params is not None:
+        report.add("appels_avec_requete_journalisee", 1)
+
     return {
         "schema_version": "1",
         "event_id": f"cc-{key}",
@@ -196,12 +222,13 @@ def _event(key: str, call: dict, report: Comprehension) -> dict | None:
         "latency_ms": round((end - start) * 1000),
         "ttft_ms": None,
         "provider": "anthropic",
-        "upstream": "api.anthropic.com",
+        "upstream": None,  # hôte non journalisé (peut être une passerelle ou un fournisseur cloud)
         "endpoint": "/v1/messages",
         "model": msg.get("model") or "unknown",
         "model_resolved": msg.get("model"),
-        "request": {"system": None, "messages": messages, "tools": [],
-                    "params": {"stream": True, "temperature": None, "top_p": None, "max_tokens": None,
+        "request": {"system": system, "messages": messages, "tools": tools,
+                    "params": {"stream": None, "temperature": None, "top_p": None,
+                               "max_tokens": num((params or {}).get("max_tokens")),
                                "stop": None, "response_format": None}},
         "response": {"content": mask_secrets(text), "tool_calls": tool_calls,
                      "finish_reason": FINISH.get(raw_stop, "other" if raw_stop else None),

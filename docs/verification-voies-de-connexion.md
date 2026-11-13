@@ -48,7 +48,7 @@ pour la connexion et l'import, pas pour la qualité des réponses.
 | `/v1/traces`, corps illisible | `{"message": "export OTLP/JSON illisible"}` | clair |
 | `make audit`, base absente | `Base absente : out/vide.db. Lancez make dev, réglez le base_url … puis relancez make audit.` | clair |
 
-## Ce qui reste à corriger
+## Ce qui restait à corriger (27/09) : points 2 à 5 corrigés le 13/11, voir la deuxième passe plus bas
 
 1. ~~**OpenTelemetry en direct depuis Python**~~ (problème 18) : corrigé par #118, `/v1/traces` lit
    aussi le protobuf.
@@ -67,3 +67,49 @@ pour la connexion et l'import, pas pour la qualité des réponses.
 Codex (journaux et direct), Claude Code et Codex en direct par la passerelle (`ANTHROPIC_BASE_URL`,
 `OPENAI_BASE_URL` : CLI absentes de la machine), Ollama et modèles locaux, Azure OpenAI, Bedrock,
 Vertex, collecteur OpenTelemetry. Make et Zapier n'ont pas de voie.
+
+
+## Deuxième passe (13/11) : voies vérifiées sans réseau, avec les SDK officiels
+
+Branche `feat/connexions-verifiees`. Chaque ligne : un vrai SDK ou un vrai journal, un faux amont du
+projet (`gateway/fake_*.py`), aucune clé réelle, aucun appel payant. Ce que ça prouve : la capture, la
+normalisation et le passage dans le rapport. Ce que ça ne prouve pas : le comportement d'un vrai
+fournisseur (voir « Toujours non vérifié »).
+
+| Voie | Avant | Après (mesuré par un test) |
+| --- | --- | --- |
+| **OpenAI API Responses** (`/v1/responses`, SDK `openai` 2.54, SDK Agents par défaut) | relayée, 0 événement (problème 11) | capturée en simple et en streaming (`tests/test_gateway_responses.py`) : instructions, entrées, `function_call` et `function_call_output` multi-tour, usage dont cache et raisonnement, `incomplete` → `length`, erreurs 401/429, octets identiques à l'amont. Le court-circuit ne répond jamais sur cette route |
+| **Anthropic** (SDK `anthropic` 2.8, `/anthropic`) | clé invalide et fixtures seulement | `tests/test_gateway_anthropic_sdk.py` : simple, streaming (`messages.stream` et `create(stream=True)`), `tool_use` puis `tool_result`, usage avec `cache_read`, 401, puis `build_report` sur les événements capturés |
+| **Gemini** (SDK `google-genai` 3.3) | fixtures seulement | `tests/test_gateway_gemini_sdk.py` : simple, streaming, `functionCall` multi-tour. Le SDK 3.x appelle `/v1/` et non `/v1beta/` : la passerelle suit (détection par suffixe) |
+| **Azure OpenAI** (`AsyncAzureOpenAI`) | relayée, **non capturée** (chemin `/openai/deployments/<d>/...`) | capturée, modèle = déploiement de l'URL si le corps n'a pas `model`, `?api-version=` et en-tête `api-key` relayés, clé absente des événements |
+| **Groq** (`/openai/v1`), **OpenRouter** (`/api/v1`) | non capturées (chemin figé sur `/v1/chat/completions`) | capturées par suffixe `/chat/completions`, jetons du streaming lus |
+| **Ollama, Mistral, vLLM** | `/v1/chat/completions` : déjà capturables | inchangé. Un seul amont par passerelle (`GATEWAY_OPENAI_UPSTREAM`) : un fournisseur compatible = une passerelle |
+| **OpenTelemetry**, contenu | attributs de span seulement | évènements de span **et logs OTLP** (`--logs`), évènement `gen_ai.client.inference.operation.details`, anciens évènements `gen_ai.user.message` / `gen_ai.choice` (botocore `aws.bedrock`, Strands `strands-agents`, noms d'usage `prompt_tokens`, `cache_read_input_tokens`). Fichier d'une ligne JSON par export (exportateur `file` du collecteur) accepté |
+| **OpenTelemetry**, fichier vide ou non OTLP | « 0 appel », code 0 | erreur explicite, code 1 ; `/v1/traces` répond 400 à un JSON qui n'est pas de l'OTLP |
+| **Codex**, journaux | non testé | **mesuré sur les journaux réels de cette machine** (Codex 0.164, 2 fichiers, 1 session) : 110 appels lus, 0 ignoré, jetons 110/110, outils personnalisés lus. Une fausse alerte corrigée. Forme récente couverte par une fixture synthétique |
+| **Claude Code / Codex**, champs absents | `upstream` = api.anthropic.com, `stream` = vrai, `max_tokens` vide, `system` vide | « non journalisé » ≠ « non défini » : `max_tokens`, prompt système et outils lus dans les entrées `api-request` / `api-request-shape` quand la version les écrit ; sinon `null` / `[]`. `upstream` et `params.stream` à `null` (le schéma accepte `stream: null`) |
+| **UX** | trace Python si port pris ; `agent_logs ~/.claude/projects` lit tout | message d'une ligne qui renvoie à `GATEWAY_PORT` ; un dossier qui range plusieurs projets exige `--project` ou `--all-projects` et liste les projets |
+
+### Toujours non vérifié (et pourquoi)
+
+- **Claude Code et Codex en direct par la passerelle** (`ANTHROPIC_BASE_URL`, `OPENAI_BASE_URL`) : les
+  CLI existent sur le Mac mais exigent de vraies réponses du fournisseur ; un faux amont ne suffit pas et
+  un vrai appel est payant. Non fait. À tester une fois avec une clé dédiée et un plafond.
+- **Collecteur OpenTelemetry** : Docker absent de la machine. Le format `file` du collecteur (une ligne
+  JSON par export) est lu et testé sur des fichiers synthétiques, pas sur un vrai collecteur. Le signal
+  logs n'est lu qu'en fichier (`--logs`) : la réception en direct (`/v1/logs`) n'existe pas, le contenu
+  d'un appel arrive en général dans une requête séparée de son span.
+- **botocore, Strands, AgentCore** : formes reproduites d'après la spécification et la documentation,
+  jamais mesurées sur une vraie application Bedrock (aucun accès AWS, aucune dépense).
+- **Jetons d'entrée d'OpenTelemetry** : la spécification récente demande que `gen_ai.usage.input_tokens`
+  inclue le cache ; Anthropic natif ne l'inclut pas. Le connecteur ne corrige pas : le coût d'un appel avec
+  cache lu par OpenTelemetry peut être surestimé. À mesurer sur une vraie trace.
+- **Écriture en cache Anthropic** (`cache_creation_input_tokens`) : le schéma n'a pas de champ pour elle ;
+  la passerelle ne la capture pas (facturée 1,25 fois ou 2 fois le prix normal : coût sous-estimé).
+- **API Responses avec `previous_response_id`** : le contexte reste chez OpenAI, la requête capturée ne
+  contient que le nouveau tour.
+- **Historique complet de Claude Code** : les entrées `api-request` donnent `keep` et `tail` (hachages de
+  messages). Le contexte complet n'est pas reconstruit ; `request.messages` reste les messages ajoutés.
+  Le rattachement d'une entrée `api-request` à sa réponse se fait par l'ordre dans le fichier (aucun
+  identifiant commun) : vérifié sur la forme, pas contre une vérité terrain.
+- **Plusieurs fournisseurs compatibles OpenAI sur une seule passerelle** : non géré (un amont par instance).

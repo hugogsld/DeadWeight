@@ -12,6 +12,7 @@ Chaque événement est écrit dans SQLite par gateway.store (D1.2), hors du
 chemin critique ; GATEWAY_DB en donne le chemin.
 """
 import asyncio
+import errno
 import gzip
 import json
 import logging
@@ -25,7 +26,7 @@ from yarl import URL
 from connectors import otel
 from gateway import mirror as mirror_mode
 from gateway import shortcircuit
-from gateway.capture import StreamAccumulator, build_event, fmt
+from gateway.capture import StreamAccumulator, build_event, fmt, is_chat_path, is_responses_path
 from gateway.store import EventStore
 
 log = logging.getLogger("deadweight.gateway")
@@ -76,7 +77,7 @@ def is_captured(provider, method, path):
     if method != "POST":
         return False
     if provider == "openai":
-        return path == "/v1/chat/completions"
+        return is_chat_path(path) or is_responses_path(path)
     if provider == "anthropic":
         return path == "/v1/messages"
     # Gemini : /v1beta/models/<modele>:generateContent ou :streamGenerateContent
@@ -87,7 +88,7 @@ def _ask_usage(provider, path, body):
     """Streaming OpenAI sans ``stream_options.include_usage`` : OpenAI ne dit pas combien de
     jetons il facture. On le demande à la place du client, qui n'en voit rien (_DropUsage).
     Renvoie (corps à envoyer en amont, demandé ?). Si le client a choisi, on respecte."""
-    if provider != "openai" or path != "/v1/chat/completions":
+    if provider != "openai" or not is_chat_path(path):
         return body, False
     try:
         req = json.loads(body)
@@ -187,7 +188,7 @@ async def receive_traces(request):
     if body[:2] == b"\x1f\x8b":  # aiohttp décompresse déjà en général ; au cas où il reste du gzip
         body = gzip.decompress(body)
     try:
-        events, report = otel.read(_otlp_protobuf(body) if protobuf else json.loads(body))
+        events, report = otel.read(_otlp_protobuf(body) if protobuf else otel.ensure_otlp(json.loads(body)))
     except Exception:  # corps illisible, quel que soit le format : 400, jamais un 500
         return web.json_response({"message": f"export OTLP/{'protobuf' if protobuf else 'JSON'} illisible"},
                                  status=400)
@@ -218,8 +219,9 @@ async def relay(request):
                 trace_id=request.headers.get("x-deadweight-trace") or None,
                 endpoint=path, ts_start=ts_start, provider=provider)
 
-    # D3.3 ne sait répondre qu'au format OpenAI
-    hit = shortcircuit.match(app[SHORTCUT], body, meta["app_id"]) if captured and provider == "openai" else None
+    # D3.3 ne sait répondre qu'au format chat/completions (pas Responses : un client Responses recevrait du chat)
+    hit = (shortcircuit.match(app[SHORTCUT], body, meta["app_id"])
+           if captured and provider == "openai" and is_chat_path(path) else None)
     if hit is not None:
         return await _answer(request, meta, t0, *hit)
 
@@ -246,7 +248,7 @@ async def relay(request):
         # Gemini sans ?alt=sse streame un tableau JSON : relayé morceau par morceau lui aussi
         streaming = (upstream.headers.get("content-type", "").startswith("text/event-stream")
                      or path.endswith(":streamGenerateContent"))
-        acc = fmt(provider).Accumulator() if streaming and captured else None
+        acc = fmt(provider, path).Accumulator() if streaming and captured else None
 
         if streaming:
             await resp.prepare(request)
@@ -345,7 +347,15 @@ def main():
     store = EventStore()
     print(f"Deadweight gateway   OpenAI: http://{host}:{port}/v1   Anthropic: http://{host}:{port}/anthropic"
           f"   Gemini: http://{host}:{port}/gemini   events: {store.path}", flush=True)
-    web.run_app(make_app(store=store), host=host, port=port, access_log=None, print=None)
+    try:
+        web.run_app(make_app(store=store), host=host, port=port, access_log=None, print=None)
+    except OSError as exc:
+        if exc.errno not in (errno.EADDRINUSE, errno.EACCES):
+            raise
+        why = "déjà utilisé" if exc.errno == errno.EADDRINUSE else "interdit"
+        raise SystemExit(f"Port {port} {why} : réglez GATEWAY_PORT dans le fichier de configuration local "
+                         f"(par exemple 8081) et changez le base_url du client en conséquence, "
+                         f"ou arrêtez la passerelle déjà lancée (lsof -i :{port}).") from None
 
 
 if __name__ == "__main__":

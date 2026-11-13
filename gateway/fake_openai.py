@@ -4,6 +4,8 @@
     model "bad-key"      : 401 qui recopie la clé, comme le vrai OpenAI
     model "rate-limited" : 429 au format d'erreur OpenAI
     model "tools"        : appel d'outil (streamé ou non)
+    model "incomplete"   : /v1/responses seulement, réponse coupée par max_output_tokens
+POST /v1/responses : API Responses (formes de la spécification OpenAPI d'OpenAI), streaming compris.
 """
 import asyncio
 import json
@@ -75,6 +77,86 @@ async def chat(request):
     return resp
 
 
+RESP_USAGE = {"input_tokens": 30, "input_tokens_details": {"cached_tokens": 8}, "output_tokens": 11,
+              "output_tokens_details": {"reasoning_tokens": 4}, "total_tokens": 41}
+
+
+def _response(model, status="completed", output=None, incomplete=None, usage=True):
+    return {"id": "resp_fake", "object": "response", "created_at": 1, "status": status, "error": None,
+            "incomplete_details": incomplete, "model": model + "-2026", "output": output or [],
+            "usage": RESP_USAGE if usage else None}
+
+
+def _item(model):
+    if model == "tools":
+        return {"type": "function_call", "id": "fc_1", "call_id": "call_1", "name": "get_weather",
+                "arguments": '{"city":"Paris"}', "status": "completed"}
+    return {"type": "message", "id": "msg_1", "status": "completed", "role": "assistant",
+            "content": [{"type": "output_text", "text": "".join(WORDS), "annotations": []}]}
+
+
+def _ev(kind, **fields):
+    return f"event: {kind}\ndata: {json.dumps({'type': kind, **fields})}\n\n".encode()
+
+
+async def responses(request):
+    request.app[SEEN].append(dict(request.headers))
+    body = await request.json()
+    model = body.get("model", "gpt-4o")
+    if model == "bad-key":
+        sent = request.headers.get("Authorization", "").removeprefix("Bearer ")
+        return web.json_response({"error": {"message": f"Incorrect API key provided: {sent}. You can find...",
+                                             "type": "invalid_request_error", "param": None,
+                                             "code": "invalid_api_key"}}, status=401)
+    if model == "rate-limited":
+        return web.json_response({"error": {"message": "Rate limit reached", "type": "requests",
+                                             "param": None, "code": "rate_limit_exceeded"}}, status=429)
+    item = _item(model)
+    if model == "incomplete":
+        full = _response(model, "incomplete", [item], {"reason": "max_output_tokens"})
+    else:
+        full = _response(model, output=[item])
+    if not body.get("stream"):
+        return web.json_response(full)
+
+    resp = web.StreamResponse(headers={"Content-Type": "text/event-stream; charset=utf-8"})
+    await resp.prepare(request)
+    pending = _response(model, "in_progress", usage=False)
+    parts = [_ev("response.created", sequence_number=0, response=pending),
+             _ev("response.in_progress", sequence_number=1, response=pending)]
+    if model == "tools":
+        parts += [_ev("response.output_item.added", output_index=0, item=dict(item, arguments="", status="in_progress")),
+                  _ev("response.function_call_arguments.delta", item_id="fc_1", output_index=0, delta='{"city":'),
+                  _ev("response.function_call_arguments.delta", item_id="fc_1", output_index=0, delta='"Paris"}'),
+                  _ev("response.function_call_arguments.done", item_id="fc_1", output_index=0,
+                      arguments=item["arguments"])]
+    else:
+        parts.append(_ev("response.output_item.added", output_index=0, item=dict(item, content=[], status="in_progress")))
+        parts += [_ev("response.output_text.delta", item_id="msg_1", output_index=0, content_index=0, delta=w)
+                  for w in WORDS]
+        parts.append(_ev("response.output_text.done", item_id="msg_1", output_index=0, content_index=0,
+                         text="".join(WORDS)))
+    parts += [_ev("response.output_item.done", output_index=0, item=item),
+              _ev("response.incomplete" if model == "incomplete" else "response.completed", response=full)]
+    for p in parts:
+        await resp.write(p)
+        if request.app[DELAY]:
+            await asyncio.sleep(request.app[DELAY])
+    await resp.write_eof()
+    return resp
+
+
+async def azure_chat(request):
+    """Azure OpenAI : déploiement dans l'URL, ?api-version= obligatoire, clé dans l'en-tête api-key."""
+    if not request.query.get("api-version"):
+        return web.json_response({"error": {"code": "BadRequest", "message": "api-version manquant"}}, status=400)
+    if not request.headers.get("api-key"):
+        return web.json_response({"error": {"code": "401", "message": "Access denied, missing credential"}},
+                                 status=401)
+    request.app[SEEN].append(dict(request.headers, path=request.path_qs))
+    return await chat(request)
+
+
 async def models(request):
     return web.json_response({"object": "list", "data": [{"id": "gpt-4o", "object": "model"}]})
 
@@ -84,5 +166,9 @@ def make_app(delay=0.0):
     app[SEEN] = []
     app[DELAY] = delay
     app.router.add_post("/v1/chat/completions", chat)
+    app.router.add_post("/v1/responses", responses)
+    app.router.add_post("/openai/deployments/{deployment}/chat/completions", azure_chat)
+    for prefix in ("/openai/v1", "/api/v1"):  # Groq, OpenRouter
+        app.router.add_post(prefix + "/chat/completions", chat)
     app.router.add_get("/v1/models", models)
     return app

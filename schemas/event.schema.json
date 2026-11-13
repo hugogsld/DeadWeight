@@ -174,7 +174,7 @@
       "additionalProperties": false,
       "required": ["stream"],
       "properties": {
-        "stream": { "type": "boolean" },
+        "stream": { "description": "null = inconnu (journaux Claude Code / Codex : non journalisé).", "type": ["boolean", "null"] },
         "temperature": { "type": ["number", "null"] },
         "top_p": { "type": ["number", "null"] },
         "max_tokens": { "type": ["integer", "null"] },

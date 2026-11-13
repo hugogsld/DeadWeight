@@ -28,9 +28,21 @@ def jsonl_line(obj) -> str:
     return text.replace("\u2028", "\\u2028").replace("\u2029", "\\u2029") + "\n"
 
 
-def lire(sources) -> tuple[list[dict], dict]:
-    """Contrat d'un connecteur : sources → (événements, rapport de compréhension par outil)."""
-    files = [f for src in sources for f in iter_files(src)]
+def projets(source) -> list[tuple[str, int]]:
+    """Si ``source`` est un dossier qui range plusieurs projets (comme ~/.claude/projects) : [(projet, sessions)].
+    Sinon liste vide. Un projet = un sous-dossier qui contient directement des .jsonl."""
+    root = Path(source)
+    if not root.is_dir():
+        return []
+    found = [(d.name, len(list(d.glob("*.jsonl")))) for d in sorted(root.iterdir()) if d.is_dir()]
+    found = [(name, n) for name, n in found if n]
+    return found if len(found) >= 2 else []
+
+
+def lire(sources, project: str | None = None) -> tuple[list[dict], dict]:
+    """Contrat d'un connecteur : sources → (événements, rapport de compréhension par outil).
+    ``project`` : ne garde que les fichiers dont le chemin contient ce texte."""
+    files = [f for src in sources for f in iter_files(src) if project is None or project in f[0]]
     events, reports = [], {}
     for name, reader in (("claude-code", claude_code), ("codex", codex)):
         found, report = reader.read(files)
@@ -50,15 +62,30 @@ def main(argv=None) -> int:
     p.add_argument("--billing", choices=[billing.ABONNEMENT, billing.API],
                    help="force le mode de facturation (abonnement ou api) pour tous les outils reconnus, "
                         "au lieu de le détecter dans la configuration locale")
+    p.add_argument("--project", help="ne lit que les projets dont le nom de dossier contient ce texte "
+                                     "(exigé pour un dossier qui range plusieurs projets, comme ~/.claude/projects)")
+    p.add_argument("--all-projects", action="store_true",
+                   help="lit tous les projets d'un dossier qui en range plusieurs (en connaissance de cause)")
     args = p.parse_args(argv)
 
+    if not args.project and not args.all_projects:
+        for src in args.sources:
+            if found := projets(src):
+                print(f"erreur : {src} range {len(found)} projets ; les lire tous mélangerait des projets sans rapport.",
+                      file=sys.stderr)
+                for name, n in found:
+                    print(f"    {name} ({n} session(s))", file=sys.stderr)
+                print("Choisissez : --project <texte du nom> (un seul projet), ou --all-projects pour tout lire.",
+                      file=sys.stderr)
+                return 2
     try:
-        events, reports = lire(args.sources)
+        events, reports = lire(args.sources, args.project)
     except FileNotFoundError as e:
         print(f"erreur : {e}", file=sys.stderr)
         return 1
     if not reports:
-        print("erreur : aucun journal Claude Code ou Codex reconnu dans ces sources", file=sys.stderr)
+        print("erreur : aucun journal Claude Code ou Codex reconnu dans ces sources"
+              + (f" pour le projet « {args.project} »" if args.project else ""), file=sys.stderr)
         return 1
 
     out = Path(args.out)

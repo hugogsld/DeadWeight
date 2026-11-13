@@ -100,7 +100,7 @@ def test_codex_un_appel_par_token_usage_record(cx):
     a, b = recent
     assert a["usage"] == {"input_tokens": 1000, "output_tokens": 50, "cached_input_tokens": 0, "reasoning_tokens": 20}
     assert b["usage"]["cached_input_tokens"] == 1000
-    assert a["model"] == "gpt-5-codex" and a["upstream"] == "api.openai.com" and a["endpoint"] == "/v1/responses"
+    assert a["model"] == "gpt-5-codex" and a["upstream"] is None and a["endpoint"] == "/v1/responses"
     assert a["app_id"] == "codex:shorts-factory"
     assert report.as_dict()["ignores"] == {}
 
@@ -205,3 +205,178 @@ def test_commande_detecte_la_facturation_sans_override(tmp_path, monkeypatch):
     comprehension = json.loads((tmp_path / "comprehension.json").read_text())
     assert comprehension["claude-code"]["billing"]["mode"] == "abonnement"
     assert comprehension["codex"]["billing"] == {"mode": "inconnu", "source": None}
+
+
+def _projets(tmp_path):
+    root = tmp_path / "projects"
+    src = next((DATA / "claude-code").rglob("*.jsonl"))
+    for name in ("-Users-moi-client-a", "-Users-moi-perso-b"):
+        (root / name).mkdir(parents=True)
+        (root / name / "s.jsonl").write_text(src.read_text())
+    return root
+
+
+def test_dossier_de_plusieurs_projets_demande_un_choix(tmp_path, capsys):
+    root = _projets(tmp_path)
+    assert main([str(root), "-o", str(tmp_path / "e.jsonl")]) == 2
+    err = capsys.readouterr().err
+    assert "2 projets" in err and "-Users-moi-client-a (1 session(s))" in err and "--project" in err
+    assert not (tmp_path / "e.jsonl").exists()
+
+
+def test_filtre_par_projet_et_tous_les_projets(tmp_path, capsys):
+    root = _projets(tmp_path)
+    assert main([str(root), "--project", "client-a", "-o", str(tmp_path / "a.jsonl")]) == 0
+    assert "1 fichier(s)" in capsys.readouterr().out
+    assert main([str(root), "--all-projects", "-o", str(tmp_path / "all.jsonl")]) == 0
+    assert "2 fichier(s)" in capsys.readouterr().out
+    assert main([str(root), "--project", "inconnu", "-o", str(tmp_path / "x.jsonl")]) == 1
+    assert "pour le projet « inconnu »" in capsys.readouterr().err
+
+
+def test_port_deja_pris_message_clair_sans_trace(monkeypatch, tmp_path):
+    import socket
+
+    from gateway import proxy
+
+    with socket.socket() as busy:
+        busy.bind(("127.0.0.1", 0))
+        busy.listen()
+        monkeypatch.setenv("GATEWAY_HOST", "127.0.0.1")
+        monkeypatch.setenv("GATEWAY_PORT", str(busy.getsockname()[1]))
+        monkeypatch.chdir(tmp_path)  # la base par défaut (out/events.db) est créée ici, pas dans le dépôt
+        with pytest.raises(SystemExit) as exc:
+            proxy.main()
+    assert "déjà utilisé" in str(exc.value) and "GATEWAY_PORT" in str(exc.value)
+
+
+def _rollout_recent(path, with_usage=True):
+    """Journal synthétique à la forme observée sur un vrai Codex 0.16x (rien de réel : textes inventés) :
+    outils personnalisés (custom_tool_call), raisonnement, world_state, compacted, additional_tools, item_completed."""
+    t = "2026-11-12T10:00:%02d.000Z"
+    rows = [
+        {"timestamp": t % 0, "type": "session_meta", "payload": {"id": "s-1", "cwd": "/Users/x/projet-demo",
+                                                                   "model_provider": "openai", "cli_version": "0.164.0-alpha.1"}},
+        {"timestamp": t % 1, "type": "turn_context", "payload": {"model": "gpt-demo", "cwd": "/Users/x/projet-demo"}},
+        {"timestamp": t % 1, "type": "event_msg", "payload": {"type": "task_started"}},
+        {"timestamp": t % 1, "type": "world_state", "payload": {"anything": 1}},
+        {"timestamp": t % 1, "type": "response_item", "payload": {"type": "additional_tools", "tools": []}},
+        {"timestamp": t % 2, "type": "response_item", "payload": {"type": "message", "role": "user",
+                                                                   "content": [{"type": "input_text", "text": "liste les fichiers"}]}},
+        {"timestamp": t % 3, "type": "response_item", "payload": {"type": "reasoning", "summary": [], "encrypted_content": "x"}},
+        {"timestamp": t % 4, "type": "response_item", "payload": {"type": "custom_tool_call", "call_id": "c1",
+                                                                   "name": "exec", "input": "ls -la"}},
+        {"timestamp": t % 4, "type": "event_msg", "payload": {"type": "item_completed"}},
+        {"timestamp": t % 5, "type": "event_msg", "payload": {"type": "token_count", "info": {
+            "total_token_usage": {"input_tokens": 100}, "last_token_usage": {"input_tokens": 100}}}},
+    ]
+    if with_usage:
+        rows.append({"timestamp": t % 5, "type": "token_usage_record", "payload": {
+            "session_id": "s-1", "thread_id": "s-1", "response_id": "resp_1",
+            "usage": {"input_tokens": 100, "cached_input_tokens": 80, "output_tokens": 12, "reasoning_output_tokens": 9}}})
+    rows += [
+        {"timestamp": t % 6, "type": "response_item", "payload": {"type": "custom_tool_call_output", "call_id": "c1",
+                                                                   "output": "a.txt b.txt"}},
+        {"timestamp": t % 7, "type": "response_item", "payload": {"type": "message", "role": "assistant",
+                                                                   "content": [{"type": "output_text", "text": "deux fichiers"}]}},
+        {"timestamp": t % 8, "type": "compacted", "payload": {"message": "résumé"}},
+    ]
+    if with_usage:
+        rows.append({"timestamp": t % 8, "type": "token_usage_record", "payload": {
+            "session_id": "s-1", "thread_id": "s-1", "response_id": "resp_2",
+            "usage": {"input_tokens": 140, "cached_input_tokens": 100, "output_tokens": 5, "reasoning_output_tokens": 0}}})
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows))
+
+
+def test_codex_recent_shape_tool_calls_and_usage(tmp_path):
+    f = tmp_path / "rollout-2026-11-12T10-00-00-s-1.jsonl"
+    _rollout_recent(f)
+    events, report = codex.read(list(iter_files(f)))
+    assert [e["event_id"] for e in events] == ["codex-resp_1", "codex-resp_2"]
+    first, second = events
+    jsonschema.validate(first, SCHEMA)
+    assert first["response"]["tool_calls"] == [{"id": "c1", "name": "exec", "arguments": "ls -la"}]
+    assert first["response"]["finish_reason"] == "tool_calls"
+    assert first["usage"] == {"input_tokens": 100, "output_tokens": 12, "cached_input_tokens": 80, "reasoning_tokens": 9}
+    assert second["request"]["messages"] == [{"role": "tool", "content": "a.txt b.txt", "tool_call_id": "c1"}]
+    assert second["response"]["content"] == "deux fichiers" and second["app_id"] == "codex:projet-demo"
+    assert not any("sans token_usage_record" in n for n in report.notes)
+
+
+def test_codex_session_without_usage_lines_is_not_a_false_alarm(tmp_path):
+    """Une session courte sans aucune ligne de jetons ne doit pas annoncer « version sans token_usage_record »."""
+    f = tmp_path / "rollout-2026-11-12T10-00-00-s-2.jsonl"
+    f.write_text("".join(json.dumps(r) + "\n" for r in [
+        {"timestamp": "2026-11-12T10:00:00.000Z", "type": "session_meta", "payload": {"id": "s-2"}},
+        {"timestamp": "2026-11-12T10:00:01.000Z", "type": "event_msg", "payload": {"type": "task_started"}}]))
+    events, report = codex.read(list(iter_files(f)))
+    assert events == [] and not any("token_usage_record" in n for n in report.notes)
+
+
+def _claude_log(with_request=True):
+    """Journal Claude Code synthétique (textes inventés) : une entrée api-request précède chaque réponse."""
+    def line(**kw):
+        return {"sessionId": "s1", "cwd": "/Users/x/demo", "version": "9.9.9", **kw}
+    rows = [
+        line(type="api-request-shape", shapeHash="h1", timestamp="2026-11-12T10:00:00.000Z",
+             shape={"system": [{"type": "text", "text": "Tu es un assistant de test."},
+                               {"type": "text", "text": "Réponds en français."}],
+                    "tools": [{"name": "Bash", "description": "Lance une commande",
+                               "input_schema": {"type": "object"}, "eager_input_streaming": True}]}),
+        line(type="user", uuid="u1", parentUuid=None, timestamp="2026-11-12T10:00:01.000Z",
+             message={"role": "user", "content": "bonjour"}),
+    ]
+    if with_request:
+        rows.append(line(type="api-request", id="r1", shapeHash="h1", timestamp="2026-11-12T10:00:01.500Z",
+                         params={"model": "claude-demo", "max_tokens": 32000, "thinking": {"type": "adaptive"}}))
+    rows += [
+        line(type="assistant", uuid="a1", parentUuid="u1", timestamp="2026-11-12T10:00:03.000Z", requestId="req_1",
+             message={"id": "msg_1", "model": "claude-demo", "role": "assistant", "stop_reason": "end_turn",
+                      "content": [{"type": "text", "text": "salut"}],
+                      "usage": {"input_tokens": 10, "output_tokens": 4}}),
+        line(type="user", uuid="u2", parentUuid="a1", timestamp="2026-11-12T10:00:04.000Z",
+             message={"role": "user", "content": "merci"}),
+        line(type="assistant", uuid="a2", parentUuid="u2", timestamp="2026-11-12T10:00:06.000Z", requestId="req_2",
+             message={"id": "msg_2", "model": "claude-demo", "role": "assistant", "stop_reason": "end_turn",
+                      "content": [{"type": "text", "text": "de rien"}],
+                      "usage": {"input_tokens": 12, "output_tokens": 3}}),
+    ]
+    return [json.dumps(r) for r in rows]
+
+
+def test_claude_code_request_params_system_and_tools_when_logged():
+    events, report = claude_code.read([("s.jsonl", _claude_log())])
+    first, second = events
+    jsonschema.validate(first, SCHEMA)
+    assert first["request"]["params"]["max_tokens"] == 32000
+    assert first["request"]["system"] == "Tu es un assistant de test.\n\nRéponds en français."
+    assert first["request"]["tools"] == [{"name": "Bash", "description": "Lance une commande",
+                                          "parameters": {"type": "object"}}]
+    # la 2e réponse n'a pas sa propre entrée api-request : rien n'est reporté de la 1re, rien n'est inventé
+    assert second["request"]["params"]["max_tokens"] is None and second["request"]["system"] is None
+    assert second["request"]["tools"] == []
+    assert report.extra["appels_avec_requete_journalisee"] == 1
+
+
+def test_claude_code_unknown_is_null_not_a_default():
+    [first, second], _ = claude_code.read([("s.jsonl", _claude_log(with_request=False))])
+    for e in (first, second):
+        jsonschema.validate(e, SCHEMA)
+        assert e["upstream"] is None  # jamais api.anthropic.com par défaut
+        assert e["request"]["params"]["stream"] is None and e["request"]["params"]["max_tokens"] is None
+        assert e["request"]["system"] is None and e["request"]["tools"] == []
+
+
+def test_codex_unknown_upstream_and_stream_are_null(tmp_path):
+    f = tmp_path / "rollout-2026-11-12T10-00-00-s-1.jsonl"
+    _rollout_recent(f)
+    [first, _], _ = codex.read(list(iter_files(f)))
+    assert first["upstream"] is None and first["request"]["params"]["stream"] is None
+    assert first["request"]["params"]["max_tokens"] is None
+
+
+def test_batch_rule_does_not_treat_unknown_stream_as_batchable():
+    from rules.batch_eligible import detect
+
+    [first, _], _ = claude_code.read([("s.jsonl", _claude_log(with_request=False))])
+    assert detect([first]) == []

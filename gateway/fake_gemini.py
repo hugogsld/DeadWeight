@@ -59,4 +59,5 @@ async def generate(request):
 def make_app():
     app = web.Application()
     app.router.add_post("/v1beta/models/{name}", generate)
+    app.router.add_post("/v1/models/{name}", generate)  # google-genai 3.x appelle /v1, plus /v1beta
     return app
