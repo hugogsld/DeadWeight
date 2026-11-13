@@ -76,7 +76,7 @@ def is_captured(provider, method, path):
     if method != "POST":
         return False
     if provider == "openai":
-        return path == "/v1/chat/completions"
+        return path in ("/v1/chat/completions", "/v1/responses")
     if provider == "anthropic":
         return path == "/v1/messages"
     # Gemini : /v1beta/models/<modele>:generateContent ou :streamGenerateContent
@@ -218,8 +218,9 @@ async def relay(request):
                 trace_id=request.headers.get("x-deadweight-trace") or None,
                 endpoint=path, ts_start=ts_start, provider=provider)
 
-    # D3.3 ne sait répondre qu'au format OpenAI
-    hit = shortcircuit.match(app[SHORTCUT], body, meta["app_id"]) if captured and provider == "openai" else None
+    # D3.3 ne sait répondre qu'au format chat/completions (pas Responses : un client Responses recevrait du chat)
+    hit = (shortcircuit.match(app[SHORTCUT], body, meta["app_id"])
+           if captured and provider == "openai" and path == "/v1/chat/completions" else None)
     if hit is not None:
         return await _answer(request, meta, t0, *hit)
 
@@ -246,7 +247,7 @@ async def relay(request):
         # Gemini sans ?alt=sse streame un tableau JSON : relayé morceau par morceau lui aussi
         streaming = (upstream.headers.get("content-type", "").startswith("text/event-stream")
                      or path.endswith(":streamGenerateContent"))
-        acc = fmt(provider).Accumulator() if streaming and captured else None
+        acc = fmt(provider, path).Accumulator() if streaming and captured else None
 
         if streaming:
             await resp.prepare(request)

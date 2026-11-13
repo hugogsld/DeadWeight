@@ -13,6 +13,7 @@ import uuid
 
 FINISH = {"stop": "stop", "length": "length", "tool_calls": "tool_calls",
           "function_call": "tool_calls", "content_filter": "content_filter"}
+RESPONSES_PATHS = ("/v1/responses", "/openai/v1/responses")
 RESPONSE_FORMATS = {"text", "json_object", "json_schema"}
 # OpenAI recopie la clé dans ses erreurs 401 ("Incorrect API key provided: sk-...").
 KEY_LIKE = re.compile(r"\b((sk|rk|pk|sess)-[A-Za-z0-9_\-*]{3,}|AIza[A-Za-z0-9_\-]{10,})")
@@ -197,8 +198,11 @@ class StreamAccumulator(SSEParser):
                 self.finish_raw = choice["finish_reason"]
 
 
-def fmt(provider):
-    """Module de normalisation du fournisseur (ce module-ci pour OpenAI)."""
+def fmt(provider, path=None):
+    """Module de normalisation du fournisseur (ce module-ci pour OpenAI chat/completions ;
+    ``gateway.openai_responses`` pour /v1/responses)."""
+    if provider == "openai" and path in RESPONSES_PATHS:
+        return importlib.import_module("gateway.openai_responses")
     return importlib.import_module(__name__ if provider == "openai" else f"gateway.{provider}")
 
 
@@ -208,7 +212,7 @@ Accumulator = StreamAccumulator  # même nom dans chaque module de format
 def build_event(*, req_body, status, resp_body=None, stream=None, upstream, app_id, trace_id,
                 endpoint, ts_start, ts_end, latency_ms, ttft_ms, transport_error=None, provider="openai"):
     """Assemble l'événement v1. ``resp_body`` : octets de la réponse non streamée."""
-    f = fmt(provider)
+    f = fmt(provider, endpoint)
     try:
         model, request = f.normalize_request(json.loads(req_body) if req_body else {}, endpoint)
     except (ValueError, AttributeError, TypeError):
