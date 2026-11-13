@@ -49,7 +49,7 @@ def test_azure_sdk_is_relayed_and_captured_with_deployment_as_model():
         assert SECRET not in json.dumps(e)
     assert events[1]["request"]["params"]["stream"] is True and events[1]["usage"]["input_tokens"] == 12
     # la requête amont garde ?api-version= et l'en-tête api-key, la passerelle n'en retient rien
-    seen = fake[fake_openai.SEEN]
+    seen = [h for h in fake[fake_openai.SEEN] if "path" in h]  # entrées posées par la route Azure
     assert len(seen) == 3 and all("api-version=2024-10-21" in h["path"] and h["api-key"] == SECRET for h in seen)
 
 
