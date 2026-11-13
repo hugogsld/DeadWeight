@@ -48,7 +48,7 @@ pour la connexion et l'import, pas pour la qualité des réponses.
 | `/v1/traces`, corps illisible | `{"message": "export OTLP/JSON illisible"}` | clair |
 | `make audit`, base absente | `Base absente : out/vide.db. Lancez make dev, réglez le base_url … puis relancez make audit.` | clair |
 
-## Ce qui reste à corriger
+## Ce qui restait à corriger (27/09) : points 2 à 5 corrigés le 13/11, voir la deuxième passe plus bas
 
 1. ~~**OpenTelemetry en direct depuis Python**~~ (problème 18) : corrigé par #118, `/v1/traces` lit
    aussi le protobuf.

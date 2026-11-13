@@ -227,7 +227,7 @@ Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour 
 | 8 | Les agents qui n'exécutent qu'une seule commande échappent à toutes les règles | haute | `rules/agent_where_chain.py` | Miguel shorts-factory (lecture du code) | ouvert |
 | 9 | Agents facturés à l'abonnement : le coût en dollars par token ne reflète pas ce qu'ils coûtent | moyenne | `report/cost.py`, `report/audit.py` | Miguel shorts-factory (lecture du code) | ouvert |
 | 10 | Les agents qui se passent le relais (la sortie de l'un devient l'entrée de l'autre) ne sont pas regroupés en trace | haute | `gateway/traces.py` | OpenAI story flow | ouvert |
-| 11 | L'API Responses d'OpenAI, celle du SDK Agents par défaut, n'est pas capturée | haute | `gateway/proxy.py`, `gateway/capture.py` | OpenAI story flow | ouvert |
+| 11 | L'API Responses d'OpenAI, celle du SDK Agents par défaut, n'est pas capturée | haute | `gateway/proxy.py`, `gateway/capture.py` | OpenAI story flow | corrigé (`gateway/openai_responses.py`, branche feat/connexions-verifiees) |
 | 12 | L'extraction de règles hors ligne apprend des noms propres | moyenne | `proof/extract.py` | OpenAI story flow | ouvert |
 | 13 | La bonne règle se trouve en amont : l'extraction ne regarde que l'entrée de l'appel signalé | moyenne | `proof/extract.py`, `gateway/traces.py` | OpenAI story flow | ouvert |
 | 14 | Sortie structurée : un champ qui ne change jamais n'est pas signalé | moyenne | `rules/low_entropy.py` | OpenAI story flow | ouvert |
