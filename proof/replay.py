@@ -113,6 +113,18 @@ def _tokens_cost(prices, model, tin, tout):
     return (tin * price['in'] + tout * price['out']) / 1_000_000
 
 
+def _missing_calls(replaced, n):
+    """Phrase « non conclu » : ce n'est pas un échec des règles, il manque du volume, et combien."""
+    base = ("NON CONCLU, échantillon trop petit (pas un échec des règles) : les exemples servant à écrire "
+            "les règles sont exclus du rejeu, il faut donc plus d'appels que ce minimum.")
+    missing = MIN_REPLAY - replaced
+    if not replaced or not n:
+        return base + f" Il manque {missing} entrée(s) remplacée(s) ; volume à prévoir non estimable (aucune règle ne couvre encore d'entrée)."
+    more = math.ceil(missing * n / replaced)
+    return base + (f" Il manque {missing} entrée(s) remplacée(s) : compter environ {more} appel(s) "
+                   "de plus de ce gabarit, au rythme de couverture observé.")
+
+
 def replay(finding, events, rules, fallback=None, fallback_model=None, throttle=None,
            threshold=THRESHOLD, prices=None):
     """Rend un dict au format schemas/proof.schema.json (+ champs explicatifs).
@@ -182,7 +194,7 @@ def replay(finding, events, rules, fallback=None, fallback_model=None, throttle=
     rate = agree / replaced if replaced else 0.0
     if replaced < MIN_REPLAY:
         reasons.append(f'{replaced} entrée(s) remplacée(s) sur {n} rejouée(s), '
-                       f'il en faut au moins {MIN_REPLAY} pour conclure')
+                       f'il en faut au moins {MIN_REPLAY} pour conclure. {_missing_calls(replaced, n)}')
     if rate < threshold:
         reasons.append(f'accord {rate:.1%} sous le seuil de {threshold:.0%}')
     if not keys:
