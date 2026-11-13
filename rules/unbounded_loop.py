@@ -87,6 +87,11 @@ def _flat(arguments):
 
 
 def _words(text):
+    # Chemin de fichier : tout ou rien. Lire fiche_1.md puis fiche_2.md d'un même dossier partage
+    # presque tous ses mots sans répéter quoi que ce soit (journaux réels : 499 « répétitions » pour
+    # 13 appels identiques au plus).
+    if " " not in text.strip() and "/" in text and "://" not in text:
+        return frozenset({text.strip()})
     return frozenset(w[:-1] if len(w) > 3 and w.endswith("s") else w for w in _WORDS.findall(text.lower()))
 
 
