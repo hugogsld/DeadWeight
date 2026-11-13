@@ -39,17 +39,41 @@ def bedrock_name(model):
     return _BEDROCK_VERSION.sub("", name)
 
 
+_DOTTED = re.compile(r"(?<![\d.])(\d)-(\d)(?!\d)")  # 5-5 -> 5.5 (un seul chiffre de chaque côté)
+_DASHED = re.compile(r"(\d)\.(\d)")
+_SUFFIX_NOISE = re.compile(r"(\[[^\]]*\]|:thinking|:free|:online|:extended|:nitro|-thinking)$")
+_PREVIEW = re.compile(r"-(?:preview|exp|experimental)(?:-[\w.]+)*$")
+
+
+def _variants(name):
+    """Écritures voisines d'un même nom : tirets/points des versions, suffixes de date, -latest, aperçus."""
+    seen = []
+    pending = [name]
+    while pending:
+        cur = pending.pop(0)
+        if cur in seen or not cur:
+            continue
+        seen.append(cur)
+        pending.extend([
+            _DATED.sub("", cur), _SUFFIX_NOISE.sub("", cur), _PREVIEW.sub("", cur),
+            _DOTTED.sub(r"\1.\2", cur), _DASHED.sub(r"\1-\2", cur),
+            re.sub(r"-latest$", "", cur),
+        ])
+    return seen
+
+
 def lookup(prices, model):
-    """Prix d'un modèle tel que l'appelle le client : nom exact, sans préfixe
-    fournisseur (ou identifiant Bedrock normalisé), puis sans suffixe de date. None si inconnu."""
-    if not model:
+    """Prix d'un modèle tel que l'appelle le client : nom exact, sans préfixe fournisseur (openai/, models/,
+    anthropic/) ni identifiant Bedrock, puis variantes d'écriture (claude-sonnet-5-5 ou claude-sonnet-5.5,
+    suffixe de date, -latest, [1m], aperçu). La casse est ignorée. None si inconnu."""
+    if not model or not isinstance(model, str):
         return None
-    for name in (model, model.split("/", 1)[-1], bedrock_name(model)):
-        if name in prices:
-            return prices[name]
-        base = _DATED.sub("", name)
-        if base != name and base in prices:
-            return prices[base]
+    raw = model.strip()
+    for name in (raw, raw.split("/", 1)[-1], raw.rsplit("/", 1)[-1], bedrock_name(raw)):
+        for candidate in (name, name.lower()):
+            for variant in _variants(candidate):
+                if variant in prices:
+                    return prices[variant]
     return None
 
 

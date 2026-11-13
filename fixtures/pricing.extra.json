@@ -1,0 +1,37 @@
+{
+ "_meta": {
+  "role": "Complète fixtures/pricing.json (OpenRouter) : fusionné par collector.pricing à chaque `make prices`. Une entrée de « models » l'emporte sur OpenRouter (page de prix officielle) ; « aliases » : nom d'API sans version -> modèle cible du catalogue, le prix suit le catalogue.",
+  "retrieved": "2026-11-13",
+  "unit": "USD par million de jetons, palier standard, contexte court",
+  "sources": {
+   "anthropic": "https://platform.claude.com/docs/en/about-claude/pricing",
+   "openai": "https://developers.openai.com/api/docs/pricing",
+   "google": "https://aistudio.google.com/docs/pricing",
+   "mistral": "https://docs.mistral.ai/inference/pricing"
+  },
+  "limits": "Claude Haiku 5.5 : 0,10/0,50 jusqu'à 100 000 jetons de prompt, 0,50/2,50 au-delà (palier non modélisé, sous-estime les longs prompts). gemini-3.8-flash : 0,75/3,75 jusqu'au 31/12/2026, puis 1,50/7,50 (1/1/2027). Alias -latest de Mistral : cible = version courante de la liste docs.mistral.ai/getting-started/models, à relire à chaque `make prices`."
+ },
+ "models": {
+  "claude-mythos-5": {"in": 10.0, "out": 50.0, "cached_in": 1.0, "source": "anthropic"},
+  "claude-mythos-5-1": {"in": 10.0, "out": 50.0, "cached_in": 0.25, "source": "anthropic"},
+  "claude-mythos-5-2": {"in": 8.0, "out": 40.0, "cached_in": 0.2, "source": "anthropic"},
+  "claude-opus-4": {"in": 15.0, "out": 75.0, "cached_in": 1.5, "source": "anthropic"},
+  "gpt-5.6-sol": {"in": 4.0, "out": 20.0, "cached_in": 0.4, "source": "openai", "note": "OpenRouter affiche +10 %"},
+  "gpt-5-search-api": {"in": 1.25, "out": 10.0, "cached_in": 0.125, "source": "openai"},
+  "chat-latest": {"in": 5.0, "out": 30.0, "cached_in": 0.5, "source": "openai"},
+  "gpt-6-cyber": {"in": 20.0, "out": 100.0, "cached_in": 2.0, "source": "openai", "note": "accès de confiance"},
+  "gpt-5.6-cyber": {"in": 12.5, "out": 75.0, "cached_in": 1.25, "source": "openai", "note": "accès de confiance"},
+  "gemini-3.8-flash": {"in": 0.75, "out": 3.75, "cached_in": 0.075, "source": "google", "note": "OpenRouter affiche +10 % ; tarif doublé au 1/1/2027"}
+ },
+ "aliases": {
+  "mistral-large-latest": "mistral-large-4-0",
+  "mistral-large-4": "mistral-large-4-0",
+  "mistral-medium-latest": "mistral-medium-3-5",
+  "mistral-small-latest": "mistral-small-2603",
+  "codestral-latest": "codestral-2508",
+  "ministral-14b-latest": "ministral-14b-2512",
+  "ministral-8b-latest": "ministral-8b-2512",
+  "ministral-3b-latest": "ministral-3b-2512",
+  "open-mistral-nemo": "mistral-nemo"
+ }
+}

@@ -18,6 +18,7 @@ from pathlib import Path
 
 URL = "https://openrouter.ai/api/v1/models"
 DEFAULT_OUT = Path(__file__).resolve().parents[1] / "fixtures" / "pricing.json"
+EXTRA_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "pricing.extra.json"
 _VERSION_DOT = re.compile(r"(\d)\.(\d)")
 
 
@@ -61,6 +62,18 @@ def build(models):
     return out
 
 
+def apply_extra(catalog, extra):
+    """Ajoute à ``catalog`` (sans le muter) les prix officiels de fixtures/pricing.extra.json : une entrée de
+    ``models`` l'emporte sur OpenRouter ; un ``aliases`` (nom d'API -> cible) reprend le prix de sa cible."""
+    out = dict(catalog)
+    for name, entry in (extra.get("models") or {}).items():
+        out[name] = {k: entry[k] for k in ("in", "out", "cached_in") if k in entry}
+    for alias, target in (extra.get("aliases") or {}).items():
+        if target in out:
+            out.setdefault(alias, out[target])
+    return out
+
+
 def fetch():
     req = urllib.request.Request(URL, headers={"User-Agent": "deadweight/0.2"})
     with urllib.request.urlopen(req, timeout=30) as r:
@@ -77,6 +90,8 @@ def main(argv=None):
         print(f"OpenRouter injoignable ({exc}) : catalogue inchangé.", file=sys.stderr)
         return 1
     catalog = build(models)
+    if EXTRA_PATH.exists():
+        catalog = apply_extra(catalog, json.loads(EXTRA_PATH.read_text(encoding="utf-8")))
     # un modèle retiré d'OpenRouter peut encore être appelé par un client : on garde son dernier prix
     out = Path(args.out)
     kept = 0

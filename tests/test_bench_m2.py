@@ -75,9 +75,12 @@ def test_candidate_gets_the_task_instruction(events, finding):
 
 def test_route_option_is_priced_at_its_route(events, finding):
     Client, _ = fake_client(answers(events, finding))
-    result = m2.prove(events, finding, max_cases=5, client_cls=Client)
-    sovereign = result["options"]["souverain"]
-    cheapest_host = m2.prove(events, finding, max_cases=5, client_cls=Client, capabilities={})["options"]["souverain"]
+    model = m2.prove(events, finding, max_cases=5, client_cls=Client)["options"]["souverain"]["model"]
+    # catalogue volontairement moins cher que la route : indépendant du rafraîchissement des prix réels
+    cheap = {**m2.load_prices(), model: {"in": 0.001, "out": 0.001}}
+    sovereign = m2.prove(events, finding, max_cases=5, client_cls=Client, prices=cheap)["options"]["souverain"]
+    cheapest_host = m2.prove(events, finding, max_cases=5, client_cls=Client, capabilities={},
+                             prices=cheap)["options"]["souverain"]
     assert sovereign["cost_per_1000_calls_usd"] > cheapest_host["cost_per_1000_calls_usd"]
 
 
