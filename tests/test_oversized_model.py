@@ -57,3 +57,16 @@ def test_unknown_price_gives_null_saving_with_reason():
 def test_dataset_v1():
     flagged = {f["app_id"] for f in detect(EVENTS)}
     assert flagged == {"mail-triage", "reviews"}
+
+
+def test_short_window_gives_observed_saving_not_monthly_projection():
+    """36 appels en 40 s : jamais « X $ par mois » (régression : 497 387 $ par mois pour 0.003 $ observés)."""
+    [f] = detect([ev(i) for i in range(40)], PRICES)
+    assert "par mois" not in f["title"] and "sur la période observée" in f["title"]
+
+
+def test_day_long_window_keeps_monthly_saving():
+    from report.cost import montant_economie
+    events = [ev(0), ev(1)]
+    events[1]["ts_end"] = "2026-09-03T00:00:00Z"
+    assert montant_economie(3.0, events) == "3.00 $ par mois"

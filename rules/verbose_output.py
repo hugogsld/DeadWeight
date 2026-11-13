@@ -44,7 +44,7 @@ import os
 from collections import defaultdict
 from statistics import median
 
-from report.cost import chiffrer
+from report.cost import chiffrer, montant_economie
 from rules.low_entropy import template_of
 
 # DW_MIN_CALLS : seuil unique, abaissable pour une demo sur peu d'executions (defaut inchange : 30).
@@ -102,7 +102,7 @@ def detect(events, pricing=None):
         truncated = sum(e["response"].get("finish_reason") == "length" for e in evts) / len(evts)
         cap = math.ceil(med * CAP_MULTIPLIER)
         saving, missing = _saving(evts, cap, pricing)
-        saving_txt = (f" Plafonner autour de {cap} jetons économiserait environ {saving:.2f} $ par mois, "
+        saving_txt = (f" Plafonner autour de {cap} jetons économiserait environ {montant_economie(saving, evts)}, "
                       "non démontré sans rejeu."
                       if saving is not None else " Économie non chiffrable et non démontrée.")
         findings.append({

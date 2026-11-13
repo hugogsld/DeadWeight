@@ -149,3 +149,10 @@ def test_lookup_accepts_api_names_and_dated_versions():
     assert lookup(prices, 'openai/gpt-4o') == {'in': 2.5}
     assert lookup(prices, 'gemini-2.0-flash-001') == {'in': 0.1}
     assert lookup(prices, 'inconnu') is None and lookup(prices, None) is None
+
+
+def test_montant_economie_short_window_is_observed_amount():
+    from report.cost import MONTH_SECONDS, montant_economie
+    events = [event(ts_start="2026-09-01T00:00:00Z", ts_end="2026-09-01T00:00:40Z")]
+    text = montant_economie(MONTH_SECONDS, events)  # 1 $ par seconde projetée : 40 $ observés
+    assert text.startswith("40 $ sur la période observée (40 s") and "par mois" not in text

@@ -183,3 +183,15 @@ def window_seconds(events):
     start = min(datetime.fromisoformat(e["ts_start"].replace("Z", "+00:00")) for e in events)
     end = max(datetime.fromisoformat(e["ts_end"].replace("Z", "+00:00")) for e in events)
     return (end - start).total_seconds()
+
+
+def montant_economie(monthly, events):
+    """Un gain en dollars, dit honnêtement : ``X $ par mois`` si la période observée couvre au moins une
+    journée, sinon le gain sur la période observée, sans projection (``0.0032 $ sur 36 s observées``)."""
+    if window_seconds(events) >= MIN_WINDOW_SECONDS:
+        return f"{monthly:.2f} $ par mois"
+    seconds = window_seconds(events)
+    observed = monthly * seconds / MONTH_SECONDS
+    span = ("moins d'1 s" if seconds < 1 else f"{seconds:.0f} s" if seconds < 120
+            else f"{seconds / 60:.0f} min" if seconds < 3600 else f"{seconds / 3600:.1f} h")
+    return f"{observed:.2g} $ sur la période observée ({span}, trop court pour une projection mensuelle)"

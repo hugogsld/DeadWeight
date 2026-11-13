@@ -12,7 +12,7 @@ from collections import defaultdict
 from pathlib import Path
 from statistics import median
 
-from report.cost import chiffrer, lookup
+from report.cost import chiffrer, lookup, montant_economie
 from rules.low_entropy import normalize, template_of
 
 PRICING_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "pricing.json"
@@ -105,7 +105,7 @@ def detect(events, pricing=None):
         suggested = suggest_model(provider, model, pricing)
         saving, missing = _saving(ok, suggested, pricing) if suggested else (None, ["aucun modele plus petit connu"])
         distinct = len({normalize(e["response"].get("content") or "") for e in ok})
-        saving_txt = (f" Économie estimée : {saving:.2f} $ par mois, non démontrée tant qu'elle n'est pas vérifiée par rejeu."
+        saving_txt = (f" Économie estimée : {montant_economie(saving, ok)}, non démontrée tant qu'elle n'est pas vérifiée par rejeu."
                       if saving is not None else " Économie non chiffrable (prix inconnu) et non démontrée.")
         findings.append({
             "finding_id": f"f_{app}_{template}_oversized",

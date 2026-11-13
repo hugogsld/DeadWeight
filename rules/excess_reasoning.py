@@ -42,7 +42,7 @@ from collections import defaultdict
 from pathlib import Path
 from statistics import median
 
-from report.cost import chiffrer
+from report.cost import chiffrer, montant_economie
 from rules.low_entropy import normalize, template_of
 
 PRICING_PATH = Path(__file__).resolve().parents[1] / "fixtures" / "pricing.json"
@@ -107,7 +107,7 @@ def detect(events, pricing=None):
         if med_visible > MAX_MEDIAN_VISIBLE_TOKENS and distinct > MAX_DISTINCT_OUTPUTS:
             continue
         saving, missing = _saving(ok, pricing)
-        saving_txt = (f" Plafond d'économie si le raisonnement était supprimé : {saving:.2f} $ par mois, "
+        saving_txt = (f" Plafond d'économie si le raisonnement était supprimé : {montant_economie(saving, ok)}, "
                       "non démontré sans rejeu à effort de raisonnement réduit."
                       if saving is not None else " Économie non chiffrable et non démontrée.")
         findings.append({
