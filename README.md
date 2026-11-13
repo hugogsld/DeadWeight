@@ -65,12 +65,13 @@ testées puis, avec `REPO=…`, ouverture des micro-PR prouvées (gh). Enfin le 
 rien ne se fusionne depuis Slack. Il ne part que s'il y a un gain prouvé (`DEMO=1` montre tout) ; sans webhook,
 le message reste dans `out/audit-complet/optim/slack.md` et la commande le dit.
 
-## Brancher Deadweight sur vos workflows : quatre voies
+## Brancher Deadweight sur vos workflows : cinq voies
 
 | Vous utilisez… | Voie | Commande | Section |
 |---|---|---|---|
 | une application qui appelle OpenAI, Anthropic ou Gemini | passerelle (seul le `base_url` change) | `make dev` | [1 à 4](#1-installer-et-lancer-la-passerelle) |
 | LangChain, SDK d'agents OpenAI, Vercel AI… | OpenTelemetry | `.venv/bin/python -m connectors.otel traces.json` | [OpenTelemetry](#opentelemetry) |
+| Amazon Bedrock (Converse, InvokeModel, agents Strands/AgentCore) | journaux d'invocation exportés par le client | `python3 -m connectors.bedrock_logs export/` | [Bedrock](#brancher-deadweight-sur-bedrock) |
 | Claude Code ou Codex | journaux de session | `python3 -m connectors.agent_logs run.zip` | [Journaux](#journaux-claude-code-et-codex-b1) |
 | n8n | historique d'exécution | `python3 -m importers.n8n check / fetch / convert` | [n8n](#importer-lhistorique-n8n-b1) |
 
@@ -259,6 +260,39 @@ réponse, appels d'outils ; la session sert de trace, un sous-agent a son propre
 Limites : le prompt système et la liste des outils ne sont pas journalisés ; les jetons écrits en
 cache par Claude Code sont comptés au prix normal (facturés 1,25× à 2×), le coût est donc un
 peu sous-estimé sur cette part.
+
+## Brancher Deadweight sur Bedrock
+
+Lecture seule, sans toucher au code du client ni à ses accès : le client active le journal d'invocation de
+Bedrock et nous remet l'export. Les journaux ne couvrent que les appels faits par le endpoint `bedrock-runtime`
+(Converse, ConverseStream, InvokeModel, InvokeModelWithResponseStream), donc aussi les agents Strands ou AgentCore qui passent par lui.
+
+**Ce que le client active** (console : Bedrock > Settings > Model invocation logging, cocher *Text*, choisir S3 et/ou
+CloudWatch Logs ; ou une commande, à adapter) :
+
+    aws bedrock put-model-invocation-logging-configuration --region eu-west-1 --logging-config \
+      '{"s3Config":{"bucketName":"MON-BUCKET","keyPrefix":"bedrock"},"textDataDeliveryEnabled":true,"imageDataDeliveryEnabled":false,"embeddingDataDeliveryEnabled":false}'
+
+Le journal ne remonte pas dans le passé : il faut laisser tourner quelques jours de trafic réel. Pour reconnaître
+les workflows, le client peut ajouter `requestMetadata` (`workflow_id`, `agent`) à ses appels Converse ; sans cela,
+l'application est déduite du rôle IAM.
+
+**Ce qu'on nous remet** : le dossier du bucket (`AWSLogs/<compte>/BedrockModelInvocationLogs/...`, fichiers `.json.gz`,
+sous-dossier `data/` compris pour les corps de plus de 100 Ko), ou un export CloudWatch, en dossier ou en `.zip`.
+
+    python3 -m connectors.bedrock_logs export/ -o private/bedrock/events.jsonl
+    .venv/bin/python -m report.audit private/bedrock/events.jsonl
+
+La commande dit ce qu'elle a lu, ignoré et pourquoi ; elle sort en erreur (code non nul) si elle ne lit aucun appel.
+Sans le dossier `data/`, les gros corps restent absents : les jetons et le coût sont comptés, pas le contenu.
+
+**Ce qu'on lit** : modèle, horodatage, région, jetons (entrée, sortie, cache lu, cache écrit), messages, prompt système,
+outils, réponses et étiquettes `requestMetadata`. Les chiffres de coût sont une estimation : tarifs Bedrock dans
+`fixtures/pricing.bedrock.json` (source et date indiquées, à vérifier avant de les montrer).
+
+**Ce qu'on ne lit ni ne garde** : aucune clé ni accès AWS (aucun appel réseau vers AWS), l'ARN de l'appelant sert
+seulement à nommer l'application (non stocké), les images sont comptées, jamais lues, les chaînes qui ressemblent
+à une clé sont masquées. Tout reste sur la machine qui lance la commande.
 
 ## Proposer et prouver des micro-modifications
 
