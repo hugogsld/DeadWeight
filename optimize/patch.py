@@ -147,3 +147,44 @@ def open_pr(repo, proposal, branch):
         return run("gh", "pr", "create", "--base", base, "--head", branch, "--title", title, "--body", body).strip()
     finally:
         run("git", "switch", base)
+
+
+class ApplyError(RuntimeError):
+    """Application du diff refusée ou impossible (dépôt sale, branche existante, diff qui ne s'applique pas)."""
+
+
+def apply_diffs(repo, diffs, branch="deadweight/appliquer"):
+    """Applique les diffs produits par ``make_patch`` sur une NOUVELLE branche du dépôt, sans commit.
+    Refuse si le dépôt a des changements non commités, en HEAD détaché, ou si la branche existe déjà ;
+    jamais sur la branche courante. Rend (branche, fichiers modifiés). En cas d'échec, le dépôt revient
+    à son état d'origine (branche d'origine, rien de modifié)."""
+    run = lambda *a, check=True: subprocess.run(  # noqa: E731
+        a, cwd=repo, check=check, capture_output=True, text=True)
+    try:
+        base = run("git", "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
+        dirty = run("git", "status", "--porcelain").stdout.strip()
+        exists = run("git", "rev-parse", "--verify", "--quiet", f"refs/heads/{branch}", check=False).returncode == 0
+    except (OSError, subprocess.CalledProcessError) as exc:
+        raise ApplyError(f"{repo} n'est pas un dépôt git utilisable ({exc})") from exc
+    if base == "HEAD":
+        raise ApplyError("dépôt en HEAD détaché : placez-vous sur une branche avant d'appliquer")
+    if dirty:
+        raise ApplyError("le dépôt a des changements non commités : commitez-les ou rangez-les d'abord")
+    if exists:
+        raise ApplyError(f"la branche {branch} existe déjà : supprimez-la ou renommez-la")
+    diffs = [d for d in diffs if d.strip()]
+    if not diffs:
+        raise ApplyError("aucun diff à appliquer")
+    run("git", "switch", "-c", branch)
+    try:
+        for diff in diffs:
+            subprocess.run(["git", "apply", "--whitespace=nowarn", "-"], cwd=repo, input=diff, check=True,
+                           capture_output=True, text=True)
+        changed = [f for f in run("git", "status", "--porcelain").stdout.splitlines() if f.strip()]
+    except subprocess.CalledProcessError as exc:
+        run("git", "reset", "--hard", check=False)
+        run("git", "clean", "-fd", check=False)
+        run("git", "switch", base, check=False)
+        run("git", "branch", "-D", branch, check=False)
+        raise ApplyError(f"le diff ne s'applique pas ({(exc.stderr or '').strip()[:200]})") from exc
+    return branch, [line[3:] for line in changed]

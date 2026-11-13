@@ -1,6 +1,7 @@
 """Audit complet en une commande : source → événements → rapport → micro-PR → message Slack.
 
     make audit-complet SOURCE=<source> [REPO=chemin/du/depot] [DEMO=1] [PROJECT=<texte>|ALL=1]
+    python -m scripts.audit_complet <source> --repo <depot> --apply   # diffs prouvés sur une nouvelle branche git
 
 Sources reconnues :
     n8n:<id>             historique d'un workflow n8n (N8N_URL, N8N_API_KEY) : check, fetch puis convert
@@ -147,7 +148,8 @@ def _explain_empty(events):
         print("\n".join(f"  - {x}" for x in useful))
 
 
-def run(source, out, repo=None, demo=False, webhook=None, sender=send, project=None, all_projects=False):
+def run(source, out, repo=None, demo=False, webhook=None, sender=send, project=None, all_projects=False,
+        apply=False):
     out = Path(out)
     print(f"1/4 Détection : {source}")
     events = detect(source, out, project, all_projects)
@@ -163,6 +165,7 @@ def run(source, out, repo=None, demo=False, webhook=None, sender=send, project=N
     argv = [str(events), "--out", str(out / "optim"), *extra]
     argv += ["--repo", str(repo), "--open-prs"] if repo else []
     argv += ["--demo"] if demo else []
+    argv += ["--apply"] if apply else []
     if optimize_main(argv):
         return 1
     print("4/4 Slack")
@@ -175,12 +178,14 @@ def main(argv=None):
     ap.add_argument("--out", default="out/audit-complet")
     ap.add_argument("--repo", help="dépôt où ouvrir les micro-PR prouvées (gh)")
     ap.add_argument("--demo", action="store_true", help="Slack montre aussi les pistes non prouvées")
+    ap.add_argument("--apply", action="store_true",
+                    help="avec --repo : applique les diffs prouvés sur une nouvelle branche git (sans commit)")
     ap.add_argument("--project", help="journaux Claude Code : ne lit que les projets dont le nom contient ce texte")
     ap.add_argument("--all-projects", action="store_true",
                     help="journaux Claude Code : lit tous les projets d'un dossier qui en range plusieurs")
     args = ap.parse_args(argv)
     return run(args.source, args.out, args.repo, args.demo, os.environ.get("SLACK_WEBHOOK_URL"),
-               project=args.project, all_projects=args.all_projects)
+               project=args.project, all_projects=args.all_projects, apply=args.apply)
 
 
 if __name__ == "__main__":

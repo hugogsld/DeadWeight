@@ -5,6 +5,7 @@
 Sans ``--repo`` : propositions mesurées + message Slack. Avec ``--repo`` : un diff et un texte de PR par
 proposition validée. ``--open-prs`` ouvre réellement les PR (gh) : à ne faire que sur un dépôt qu'on
 contrôle. Le banc de modèles n'est lancé que si une clé est présente (``DW_LLM_API_KEY``).
+``--apply`` (avec ``--repo``) : applique les diffs prouvés sur une nouvelle branche git, sans commit.
 ``--comprehension`` / ``--billing`` : sur abonnement, le message parle de valeur équivalente API, pas d'économie.
 """
 import argparse
@@ -14,7 +15,7 @@ import sys
 from pathlib import Path
 
 from optimize.devpage import render
-from optimize.patch import make_patch, open_pr, pr_text
+from optimize.patch import ApplyError, apply_diffs, make_patch, open_pr, pr_text
 from optimize.propose import _cost, propose, sans_piste
 from optimize.slack import message
 from proof.extract import OpenAICompatibleLLM
@@ -46,6 +47,8 @@ def main(argv=None):
     ap.add_argument("events")
     ap.add_argument("--out", default="private/optim")
     ap.add_argument("--repo", help="dépôt du client sur lequel préparer les micro-PR")
+    ap.add_argument("--apply", action="store_true",
+                    help="avec --repo : applique les diffs prouvés sur une nouvelle branche git (sans commit)")
     ap.add_argument("--open-prs", action="store_true", help="ouvre réellement les PR (gh)")
     ap.add_argument("--demo", action="store_true", help="Slack montre aussi les pistes refusées ou non testées")
     ap.add_argument("--comprehension", help="comprehension.json de python -m connectors.agent_logs (facturation)")
@@ -68,6 +71,21 @@ def main(argv=None):
             (out / f"{i:02d}-{p['type']}-{p['app_id']}.pr.md").write_text(f"# {title}\n\n{body}\n", encoding="utf-8")
             if args.open_prs:
                 links[p["finding_id"] + p["type"]] = open_pr(args.repo, p, f"deadweight/{p['type']}-{i:02d}")
+    if args.apply:
+        if not args.repo:
+            print("erreur : --apply demande --repo <dépôt>.", file=sys.stderr)
+            return 1
+        if not diffs:
+            print("--apply : aucun diff prouvé à appliquer, le dépôt n'est pas modifié.")
+        else:
+            try:
+                branch, changed = apply_diffs(args.repo, list(diffs.values()))
+            except ApplyError as exc:
+                print(f"--apply refusé : {exc}.", file=sys.stderr)
+                return 1
+            print(f"--apply : branche {branch} créée (rien n'est commité), {len(changed)} fichier(s) modifié(s) :")
+            print("\n".join(f"  {c}" for c in changed))
+            print(f"Relisez avec `git -C {args.repo} diff`, puis commitez ou `git switch -` pour annuler.")
     slim = [{k: v for k, v in p.items() if k != "preuve"} for p in proposals]
     (out / "propositions.json").write_text(json.dumps(slim, ensure_ascii=False, indent=1), encoding="utf-8")
     (out / "propositions.html").write_text(render(proposals, diffs), encoding="utf-8")
