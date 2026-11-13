@@ -111,3 +111,16 @@ def test_cout_profil_global_inferieur_au_regional(tmp_path):
         e = dict(e, ts_end="2026-11-14T00:00:00Z")
         return chiffrer([e])["cout_mensuel_usd"]
     assert cost("global.anthropic.claude-sonnet-4-5-20250929-v1:0") < cost("eu.anthropic.claude-sonnet-4-5-20250929-v1:0")
+
+
+def test_hote_global_ou_hors_ue_jamais_presente_comme_europeen(tmp_path):
+    from catalog import destination, load_hosts
+    hosts = load_hosts()
+    glob, _ = _read(tmp_path, _record("global.anthropic.claude-sonnet-4-5-20250929-v1:0",
+                                      input_extra={"inputTokenCount": 5, "cacheReadInputTokenCount": 0}))
+    assert glob["upstream"] == "bedrock-runtime.global.amazonaws.com"
+    assert destination(glob, hosts)["ue"] is None
+    us = dict(glob, upstream="bedrock-runtime.us-east-1.amazonaws.com")
+    assert destination(us, hosts)["ue"] is False
+    eu = dict(glob, upstream="bedrock-runtime.eu-west-1.amazonaws.com")
+    assert destination(eu, hosts)["ue"] is True

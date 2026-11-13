@@ -354,6 +354,8 @@ def convert(record: dict, bodies: dict[str, bytes], report: Comprehension) -> di
     role = _role_name((record.get("identity") or {}).get("arn"))
     trace_id = _tag(tags, TRACE_TAGS)
     region = record.get("inferenceRegion") or record.get("region")
+    if profile_kind(model) == "global" and not record.get("inferenceRegion"):
+        region = "global"  # région réelle inconnue : hôte « global », jamais présenté comme européen
     metrics = out_body.get("metrics") if isinstance(out_body, dict) else None
     latency = num((metrics or {}).get("latencyMs")) or 0
     error_code = record.get("errorCode")

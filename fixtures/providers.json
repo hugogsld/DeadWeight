@@ -13,7 +13,9 @@
  },
  "motifs_hotes": [
   {"motif": "europe-*-aiplatform.googleapis.com", "editeur": "google", "ue": true, "note": "Vertex AI, région UE", "source": "recherche"},
-  {"motif": "bedrock-runtime.eu-*.amazonaws.com", "editeur": null, "ue": true, "note": "AWS Bedrock, région UE", "source": "recherche"}
+  {"motif": "bedrock-runtime.eu-*.amazonaws.com", "editeur": null, "ue": true, "note": "AWS Bedrock, région UE", "source": "recherche"},
+  {"motif": "bedrock-runtime.global.amazonaws.com", "editeur": null, "ue": null, "note": "AWS Bedrock, profil d'inférence global : AWS choisit la région, hors UE possible (région réelle absente du journal)", "source": "doc AWS, profils d'inférence"},
+  {"motif": "bedrock-runtime.*.amazonaws.com", "editeur": null, "ue": false, "note": "AWS Bedrock, région hors UE", "source": "recherche"}
  ],
  "editeurs": {
   "openai": {"nom": "OpenAI", "pays": "US", "hebergement_ue": "sous_conditions", "souverain": false, "option_ue": "résidence des données UE (eu.api.openai.com), pour les comptes éligibles seulement", "source": "recherche", "date": "2026-09-26", "route_openrouter": ["OpenAI"]},
