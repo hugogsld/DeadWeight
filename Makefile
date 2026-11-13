@@ -67,10 +67,11 @@ e2e: install
 # audit, micro-PR (REPO=… les ouvre avec gh), puis Slack si SLACK_WEBHOOK_URL (sinon slack.md seulement)
 AUDIT_COMPLET_OUT ?= out/audit-complet
 audit-complet: install
-	@test -n "$(SOURCE)" || { echo "Usage : make audit-complet SOURCE=<n8n:id|dossier|gateway|events.jsonl|journaux> [REPO=…] [DEMO=1]"; exit 2; }
+	@test -n "$(SOURCE)" || { echo "Usage : make audit-complet SOURCE=<n8n:id|dossier|gateway|events.jsonl|journaux> [REPO=…] [DEMO=1] [PROJECT=<texte>|ALL=1]"; exit 2; }
 	@set -a; if [ -f .env.local ]; then . ./.env.local; fi; set +a; \
 	$(BIN)/python -m scripts.audit_complet "$(SOURCE)" --out "$(AUDIT_COMPLET_OUT)" \
-		$(if $(REPO),--repo "$(REPO)") $(if $(DEMO),--demo)
+		$(if $(REPO),--repo "$(REPO)") $(if $(DEMO),--demo) \
+		$(if $(PROJECT),--project "$(PROJECT)") $(if $(ALL),--all-projects)
 
 # scénario testeur guidé (O/n) : WF=<id n8n>, SOURCE par défaut n8n:<id> si N8N_URL, OUI=1 accepte tout
 TESTER_OUT ?= out/tester

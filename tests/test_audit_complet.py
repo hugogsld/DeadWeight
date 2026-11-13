@@ -207,3 +207,36 @@ def test_chaine_sans_repo_ni_webhook(tmp_path):
 
 def test_source_invalide_code_retour(tmp_path):
     assert run(str(tmp_path / "absent.db"), tmp_path / "out") == 1
+
+
+# --- journaux Claude Code : plusieurs projets, zéro constat expliqué ---
+
+def _projets(tmp_path):
+    root = tmp_path / "projects"
+    src = next((AGENT_LOGS / "claude-code").rglob("*.jsonl"))
+    for name in ("-Users-moi-client-a", "-Users-moi-perso-b"):
+        (root / name).mkdir(parents=True)
+        (root / name / "s.jsonl").write_text(src.read_text())
+    return root
+
+
+def test_dossier_de_plusieurs_projets_exige_un_choix(tmp_path, capsys):
+    root = _projets(tmp_path)
+    assert run(str(root), tmp_path / "out") == 1
+    err = capsys.readouterr().err
+    assert "2 projets" in err and "ALL=1" in err and "PROJECT=" in err
+
+
+def test_un_projet_ou_tous_les_projets(tmp_path):
+    root = _projets(tmp_path)
+    assert run(str(root), tmp_path / "a", project="client-a") == 0
+    assert run(str(root), tmp_path / "all", all_projects=True) == 0
+    assert (tmp_path / "a" / "comprehension.json").is_file()
+    assert "Facturation" in (tmp_path / "all" / "audit.html").read_text()
+
+
+def test_zero_constat_est_explique_dans_la_console_et_la_page(tmp_path, capsys):
+    assert run(str(AGENT_LOGS / "claude-code"), tmp_path) == 0
+    out = capsys.readouterr().out
+    assert "Aucun constat. Pourquoi :" in out and "appels par tâche" in out and "--all-projects" in out
+    assert "Pourquoi aucun constat" in (tmp_path / "audit.html").read_text()

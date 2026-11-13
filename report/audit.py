@@ -17,6 +17,7 @@ from pathlib import Path
 import rules
 from catalog.recommend import recommend
 from report.billing import ABONNEMENT, billing_section, load_billing, spent_usd
+from report.pourquoi import diagnostic, lignes, utile
 from report.cost import MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer, runs, window_seconds
 
 # En dessous d'une heure de trafic, projeter sur un mois multiplie du bruit :
@@ -198,6 +199,8 @@ def build_report(events, detectors=None, banc=None, billing=None, propositions=N
         "rien_a_signaler": clean,
         "souverainete": souverainete,
         "billing": section,
+        "pourquoi_rien": ({"pourquoi": lignes(diagnostic(events)), "utile": utile(diagnostic(events))}
+                          if events and not constats else None),
         "gains_par_tache": _task_gains(propositions, events) if propositions else [],
         "gains_equivalent_api": bool(section and section["tout_abonnement"]),
     }
@@ -482,6 +485,15 @@ période, jamais des pourcentages de périmètres différents.</p>
 {"".join(body)}</table>"""
 
 
+def _pourquoi_html(block):
+    """Zéro constat : pourquoi, et ce que la source montre déjà."""
+    if not block:
+        return ""
+    li = lambda items: "".join(f"<li>{html.escape(x).replace('`', '')}</li>" for x in items)  # noqa: E731
+    useful = f"<h2>Ce que montre déjà cette source</h2><ul>{li(block['utile'])}</ul>" if block["utile"] else ""
+    return f"<h2>Pourquoi aucun constat ?</h2><ul>{li(block['pourquoi'])}</ul>{useful}"
+
+
 def render_html(report):
     r, e = report["resume"], html.escape
     if not r["nb_appels"]:
@@ -512,7 +524,7 @@ def render_html(report):
 <p class="note">Vérifications effectuées : {checks}.</p>
 {_billing_html(billing)}
 {_agent_section(report.get("agent"))}
-<h2>Constats, du plus coûteux au moins coûteux</h2>{cards}
+{_pourquoi_html(report.get("pourquoi_rien")) or f"<h2>Constats, du plus coûteux au moins coûteux</h2>{cards}"}
 {_gains_html(report.get("gains_par_tache"), report.get("gains_equivalent_api", False))}
 {_sovereignty(report.get("souverainete"))}
 <h2>Rien à signaler</h2>

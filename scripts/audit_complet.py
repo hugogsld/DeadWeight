@@ -1,13 +1,14 @@
 """Audit complet en une commande : source → événements → rapport → micro-PR → message Slack.
 
-    make audit-complet SOURCE=<source> [REPO=chemin/du/depot] [DEMO=1]
+    make audit-complet SOURCE=<source> [REPO=chemin/du/depot] [DEMO=1] [PROJECT=<texte>|ALL=1]
 
 Sources reconnues :
     n8n:<id>             historique d'un workflow n8n (N8N_URL, N8N_API_KEY) : check, fetch puis convert
     dossier n8n          dossier déjà écrit par fetch (workflow.json + executions.jsonl)
     gateway | *.db       trafic déjà capturé par la passerelle (défaut : GATEWAY_DB)
     events.jsonl         événements déjà au format DeadWeight
-    autre                journaux Claude Code / Codex (fichier .jsonl, dossier ou .zip)
+    autre                journaux Claude Code / Codex (fichier .jsonl, dossier ou .zip) ; un dossier qui range
+                         plusieurs projets (~/.claude/projects) exige PROJECT=<texte> ou ALL=1
 
 Avec ``--repo``, les micro-PR prouvées sont ouvertes (gh) et deviennent des boutons lien dans Slack.
 Le message part par ``SLACK_WEBHOOK_URL`` seulement s'il y a un gain prouvé (``--demo`` montre tout) ;
@@ -21,12 +22,15 @@ import urllib.error
 from pathlib import Path
 
 from agent.audit import main as audit_main
-from connectors.agent_logs.__main__ import jsonl_line, lire
+from connectors.agent_logs import billing as agent_billing
+from connectors.agent_logs.__main__ import jsonl_line, lire, projets
 from gateway.store import read_events
 from gateway.traces import assign_traces
 from importers.n8n.__main__ import main as n8n_main, run_convert
 from optimize.__main__ import main as optimize_main
 from optimize.send import payload, send
+from report.audit import build_report
+from report.pourquoi import diagnostic, lignes, utile
 
 
 def _is_events(path):
@@ -65,9 +69,19 @@ def _from_gateway(db, out):
     return _write(assign_traces(read_events(db)), out)
 
 
-def _from_agent_logs(source, out):
+def _from_agent_logs(source, out, project=None, all_projects=False):
+    """Journaux Claude Code / Codex. Un dossier qui range plusieurs projets exige ``project`` ou
+    ``all_projects`` (même règle que ``python -m connectors.agent_logs``). Écrit aussi comprehension.json."""
+    if not project and not all_projects and (found := projets(source)):
+        print(f"erreur : {source} range {len(found)} projets ; les lire tous mélangerait des projets sans rapport.",
+              file=sys.stderr)
+        for name, n in found:
+            print(f"    {name} ({n} session(s))", file=sys.stderr)
+        print("Choisissez : PROJECT=<texte du nom> (--project) pour un projet, ou ALL=1 (--all-projects) pour tout.",
+              file=sys.stderr)
+        return None
     try:
-        events, reports = lire([source])
+        events, reports = lire([source], project)
     except FileNotFoundError as e:
         print(f"erreur : {e}", file=sys.stderr)
         return None
@@ -76,10 +90,14 @@ def _from_agent_logs(source, out):
               "Claude Code / Codex reconnus", file=sys.stderr)
         return None
     print(", ".join(f"{name} : {r['appels_lus']} appel(s) lus" for name, r in reports.items()))
-    return _write(events, out)
+    for name, r in reports.items():
+        r["billing"] = agent_billing.resolve(name)
+    path = _write(events, out)
+    out.with_name("comprehension.json").write_text(json.dumps(reports, ensure_ascii=False, indent=2), encoding="utf-8")
+    return path
 
 
-def detect(source, out):
+def detect(source, out, project=None, all_projects=False):
     """Source → chemin d'un events.jsonl (ou None, message d'erreur déjà affiché)."""
     if source.startswith("n8n:"):
         return _fetch_n8n(source[4:], out / "n8n")
@@ -92,7 +110,7 @@ def detect(source, out):
         return _from_n8n(path)
     if path.is_file() and path.suffix == ".jsonl" and _is_events(path):
         return path
-    return _from_agent_logs(str(path), out / "events.jsonl")
+    return _from_agent_logs(str(path), out / "events.jsonl", project, all_projects)
 
 
 def notify(folder, demo=False, webhook=None, sender=send):
@@ -117,17 +135,32 @@ def notify(folder, demo=False, webhook=None, sender=send):
     return "envoye"
 
 
-def run(source, out, repo=None, demo=False, webhook=None, sender=send):
+def _explain_empty(events):
+    """0 constat : le dit en clair dans la console (même texte que la page du rapport)."""
+    evts = [json.loads(line) for line in Path(events).read_text(encoding="utf-8").splitlines() if line.strip()]
+    if not evts or build_report(evts)["constats"]:
+        return
+    print("Aucun constat. Pourquoi :")
+    print("\n".join(f"  - {x}".replace("`", "") for x in lignes(diagnostic(evts))))
+    if useful := utile(diagnostic(evts)):
+        print("Ce que montre déjà cette source :")
+        print("\n".join(f"  - {x}" for x in useful))
+
+
+def run(source, out, repo=None, demo=False, webhook=None, sender=send, project=None, all_projects=False):
     out = Path(out)
     print(f"1/4 Détection : {source}")
-    events = detect(source, out)
+    events = detect(source, out, project, all_projects)
     if events is None:
         return 1
     print(f"2/4 Audit → {out / 'audit.html'}")
-    if audit_main([str(events), "-o", str(out / "audit.html")]):
+    comprehension = out / "comprehension.json"
+    extra = ["--comprehension", str(comprehension)] if comprehension.is_file() else []
+    if audit_main([str(events), "-o", str(out / "audit.html"), *extra]):
         return 1
+    _explain_empty(events)
     print("3/4 Optimisation" + (f" et micro-PR sur {repo}" if repo else " (sans REPO : aucune PR ouverte)"))
-    argv = [str(events), "--out", str(out / "optim")]
+    argv = [str(events), "--out", str(out / "optim"), *extra]
     argv += ["--repo", str(repo), "--open-prs"] if repo else []
     argv += ["--demo"] if demo else []
     if optimize_main(argv):
@@ -142,8 +175,12 @@ def main(argv=None):
     ap.add_argument("--out", default="out/audit-complet")
     ap.add_argument("--repo", help="dépôt où ouvrir les micro-PR prouvées (gh)")
     ap.add_argument("--demo", action="store_true", help="Slack montre aussi les pistes non prouvées")
+    ap.add_argument("--project", help="journaux Claude Code : ne lit que les projets dont le nom contient ce texte")
+    ap.add_argument("--all-projects", action="store_true",
+                    help="journaux Claude Code : lit tous les projets d'un dossier qui en range plusieurs")
     args = ap.parse_args(argv)
-    return run(args.source, args.out, args.repo, args.demo, os.environ.get("SLACK_WEBHOOK_URL"))
+    return run(args.source, args.out, args.repo, args.demo, os.environ.get("SLACK_WEBHOOK_URL"),
+               project=args.project, all_projects=args.all_projects)
 
 
 if __name__ == "__main__":
