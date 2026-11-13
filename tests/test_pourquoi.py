@@ -58,7 +58,7 @@ def _demo_page():
 def test_html_checks_folded_and_not_repeated_missing_note():
     page = render_html(build_report([ev(i, system="s") for i in range(40)]))
     assert "<details><summary>Vérifications effectuées (" in page
-    assert page.count("Chiffre manquant") == 0 and page.count("laissez tourner la passerelle") == 1
+    assert page.count("Chiffre manquant") == 0 and page.count("laissez tourner la passerelle") == 0
 
 
 def test_zero_latency_is_not_measured():

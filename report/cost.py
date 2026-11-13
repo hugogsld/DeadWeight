@@ -200,6 +200,48 @@ def runs(events):
     return sum(1 for a, b in zip(starts, starts[1:]) if (b - a).total_seconds() >= RUN_GAP_SECONDS) + bool(starts)
 
 
+def source_kind(events):
+    """D'où viennent les appels : ``logs`` (Claude Code, Codex), ``n8n`` (exécutions d'un workflow) ou
+    ``passerelle`` (trafic capturé en direct, ou source inconnue)."""
+    prefixes = {(e.get("app_id") or "").split(":", 1)[0] for e in events}
+    if prefixes & {"claude-code", "codex"}:
+        return "logs"
+    return "n8n" if "n8n" in prefixes else "passerelle"
+
+
+MORE_DATA_HINT = {
+    "logs": "analysez une période plus longue ou plus de sessions (tous vos projets : ALL=1)",
+    "n8n": "attendez davantage d'exécutions du workflow, puis relancez l'audit",
+    "passerelle": "laissez tourner la passerelle au moins une journée",
+}
+
+
+def more_data_hint(events):
+    """Le conseil « plus de données » qui convient à la source (jamais « laissez tourner la passerelle »
+    pour des journaux ou un workflow n8n)."""
+    return MORE_DATA_HINT[source_kind(events)]
+
+
+def chiffrer_partiel(events):
+    """chiffrer(), mais si des appels ne sont pas chiffrables, chiffre les autres plutôt que rien.
+    ``part_chiffree`` dit quelle part des appels réussis le chiffre couvre. Une seule vérité pour l'en-tête
+    du rapport, ses constats et la section Facturation."""
+    events = list(events)
+    c = chiffrer(events)
+    if c["cout_mensuel_usd"] is not None or not events:
+        return c
+    ids = {e["event_id"] for e in events}
+    unpriced = {m.split(": ", 1)[0] for m in c["manquants"]} & ids
+    succeeded = [e for e in events if e["error"] is None]
+    priced = [e for e in succeeded if e["event_id"] not in unpriced]
+    if not unpriced or not priced:
+        return c
+    p = chiffrer(priced)
+    if p["cout_mensuel_usd"] is None:
+        return c
+    return {**c, "cout_mensuel_usd": p["cout_mensuel_usd"], "part_chiffree": len(priced) / len(succeeded)}
+
+
 def window_seconds(events):
     """Durée observée, du premier début au dernier fin d'appel."""
     if not events:

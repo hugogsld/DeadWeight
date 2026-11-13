@@ -18,25 +18,11 @@ import rules
 from catalog.recommend import recommend
 from report.billing import ABONNEMENT, billing_section, load_billing, spent_usd
 from report.pourquoi import diagnostic, lignes, utile
-from report.cost import MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer, runs, window_seconds
+from report.cost import (MIN_WINDOW_SECONDS, MONTH_SECONDS, chiffrer_partiel, more_data_hint, runs,
+                         window_seconds)
 
 # En dessous d'une heure de trafic, projeter sur un mois multiplie du bruit :
 # 36 appels en 0,3 s donnaient 315 220 $/mois. On affiche alors le coût réellement dépensé.
-
-
-def _partial(events, c):
-    """Si des appels ne sont pas chiffrables, chiffre les autres plutôt que rien.
-    ``part_chiffree`` dit quelle part des appels réussis le chiffre couvre."""
-    ids = {e["event_id"] for e in events}
-    unpriced = {m.split(": ", 1)[0] for m in c["manquants"]} & ids
-    succeeded = [e for e in events if e["error"] is None]
-    priced = [e for e in succeeded if e["event_id"] not in unpriced]
-    if not unpriced or not priced:
-        return c
-    p = chiffrer(priced)
-    if p["cout_mensuel_usd"] is None:
-        return c
-    return {**c, "cout_mensuel_usd": p["cout_mensuel_usd"], "part_chiffree": len(priced) / len(succeeded)}
 
 
 def _figures(events, window=None):
@@ -44,9 +30,7 @@ def _figures(events, window=None):
     pour chaque constat (sinon une application active une heure sur sept jours serait projetée comme si
     elle tournait sans arrêt, et la somme des constats dépasserait le total). Sous une journée observée :
     coût réellement dépensé et coût par passage, jamais de projection mensuelle."""
-    c = chiffrer(events)
-    if c["cout_mensuel_usd"] is None and events:
-        c = _partial(events, c)
+    c = chiffrer_partiel(events)
     if c["cout_mensuel_usd"] is None:
         return c
     own = window_seconds(events)
@@ -57,9 +41,12 @@ def _figures(events, window=None):
     n = runs(events)
     # pas de « : » dans la raison, _missing_reasons coupe dessus
     reason = (f"moins d'une journée de trafic observée ({_duration(ref)}, {n} passage{'s' if n > 1 else ''}), "
-              "projection sur un mois non fiable, laissez tourner la passerelle au moins une journée")
+              f"projection sur un mois non fiable, {more_data_hint(events)}")
     return {**c, "cout_mensuel_usd": None, "cout_observe_usd": observed, "passages": n,
             "cout_par_passage_usd": observed / n if n else None, "manquants": [*c["manquants"], reason]}
+
+
+SHARED_REASON = "moins d'une journée de trafic observée"
 
 
 def _duration(seconds):
@@ -377,7 +364,10 @@ def _card(c, global_reasons=()):
                      + (f" ({how})." if how else "."))
     elif not c["prouve"]:
         notes.append("Constat statistique, pas encore vérifié par rejeu.")
-    own = [r for r in c["raisons_manquantes"] if r not in global_reasons]  # la note globale les dit déjà
+    # la note globale dit déjà les raisons communes, dont la durée trop courte (ses chiffres varient par constat) :
+    # sous un constat, seulement ce qui lui est propre (ex. un modèle absent du catalogue)
+    own = [r for r in c["raisons_manquantes"]
+           if r not in global_reasons and not r.startswith(SHARED_REASON)]
     if own:
         notes.append("Chiffre manquant : " + "; ".join(own) + ".")
     return f"""<div class="card"><h3>{e(c['titre'])}</h3>
@@ -448,8 +438,10 @@ def _billing_html(billing):
         parts = [f"<h3>{e(o['outil'])} — {e(mode)}</h3><p class=\"note\">Mode de facturation{source}.</p>"]
         if o["mode"] == ABONNEMENT:
             valeur = o.get("valeur_equivalente_usd")
+            partiel = (f" (partiel, {round(o['part_chiffree'] * 100)} % des appels)"
+                       if o.get("part_chiffree") is not None else "")
             parts.append(f'<p><b>Valeur consommée en équivalent API</b> (le forfait est un abonnement, ce montant '
-                         f"n'est pas payé à l'usage) : {_usd(valeur)} sur la période observée.</p>")
+                         f"n'est pas payé à l'usage) : {_usd(valeur)}{partiel} sur la période observée.</p>")
             p5, p7 = o.get("pic_5h") or {}, o.get("pic_semaine") or {}
             parts.append(f"<p>Pic mesuré : {p5.get('nb_appels', 0)} appel(s) sur la fenêtre glissante de 5 heures "
                          f"la plus chargée ; {p7.get('nb_appels', 0)} appel(s) sur la semaine glissante la plus "

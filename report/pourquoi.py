@@ -6,6 +6,7 @@ cache, coût), jamais d'une supposition ; le seuil de volume est celui des règl
 from collections import Counter, defaultdict
 
 from report.billing import spent_usd
+from report.cost import source_kind
 from rules.context_reread import _context_cost_share, _context_tokens
 from rules.low_entropy import MIN_CALLS, template_of
 
@@ -42,6 +43,7 @@ def diagnostic(events):
         "max_par_tache": max(groups.values(), default=0), "minimum": MIN_CALLS,
         "systeme_visible": any(e["request"].get("system") for e in events),
         "outils_visibles": any(e["request"].get("tools") for e in events),
+        "source": source_kind(events),
         "agent_code": any((e["app_id"] or "").split(":", 1)[0] in AGENT_CODE for e in events),
         "cache_pct": _cache_pct(events), "cout_observe_usd": spent,
         "cout_par_session_usd": spent / len(sessions) if spent is not None and sessions else None,
@@ -64,6 +66,8 @@ def lignes(d):
         out.append("Pour atteindre le volume : lancez l'audit sur l'ensemble de vos projets "
                    "(`make audit-complet SOURCE=~/.claude/projects ALL=1`, soit `--all-projects`). "
                    "La section Facturation du rapport dit si ces dollars sont payés ou une valeur équivalente API.")
+    elif d["source"] == "n8n":
+        out.append("Pour atteindre le volume : attendez davantage d'exécutions du workflow, puis relancez l'audit.")
     else:
         out.append("Pour atteindre le volume : laissez tourner la passerelle plus longtemps, puis relancez l'audit.")
     return out

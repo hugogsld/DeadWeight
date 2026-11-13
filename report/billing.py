@@ -16,7 +16,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from report.cost import MONTH_SECONDS, chiffrer, window_seconds
+from report.cost import MONTH_SECONDS, chiffrer_partiel, window_seconds
 
 ABONNEMENT, API, INCONNU = "abonnement", "api", "inconnu"
 TOOLS = ("claude-code", "codex")
@@ -57,12 +57,18 @@ def peak_window(events: list[dict], window_seconds_: float) -> dict:
     return {"nb_appels": best_n, "debut": starts[best_i].isoformat(), "fin": starts[best_j].isoformat()}
 
 
+def spent_info(events: list[dict]) -> tuple[float | None, float | None]:
+    """(dépense mesurée sur la période observée, part des appels chiffrés si partielle). Même calcul que
+    l'en-tête du rapport (report.cost.chiffrer_partiel) : un seul nombre, jamais deux."""
+    c = chiffrer_partiel(events)
+    if c["cout_mensuel_usd"] is None:
+        return None, None
+    return c["cout_mensuel_usd"] * window_seconds(events) / MONTH_SECONDS, c.get("part_chiffree")
+
+
 def spent_usd(events: list[dict]):
     """Dépense réellement mesurée sur la période observée (pas de projection mensuelle)."""
-    c = chiffrer(events)
-    if c["cout_mensuel_usd"] is None:
-        return None
-    return c["cout_mensuel_usd"] * window_seconds(events) / MONTH_SECONDS
+    return spent_info(events)[0]
 
 
 def billing_section(events: list[dict], billing_by_tool: dict) -> dict | None:
@@ -92,7 +98,7 @@ def billing_section(events: list[dict], billing_by_tool: dict) -> dict | None:
             entry["pic_5h"] = peak_window(evs, 5 * 3600)
             entry["pic_semaine"] = peak_window(evs, 7 * 24 * 3600)
             entry["limite_note"] = PLAN_LIMITS_NOTE.get(tool, "")
-            entry["valeur_equivalente_usd"] = spent_usd(evs)
+            entry["valeur_equivalente_usd"], entry["part_chiffree"] = spent_info(evs)
         outils.append(entry)
 
     return {"outils": outils, "tout_abonnement": covers_all and all_subscription}
