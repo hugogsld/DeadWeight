@@ -11,19 +11,41 @@ d'action ; un garde-fou refuse tout chiffre qui ne sort pas de ces outils.
 
 > Travaux antérieurs déclarés : voir [Construit pendant le hackathon](#construit-pendant-le-hackathon-déclaration-des-travaux-antérieurs).
 
-## Tester Deadweight en 5 minutes (sans clé, sans appel payant)
+## Essayer en 5 minutes
+
+Prérequis : Python 3.11+, git, make (macOS ou Linux). Aucune clé, aucun appel payant.
 
 ```sh
 git clone https://github.com/hugogsld/DeadWeight.git && cd DeadWeight
-make install                                    # crée .venv et installe
-make demo                                       # 36 appels simulés → out/demo-…/audit.html
+make install        # crée .venv et installe
+make demo           # 36 appels simulés → out/demo-…/audit.html (ouvrez-le)
+```
+
+Puis, avec votre propre usage de Claude Code (aucun zip, vos journaux restent sur votre machine) :
+
+```sh
+make audit-complet SOURCE=~/.claude/projects/<un-projet>    # un projet ; la liste s'affiche si vous oubliez
+make audit-complet SOURCE=~/.claude/projects ALL=1          # tous vos projets : plus de volume, plus de constats
+```
+
+Enfin, pour votre propre application (OpenAI, Anthropic, Gemini) : `make dev` lance la passerelle locale sur
+`http://127.0.0.1:8080/v1` ; vous ne changez que le `base_url` de votre client ([sections 1 à 4](#1-installer-et-lancer-la-passerelle)).
+
+Pour voir le message Slack et la page développeur sur l'historique d'exemple :
+
+```sh
 .venv/bin/python -m optimize fixtures/dataset/v1/events.jsonl --out out/optim --demo
 ```
 
-La dernière commande rejoue l'historique d'exemple, propose une modification par constat, la teste
-(précision, latence, coût) et écrit `out/optim/slack.md` (le message Slack), `out/optim/propositions.html`
-(la page développeur). Ajoutez `--repo <chemin/du/depot>` pour obtenir aussi le diff et le texte de chaque
-micro-PR ; le dépôt n'est pas modifié. Pour tout vérifier d'un coup : `make e2e`.
+Cette commande rejoue l'historique d'exemple, propose une modification par constat, la teste
+(précision, latence, coût) et écrit `out/optim/slack.md` (le message Slack, avec sa légende ✅ ◻️ ⛔) et
+`out/optim/propositions.html` (la page développeur). Ajoutez `--repo <chemin/du/depot>` pour obtenir aussi le
+diff et le texte de chaque micro-PR ; le dépôt n'est pas modifié. Pour tout vérifier d'un coup : `make e2e`.
+
+**Ce qui quitte votre machine.** Tout reste local (passerelle, base, rapports, rejeu des règles), sauf deux
+fonctions que vous activez vous-même avec votre clé : l'agent auditeur (`DW_LLM_API_KEY`) et le banc de modèles
+(`bench`) envoient des extraits de vos données (prompts, réponses) au fournisseur LLM que vous avez choisi.
+Sans ces clés, rien n'est envoyé.
 
 ### Scénario testeur (workflow 4553)
 
@@ -72,7 +94,7 @@ le message reste dans `out/audit-complet/optim/slack.md` et la commande le dit.
 | une application qui appelle OpenAI, Anthropic ou Gemini | passerelle (seul le `base_url` change) | `make dev` | [1 à 4](#1-installer-et-lancer-la-passerelle) |
 | LangChain, SDK d'agents OpenAI, Vercel AI… | OpenTelemetry | `.venv/bin/python -m connectors.otel traces.json` | [OpenTelemetry](#opentelemetry) |
 | Amazon Bedrock (Converse, InvokeModel, agents Strands/AgentCore) | journaux d'invocation exportés par le client | `python3 -m connectors.bedrock_logs export/` | [Bedrock](#brancher-deadweight-sur-bedrock) |
-| Claude Code ou Codex | journaux de session | `python3 -m connectors.agent_logs run.zip` | [Journaux](#journaux-claude-code-et-codex-b1) |
+| Claude Code ou Codex | journaux de session | `make audit-complet SOURCE=~/.claude/projects/<projet>` | [Journaux](#journaux-claude-code-et-codex-b1) |
 | n8n | historique d'exécution | `python3 -m importers.n8n check / fetch / convert` | [n8n](#importer-lhistorique-n8n-b1) |
 
 Chaque voie a été vérifiée sur un clone neuf avec de vraies applications, temps et messages d'erreur
@@ -244,22 +266,41 @@ dans votre instrumentation. Méthode : `docs/analyser-un-workflow.md`.
 
 ## Journaux Claude Code et Codex (B1)
 
-Si vos agents sont Claude Code ou Codex, leurs journaux de session contiennent déjà chaque appel
-de modèle. Zippez ceux d'un run, puis une commande (Python 3.9+, rien à installer) :
+Si vos agents sont Claude Code ou Codex, leurs journaux de session contiennent déjà chaque appel de modèle.
+Pas de zip : pointez le dossier.
 
-    cd ~/.claude/projects && zip -r ~/run.zip <dossier-du-projet>     # Claude Code
-    cd ~/.codex && zip -r ~/run-codex.zip sessions/2026/09/26          # Codex, le jour du run
+    make audit-complet SOURCE=~/.claude/projects/<un-projet>        # Claude Code, un projet
+    make audit-complet SOURCE=~/.claude/projects ALL=1              # tous les projets
+    make audit-complet SOURCE=~/.claude/projects PROJECT=mon-app    # les projets dont le nom contient ce texte
+    make audit-complet SOURCE=~/.codex/sessions                     # Codex
 
-    python3 -m connectors.agent_logs ~/run.zip ~/run-codex.zip -o private/agent-logs/events.jsonl
-    python3 -m report.audit private/agent-logs/events.jsonl -o out/audit.html
+Un dossier qui range plusieurs projets (comme `~/.claude/projects`) exige `PROJECT=` ou `ALL=1` (`--project` /
+`--all-projects` en ligne de commande) : sinon la commande liste les projets et s'arrête, pour ne pas mélanger
+des projets sans rapport. Le rapport est `out/audit-complet/audit.html`, le message Slack
+`out/audit-complet/optim/slack.md`.
+
+Sous la barre de volume (30 appels par tâche pour les règles de fréquence), le rapport ne reste pas muet : une
+section « Pourquoi aucun constat » donne le volume lu, ce que la source ne montre pas, la suite, et ce qui est
+déjà utile (coût par session, part du cache, part du contexte relu dans le coût).
+
+Facturation : `~/.claude.json` est lu (seulement le type de facturation du compte, jamais un jeton) pour savoir
+si Claude Code tourne sur abonnement ou à l'usage ; `--billing abonnement|api` force le choix. Sur abonnement,
+les dollars sont une valeur équivalente API, pas une économie sur la facture.
 
 Chaque appel devient un événement : modèle, jetons (cache compris), heure, messages du tour,
 réponse, appels d'outils ; la session sert de trace, un sous-agent a son propre `app_id`
 (`claude-code:<projet>/sous-agent`). Les clés d'API affichées dans les journaux sont masquées.
-`comprehension.json` dit, par outil, les appels lus, ignorés et pourquoi, et le niveau atteint.
+`comprehension.json` dit, par outil, les appels lus, ignorés et pourquoi, le niveau atteint et la facturation.
 Limites : le prompt système et la liste des outils ne sont pas journalisés ; les jetons écrits en
 cache par Claude Code sont comptés au prix normal (facturés 1,25× à 2×), le coût est donc un
 peu sous-estimé sur cette part.
+
+Étapes séparées (équivalent manuel) :
+
+    python3 -m connectors.agent_logs ~/.claude/projects/<un-projet> -o private/agent-logs/events.jsonl
+    python3 -m report.audit private/agent-logs/events.jsonl --comprehension private/agent-logs/comprehension.json -o out/audit.html
+
+`--comprehension` apporte au rapport le mode de facturation détecté.
 
 ## Brancher Deadweight sur Bedrock
 
@@ -407,7 +448,9 @@ La liste des 1 000 workflows de test et ce qu'on y lit : [docs/bibliotheque-n8n.
   comme les données de votre application. Le rapport peut aussi contenir des informations
   sur vos applications ; partagez-le uniquement avec les personnes concernées.
 - Le fournisseur reçoit toujours vos appels habituels. La génération du rapport ne
-  transmet aucune donnée à DeadWeight ou à un modèle externe.
+  transmet aucune donnée à DeadWeight ou à un modèle externe, sauf l'agent auditeur
+  (`DW_LLM_API_KEY`) et le banc de modèles (`bench`) : ils envoient des extraits de vos données au
+  fournisseur LLM que vous avez choisi.
 - La démo utilise exclusivement des serveurs locaux et ne lit aucune clé client.
 
 ## Si ça ne marche pas
