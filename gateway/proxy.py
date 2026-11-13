@@ -187,7 +187,7 @@ async def receive_traces(request):
     if body[:2] == b"\x1f\x8b":  # aiohttp décompresse déjà en général ; au cas où il reste du gzip
         body = gzip.decompress(body)
     try:
-        events, report = otel.read(_otlp_protobuf(body) if protobuf else json.loads(body))
+        events, report = otel.read(_otlp_protobuf(body) if protobuf else otel.ensure_otlp(json.loads(body)))
     except Exception:  # corps illisible, quel que soit le format : 400, jamais un 500
         return web.json_response({"message": f"export OTLP/{'protobuf' if protobuf else 'JSON'} illisible"},
                                  status=400)
