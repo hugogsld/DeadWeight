@@ -146,6 +146,17 @@ async def responses(request):
     return resp
 
 
+async def azure_chat(request):
+    """Azure OpenAI : déploiement dans l'URL, ?api-version= obligatoire, clé dans l'en-tête api-key."""
+    if not request.query.get("api-version"):
+        return web.json_response({"error": {"code": "BadRequest", "message": "api-version manquant"}}, status=400)
+    if not request.headers.get("api-key"):
+        return web.json_response({"error": {"code": "401", "message": "Access denied, missing credential"}},
+                                 status=401)
+    request.app[SEEN].append(dict(request.headers, path=request.path_qs))
+    return await chat(request)
+
+
 async def models(request):
     return web.json_response({"object": "list", "data": [{"id": "gpt-4o", "object": "model"}]})
 
@@ -156,5 +167,8 @@ def make_app(delay=0.0):
     app[DELAY] = delay
     app.router.add_post("/v1/chat/completions", chat)
     app.router.add_post("/v1/responses", responses)
+    app.router.add_post("/openai/deployments/{deployment}/chat/completions", azure_chat)
+    for prefix in ("/openai/v1", "/api/v1"):  # Groq, OpenRouter
+        app.router.add_post(prefix + "/chat/completions", chat)
     app.router.add_get("/v1/models", models)
     return app

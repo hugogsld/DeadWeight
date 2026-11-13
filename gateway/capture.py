@@ -13,7 +13,19 @@ import uuid
 
 FINISH = {"stop": "stop", "length": "length", "tool_calls": "tool_calls",
           "function_call": "tool_calls", "content_filter": "content_filter"}
-RESPONSES_PATHS = ("/v1/responses", "/openai/v1/responses")
+AZURE_DEPLOYMENT = re.compile(r"/openai/deployments/([^/]+)/")
+
+
+def is_chat_path(path):
+    """chat/completions chez OpenAI et ses clones : /v1/..., Groq /openai/v1/..., OpenRouter /api/v1/...,
+    Azure /openai/deployments/<déploiement>/..., Ollama et vLLM /v1/..."""
+    return bool(path) and path.endswith("/chat/completions")
+
+
+def is_responses_path(path):
+    return bool(path) and path.endswith("/responses")
+
+
 RESPONSE_FORMATS = {"text", "json_object", "json_schema"}
 # OpenAI recopie la clé dans ses erreurs 401 ("Incorrect API key provided: sk-...").
 KEY_LIKE = re.compile(r"\b((sk|rk|pk|sess)-[A-Za-z0-9_\-*]{3,}|AIza[A-Za-z0-9_\-]{10,})")
@@ -92,7 +104,8 @@ def normalize_request(body, path=None):
     }
     request = {"system": "\n\n".join(system) or None, "messages": messages,
                "tools": tools, "params": params}
-    return str(body.get("model") or "unknown"), request
+    deployment = AZURE_DEPLOYMENT.search(path or "")  # Azure : le modèle est le déploiement, dans l'URL
+    return str(body.get("model") or (deployment.group(1) if deployment else None) or "unknown"), request
 
 
 def _usage(u):
@@ -201,7 +214,7 @@ class StreamAccumulator(SSEParser):
 def fmt(provider, path=None):
     """Module de normalisation du fournisseur (ce module-ci pour OpenAI chat/completions ;
     ``gateway.openai_responses`` pour /v1/responses)."""
-    if provider == "openai" and path in RESPONSES_PATHS:
+    if provider == "openai" and is_responses_path(path):
         return importlib.import_module("gateway.openai_responses")
     return importlib.import_module(__name__ if provider == "openai" else f"gateway.{provider}")
 

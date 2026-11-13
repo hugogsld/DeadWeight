@@ -26,7 +26,7 @@ from yarl import URL
 from connectors import otel
 from gateway import mirror as mirror_mode
 from gateway import shortcircuit
-from gateway.capture import StreamAccumulator, build_event, fmt
+from gateway.capture import StreamAccumulator, build_event, fmt, is_chat_path, is_responses_path
 from gateway.store import EventStore
 
 log = logging.getLogger("deadweight.gateway")
@@ -77,7 +77,7 @@ def is_captured(provider, method, path):
     if method != "POST":
         return False
     if provider == "openai":
-        return path in ("/v1/chat/completions", "/v1/responses")
+        return is_chat_path(path) or is_responses_path(path)
     if provider == "anthropic":
         return path == "/v1/messages"
     # Gemini : /v1beta/models/<modele>:generateContent ou :streamGenerateContent
@@ -88,7 +88,7 @@ def _ask_usage(provider, path, body):
     """Streaming OpenAI sans ``stream_options.include_usage`` : OpenAI ne dit pas combien de
     jetons il facture. On le demande à la place du client, qui n'en voit rien (_DropUsage).
     Renvoie (corps à envoyer en amont, demandé ?). Si le client a choisi, on respecte."""
-    if provider != "openai" or path != "/v1/chat/completions":
+    if provider != "openai" or not is_chat_path(path):
         return body, False
     try:
         req = json.loads(body)
@@ -221,7 +221,7 @@ async def relay(request):
 
     # D3.3 ne sait répondre qu'au format chat/completions (pas Responses : un client Responses recevrait du chat)
     hit = (shortcircuit.match(app[SHORTCUT], body, meta["app_id"])
-           if captured and provider == "openai" and path == "/v1/chat/completions" else None)
+           if captured and provider == "openai" and is_chat_path(path) else None)
     if hit is not None:
         return await _answer(request, meta, t0, *hit)
 
