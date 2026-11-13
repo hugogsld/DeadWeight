@@ -219,7 +219,7 @@ Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour 
 | --- | --- | --- | --- | --- | --- |
 | 1 | Le rejeu affiche encore une projection mensuelle absurde | haute | `proof/replay.py` | Récap Gmail, OpenAI story flow | ouvert |
 | 2 | R1 conseille des « règles fixes » que le rejeu refuse ensuite | haute | `report/audit.py`, `proof/` | Récap Gmail | ouvert |
-| 3 | Le rejeu ne peut presque jamais conclure sous ~90 appels | moyenne | `proof/replay.py`, `rules/low_entropy.py` | Récap Gmail, OpenAI story flow | ouvert |
+| 3 | Le rejeu ne peut presque jamais conclure sous ~90 appels | moyenne | `proof/replay.py`, `rules/low_entropy.py` | Récap Gmail, OpenAI story flow | en partie : le rapport dit « non conclu » et le volume manquant ; seuil inchangé |
 | 4 | La projection mensuelle surestime les workflows par lots, même après une heure | haute | `report/audit.py`, `report/cost.py` | Récap Gmail (2 passages) | corrigé (#98) |
 | 5 | Choix de R5 à valider en équipe | basse | `rules/unbounded_loop.py` | tests D2.4 | ouvert |
 | 6 | Heuristique de traces jamais confrontée à un historique réécrit | basse | `gateway/traces.py` | aucun (à tester) | ouvert |
@@ -239,7 +239,7 @@ Synthèse dans `docs/analyser-un-workflow.md`, « Ce qui a été vérifié pour 
 | 20 | Le plan de l'agent auditeur présente la projection du rejeu comme un « coût mensuel observé » | haute | `agent/`, `proof/replay.py` | OpenAI story flow (retest) | ouvert |
 | 21 | Les règles de remplacement renvoient la sortie normalisée, pas la sortie d'origine | moyenne | `rules/low_entropy.py`, `proof/extract.py`, `optimize/` | OpenAI story flow (retest) | ouvert |
 | 22 | Banc : les tâches à sortie structurée (`response_format`) ont toujours un score de 0 | haute | `bench/client.py`, `schemas/event.schema.json` | OpenAI story flow (retest) | ouvert |
-| 23 | Les règles cherchent des fragments de mots : `pui` (de « puis-je ») attrape « depuis ». Réponses fausses en production | haute | `proof/extract.py`, `gateway/shortcircuit.py` | Tri tickets (PR appliquée) | ouvert |
+| 23 | Les règles cherchent des fragments de mots : `pui` (de « puis-je ») attrape « depuis ». Réponses fausses en production | haute | `proof/extract.py`, `gateway/shortcircuit.py` | Tri tickets (PR appliquée) | corrigé (mots entiers, `proof/extract.py`) |
 | 24 | `optimize --repo` plante si le dépôt du client contient un lien symbolique cassé | haute | `optimize/patch.py` | Tri tickets | corrigé (#120) |
 | 25 | Titre de la PR `optimize` coupé au milieu d'un mot | basse | `optimize/patch.py` (`pr_text`) | Tri tickets | ouvert |
 | 26 | Dans un dépôt à plusieurs applications, la preuve et `.env.example` sont écrits à la racine, pas dans le dossier de l'application | moyenne | `optimize/patch.py` (`_apply_regles`) | Tri tickets | ouvert |

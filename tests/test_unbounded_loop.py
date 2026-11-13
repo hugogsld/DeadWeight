@@ -120,3 +120,16 @@ def test_repeats_must_be_the_majority():
     varied = [("tool_" + str(i), {"x": i}) for i in range(20)]
     same = [("search", {"q": "tarif entreprise"})] * 7  # 6 répétitions sur 27 actions
     assert detect(agent_run(varied + same, final="ok")) == []
+
+
+def test_lire_dix_fichiers_d_un_meme_dossier_n_est_pas_une_boucle():
+    # forme mesurée sur des journaux Claude Code réels : des lectures de fichiers différents d'un même
+    # dossier comptaient comme « quasi identiques » (mots du chemin en commun) ; 499 répétitions
+    # comptées pour 13 appels réellement identiques au plus. Chemins inventés.
+    calls = [("Read", {"file_path": f"/home/demo/projet/docs/guides/fiche_metier_{i}.md"}) for i in range(10)]
+    assert detect(agent_run(calls, final="resume")) == []
+
+
+def test_relire_le_meme_fichier_reste_une_boucle():
+    calls = [("Read", {"file_path": "/home/demo/projet/docs/guides/fiche_metier_1.md"})] * 8
+    assert len(detect(agent_run(calls))) == 1

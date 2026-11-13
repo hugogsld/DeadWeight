@@ -28,6 +28,8 @@ Seuils et raisonnement :
 - CAP_MULTIPLIER = 1.2 : plafond suggere = 1,2x la mediane observee, une marge de 20 % au-dessus
   du cas typique du groupe pour ne pas couper les reponses un peu plus longues que d'habitude.
 
+Les tours qui rendent un appel d'outil sont exclus de l'echantillon (leur sortie est une action).
+
 Chiffrage : compare le cout actuel a un cout hypothetique ou chaque appel qui depasse le plafond
 suggere est retaille a ce plafond (report.cost.chiffrer sur une copie). Hypothese non verifiee :
 rien ne garantit qu'une reponse coupee a ce plafond reste utilisable, d'ou proven=False.
@@ -76,7 +78,11 @@ def _saving(evts, cap, pricing):
 def detect(events, pricing=None):
     groups = defaultdict(list)
     for e in events:
-        if e.get("error") is None and e["usage"].get("output_tokens") is not None:
+        # un tour qui demande un outil rend des arguments (fichier à écrire, commande) : les couper
+        # casserait l'action, ce n'est pas du bavardage. Vu sur des journaux Claude Code réels :
+        # les 64 constats d'origine venaient à 68-100 % de ces tours.
+        if (e.get("error") is None and e["usage"].get("output_tokens") is not None
+                and not e["response"].get("tool_calls")):
             groups[(e["app_id"], e["model"], template_of(e))].append(e)
 
     findings = []

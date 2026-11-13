@@ -182,3 +182,11 @@ def test_regles_justes_sur_chaque_reponse_passent_toujours():
         {**e, 'event_id': f'h{i}'} for i, e in enumerate(_events(20, label='ham', text='réunion demain'))]
     rules = {'categories': [{'key': 'spam', 'regex': 'gagnez'}, {'key': 'ham', 'regex': 'réunion'}]}
     assert replay(_finding(events), events, rules)['verdict'] == 'pass'
+
+
+def test_echantillon_trop_petit_dit_non_conclu_et_combien_d_appels_manquent():
+    events = _events(MIN_REPLAY - 10)
+    proof = replay(_finding(events), events, RULES)
+    raison = next(r for r in proof['reasons'] if 'il en faut au moins' in r)
+    assert 'NON CONCLU' in raison and 'pas un échec des règles' in raison
+    assert 'Il manque 10 entrée(s)' in raison and 'environ' in raison

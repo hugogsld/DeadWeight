@@ -84,3 +84,28 @@ def test_dataset_v1_positives_and_negatives():
     assert "capped-writer" not in flagged
     expected = {label["app_id"] for label in LABELS if "verbose_output" in label["expected_rules"]}
     assert expected == {"brainstorm-bot"}
+
+
+def test_agent_de_code_dont_la_sortie_est_faite_d_appels_d_outils_n_est_pas_signale():
+    # forme mesurée sur des journaux Claude Code réels : 64 constats, tous portés à 68-100 % par des
+    # tours qui rendent des arguments d'outil (écriture de fichier, commande). Plafonner la sortie
+    # couperait l'action, pas un bavardage. Texte inventé, forme reprise (volumes en jetons).
+    events = []
+    for i in range(60):
+        e = ev(i, out_tok=3000 if i % 8 == 0 else 500)
+        if i % 10 != 9:  # 90 % des tours demandent un outil
+            e["response"]["content"] = None
+            e["response"]["tool_calls"] = [{"id": f"t{i}", "name": "Write", "arguments": "{}"}]
+        events.append(e)
+    assert detect(events, PRICES) == []
+
+
+def test_les_tours_texte_d_un_agent_restent_evalues_a_part():
+    events = _verbose_group(40)
+    for i in range(40, 70):  # des tours d'outils en plus ne masquent ni ne créent le constat
+        e = ev(i, out_tok=900)
+        e["response"]["content"] = None
+        e["response"]["tool_calls"] = [{"id": f"t{i}", "name": "Bash", "arguments": "{}"}]
+        events.append(e)
+    [f] = detect(events, PRICES)
+    assert f["evidence"]["calls"] == 40

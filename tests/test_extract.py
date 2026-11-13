@@ -200,3 +200,31 @@ def test_les_regles_ignorent_la_consigne_fixe_du_prompt():
                                                  {"key": "billing", "regex": "facture"}]})
     assert route(consigne + "Ma facture est fausse") == "billing"  # « technical » de la consigne ignoré
     assert route(consigne + "L'appli plante") == "technical"
+
+
+# --- n°23 : les règles cherchent des mots entiers, jamais des fragments ---------------------------
+
+def test_fragment_pui_n_attrape_plus_depuis():
+    # cas réel (tri de tickets, PR appliquée) : « puis » retiré de son s donnait « pui », qui
+    # attrapait « depuis » et classait un colis en transit dans la mauvaise catégorie
+    route = build_router({"categories": [{"key": "facturation", "regex": "facture|pui"},
+                                         {"key": "livraison", "regex": "colis|suivi"}]})
+    assert route("Mon colis est en transit depuis 5 jours") == "livraison"
+    assert route("Puis-je obtenir ma facture") == "facturation"  # le mot « puis » reste reconnu
+    assert route("Mes factures") == "facturation"  # pluriel accepté
+
+
+def test_mots_entiers_sans_toucher_aux_regex_deja_structurees():
+    route = build_router({"categories": [{"key": "a", "regex": r"\bfact\w*"}, {"key": "b", "regex": "re(mbours|fund)"}]})
+    assert route("facturation") == "a"           # regex écrite par l'auteur : conservée telle quelle
+    assert route("remboursement") == "b"
+
+
+def test_extraction_hors_ligne_produit_des_mots_entiers():
+    finding, events = example_data()
+    result = extract_rules(finding, events)
+    assert all(c["regex"].startswith(r"\b") and c["regex"].endswith(r"\b") for c in result["categories"])
+    route = build_router(result)
+    assert route("paiements en retard") is None or route("paiements") == "facture"
+    assert route("connexions") == "support"
+    assert route("supportable") is None  # fragment d'un autre mot
