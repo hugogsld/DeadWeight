@@ -15,6 +15,7 @@ from agent.loop import OpenAIChatTools, run_agent
 from agent.tools import AuditTools
 from proof.extract import OpenAICompatibleLLM
 from report.audit import build_report, load_banc, render_html
+from report.audit_vue import console
 from report.billing import load_billing
 
 DEFAULT_MODEL = "gpt-5-mini"
@@ -55,7 +56,8 @@ def main(argv=None):
     if args.journal and agent:
         Path(args.journal).write_text(json.dumps(agent, ensure_ascii=False, indent=1), encoding="utf-8")
     status = f"agent : {agent['statut']}" if agent else "sans agent (DW_LLM_API_KEY absente)"
-    print(f"{len(report['constats'])} constat(s), {status}, rapport écrit dans {out}")
+    print(f"{status}, rapport écrit dans {out}")
+    print("\n".join(console(report)))
 
 
 if __name__ == "__main__":

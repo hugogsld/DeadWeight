@@ -221,19 +221,24 @@ def propose(events, llm=None, keys_available=False, prove=None, prove_reasoning=
 
 
 def sans_piste(events, proposals):
-    """Constats sans proposition testable par rejeu : [{regle, titre, nb, pourquoi, pour_tester}].
-    Distingue « constats mais rien de rejouable » de « aucun constat »."""
-    from report.audit import DEFAULT_TEXT, RULE_TEXT
+    """Constats sans proposition testable par rejeu, un par problème (règle) et par coût décroissant :
+    [{regle, titre, nb, pourquoi, pour_tester, workflows, nb_workflows, part}]. ``workflows`` : les trois
+    plus coûteux, ``part`` : leur part du coût total (ou None). Distingue « constats mais rien de
+    rejouable » de « aucun constat »."""
+    from report.audit import build_report
     from report.conseils import NON_REJOUABLE, NON_REJOUABLE_DEFAULT
+    from report.regroupe import groupes
     done = {p["finding_id"] for p in proposals}
-    counts = {}
-    for _, detect in _discover_detectors():
-        for f in detect(list(events)):
-            if f["rule"] != "data_outside_eu" and f["finding_id"] not in done:
-                counts[f["rule"]] = counts.get(f["rule"], 0) + 1
+    report = build_report(list(events))
+    total = (report["resume"]["global"] or {}).get("cout_mensuel_usd") if events else None
+    if total is None and events:
+        total = report["resume"]["global"].get("cout_observe_usd")
+    pending = [c for c in report["constats"] if c["finding_id"] not in done]
+    ids = [a["app_id"] for a in report["applications"]]
     rows = []
-    for rule, n in sorted(counts.items()):
-        why, how = NON_REJOUABLE.get(rule, NON_REJOUABLE_DEFAULT)
-        rows.append({"regle": rule, "titre": RULE_TEXT.get(rule, DEFAULT_TEXT)[0], "nb": n,
-                     "pourquoi": why, "pour_tester": how})
+    for g in groupes(pending, total, ids):
+        why, how = NON_REJOUABLE.get(g["regle"], NON_REJOUABLE_DEFAULT)
+        rows.append({"regle": g["regle"], "titre": g["titre"], "nb": len(g["constats"]), "pourquoi": why,
+                     "pour_tester": how, "workflows": [w["nom"] for w in g["workflows"][:3]],
+                     "nb_workflows": len(g["workflows"]), "part": g["part"]})
     return rows

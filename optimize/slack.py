@@ -82,14 +82,33 @@ def _line(p, link, total_spent=None, equivalent_api=False, kind=None):
     return f"{icon} *{p['app_id']}* — {p['changement']}\n      {detail}{share}{why}{pr}" + (f"\n      {how}" if how else "")
 
 
+TOP_PROBLEMES = 3  # problèmes détaillés dans le message ; les autres tiennent en une ligne
+
+
+def _ou(r):
+    """« 11 workflows (21 % du coût) : a, b, c », ou rien si la source ne dit pas où."""
+    names = r.get("workflows")
+    if not names:
+        return ""
+    n = r.get("nb_workflows", len(names))
+    part = f", {r['part'] * 100:.0f} % du coût" if r.get("part") is not None else ""
+    more = f" et {n - len(names)} autres" if n > len(names) else ""
+    return f" Où : {n} workflow{'s' if n > 1 else ''}{part} ({', '.join(names)}{more})."
+
+
 def _sans_piste(rows, kind):
-    """Constats statistiques sans piste testable : lesquels, pourquoi, et ce qui les rendrait testables."""
+    """Constats statistiques sans piste testable : une ligne par problème (pas par workflow), les trois
+    plus coûteux détaillés, les autres comptés ; chaque conseil n'est dit qu'une fois."""
     out = [f"• {sum(r['nb'] for r in rows)} constat(s) statistique(s), mais aucune piste testable par rejeu :"]
-    for r in rows:
-        out.append(f"   - {r['titre']} ({r['nb']}) : {r['pourquoi']}. Pour le tester : {r['pour_tester']}.")
+    for r in rows[:TOP_PROBLEMES]:
+        out.append(f"   - {r['titre']} ({r['nb']}) : {r['pourquoi']}. Pour le tester : {r['pour_tester']}.{_ou(r)}")
         how = conseil_logs(r["regle"]) if kind == "logs" else None
         if how:
             out.append(f"     {how}")
+    rest = rows[TOP_PROBLEMES:]
+    if rest:
+        out.append(f"   - {len(rest)} autre{'s' if len(rest) > 1 else ''} problème{'s' if len(rest) > 1 else ''} moins "
+                   f"coûteux{'s' if len(rest) > 1 else ''} : {', '.join(r['titre'] for r in rest)} (détail dans audit.html).")
     return out
 
 
