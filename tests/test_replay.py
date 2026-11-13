@@ -189,4 +189,4 @@ def test_echantillon_trop_petit_dit_non_conclu_et_combien_d_appels_manquent():
     proof = replay(_finding(events), events, RULES)
     raison = next(r for r in proof['reasons'] if 'il en faut au moins' in r)
     assert 'NON CONCLU' in raison and 'pas un échec des règles' in raison
-    assert f'Il manque 10 entrée(s)' in raison and 'environ' in raison
+    assert 'Il manque 10 entrée(s)' in raison and 'environ' in raison
