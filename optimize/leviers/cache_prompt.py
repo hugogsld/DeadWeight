@@ -20,7 +20,11 @@ def cache_prompt_proposal(finding, events):
     repeated_tokens = known = 0
     for t in templates:
         ordered = sorted((by_id[i] for i in t["event_ids"] if i in by_id), key=lambda e: e["ts_start"])
+        if sum(1 for e in ordered if (e["usage"].get("cached_input_tokens") or 0) > 0) * 2 >= len(ordered):
+            continue  # le cache du fournisseur sert déjà ce gabarit : rien à « activer »
         for e in ordered[1:]:
+            if (e["usage"].get("cached_input_tokens") or 0) > 0:
+                continue  # appel déjà servi par le cache
             price = lookup(prices, e["model"])
             tin = e["usage"].get("input_tokens")
             if price is None or tin is None or "cached_in" not in price:

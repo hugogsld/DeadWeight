@@ -95,6 +95,15 @@ def test_prompt_cache_proposal_is_pass_with_measured_savings(proposals):
         assert p["cout_usd"]["apres"] < p["cout_usd"]["avant"]
 
 
+def test_prompt_cache_not_proposed_when_provider_cache_already_serves_the_template():
+    """Claude Code et tout appel qui lit déjà le cache : rien à « activer », pas de gain fictif."""
+    events = copy.deepcopy(DATASET)
+    for e in events:
+        if e["app_id"] == "daily-report":
+            e["usage"]["cached_input_tokens"] = max(1, (e["usage"].get("input_tokens") or 0) // 2)
+    assert not [p for p in propose(events) if p["type"] == "cache_prompt" and p["app_id"] == "daily-report"]
+
+
 def test_prompt_cache_skips_the_first_call_of_each_template():
     """Le premier appel de chaque gabarit établit le cache : aucun jeton à son tarif dans le calcul."""
     p = by(propose(DATASET), "cache_prompt", "daily-report")

@@ -120,7 +120,11 @@ def _check_title(module_name):
 
 def _missing_reasons(manquants):
     """Raisons dedupliquees, sans l'identifiant d'evenement."""
-    return sorted({m.split(": ", 1)[-1] for m in manquants})
+    def reason(m):
+        head, sep, tail = m.partition(": ")
+        # Seul un identifiant d'évènement (sans espace) est retiré : une raison peut contenir « : ».
+        return tail if sep and head and " " not in head else m
+    return sorted({reason(m) for m in manquants})
 
 
 def load_banc(directory):

@@ -156,3 +156,13 @@ def test_montant_economie_short_window_is_observed_amount():
     events = [event(ts_start="2026-09-01T00:00:00Z", ts_end="2026-09-01T00:00:40Z")]
     text = montant_economie(MONTH_SECONDS, events)  # 1 $ par seconde projetée : 40 $ observés
     assert text.startswith("40 $ sur la période observée (40 s") and "par mois" not in text
+
+
+def test_raisons_globales_gardent_le_texte_apres_deux_points():
+    from report.audit import _missing_reasons
+    raisons = _missing_reasons([
+        "ev-1: modele absent du catalogue : x",
+        "moins d'une journée, analysez plus de sessions (tous vos projets : ALL=1)",
+    ])
+    assert "modele absent du catalogue : x" in raisons
+    assert "moins d'une journée, analysez plus de sessions (tous vos projets : ALL=1)" in raisons
