@@ -268,10 +268,16 @@ Bedrock et nous remet l'export. Les journaux ne couvrent que les appels faits pa
 (Converse, ConverseStream, InvokeModel, InvokeModelWithResponseStream), donc aussi les agents Strands ou AgentCore qui passent par lui.
 
 **Ce que le client active** (console : Bedrock > Settings > Model invocation logging, cocher *Text*, choisir S3 et/ou
-CloudWatch Logs ; ou une commande, à adapter) :
+CloudWatch Logs ; ou une commande, syntaxe relue contre le modèle de service botocore 1.44, `--logging-config` est
+l'option obligatoire) :
 
     aws bedrock put-model-invocation-logging-configuration --region eu-west-1 --logging-config \
       '{"s3Config":{"bucketName":"MON-BUCKET","keyPrefix":"bedrock"},"textDataDeliveryEnabled":true,"imageDataDeliveryEnabled":false,"embeddingDataDeliveryEnabled":false}'
+
+Le bucket doit être dans le même compte et la même région que la configuration (AWS pose sa politique de bucket
+si le client a les droits `s3:GetBucketPolicy` et `s3:PutBucketPolicy`). Pour CloudWatch Logs, remplacer `s3Config`
+par `cloudWatchConfig` (`logGroupName` et `roleArn` obligatoires, `largeDataDeliveryS3Config` pour les corps de plus
+de 100 Ko). Ne sont journalisés que les appels du endpoint `bedrock-runtime`, pas ceux de `bedrock-mantle`.
 
 Le journal ne remonte pas dans le passé : il faut laisser tourner quelques jours de trafic réel. Pour reconnaître
 les workflows, le client peut ajouter `requestMetadata` (`workflow_id`, `agent`) à ses appels Converse ; sans cela,
@@ -287,8 +293,9 @@ La commande dit ce qu'elle a lu, ignoré et pourquoi ; elle sort en erreur (code
 Sans le dossier `data/`, les gros corps restent absents : les jetons et le coût sont comptés, pas le contenu.
 
 **Ce qu'on lit** : modèle, horodatage, région, jetons (entrée, sortie, cache lu, cache écrit), messages, prompt système,
-outils, réponses et étiquettes `requestMetadata`. Les chiffres de coût sont une estimation : tarifs Bedrock dans
-`fixtures/pricing.bedrock.json` (source et date indiquées, à vérifier avant de les montrer).
+outils, réponses et étiquettes `requestMetadata`. Le coût est calculé avec les tarifs publics AWS à la demande
+(`fixtures/pricing.bedrock.json`, lus dans le catalogue AWS Price List, source et date dans le fichier ; tarif
+« global » pour un profil `global.`, régional sinon). Un appel direct dans une région est supposé au tarif régional.
 
 **Ce qu'on ne lit ni ne garde** : aucune clé ni accès AWS (aucun appel réseau vers AWS), l'ARN de l'appelant sert
 seulement à nommer l'application (non stocké), les images sont comptées, jamais lues, les chaînes qui ressemblent
