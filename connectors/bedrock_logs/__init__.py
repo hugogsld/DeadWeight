@@ -46,6 +46,9 @@ def _notes(report: Comprehension) -> None:
                     "jetons seulement pour ces appels")
     if extra.get("appels_format_non_reconnu"):
         report.note("corps d'un format de modèle non Anthropic/Converse (Titan, Llama...) : jetons seulement")
+    if extra.get("compteurs_jetons_divergents"):
+        report.note(f"{int(extra['compteurs_jetons_divergents'])} appels où inputTokenCount de l'enregistrement diffère "
+                    "de l'usage du corps : à vérifier (le cache est peut-être compté dans l'un et pas dans l'autre)")
     if extra.get("jetons_ecrits_en_cache"):
         report.note("jetons écrits en cache comptés à part (usage.cache_write_input_tokens)")
     report.note("horodatage du journal pris comme début d'appel ; durée = metrics.latencyMs (Converse), "

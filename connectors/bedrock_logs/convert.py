@@ -12,7 +12,10 @@ Deux formes de corps selon l'opération :
 
 Les jetons viennent d'abord des compteurs de l'enregistrement (`input.inputTokenCount`,
 `cacheReadInputTokenCount`...), toujours présents même quand le corps manque, puis de l'usage du corps.
-`input_tokens` exclut le cache (comme Anthropic) : voir report/cost.py.
+`input_tokens` exclut le cache : confirmé par AWS pour Converse (doc « Prompt caching » : inputTokens = jetons non
+cachés ; total = inputTokens + cacheRead + cacheWrite). Les compteurs de cache de l'enregistrement sont sous `input`
+(cacheReadInputTokenCount, cacheWriteInputTokenCount) ; si l'enregistrement et le corps divergent sur les jetons
+d'entrée, le rapport le compte (compteurs_jetons_divergents). Voir report/cost.py.
 
 Aucun ARN n'est gardé dans l'événement ; les chaînes qui ressemblent à une clé sont masquées.
 """
@@ -289,7 +292,22 @@ def _usage(record: dict, body_usage: dict) -> dict:
                  body_usage.get("cache_creation_input_tokens"))
     if write is not None:
         usage["cache_write_input_tokens"] = write
+    one_hour = _one_hour_writes(body_usage)
+    if one_hour:
+        usage["cache_write_1h_input_tokens"] = one_hour
     return usage
+
+
+def _one_hour_writes(body_usage: dict) -> int:
+    """Jetons écrits en cache avec un TTL de 1 h : Converse `cacheDetails`, ou Anthropic `cache_creation`."""
+    total = 0
+    for detail in body_usage.get("cacheDetails") or []:
+        if isinstance(detail, dict) and detail.get("ttl") == "1h":
+            total += int(num(detail.get("inputTokens")) or 0)
+    creation = body_usage.get("cache_creation")
+    if isinstance(creation, dict):
+        total += int(num(creation.get("ephemeral_1h_input_tokens")) or 0)
+    return total
 
 
 def _refused(record: dict) -> str | None:
@@ -343,6 +361,10 @@ def convert(record: dict, bodies: dict[str, bytes], report: Comprehension) -> di
     stop = inference.get("stopSequences") or request.get("stop_sequences")
     resolved = out_body.get("model") if isinstance(out_body, dict) else None
 
+    declared = num(body_usage.get("inputTokens", body_usage.get("input_tokens")))
+    counted = num((record.get("input") or {}).get("inputTokenCount"))
+    if declared is not None and counted is not None and declared != counted:
+        report.add("compteurs_jetons_divergents", 1)
     if usage.get("cache_write_input_tokens"):
         report.add("jetons_ecrits_en_cache", usage["cache_write_input_tokens"])
     report.calls += 1

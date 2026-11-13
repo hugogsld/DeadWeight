@@ -27,6 +27,7 @@ _DATED = re.compile(r"(-\d{8}|-\d{4}-\d{2}-\d{2}|@\d{8}|-0\d\d)$")
 # identifiants Bedrock : ARN, préfixe de profil d'inférence (eu., us., global...), préfixe éditeur, suffixe -v1:0
 _BEDROCK_ARN = re.compile(r"^arn:aws[a-z-]*:bedrock:[^:]*:[^:]*:(?:inference-profile|foundation-model)/")
 _BEDROCK_PROFILE = re.compile(r"^(?:eu|us|us-gov|apac|jp|au|ca|global)\.")
+_BEDROCK_PUBLISHER = re.compile(r"^(?:anthropic|amazon|meta|mistral)\.")
 _BEDROCK_VERSION = re.compile(r"-v\d+(?::\d+)?$")
 
 
@@ -34,8 +35,7 @@ def bedrock_name(model):
     """Nom nu d'un identifiant Bedrock (claude-sonnet-4-5-20250929), identique si ce n'en est pas un."""
     name = _BEDROCK_ARN.sub("", model)
     name = _BEDROCK_PROFILE.sub("", name)
-    if name.startswith("anthropic."):
-        name = name[len("anthropic."):]
+    name = _BEDROCK_PUBLISHER.sub("", name)
     return _BEDROCK_VERSION.sub("", name)
 
 
@@ -51,6 +51,14 @@ def lookup(prices, model):
         if base != name and base in prices:
             return prices[base]
     return None
+
+
+def scoped_price(price, model):
+    """Tarif Bedrock applicable : le sous-bloc « global » pour un profil global., sinon le tarif régional (racine)."""
+    name = _BEDROCK_ARN.sub("", model or "")
+    if price and name.startswith("global.") and isinstance(price.get("global"), dict):
+        return {**price, **price["global"]}
+    return price
 
 
 def _bedrock_prices():
@@ -120,8 +128,9 @@ def chiffrer(events, pricing=None):
                 reasons.append(f'usage.{field} inconnu')
         model = e['model']
         on_bedrock = 'bedrock' in (e.get('upstream') or '')
-        price = (lookup(bedrock, model) if on_bedrock else None) or lookup(prices, model)
+        price = (scoped_price(lookup(bedrock, model), model) if on_bedrock else None) or lookup(prices, model)
         written = usage.get('cache_write_input_tokens') or 0
+        written_1h = min(usage.get('cache_write_1h_input_tokens') or 0, written)
         if price is None:
             reasons.append(f'modele absent du catalogue : {model}')
         else:
@@ -129,8 +138,10 @@ def chiffrer(events, pricing=None):
             cached = usage.get('cached_input_tokens')
             if cached is not None and cached > 0:
                 fields.append('cached_in')
-            if written > 0:
+            if written - written_1h > 0:
                 fields.append('cache_write_in')
+            if written_1h > 0:
+                fields.append('cache_write_1h_in')
             for field in fields:
                 rate = price.get(field)
                 if (isinstance(rate, bool) or not isinstance(rate, (int, float))
@@ -149,8 +160,10 @@ def chiffrer(events, pricing=None):
             if e['provider'] != 'anthropic':
                 input_cost -= cached * price['in']
             input_cost += cached * price['cached_in']
-        if written > 0:
-            input_cost += written * price['cache_write_in']
+        if written - written_1h > 0:
+            input_cost += (written - written_1h) * price['cache_write_in']
+        if written_1h > 0:
+            input_cost += written_1h * price['cache_write_1h_in']
         costs.append((input_cost + usage['output_tokens'] * price['out']) / 1_000_000)
     if not missing:
         result['cout_mensuel_usd'] = math.fsum(costs) * MONTH_SECONDS / duration

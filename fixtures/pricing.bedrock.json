@@ -1,142 +1,367 @@
 {
  "_meta": {
-  "source": "https://aws.amazon.com/bedrock/pricing/",
-  "date": "2026-11-13",
-  "estimated": true,
-  "verified": false,
-  "how": "Tarifs de base repris de fixtures/pricing.json (OpenRouter, liste Anthropic) : la page AWS n'a pas pu etre lue automatiquement (tableaux dynamiques). A verifier ligne a ligne sur la page avant tout chiffre montre a un client.",
-  "cache_write_in": "1,25 x tarif d'entree (TTL 5 min) : hypothese, le TTL 1 h coute 2 x. Aucun TTL n'est visible dans le journal d'invocation.",
-  "batch": "Inference par lots : -50 % sur les modeles pris en charge (page AWS, section batch). batch_in / batch_out = moitie du tarif standard.",
-  "flex_tier": "Niveau de service Flex : -50 % annonce par AWS sur certains modeles ; non verifie pour Claude.",
-  "regional": "Un profil geographique (eu., us., apac.) peut couter plus cher que le profil global. (global.) : prime non verifiee, aucun chiffre applique ici.",
-  "region_pricing": "Prix identiques quelle que soit la region dans ce fichier : hypothese non verifiee."
+  "source": "https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/ (AmazonBedrockFoundationModels, Claude), régions us-east-1, eu-west-1, eu-central-1",
+  "retrieved": "2026-11-13",
+  "published": [
+   "2026-11-09T22:43:12Z"
+  ],
+  "verified": true,
+  "unit": "USD par million de jetons, à la demande",
+  "scopes": "clés à la racine = portée régionale (profil eu./us./apac. ou appel direct) ; sous-clé « global » = profil global. Modèle sans « global » : pas de profil global au catalogue.",
+  "region_pricing": "quand un tarif figure dans plusieurs des trois régions lues il est identique (contrôlé par le script) ; la disponibilité (batch, profil global) varie selon la région ; GovCloud exclu, autres régions non lues.",
+  "fields": "in, out, cached_in (cache lu), cache_write_in (écriture TTL 5 min), cache_write_1h_in (TTL 1 h), batch_in/batch_out (inférence par lots), flex_in/flex_out/flex_cached_in (niveau Flex).",
+  "absent": "Claude : aucun tarif Flex ni Priority au catalogue ; batch seulement sur une partie des modèles (champ absent = non listé).",
+  "not_read": "contexte long (long_ctx), débit provisionné ou réservé, Nova, Llama, Mistral : non repris (les tarifs Nova varient selon la région, ce fichier ne porte qu'un tarif par modèle).",
+  "hypothesis": "un appel direct dans une région (sans préfixe de profil) est supposé facturé au tarif régional ; le journal ne dit pas quel TTL a servi pour les écritures de cache sauf si cacheDetails est présent."
  },
  "models": {
+  "claude-3-5-haiku": {
+   "out": 4.0,
+   "batch_out": 2.0,
+   "cache_write_in": 1.0,
+   "in": 0.8,
+   "batch_in": 0.4,
+   "cached_in": 0.08
+  },
+  "claude-3-5-sonnet": {
+   "out": 15.0,
+   "batch_out": 7.5,
+   "in": 3.0,
+   "batch_in": 1.5,
+   "cached_in": 0.3,
+   "cache_write_in": 3.75
+  },
+  "claude-3-7-sonnet": {
+   "out": 15.0,
+   "cached_in": 0.3,
+   "cache_write_in": 3.75,
+   "batch_out": 7.5,
+   "in": 3.0,
+   "batch_in": 1.5
+  },
   "claude-3-haiku": {
-   "in": 0.25,
-   "out": 1.25,
-   "cache_write_in": 0.3125,
    "batch_in": 0.125,
-   "batch_out": 0.625
+   "out": 1.25,
+   "batch_out": 0.625,
+   "in": 0.25
+  },
+  "claude-3-opus": {
+   "batch_in": 7.5,
+   "out": 75.0,
+   "in": 15.0,
+   "batch_out": 37.5
+  },
+  "claude-3-sonnet": {
+   "batch_in": 1.5,
+   "out": 15.0,
+   "batch_out": 7.5,
+   "in": 3.0
   },
   "claude-fable-5": {
-   "in": 10.0,
-   "out": 50.0,
-   "cached_in": 1.0,
-   "cache_write_in": 12.5,
-   "batch_in": 5.0,
-   "batch_out": 25.0
+   "cache_write_1h_in": 22.0,
+   "in": 11.0,
+   "cached_in": 1.1,
+   "cache_write_in": 13.75,
+   "out": 55.0,
+   "global": {
+    "cache_write_in": 12.5,
+    "out": 50.0,
+    "cache_write_1h_in": 20.0,
+    "in": 10.0,
+    "cached_in": 1.0
+   }
   },
   "claude-fable-5-1": {
-   "in": 10.0,
-   "out": 50.0,
-   "cached_in": 0.25,
-   "cache_write_in": 12.5,
-   "batch_in": 5.0,
-   "batch_out": 25.0
+   "out": 55.0,
+   "cache_write_1h_in": 22.0,
+   "in": 11.0,
+   "cached_in": 0.275,
+   "cache_write_in": 13.75,
+   "global": {
+    "in": 10.0,
+    "cached_in": 0.25,
+    "cache_write_1h_in": 20.0,
+    "cache_write_in": 12.5,
+    "out": 50.0
+   }
+  },
+  "claude-fable-5-2": {
+   "cache_write_in": 11.0,
+   "in": 8.8,
+   "cached_in": 0.22,
+   "out": 44.0,
+   "cache_write_1h_in": 17.6,
+   "global": {
+    "cached_in": 0.2,
+    "in": 8.0,
+    "cache_write_in": 10.0,
+    "cache_write_1h_in": 16.0,
+    "out": 40.0
+   }
   },
   "claude-haiku-4-5": {
-   "in": 1.0,
-   "out": 5.0,
-   "cached_in": 0.1,
-   "cache_write_in": 1.25,
-   "batch_in": 0.5,
-   "batch_out": 2.5
+   "cache_write_in": 1.375,
+   "cached_in": 0.11,
+   "in": 1.1,
+   "cache_write_1h_in": 2.2,
+   "out": 5.5,
+   "batch_out": 2.75,
+   "batch_in": 0.55,
+   "global": {
+    "batch_out": 2.5,
+    "in": 1.0,
+    "cache_write_in": 1.25,
+    "cache_write_1h_in": 2.0,
+    "cached_in": 0.1,
+    "out": 5.0,
+    "batch_in": 0.5
+   }
+  },
+  "claude-haiku-5-5": {
+   "out": 0.55,
+   "cache_write_1h_in": 0.22,
+   "cached_in": 0.011,
+   "in": 0.11,
+   "cache_write_in": 0.1375,
+   "global": {
+    "cached_in": 0.01,
+    "cache_write_in": 0.125,
+    "cache_write_1h_in": 0.2,
+    "in": 0.1,
+    "out": 0.5
+   }
+  },
+  "claude-mythos-5": {
+   "out": 55.0,
+   "in": 11.0,
+   "cache_write_in": 13.75,
+   "cache_write_1h_in": 22.0,
+   "cached_in": 1.1
+  },
+  "claude-mythos-5-1": {
+   "in": 11.0,
+   "cached_in": 0.275,
+   "cache_write_1h_in": 22.0,
+   "out": 55.0,
+   "cache_write_in": 13.75,
+   "global": {
+    "cache_write_1h_in": 20.0,
+    "cached_in": 0.25,
+    "out": 50.0,
+    "in": 10.0,
+    "cache_write_in": 12.5
+   }
+  },
+  "claude-mythos-5-2": {
+   "cached_in": 0.22,
+   "in": 8.8,
+   "cache_write_in": 11.0,
+   "cache_write_1h_in": 17.6,
+   "out": 44.0,
+   "global": {
+    "in": 8.0,
+    "cached_in": 0.2,
+    "out": 40.0,
+    "cache_write_1h_in": 16.0,
+    "cache_write_in": 10.0
+   }
+  },
+  "claude-mythos-preview": {
+   "out": 137.5,
+   "in": 27.5,
+   "cache_write_1h_in": 55.0,
+   "cached_in": 2.75,
+   "cache_write_in": 34.375
   },
   "claude-opus-4": {
-   "in": 15.0,
    "out": 75.0,
-   "cache_write_in": 18.75,
    "batch_in": 7.5,
-   "batch_out": 37.5
+   "in": 15.0,
+   "batch_out": 37.5,
+   "cache_write_in": 18.75,
+   "cached_in": 1.5
   },
   "claude-opus-4-1": {
    "in": 15.0,
-   "out": 75.0,
    "cached_in": 1.5,
-   "cache_write_in": 18.75,
-   "batch_in": 7.5,
-   "batch_out": 37.5
+   "out": 75.0,
+   "cache_write_in": 18.75
   },
   "claude-opus-4-5": {
-   "in": 5.0,
-   "out": 25.0,
-   "cached_in": 0.5,
-   "cache_write_in": 6.25,
-   "batch_in": 2.5,
-   "batch_out": 12.5
+   "out": 27.5,
+   "in": 5.5,
+   "batch_in": 2.75,
+   "batch_out": 13.75,
+   "cache_write_1h_in": 11.0,
+   "cached_in": 0.55,
+   "cache_write_in": 6.875,
+   "global": {
+    "in": 5.0,
+    "cache_write_1h_in": 10.0,
+    "cached_in": 0.5,
+    "batch_in": 2.5,
+    "batch_out": 12.5,
+    "cache_write_in": 6.25,
+    "out": 25.0
+   }
   },
   "claude-opus-4-6": {
-   "in": 5.0,
-   "out": 25.0,
-   "cached_in": 0.5,
-   "cache_write_in": 6.25,
-   "batch_in": 2.5,
-   "batch_out": 12.5
+   "batch_in": 2.75,
+   "batch_out": 13.75,
+   "in": 5.5,
+   "cache_write_1h_in": 11.0,
+   "cached_in": 0.55,
+   "cache_write_in": 6.875,
+   "out": 27.5,
+   "global": {
+    "cache_write_1h_in": 10.0,
+    "in": 5.0,
+    "cached_in": 0.5,
+    "batch_in": 2.5,
+    "cache_write_in": 6.25,
+    "out": 25.0,
+    "batch_out": 12.5
+   }
   },
   "claude-opus-4-7": {
-   "in": 5.0,
-   "out": 25.0,
-   "cached_in": 0.5,
-   "cache_write_in": 6.25,
-   "batch_in": 2.5,
-   "batch_out": 12.5
+   "cache_write_in": 6.875,
+   "in": 5.5,
+   "cached_in": 0.55,
+   "cache_write_1h_in": 11.0,
+   "out": 27.5,
+   "global": {
+    "cached_in": 0.5,
+    "out": 25.0,
+    "cache_write_1h_in": 10.0,
+    "in": 5.0,
+    "cache_write_in": 6.25
+   }
   },
   "claude-opus-4-8": {
-   "in": 5.0,
-   "out": 25.0,
-   "cached_in": 0.5,
-   "cache_write_in": 6.25,
-   "batch_in": 2.5,
-   "batch_out": 12.5
+   "out": 27.5,
+   "cache_write_1h_in": 11.0,
+   "cache_write_in": 6.875,
+   "cached_in": 0.55,
+   "in": 5.5,
+   "global": {
+    "in": 5.0,
+    "out": 25.0,
+    "cache_write_1h_in": 10.0,
+    "cached_in": 0.5,
+    "cache_write_in": 6.25
+   }
   },
   "claude-opus-5": {
-   "in": 5.0,
-   "out": 25.0,
-   "cached_in": 0.5,
-   "cache_write_in": 6.25,
-   "batch_in": 2.5,
-   "batch_out": 12.5
+   "cache_write_1h_in": 11.0,
+   "cache_write_in": 6.875,
+   "out": 27.5,
+   "batch_in": 2.75,
+   "cached_in": 0.55,
+   "batch_out": 13.75,
+   "in": 5.5,
+   "global": {
+    "cached_in": 0.5,
+    "batch_out": 12.5,
+    "cache_write_1h_in": 10.0,
+    "out": 25.0,
+    "cache_write_in": 6.25,
+    "in": 5.0,
+    "batch_in": 2.5
+   }
   },
   "claude-opus-5-5": {
-   "in": 4.0,
-   "out": 20.0,
-   "cached_in": 0.2,
-   "cache_write_in": 5.0,
-   "batch_in": 2.0,
-   "batch_out": 10.0
+   "in": 4.4,
+   "cached_in": 0.22,
+   "out": 22.0,
+   "cache_write_1h_in": 8.8,
+   "cache_write_in": 5.5,
+   "global": {
+    "in": 4.0,
+    "cache_write_1h_in": 8.0,
+    "cache_write_in": 5.0,
+    "out": 20.0,
+    "cached_in": 0.2
+   }
   },
   "claude-sonnet-4": {
    "in": 3.0,
-   "out": 15.0,
-   "cached_in": 0.3,
-   "cache_write_in": 3.75,
    "batch_in": 1.5,
-   "batch_out": 7.5
+   "cache_write_in": 3.75,
+   "cached_in": 0.3,
+   "out": 15.0,
+   "batch_out": 7.5,
+   "global": {
+    "batch_out": 7.5,
+    "cached_in": 0.3,
+    "cache_write_in": 3.75,
+    "out": 15.0,
+    "in": 3.0,
+    "batch_in": 1.5
+   }
   },
   "claude-sonnet-4-5": {
-   "in": 3.0,
-   "out": 15.0,
-   "cached_in": 0.3,
-   "cache_write_in": 3.75,
-   "batch_in": 1.5,
-   "batch_out": 7.5
+   "in": 3.3,
+   "cache_write_1h_in": 6.6,
+   "batch_in": 1.65,
+   "cached_in": 0.33,
+   "cache_write_in": 4.125,
+   "out": 16.5,
+   "batch_out": 8.25,
+   "global": {
+    "cached_in": 0.3,
+    "in": 3.0,
+    "cache_write_in": 3.75,
+    "batch_out": 7.5,
+    "out": 15.0,
+    "batch_in": 1.5,
+    "cache_write_1h_in": 6.0
+   }
   },
   "claude-sonnet-4-6": {
-   "in": 3.0,
-   "out": 15.0,
-   "cached_in": 0.3,
-   "cache_write_in": 3.75,
-   "batch_in": 1.5,
-   "batch_out": 7.5
+   "batch_in": 1.65,
+   "in": 3.3,
+   "cache_write_1h_in": 6.6,
+   "cached_in": 0.33,
+   "batch_out": 8.25,
+   "out": 16.5,
+   "cache_write_in": 4.125,
+   "global": {
+    "cache_write_in": 3.75,
+    "in": 3.0,
+    "batch_out": 7.5,
+    "out": 15.0,
+    "batch_in": 1.5,
+    "cache_write_1h_in": 6.0,
+    "cached_in": 0.3
+   }
   },
   "claude-sonnet-5": {
-   "in": 2.0,
-   "out": 10.0,
-   "cached_in": 0.2,
-   "cache_write_in": 2.5,
-   "batch_in": 1.0,
-   "batch_out": 5.0
+   "cache_write_in": 2.75,
+   "out": 11.0,
+   "in": 2.2,
+   "cached_in": 0.22,
+   "cache_write_1h_in": 4.4,
+   "global": {
+    "cache_write_1h_in": 4.0,
+    "cache_write_in": 2.5,
+    "in": 2.0,
+    "out": 10.0,
+    "cached_in": 0.2
+   }
+  },
+  "claude-sonnet-5-5": {
+   "in": 2.2,
+   "cache_write_in": 2.75,
+   "cached_in": 0.11,
+   "cache_write_1h_in": 4.4,
+   "out": 11.0,
+   "global": {
+    "cache_write_1h_in": 4.0,
+    "cached_in": 0.1,
+    "cache_write_in": 2.5,
+    "out": 10.0,
+    "in": 2.0
+   }
   }
  }
 }

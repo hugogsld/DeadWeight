@@ -3,7 +3,7 @@
     python3 fixtures/bedrock/gen.py
 
 Aucune donnée réelle, aucun identifiant réel (compte 123456789012, ARN d'exemple).
-Les formes de flux et les champs de cache sont des hypothèses tirées de la doc, à valider sur un vrai journal.
+Les compteurs de cache (input.cache*InputTokenCount) sont documentés ; les formes de flux restent des hypothèses.
 """
 import base64
 import gzip

@@ -110,6 +110,10 @@
         "cache_write_input_tokens": {
           "description": "Optionnel. Jetons ecrits en cache, factures a part (Anthropic cache_creation_input_tokens ; Bedrock cacheWriteInputTokens). Hors input_tokens.",
           "type": ["integer", "null"], "minimum": 0
+        },
+        "cache_write_1h_input_tokens": {
+          "description": "Optionnel. Part de cache_write_input_tokens ecrite avec un TTL de 1 h (tarif plus eleve). Bedrock : usage.cacheDetails (ttl 1h) ; Anthropic : cache_creation.ephemeral_1h_input_tokens. Absent = tout au TTL 5 min.",
+          "type": ["integer", "null"], "minimum": 0
         }
       }
     },

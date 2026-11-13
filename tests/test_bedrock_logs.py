@@ -245,10 +245,10 @@ def test_le_rapport_d_audit_accepte_les_evenements(s3):
     assert build_report(s3[0])
 
 
-def test_surcouche_tarifs_porte_source_date_et_estimation():
+def test_surcouche_tarifs_porte_source_date_et_verification():
     meta = json.loads((ROOT / "fixtures/pricing.bedrock.json").read_text())["_meta"]
-    assert meta["source"].startswith("https://aws.amazon.com/bedrock/pricing")
-    assert meta["date"] and meta["estimated"] is True and meta["verified"] is False
+    assert meta["source"].startswith("https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/")
+    assert meta["retrieved"] and meta["published"] and meta["verified"] is True
 
 
 def test_dossier_copie_ailleurs_suit_toujours_les_corps(tmp_path):

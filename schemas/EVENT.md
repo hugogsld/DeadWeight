@@ -39,5 +39,12 @@ confondre deux modèles de même nom chez deux hébergeurs.
 | `usage.cached_input_tokens` | `prompt_tokens_details.cached_tokens` | `cache_read_input_tokens` | `cachedContentTokenCount` |
 | `usage.reasoning_tokens` | `completion_tokens_details.reasoning_tokens` | — (null) | `thoughtsTokenCount` |
 
+Champs optionnels de `usage` (absents si la source ne les donne pas ; les consommateurs les lisent avec un défaut de 0) :
+
+- `usage.cache_write_input_tokens` : jetons écrits en cache, facturés à part, **hors** `input_tokens`
+  (Anthropic `cache_creation_input_tokens` ; Bedrock `cacheWriteInputTokenCount` / `cacheWriteInputTokens`).
+- `usage.cache_write_1h_input_tokens` : part de ces écritures faite avec un TTL de 1 h (plus chère).
+  Bedrock `usage.cacheDetails` (ttl `1h`) ; Anthropic `cache_creation.ephemeral_1h_input_tokens`. Absent = tout au TTL 5 min.
+
 La valeur brute reste dans `finish_reason_raw`. Un champ absent chez un fournisseur vaut `null`,
 jamais une valeur par défaut inventée.
