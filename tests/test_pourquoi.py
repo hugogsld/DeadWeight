@@ -48,3 +48,29 @@ def test_html_has_block_only_when_no_finding():
     assert not report["constats"]
     page = render_html(report)
     assert "Pourquoi aucun constat" in page and "Ce que montre déjà cette source" in page
+
+
+def _demo_page():
+    events = [json.loads(line) for line in (ROOT / "fixtures/dataset/v1/events.jsonl").read_text().splitlines()]
+    return render_html(build_report(events[:40]))
+
+
+def test_html_checks_folded_and_not_repeated_missing_note():
+    page = render_html(build_report([ev(i, system="s") for i in range(40)]))
+    assert "<details><summary>Vérifications effectuées (" in page
+    assert page.count("Chiffre manquant") == 0 and page.count("laissez tourner la passerelle") == 1
+
+
+def test_zero_latency_is_not_measured():
+    from report.audit import _ms
+    assert _ms(0) == "non mesuré" and _ms(None) == "non mesuré" and _ms(640) == "640 ms"
+
+
+def test_low_entropy_title_singular():
+    from rules.low_entropy import detect
+    events = [ev(i, system="s") for i in range(40)]
+    for e in events:
+        e["response"]["content"] = "spam"
+        e["provider"], e["model"] = "openai", "gpt-4o"
+    [f] = detect(events)
+    assert "1 réponse différente :" in f["title"]

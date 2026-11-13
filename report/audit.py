@@ -262,7 +262,8 @@ def _usd(v):
 
 
 def _ms(v):
-    return "non disponible" if v is None else f"{v / 1000:.1f} s" if v >= 1000 else f"{v:.0f} ms"
+    """0 ms = latence non rapportée par la source (journaux, import) : on ne l'affiche pas comme une mesure."""
+    return "non mesuré" if not v else f"{v / 1000:.1f} s" if v >= 1000 else f"{v:.0f} ms"
 
 
 def _day(ts):
@@ -366,7 +367,7 @@ Aucune piste n'est prouvée : un modèle européen se teste au banc avant de cha
 {'<p class="note">* Destination déduite du format d’appel : le trafic n’est pas passé par la passerelle.</p>' if deduced else ''}"""
 
 
-def _card(c):
+def _card(c, global_reasons=()):
     n, e = c["chiffres"], html.escape
     notes = []
     proof = c.get("preuve_agent")
@@ -376,8 +377,9 @@ def _card(c):
                      + (f" ({how})." if how else "."))
     elif not c["prouve"]:
         notes.append("Constat statistique, pas encore vérifié par rejeu.")
-    if c["raisons_manquantes"]:
-        notes.append("Chiffre manquant : " + "; ".join(c["raisons_manquantes"]) + ".")
+    own = [r for r in c["raisons_manquantes"] if r not in global_reasons]  # la note globale les dit déjà
+    if own:
+        notes.append("Chiffre manquant : " + "; ".join(own) + ".")
     return f"""<div class="card"><h3>{e(c['titre'])}</h3>
 <div class="app">Application {e(c['app_id'])} · modèle {e(c['model'])}</div>
 <p>{e(c['phrase'])}</p>
@@ -503,11 +505,15 @@ def render_html(report):
         partial = g.get("part_chiffree") is not None or g.get("cout_observe_usd") is not None
         missing = (f'<p class="note">{"Coût à lire avec prudence" if partial else "Coût total non disponible"} : '
                    f'{e("; ".join(report["raisons_globales"]))}.</p>' if report["raisons_globales"] else "")
-        checks = e(", ".join(report["verifications"])) or "aucune"
-        cards = "".join(_card(c) for c in report["constats"]) or "<p>Aucun gaspillage détecté.</p>"
+        checks = "".join(f"<li>{e(v)}</li>" for v in report["verifications"]) or "<li>aucune</li>"
+        cards = "".join(_card(c, report["raisons_globales"]) for c in report["constats"]) or "<p>Aucun gaspillage détecté.</p>"
         rows = "".join(
             f"<tr><td>{e(a['app_id'])}</td><td>{a['chiffres']['nb_appels']}</td>"
             f"<td>{_usd(_cost(a['chiffres']))}</td></tr>" for a in report["rien_a_signaler"])
+        quiet = (f"""<h2>Rien à signaler</h2>
+<p class="note">Ces applications ne déclenchent aucune des vérifications.</p>
+<table class="clean"><tr><th>Application</th><th>Appels</th><th>{"Coût observé" if g.get("cout_observe_usd") is not None else "Coût mensuel"}</th></tr>{rows}</table>"""
+                 if rows else "")
         billing = report.get("billing")
         kpi_label, kpi_value = _cost_label(g, "Coût mensuel total")
         if report.get("gains_equivalent_api"):  # abonnement : ce dollar n'est pas facturé à l'usage
@@ -521,20 +527,22 @@ def render_html(report):
 <div class="kpi"><b>{_usd(kpi_value)}</b><span>{kpi_label.lower()}</span></div>
 <div class="kpi"><b>{len(report['constats'])}</b><span>constats</span></div></div>
 {missing}
-<p class="note">Vérifications effectuées : {checks}.</p>
+<details><summary>Vérifications effectuées ({len(report['verifications'])})</summary><ul class="note">{checks}</ul></details>
 {_billing_html(billing)}
 {_agent_section(report.get("agent"))}
 {_pourquoi_html(report.get("pourquoi_rien")) or f"<h2>Constats, du plus coûteux au moins coûteux</h2>{cards}"}
 {_gains_html(report.get("gains_par_tache"), report.get("gains_equivalent_api", False))}
 {_sovereignty(report.get("souverainete"))}
-<h2>Rien à signaler</h2>
-<p class="note">Ces applications ne déclenchent aucune des vérifications ci-dessus.</p>
-<table class="clean"><tr><th>Application</th><th>Appels</th><th>Coût mensuel</th></tr>{rows}</table>"""
+{quiet}"""
+    g = r["global"] or {}
+    sub = ("Coûts en dollars, à partir des prix publics des modèles ; trafic observé sur moins d'une journée, "
+           "donc aucune projection mensuelle." if g.get("cout_observe_usd") is not None else
+           "Coûts projetés sur 30 jours au volume observé, en dollars, à partir des prix publics des modèles.")
     return f"""<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Audit Deadweight</title><style>{CSS}</style></head><body><main>
 <h1>Audit des appels d'IA</h1>
-<p class="sub">Période observée : du {_day(r['debut'])} au {_day(r['fin'])}. Coûts projetés sur 30 jours au volume observé, en dollars, à partir des prix publics des modèles.</p>
+<p class="sub">Période observée : du {_day(r['debut'])} au {_day(r['fin'])}. {sub}</p>
 {body}
 <p class="note">Aucune donnée n'a quitté votre infrastructure pour produire ce rapport.</p>
 </main></body></html>

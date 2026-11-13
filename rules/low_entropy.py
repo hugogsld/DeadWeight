@@ -167,7 +167,7 @@ def _finding(app_id, model, template, evts, outputs, raw):
         "model": model,
         "template": template,
         "severity": "cut" if cut else "trim",
-        "title": (f"{n} appels à {model} ne produisent que {len(dist)} réponses différentes : "
+        "title": (f"{n} appels à {model} ne produisent que {len(dist)} réponse{'s' if len(dist) > 1 else ''} différente{'s' if len(dist) > 1 else ''} : "
                   f"c'est un aiguillage, pas du raisonnement{how.get(kind, '')}"),
         "proven": False,
         "event_ids": [e["event_id"] for e in evts],
