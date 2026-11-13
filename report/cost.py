@@ -12,6 +12,8 @@ from pathlib import Path
 from statistics import median
 
 PRICING_PATH = Path(__file__).resolve().parents[1] / 'fixtures' / 'pricing.json'
+# Surcouche Amazon Bedrock : tarifs estimés (source, date et réserves dans son bloc _meta).
+BEDROCK_PRICING_PATH = Path(__file__).resolve().parents[1] / 'fixtures' / 'pricing.bedrock.json'
 MONTH_SECONDS = 30 * 24 * 60 * 60
 # En dessous d'une journée observée, une projection sur un mois n'est pas fiable : un workflow par lots
 # (un récap par jour) passé deux fois en une heure serait projeté 38 fois trop haut (retour du 26/09).
@@ -22,18 +24,41 @@ RUN_GAP_SECONDS = 30 * 60
 _DATED = re.compile(r"(-\d{8}|-\d{4}-\d{2}-\d{2}|@\d{8}|-0\d\d)$")
 
 
+# identifiants Bedrock : ARN, préfixe de profil d'inférence (eu., us., global...), préfixe éditeur, suffixe -v1:0
+_BEDROCK_ARN = re.compile(r"^arn:aws[a-z-]*:bedrock:[^:]*:[^:]*:(?:inference-profile|foundation-model)/")
+_BEDROCK_PROFILE = re.compile(r"^(?:eu|us|us-gov|apac|jp|au|ca|global)\.")
+_BEDROCK_VERSION = re.compile(r"-v\d+(?::\d+)?$")
+
+
+def bedrock_name(model):
+    """Nom nu d'un identifiant Bedrock (claude-sonnet-4-5-20250929), identique si ce n'en est pas un."""
+    name = _BEDROCK_ARN.sub("", model)
+    name = _BEDROCK_PROFILE.sub("", name)
+    if name.startswith("anthropic."):
+        name = name[len("anthropic."):]
+    return _BEDROCK_VERSION.sub("", name)
+
+
 def lookup(prices, model):
     """Prix d'un modèle tel que l'appelle le client : nom exact, sans préfixe
-    fournisseur, puis sans suffixe de date. None si inconnu."""
+    fournisseur (ou identifiant Bedrock normalisé), puis sans suffixe de date. None si inconnu."""
     if not model:
         return None
-    for name in (model, model.split("/", 1)[-1]):
+    for name in (model, model.split("/", 1)[-1], bedrock_name(model)):
         if name in prices:
             return prices[name]
         base = _DATED.sub("", name)
         if base != name and base in prices:
             return prices[base]
     return None
+
+
+def _bedrock_prices():
+    """Tarifs Bedrock estimés (surcouche), ou {} si le fichier est absent."""
+    try:
+        return json.loads(BEDROCK_PRICING_PATH.read_text(encoding='utf-8')).get('models', {})
+    except (OSError, ValueError):
+        return {}
 
 
 def chiffrer(events, pricing=None):
@@ -60,6 +85,7 @@ def chiffrer(events, pricing=None):
         if '/' in model:
             prices.setdefault(model.split('/', 1)[1], price)
 
+    bedrock = _bedrock_prices()
     missing = []
     latencies = sorted(e['latency_ms'] for e in events)
     errors = sum(e['error'] is not None for e in events)
@@ -93,7 +119,9 @@ def chiffrer(events, pricing=None):
             if (field != 'cached_input_tokens' or field in usage) and usage.get(field) is None:
                 reasons.append(f'usage.{field} inconnu')
         model = e['model']
-        price = lookup(prices, model)
+        on_bedrock = 'bedrock' in (e.get('upstream') or '')
+        price = (lookup(bedrock, model) if on_bedrock else None) or lookup(prices, model)
+        written = usage.get('cache_write_input_tokens') or 0
         if price is None:
             reasons.append(f'modele absent du catalogue : {model}')
         else:
@@ -101,6 +129,8 @@ def chiffrer(events, pricing=None):
             cached = usage.get('cached_input_tokens')
             if cached is not None and cached > 0:
                 fields.append('cached_in')
+            if written > 0:
+                fields.append('cache_write_in')
             for field in fields:
                 rate = price.get(field)
                 if (isinstance(rate, bool) or not isinstance(rate, (int, float))
@@ -119,6 +149,8 @@ def chiffrer(events, pricing=None):
             if e['provider'] != 'anthropic':
                 input_cost -= cached * price['in']
             input_cost += cached * price['cached_in']
+        if written > 0:
+            input_cost += written * price['cache_write_in']
         costs.append((input_cost + usage['output_tokens'] * price['out']) / 1_000_000)
     if not missing:
         result['cout_mensuel_usd'] = math.fsum(costs) * MONTH_SECONDS / duration

@@ -1,0 +1,142 @@
+{
+ "_meta": {
+  "source": "https://aws.amazon.com/bedrock/pricing/",
+  "date": "2026-11-13",
+  "estimated": true,
+  "verified": false,
+  "how": "Tarifs de base repris de fixtures/pricing.json (OpenRouter, liste Anthropic) : la page AWS n'a pas pu etre lue automatiquement (tableaux dynamiques). A verifier ligne a ligne sur la page avant tout chiffre montre a un client.",
+  "cache_write_in": "1,25 x tarif d'entree (TTL 5 min) : hypothese, le TTL 1 h coute 2 x. Aucun TTL n'est visible dans le journal d'invocation.",
+  "batch": "Inference par lots : -50 % sur les modeles pris en charge (page AWS, section batch). batch_in / batch_out = moitie du tarif standard.",
+  "flex_tier": "Niveau de service Flex : -50 % annonce par AWS sur certains modeles ; non verifie pour Claude.",
+  "regional": "Un profil geographique (eu., us., apac.) peut couter plus cher que le profil global. (global.) : prime non verifiee, aucun chiffre applique ici.",
+  "region_pricing": "Prix identiques quelle que soit la region dans ce fichier : hypothese non verifiee."
+ },
+ "models": {
+  "claude-3-haiku": {
+   "in": 0.25,
+   "out": 1.25,
+   "cache_write_in": 0.3125,
+   "batch_in": 0.125,
+   "batch_out": 0.625
+  },
+  "claude-fable-5": {
+   "in": 10.0,
+   "out": 50.0,
+   "cached_in": 1.0,
+   "cache_write_in": 12.5,
+   "batch_in": 5.0,
+   "batch_out": 25.0
+  },
+  "claude-fable-5-1": {
+   "in": 10.0,
+   "out": 50.0,
+   "cached_in": 0.25,
+   "cache_write_in": 12.5,
+   "batch_in": 5.0,
+   "batch_out": 25.0
+  },
+  "claude-haiku-4-5": {
+   "in": 1.0,
+   "out": 5.0,
+   "cached_in": 0.1,
+   "cache_write_in": 1.25,
+   "batch_in": 0.5,
+   "batch_out": 2.5
+  },
+  "claude-opus-4": {
+   "in": 15.0,
+   "out": 75.0,
+   "cache_write_in": 18.75,
+   "batch_in": 7.5,
+   "batch_out": 37.5
+  },
+  "claude-opus-4-1": {
+   "in": 15.0,
+   "out": 75.0,
+   "cached_in": 1.5,
+   "cache_write_in": 18.75,
+   "batch_in": 7.5,
+   "batch_out": 37.5
+  },
+  "claude-opus-4-5": {
+   "in": 5.0,
+   "out": 25.0,
+   "cached_in": 0.5,
+   "cache_write_in": 6.25,
+   "batch_in": 2.5,
+   "batch_out": 12.5
+  },
+  "claude-opus-4-6": {
+   "in": 5.0,
+   "out": 25.0,
+   "cached_in": 0.5,
+   "cache_write_in": 6.25,
+   "batch_in": 2.5,
+   "batch_out": 12.5
+  },
+  "claude-opus-4-7": {
+   "in": 5.0,
+   "out": 25.0,
+   "cached_in": 0.5,
+   "cache_write_in": 6.25,
+   "batch_in": 2.5,
+   "batch_out": 12.5
+  },
+  "claude-opus-4-8": {
+   "in": 5.0,
+   "out": 25.0,
+   "cached_in": 0.5,
+   "cache_write_in": 6.25,
+   "batch_in": 2.5,
+   "batch_out": 12.5
+  },
+  "claude-opus-5": {
+   "in": 5.0,
+   "out": 25.0,
+   "cached_in": 0.5,
+   "cache_write_in": 6.25,
+   "batch_in": 2.5,
+   "batch_out": 12.5
+  },
+  "claude-opus-5-5": {
+   "in": 4.0,
+   "out": 20.0,
+   "cached_in": 0.2,
+   "cache_write_in": 5.0,
+   "batch_in": 2.0,
+   "batch_out": 10.0
+  },
+  "claude-sonnet-4": {
+   "in": 3.0,
+   "out": 15.0,
+   "cached_in": 0.3,
+   "cache_write_in": 3.75,
+   "batch_in": 1.5,
+   "batch_out": 7.5
+  },
+  "claude-sonnet-4-5": {
+   "in": 3.0,
+   "out": 15.0,
+   "cached_in": 0.3,
+   "cache_write_in": 3.75,
+   "batch_in": 1.5,
+   "batch_out": 7.5
+  },
+  "claude-sonnet-4-6": {
+   "in": 3.0,
+   "out": 15.0,
+   "cached_in": 0.3,
+   "cache_write_in": 3.75,
+   "batch_in": 1.5,
+   "batch_out": 7.5
+  },
+  "claude-sonnet-5": {
+   "in": 2.0,
+   "out": 10.0,
+   "cached_in": 0.2,
+   "cache_write_in": 2.5,
+   "batch_in": 1.0,
+   "batch_out": 5.0
+  }
+ }
+}
